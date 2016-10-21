@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-public class GameStart : MonoBehaviour {
+public class StartLoadingSceneManager : SceneManager {
     public GameObject gameManager;
 
     void Awake() {
