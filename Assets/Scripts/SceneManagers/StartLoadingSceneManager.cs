@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 public class StartLoadingSceneManager : SceneManager {
     public GameObject gameManager;
 
@@ -9,6 +10,10 @@ public class StartLoadingSceneManager : SceneManager {
     }
 
     void Start() {
+        
+    }
 
+    public void loadMainScene() {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Main");
     }
 }
