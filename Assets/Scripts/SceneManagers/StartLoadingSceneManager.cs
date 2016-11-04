@@ -7,7 +7,7 @@ public class StartLoadingSceneManager : SceneManager {
         if(GameManager.Instance == null){
             Instantiate(gameManager);
         }
-        var _gameManager = gameManager.GetComponent<GameManager>();
+        var _gameManager = GameManager.Instance;
         _gameManager.userStore = new User(_gameManager.gameDispatcher);
     }
 

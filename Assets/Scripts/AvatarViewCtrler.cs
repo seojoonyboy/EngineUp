@@ -21,6 +21,14 @@ public class AvatarViewCtrler : MonoBehaviour {
         Debug.Log(startTime);
     }
 
+    public void OnConfirm() {
+        string nickName = menuPanel.transform.Find("NickNameBox").GetComponent<UIInput>().value;
+        EditNickNameAction action = (EditNickNameAction)ActionCreator.createAction(ActionTypes.EDIT_NICKNAME);
+        action.nickname = nickName;
+        GameManager.Instance.gameDispatcher.dispatch(action);
+        //Debug.Log(GameManager.Instance.userStore.nickName);
+    }
+
     public void OnSelectPanel() {
         selectPanel.SetActive(true);
     }
