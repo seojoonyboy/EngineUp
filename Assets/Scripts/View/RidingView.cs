@@ -3,12 +3,13 @@ using System.Collections;
 using System;
 
 public class RidingView : MonoBehaviour {
+    public GameObject gpsPref;
+    private GameObject gpsManager;
     public UILabel 
         latitudeLabel,
         longitudeLabel,
         accuracyLabel,
-        distLabel,
-        timeLabel;
+        distLabel;
     private float
         latitude,
         longitude,
@@ -17,6 +18,14 @@ public class RidingView : MonoBehaviour {
     private const float EARTH_RADIUS = 6371;
     private LocationState state;
     LocationInfo currentGPSPosition;
+
+    void OnEnable() {
+        gpsManager = Instantiate(gpsPref);
+    }
+
+    void OnDisable() {
+        Destroy(gpsManager);
+    }
 
     IEnumerator DistBetweenLoc() {
         while(state == LocationState.Enabled) {

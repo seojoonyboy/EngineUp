@@ -19,16 +19,9 @@ public class GPSManager : MonoBehaviour {
         distance,
         time;
 
-    void OnEnable() {
-        StartCoroutine("checkGPSConfig");
-    }
-
-    void OnDisable() {
-        StopCoroutine("checkGPSConfig");
-    }
-
-    IEnumerator checkGPSConfig() {
+    IEnumerator Start() {
         //GPS 허용이 켜져있지 않으면 종료한다.
+        Debug.Log("Ienumerator Start");
         state = LocationState.Disabled;
         if (!Input.location.isEnabledByUser) {
             yield break;
@@ -73,4 +66,6 @@ public class GPSManager : MonoBehaviour {
         action.info = currentGPSPosition;
         GameManager.Instance.gameDispatcher.dispatch(action);
     }
+
+
 }
