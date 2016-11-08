@@ -1,7 +1,11 @@
-﻿public enum ActionTypes {
+﻿using UnityEngine;
+using System;
+
+public enum ActionTypes {
     GAME_START,
     GAME_END,
-    EDIT_NICKNAME
+    EDIT_NICKNAME,
+    GET_GPS_DATA
 }
 public class Actions{
     public ActionTypes type;
@@ -26,4 +30,8 @@ public class StartAction : Actions{
 
 public class EditNickNameAction : Actions{
     public string nickname;
+}
+
+public class GetGPSDataAction : Actions {
+    public LocationInfo info;
 }
