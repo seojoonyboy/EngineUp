@@ -33,5 +33,5 @@ public class EditNickNameAction : Actions{
 }
 
 public class GetGPSDataAction : Actions {
-    public LocationInfo info;
+    public LocationInfo GPSInfo;
 }

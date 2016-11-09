@@ -11,13 +11,11 @@ public enum LocationState {
 
 public class GPSReceiver : MonoBehaviour {
     private LocationState state;
-    LocationInfo currentGPSPosition;
+    LocationInfo currGPSInfo;
 
     private float
         latitude,
-        longitude,
-        distance,
-        time;
+        longitude;
 
     IEnumerator Start() {
         //GPS 허용이 켜져있지 않으면 종료한다.
@@ -57,15 +55,13 @@ public class GPSReceiver : MonoBehaviour {
     }
 
     private void getData() {
-        currentGPSPosition = Input.location.lastData;
-        latitude = currentGPSPosition.latitude;
-        longitude = currentGPSPosition.longitude;
+        currGPSInfo = Input.location.lastData;
+        latitude = currGPSInfo.latitude;
+        longitude = currGPSInfo.longitude;
 
         //Action 생성
         GetGPSDataAction action = (GetGPSDataAction)ActionCreator.createAction(ActionTypes.GET_GPS_DATA);
-        action.info = currentGPSPosition;
+        action.GPSInfo = currGPSInfo;
         GameManager.Instance.gameDispatcher.dispatch(action);
     }
-
-
 }
