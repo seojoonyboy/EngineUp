@@ -1,3 +1,5 @@
-﻿public class MainSceneManager : SceneManager {
+﻿using UnityEngine;
+
+public class MainSceneManager : SceneManager {
 
 }
