@@ -13,10 +13,6 @@ public class GPSReceiver : MonoBehaviour {
     private LocationState state;
     LocationInfo currGPSInfo;
 
-    private float
-        latitude,
-        longitude;
-
     IEnumerator Start() {
         //GPS 허용이 켜져있지 않으면 종료한다.
         Debug.Log("Ienumerator Start");
@@ -50,18 +46,21 @@ public class GPSReceiver : MonoBehaviour {
         //location 접근
         else {
             state = LocationState.Enabled;
-            getData();
+            StartCoroutine("getData");
         }
     }
 
-    private void getData() {
-        currGPSInfo = Input.location.lastData;
-        latitude = currGPSInfo.latitude;
-        longitude = currGPSInfo.longitude;
-
+    IEnumerator getData() {
         //Action 생성
         GetGPSDataAction action = (GetGPSDataAction)ActionCreator.createAction(ActionTypes.GET_GPS_DATA);
-        action.GPSInfo = currGPSInfo;
-        GameManager.Instance.gameDispatcher.dispatch(action);
+        GameManager gameManager = GameManager.Instance;
+
+        while (true) {
+            Debug.Log("GET GPS DATA");
+            currGPSInfo = Input.location.lastData;
+            action.GPSInfo = currGPSInfo;
+            gameManager.gameDispatcher.dispatch(action);
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 }
