@@ -19,6 +19,10 @@ public static class ActionCreator{
             _return = new EditNickNameAction();
             _return.type = _type;
             break;
+        case ActionTypes.GET_GPS_DATA:
+            _return = new GetGPSDataAction();
+            _return.type = _type;
+            break;
         }
         return _return;
     }

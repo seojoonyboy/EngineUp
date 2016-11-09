@@ -8,4 +8,8 @@ public class MainViewController : MonoBehaviour {
     public void onRidingPanel() {
         ridingPanel.SetActive(true);
     }
+
+    public void offRidingPanel() {
+        ridingPanel.SetActive(false);
+    }
 }

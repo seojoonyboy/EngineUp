@@ -12,11 +12,12 @@ public enum LocationState {
 public class GPSReceiver : MonoBehaviour {
     private LocationState state;
     LocationInfo currGPSInfo;
-
+    
     IEnumerator Start() {
         //GPS 허용이 켜져있지 않으면 종료한다.
         Debug.Log("Ienumerator Start");
         state = LocationState.Disabled;
+        //StartCoroutine("getData");
         if (!Input.location.isEnabledByUser) {
             yield break;
         }
