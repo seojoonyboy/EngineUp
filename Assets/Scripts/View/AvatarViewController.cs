@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 
-public class AvatarViewCtrler : MonoBehaviour {
+public class AvatarViewController : MonoBehaviour {
     public GameObject 
         selectPanel,
         menuPanel;

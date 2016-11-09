@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MainView : MonoBehaviour {
+public class MainViewController : MonoBehaviour {
     public GameObject
         ridingPanel;
 

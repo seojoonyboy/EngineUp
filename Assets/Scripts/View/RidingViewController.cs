@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-public class RidingView : MonoBehaviour {
+public class RidingViewController : MonoBehaviour {
     public GameObject gpsPref;
     private GameObject gpsManager;
     public UILabel 

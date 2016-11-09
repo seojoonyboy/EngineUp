@@ -9,7 +9,7 @@ public enum LocationState {
     Enabled
 }
 
-public class GPSManager : MonoBehaviour {
+public class GPSReceiver : MonoBehaviour {
     private LocationState state;
     LocationInfo currentGPSPosition;
 
