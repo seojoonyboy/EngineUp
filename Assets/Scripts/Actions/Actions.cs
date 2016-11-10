@@ -5,7 +5,8 @@ public enum ActionTypes {
     GAME_START,
     GAME_END,
     EDIT_NICKNAME,
-    GET_GPS_DATA
+    GET_GPS_DATA,
+    RIDING_START
 }
 public class Actions{
     public ActionTypes type;
@@ -17,13 +18,15 @@ public static class ActionCreator{
         switch(_type){
         case ActionTypes.EDIT_NICKNAME:
             _return = new EditNickNameAction();
-            _return.type = _type;
             break;
         case ActionTypes.GET_GPS_DATA:
             _return = new GetGPSDataAction();
-            _return.type = _type;
+            break;
+        case ActionTypes.RIDING_START:
+            _return =  new RidingStartAction();
             break;
         }
+         _return.type = _type;
         return _return;
     }
 }
@@ -39,3 +42,5 @@ public class EditNickNameAction : Actions{
 public class GetGPSDataAction : Actions {
     public LocationInfo GPSInfo;
 }
+
+public class RidingStartAction : Actions {}

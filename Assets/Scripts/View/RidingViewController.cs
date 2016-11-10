@@ -5,7 +5,7 @@ using System;
 public class RidingViewController : MonoBehaviour {
     public GameObject gpsPref;
     private GameObject gpsManager;
-    public UILabel 
+    public UILabel
         latitudeLabel,
         longitudeLabel,
         accuracyLabel,
@@ -15,8 +15,9 @@ public class RidingViewController : MonoBehaviour {
         longitude,
         distance,
         time;
-    private const float EARTH_RADIUS = 6371;
     private LocationState state;
+
+    private Riding ridingStore;
     LocationInfo currentGPSPosition;
 
     void OnEnable() {
@@ -27,45 +28,36 @@ public class RidingViewController : MonoBehaviour {
         Destroy(gpsManager);
     }
 
-    IEnumerator DistBetweenLoc() {
-        while(state == LocationState.Enabled) {
-            currentGPSPosition = Input.location.lastData;
-            latitude = currentGPSPosition.latitude;
-            longitude = currentGPSPosition.longitude;
-            //3초 간격으로 위치 갱신, 거리 계산
-            yield return new WaitForSeconds(3.0f);            
-
-            float deltaDist = calcDist(ref latitude, ref longitude) * 1000f;
-
-            if (deltaDist > 0) {
-                distance += deltaDist;
-            }
-
-            distLabel.text = distance.ToString() + "m";
-            latitudeLabel.text = latitude.ToString();
-            longitudeLabel.text = longitude.ToString();
-            accuracyLabel.text = currentGPSPosition.horizontalAccuracy.ToString();
-        }
+    void Start(){
+        MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
+        ridingStore = msm.ridingStore;
+        ridingStore.addListener(ridingListiner);
     }
 
-    float calcDist(ref float lastLatitude, ref float lastLongitude) {
-        currentGPSPosition = Input.location.lastData;
-
-        float newLatitude = currentGPSPosition.latitude;
-        float newLongitude = currentGPSPosition.longitude;
-
-        float deltaLatitude = (newLatitude - lastLatitude) * Mathf.Deg2Rad;
-        float deltaLongitude = (newLongitude - lastLongitude) * Mathf.Deg2Rad;
-
-        float a = Mathf.Pow(Mathf.Sin(deltaLongitude / 2), 2) 
-            + Mathf.Cos(lastLatitude * Mathf.Deg2Rad) * Mathf.Cos(newLatitude * Mathf.Deg2Rad)
-            * Mathf.Pow(Mathf.Sin(deltaLongitude / 2), 2);
-
-        lastLatitude = newLatitude;
-        lastLongitude = newLongitude;
-
-        float c = 2 * Mathf.Atan2(Mathf.Sqrt(a), Mathf.Sqrt(1 - a));
-
-        return EARTH_RADIUS * c;
+    void ridingListiner(){
+        Debug.Log("야호");
     }
+
+    // IEnumerator DistBetweenLoc() {
+    //     while(state == LocationState.Enabled) {
+    //         currentGPSPosition = Input.location.lastData;
+    //         latitude = currentGPSPosition.latitude;
+    //         longitude = currentGPSPosition.longitude;
+    //         //3초 간격으로 위치 갱신, 거리 계산
+    //         yield return new WaitForSeconds(3.0f);
+
+    //         float deltaDist = calcDist(ref latitude, ref longitude) * 1000f;
+
+    //         if (deltaDist > 0) {
+    //             distance += deltaDist;
+    //         }
+
+    //         distLabel.text = distance.ToString() + "m";
+    //         latitudeLabel.text = latitude.ToString();
+    //         longitudeLabel.text = longitude.ToString();
+    //         accuracyLabel.text = currentGPSPosition.horizontalAccuracy.ToString();
+    //     }
+    // }
+
+
 }

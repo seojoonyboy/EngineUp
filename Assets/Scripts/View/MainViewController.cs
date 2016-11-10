@@ -11,5 +11,7 @@ public class MainViewController : MonoBehaviour {
 
     public void offRidingPanel() {
         ridingPanel.SetActive(false);
+        Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
+        GameManager.Instance.gameDispatcher.dispatch(act);
     }
 }
