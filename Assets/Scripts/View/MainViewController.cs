@@ -6,12 +6,12 @@ public class MainViewController : MonoBehaviour {
         ridingPanel;
 
     public void onRidingPanel() {
+        Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
+        GameManager.Instance.gameDispatcher.dispatch(act);
         ridingPanel.SetActive(true);
     }
 
     public void offRidingPanel() {
         ridingPanel.SetActive(false);
-        Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
-        GameManager.Instance.gameDispatcher.dispatch(act);
     }
 }

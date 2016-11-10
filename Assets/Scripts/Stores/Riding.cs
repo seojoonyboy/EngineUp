@@ -21,16 +21,16 @@ public class Riding : Store<Actions>{
             _preLocation = loc;
             return;
         } else {
+            if(_preLocation.Value.timestamp == loc.timestamp){return;}
             float curDistance = calcDist(_preLocation.Value, loc);
+            curDistance = float.IsNaN(curDistance)?0:curDistance;
             totalDist += curDistance;
             float intervalTime = (float)(loc.timestamp - _preLocation.Value.timestamp);
-            if(intervalTime == 0) {
-                curSpeed = curDistance / intervalTime / 3600;
-            }
+            curSpeed = curDistance / intervalTime / 3600;
             avgSpeed = totalDist / (float)totalTime.TotalHours;
         }
         _preLocation = loc;
-        Debug.Log("gps");
+        // Debug.Log(loc.timestamp);
     }
 
     float calcDist(LocationInfo prePos, LocationInfo curPos) {
