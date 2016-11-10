@@ -24,7 +24,9 @@ public class Riding : Store<Actions>{
             float curDistance = calcDist(_preLocation.Value, loc);
             totalDist += curDistance;
             float intervalTime = (float)(loc.timestamp - _preLocation.Value.timestamp);
-            curSpeed = curDistance / intervalTime / 3600;
+            if(intervalTime == 0) {
+                curSpeed = curDistance / intervalTime / 3600;
+            }
             avgSpeed = totalDist / (float)totalTime.TotalHours;
         }
         _preLocation = loc;
