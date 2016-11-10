@@ -34,6 +34,8 @@ public class RidingViewController : MonoBehaviour {
         currSpeedLabel.text = ridingStore.curSpeed.ToString() + " KM/H";
         avgSpeedLabel.text = ridingStore.avgSpeed.ToString() + " KM/H";
         distLabel.text = Math.Round(ridingStore.totalDist, 2).ToString() + " KM";
-        timeLabel.text = ridingStore.totalTime.ToString();
+
+        char delimeter = '.';
+        timeLabel.text = ridingStore.totalTime.ToString().Split(delimeter)[0];
     }
 }
