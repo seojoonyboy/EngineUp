@@ -29,7 +29,7 @@ public class Riding : Store<Actions>{
             curDistance = float.IsNaN(curDistance)?0:curDistance;
             totalDist += curDistance;
             float intervalTime = (float)(loc.timestamp - _preLocation.Value.timestamp);
-            curSpeed = curDistance / intervalTime / 3600;
+            curSpeed = (curDistance / intervalTime) * 3600f;
             avgSpeed = totalDist / (float)totalTime.TotalHours;
         }
         _preLocation = loc;
