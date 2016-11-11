@@ -90,10 +90,14 @@ public class Riding : Store<Actions>{
             startTime = DateTime.Now;
             totalDist = 0;
             _dataFileInit(startTime);
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
             break;
         case ActionTypes.GET_GPS_DATA:
             GetGPSDataAction _act = action as GetGPSDataAction;
             _gpsOperation(_act.GPSInfo);
+            break;
+        case ActionTypes.RIDING_END:
+            Screen.sleepTimeout = SleepTimeout.SystemSetting;
             break;
         }
         _emmetChange();
