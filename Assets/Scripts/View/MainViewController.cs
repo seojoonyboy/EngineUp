@@ -3,7 +3,8 @@ using System.Collections;
 
 public class MainViewController : MonoBehaviour {
     public GameObject
-        ridingPanel;
+        ridingPanel,
+        uploadPanel;
 
     public void onRidingPanel() {
         Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
@@ -13,5 +14,13 @@ public class MainViewController : MonoBehaviour {
 
     public void offRidingPanel() {
         ridingPanel.SetActive(false);
+    }
+
+    public void onUploadPanel() {
+        uploadPanel.SetActive(true);
+    }
+
+    public void offUploadPanel() {
+        uploadPanel.SetActive(false);
     }
 }
