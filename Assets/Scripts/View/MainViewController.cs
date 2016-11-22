@@ -37,6 +37,10 @@ public class MainViewController : MonoBehaviour {
         uploadPanel.SetActive(true);
     }
 
+    public void offUploadPanel() {
+        uploadPanel.SetActive(false);
+    }
+
     private void addMainBtnEvent(int index, MAIN_BUTTON type) {
         EventDelegate eventBtn = new EventDelegate(gameObject.GetComponent<MainViewController>(),"onMainBtnEvent");
 
