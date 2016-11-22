@@ -1476,6 +1476,12 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_PrefabInternal: {fileID: 203534698}
+--- !u!114 &203534700 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c,
+    type: 2}
+  m_PrefabInternal: {fileID: 203534698}
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
 --- !u!1 &207995413
 GameObject:
   m_ObjectHideFlags: 0
@@ -4168,6 +4174,12 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_PrefabInternal: {fileID: 524790588}
+--- !u!114 &524790590 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c,
+    type: 2}
+  m_PrefabInternal: {fileID: 524790588}
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
 --- !u!1 &542661882
 GameObject:
   m_ObjectHideFlags: 0
@@ -5159,7 +5171,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3009
+  startingRenderQueue: 3007
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -6765,6 +6777,12 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_PrefabInternal: {fileID: 893394038}
+--- !u!114 &893394040 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c,
+    type: 2}
+  m_PrefabInternal: {fileID: 893394038}
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
 --- !u!1 &907911512
 GameObject:
   m_ObjectHideFlags: 0
@@ -7252,6 +7270,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ridingPanel: {fileID: 645750107}
   uploadPanel: {fileID: 548115333}
+  mainBtns:
+  - {fileID: 1925767198}
+  - {fileID: 596234644}
+  - {fileID: 203534700}
+  - {fileID: 1269525647}
+  - {fileID: 524790590}
+  - {fileID: 1639156698}
+  - {fileID: 893394040}
 --- !u!1 &987183180
 GameObject:
   m_ObjectHideFlags: 0
@@ -9584,6 +9610,12 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_PrefabInternal: {fileID: 1269525645}
+--- !u!114 &1269525647 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c,
+    type: 2}
+  m_PrefabInternal: {fileID: 1269525645}
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
 --- !u!1 &1271675254
 GameObject:
   m_ObjectHideFlags: 0
@@ -11763,6 +11795,12 @@ Prefab:
 Transform:
   m_PrefabParentObject: {fileID: 400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_PrefabInternal: {fileID: 1639156696}
+--- !u!114 &1639156698 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c,
+    type: 2}
+  m_PrefabInternal: {fileID: 1639156696}
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
 --- !u!1 &1641841326
 GameObject:
   m_ObjectHideFlags: 0
@@ -11820,10 +11858,6 @@ MonoBehaviour:
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
   onClick:
-  - mTarget: {fileID: 978275567}
-    mMethodName: offRidingPanel
-    mParameters: []
-    oneShot: 0
   - mTarget: {fileID: 978275567}
     mMethodName: onUploadPanel
     mParameters: []
@@ -14180,11 +14214,7 @@ MonoBehaviour:
   pressedSprite2D: {fileID: 0}
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
-  onClick:
-  - mTarget: {fileID: 978275567}
-    mMethodName: onRidingPanel
-    mParameters: []
-    oneShot: 0
+  onClick: []
 --- !u!114 &1925767199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15173,11 +15203,7 @@ MonoBehaviour:
   pressedSprite2D: {fileID: 0}
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
-  onClick:
-  - mTarget: {fileID: 978275567}
-    mMethodName: offUploadPanel
-    mParameters: []
-    oneShot: 0
+  onClick: []
 --- !u!114 &2030359582
 MonoBehaviour:
   m_ObjectHideFlags: 0
