@@ -14,7 +14,8 @@ public enum MAIN_BUTTON {
 public class MainViewController : MonoBehaviour {
     public GameObject
         ridingPanel,
-        uploadPanel;
+        uploadPanel,
+        avatar;
 
     public UIButton[] mainBtns;
     
@@ -28,6 +29,7 @@ public class MainViewController : MonoBehaviour {
             Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
             GameManager.Instance.gameDispatcher.dispatch(act);
             ridingPanel.SetActive(true);
+            avatar.SetActive(false);
             break;
         }
     }
@@ -38,6 +40,7 @@ public class MainViewController : MonoBehaviour {
     }
 
     public void offUploadPanel() {
+        avatar.SetActive(true);
         uploadPanel.SetActive(false);
     }
 

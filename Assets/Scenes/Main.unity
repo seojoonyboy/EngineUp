@@ -2271,7 +2271,7 @@ GameObject:
   - 124: {fileID: 272760783}
   - 81: {fileID: 272760782}
   - 114: {fileID: 272760787}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -2307,8 +2307,8 @@ Camera:
   m_GameObject: {fileID: 272760781}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.7205882, g: 0.7205882, b: 0.7205882, a: 0}
+  m_ClearFlags: 3
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -2320,7 +2320,7 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967240
@@ -2370,7 +2370,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 17dc6e12b5f98e74195b2a6fb98e6a43, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.86
+      value: -2.39
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 17dc6e12b5f98e74195b2a6fb98e6a43, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2424,6 +2424,10 @@ Prefab:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: c7aa3747e2301964090a0516d1737b80, type: 2}
+    - target: {fileID: 100002, guid: 17dc6e12b5f98e74195b2a6fb98e6a43, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 17dc6e12b5f98e74195b2a6fb98e6a43, type: 3}
   m_IsPrefabParent: 0
@@ -7136,6 +7140,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ridingPanel: {fileID: 645750107}
   uploadPanel: {fileID: 548115333}
+  avatar: {fileID: 1683280330}
   mainBtns:
   - {fileID: 1925767198}
   - {fileID: 596234644}
@@ -7879,7 +7884,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 12.346154
+  aspectRatio: 40.807693
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -8474,7 +8479,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1.7532468
+  aspectRatio: 4.155844
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -9437,7 +9442,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 2.967033
+  aspectRatio: 7.032967
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -11051,7 +11056,7 @@ MonoBehaviour:
   eventsGoToColliders: 0
   eventReceiverMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967016
   processEventsIn: 0
   debug: 0
   useMouse: 1
@@ -12277,6 +12282,10 @@ MonoBehaviour:
   mAtlas: {fileID: 0}
   mSpriteName: Dark
   mFillCenter: 1
+--- !u!1 &1683280330 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100002, guid: 17dc6e12b5f98e74195b2a6fb98e6a43, type: 3}
+  m_PrefabInternal: {fileID: 277797756}
 --- !u!1001 &1689449012
 Prefab:
   m_ObjectHideFlags: 0
@@ -13008,7 +13017,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 0.5625
+  aspectRatio: 1.3333334
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -14040,7 +14049,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 3.6489363
+  aspectRatio: 11.521276
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
