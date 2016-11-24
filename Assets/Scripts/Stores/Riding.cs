@@ -10,7 +10,7 @@ public class Riding : Store<Actions>{
     public float totalDist;
     public float curSpeed;
     public float avgSpeed;
-    public float maxSpeed;
+    public float maxSpeed = 0;
     public TimeSpan totalTime;
 
     private string dataFilePath;
@@ -33,6 +33,9 @@ public class Riding : Store<Actions>{
             curSpeed = (curDistance / intervalTime) * 3600f;
             avgSpeed = totalDist / (float)totalTime.TotalHours;
         }
+        if(maxSpeed < curSpeed) {
+            maxSpeed = curSpeed;
+        }        
         _preLocation = loc;
         // Debug.Log(loc.timestamp);
     }
