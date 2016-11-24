@@ -10,6 +10,7 @@ public class Riding : Store<Actions>{
     public float totalDist;
     public float curSpeed;
     public float avgSpeed;
+    public float maxSpeed;
     public TimeSpan totalTime;
 
     private string dataFilePath;
