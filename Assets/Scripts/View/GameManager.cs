@@ -6,5 +6,5 @@ public class GameManager : Singleton<GameManager> {
     public StringBuilder sb = new StringBuilder();
 
     public User userStore;
-
+    public RidingResult resultStore;
 }
