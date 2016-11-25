@@ -13,7 +13,7 @@ public class ResultViewController : MonoBehaviour {
     public UITexture mapTexture;
 
     private string
-        url = "https://maps.googleapis.com/maps/api/staticmap?center=47.5952,-122.3316&zoom=16&size=640x400&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyBtDjeVHb2nspGojQpo-n-n1mf5_l_o6tk";
+        url = "https://maps.googleapis.com/maps/api/staticmap?center=37.881561,127.730199&zoom=14&size=640x400&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyBtDjeVHb2nspGojQpo-n-n1mf5_l_o6tk";
 
     void Start() {
         MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
