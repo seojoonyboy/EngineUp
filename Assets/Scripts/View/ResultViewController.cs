@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class ResultViewController : MonoBehaviour {
     private Riding ridingStore;
@@ -11,9 +12,11 @@ public class ResultViewController : MonoBehaviour {
         maxSpeed;
 
     public UITexture mapTexture;
+    private StringBuilder sb;
 
     private string
-        url = "https://maps.googleapis.com/maps/api/staticmap?center=37.881561,127.730199&zoom=14&size=640x400&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyBtDjeVHb2nspGojQpo-n-n1mf5_l_o6tk";
+        url = "https://maps.googleapis.com/maps/api/staticmap?center=37.881561,127.730199&zoom=14&size=640x400&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=",
+        api_key = "AIzaSyBtDjeVHb2nspGojQpo-n-n1mf5_l_o6tk";
 
     void Start() {
         MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
@@ -34,10 +37,18 @@ public class ResultViewController : MonoBehaviour {
     }
 
     IEnumerator setMap() {
-        WWW www = new WWW(url);
-        yield return www;        
+        makeURL();
+        WWW www = new WWW(sb.ToString());
+        yield return www;
+
         mapTexture.material.mainTexture = www.texture;
         mapTexture.transform.localScale = Vector3.one;
+
         mapTexture.MakePixelPerfect();
+    }
+
+    private void makeURL() {
+        sb = new StringBuilder();
+        sb.Append(url).Append(api_key);
     }
 }
