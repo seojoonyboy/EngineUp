@@ -10,9 +10,15 @@ public class ResultViewController : MonoBehaviour {
         avgSpeed,
         maxSpeed;
 
+    public UITexture mapTexture;
+
+    private string
+        url = "https://maps.googleapis.com/maps/api/staticmap?center=47.5952,-122.3316&zoom=16&size=640x400&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyBtDjeVHb2nspGojQpo-n-n1mf5_l_o6tk";
+
     void Start() {
         MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
         ridingStore = msm.ridingStore;
+        StartCoroutine("setMap");
         //setResult();
         //totalDistLabel.text = GameManager.Instance.resultStore.rewardNum.ToString();
     }
@@ -25,5 +31,13 @@ public class ResultViewController : MonoBehaviour {
 
         avgSpeed.text = ridingStore.avgSpeed.ToString() + " KM/H";
         maxSpeed.text = ridingStore.maxSpeed.ToString() + " KM/H";
+    }
+
+    IEnumerator setMap() {
+        WWW www = new WWW(url);
+        yield return www;        
+        mapTexture.material.mainTexture = www.texture;
+        mapTexture.transform.localScale = Vector3.one;
+        mapTexture.MakePixelPerfect();
     }
 }
