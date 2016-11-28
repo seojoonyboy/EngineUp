@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Text;
 
-public class ResultViewController : MonoBehaviour {
+public class ResultView : MonoBehaviour {
     private Riding ridingStore;
 
     public UILabel
