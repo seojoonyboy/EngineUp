@@ -11,19 +11,31 @@ public class ResultView : MonoBehaviour {
         avgSpeed,
         maxSpeed;
 
+    public float
+        centerLog,
+        centerLat,
+        zoomLV,
+        mWidth,
+        mHeight;
+
     public UITexture mapTexture;
     private StringBuilder sb;
-
-    private string
-        url = "https://maps.googleapis.com/maps/api/staticmap?center=37.881561,127.730199&zoom=14&size=640x400&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=",
-        api_key = "AIzaSyBtDjeVHb2nspGojQpo-n-n1mf5_l_o6tk";
+    //https://maps.googleapis.com/maps/api/staticmap?center=37.881561,127.730199&zoom=14&size=640x400&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyBtDjeVHb2nspGojQpo-n-n1mf5_l_o6tk
+    public string
+        baseUrl = "https://maps.googleapis.com/maps/api/staticmap?",
+        api_key = "AIzaSyBtDjeVHb2nspGojQpo-n-n1mf5_l_o6tk",
+        path = "path=color:0x0000ff|weight:5|"
+        + "37.880035,%20127.729925"+ "|"
+        + "37.8769859,127.7366413&";
 
     void Start() {
         MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
         ridingStore = msm.ridingStore;
+    }
+
+    void OnEnable() {
         StartCoroutine("setMap");
         //setResult();
-        //totalDistLabel.text = GameManager.Instance.resultStore.rewardNum.ToString();
     }
 
     void setResult() {
@@ -49,6 +61,12 @@ public class ResultView : MonoBehaviour {
 
     private void makeURL() {
         sb = new StringBuilder();
-        sb.Append(url).Append(api_key);
+        sb.Append(baseUrl);
+        string str = "center=" + centerLog + "," + centerLat + "&"
+            + "zoom=" + zoomLV + "&"
+            + "size=" + mWidth + "x" + mHeight + "&"
+            + path
+            + "key=" + api_key;
+        sb.Append(str);
     }
 }
