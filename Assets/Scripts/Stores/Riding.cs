@@ -12,6 +12,7 @@ public class Riding : Store<Actions>{
     public float avgSpeed;
     public float maxSpeed = 0;
     public TimeSpan totalTime;
+    public string resultData;
 
     private string dataFilePath;
     private const float EARTH_RADIUS = 6371;
@@ -88,6 +89,12 @@ public class Riding : Store<Actions>{
         dataFilePath = _sb.ToString();
         Debug.Log(dataFilePath);
     }
+
+    void _readFile(string path) {
+        byte[] bytes = File.ReadAllBytes(path);
+        resultData = System.Text.Encoding.UTF8.GetString(bytes);
+    }
+
     protected override void _onDispatch(Actions action){
         switch(action.type){
         case ActionTypes.RIDING_START:
@@ -102,6 +109,7 @@ public class Riding : Store<Actions>{
             break;
         case ActionTypes.RIDING_END:
             Screen.sleepTimeout = SleepTimeout.SystemSetting;
+            _readFile(dataFilePath);
             break;
         }
         _emmetChange();

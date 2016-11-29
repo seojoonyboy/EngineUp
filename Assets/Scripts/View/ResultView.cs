@@ -9,7 +9,8 @@ public class ResultView : MonoBehaviour {
         totalDist,
         totalTime,
         avgSpeed,
-        maxSpeed;
+        maxSpeed,
+        reultTestLabel;
 
     public float
         centerLog,
@@ -28,14 +29,12 @@ public class ResultView : MonoBehaviour {
         + "37.880035,%20127.729925"+ "|"
         + "37.8769859,127.7366413&";
 
-    void Start() {
+    void OnEnable() {
         MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
         ridingStore = msm.ridingStore;
-    }
 
-    void OnEnable() {
         StartCoroutine("setMap");
-        //setResult();
+        setResult();
     }
 
     void setResult() {
@@ -46,6 +45,8 @@ public class ResultView : MonoBehaviour {
 
         avgSpeed.text = ridingStore.avgSpeed.ToString() + " KM/H";
         maxSpeed.text = ridingStore.maxSpeed.ToString() + " KM/H";
+
+        reultTestLabel.text = ridingStore.resultData;
     }
 
     IEnumerator setMap() {

@@ -5,6 +5,7 @@ using System;
 public class RidingView : MonoBehaviour {
     public GameObject gpsPref;
     private GameObject gpsManager;
+    private GameManager gameManager;
 
     public UILabel
         currSpeedLabel,
@@ -16,7 +17,7 @@ public class RidingView : MonoBehaviour {
     LocationInfo currentGPSPosition;
 
     void Start() {
-        
+        gameManager = GameManager.Instance;
     }
 
     void OnEnable() {
@@ -32,5 +33,10 @@ public class RidingView : MonoBehaviour {
         avgSpeedLabel.text = avgSpeed.ToString() + " KM/H";
         distLabel.text = dist.ToString() + " KM";
         timeLabel.text = time;
+    }
+
+    public void rigingEnd() {
+        RidingEndAction action = (RidingEndAction)ActionCreator.createAction(ActionTypes.RIDING_END);
+        gameManager.gameDispatcher.dispatch(action);
     }
 }

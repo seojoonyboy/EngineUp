@@ -25,7 +25,7 @@ public static class ActionCreator{
             break;
         case ActionTypes.RIDING_START:
         case ActionTypes.RIDING_END:
-            _return =  new Actions();
+            _return =  new RidingEndAction();
             break;
         }
          _return.type = _type;
@@ -46,4 +46,6 @@ public class GetGPSDataAction : Actions {
 }
 
 // public class RidingStartAction : Actions {}
-// public class RidingEndAction : Actions {}
+public class RidingEndAction : Actions {
+
+}

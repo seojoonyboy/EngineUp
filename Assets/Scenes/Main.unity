@@ -159,7 +159,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1.7433333
+  aspectRatio: 4.21
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -2370,7 +2370,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 0.5625
+  aspectRatio: 1.3333334
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -5058,6 +5058,7 @@ GameObject:
   - 114: {fileID: 978275567}
   - 114: {fileID: 978275568}
   - 114: {fileID: 978275569}
+  - 114: {fileID: 978275570}
   m_Layer: 5
   m_Name: MainPanel
   m_TagString: Untagged
@@ -5175,6 +5176,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainBtns:
   - {fileID: 1925767198}
+--- !u!114 &978275570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 978275564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4d499fe9fb53b848808f2c2a62617e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resultPanel: {fileID: 1020560466}
 --- !u!1 &1020560466
 GameObject:
   m_ObjectHideFlags: 0
@@ -5267,6 +5280,7 @@ MonoBehaviour:
   totalTime: {fileID: 1766779233}
   avgSpeed: {fileID: 1175444921}
   maxSpeed: {fileID: 1412542444}
+  reultTestLabel: {fileID: 2055730590}
   centerLog: 37.88156
   centerLat: 127.7302
   zoomLV: 14
@@ -5304,6 +5318,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1205191952}
+  - {fileID: 2055730589}
   m_Father: {fileID: 408696557}
   m_RootOrder: 2
 --- !u!114 &1026364186
@@ -5626,7 +5641,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 12.346154
+  aspectRatio: 40.807693
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -5999,7 +6014,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1.7532468
+  aspectRatio: 4.155844
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -6761,7 +6776,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 2.967033
+  aspectRatio: 7.032967
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -9999,7 +10014,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 0.5625
+  aspectRatio: 1.3333334
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -11609,6 +11624,14 @@ MonoBehaviour:
     mMethodName: offUploadPanel
     mParameters: []
     oneShot: 0
+  - mTarget: {fileID: 645750110}
+    mMethodName: rigingEnd
+    mParameters: []
+    oneShot: 0
+  - mTarget: {fileID: 978275570}
+    mMethodName: onResultPanel
+    mParameters: []
+    oneShot: 0
 --- !u!114 &2030359582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11899,6 +11922,103 @@ MonoBehaviour:
   mAtlas: {fileID: 114000010436794864, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: PanelBG
   mFillCenter: 1
+--- !u!1 &2055730588
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 2055730589}
+  - 114: {fileID: 2055730590}
+  m_Layer: 5
+  m_Name: TestLabel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2055730589
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2055730588}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 1026364185}
+  m_RootOrder: 1
+--- !u!114 &2055730590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2055730588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d0b5f3bbe925a408bd595c79d0bf63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftAnchor:
+    target: {fileID: 0}
+    relative: 0
+    absolute: 0
+  rightAnchor:
+    target: {fileID: 0}
+    relative: 1
+    absolute: 0
+  bottomAnchor:
+    target: {fileID: 0}
+    relative: 0
+    absolute: 0
+  topAnchor:
+    target: {fileID: 0}
+    relative: 1
+    absolute: 0
+  updateAnchors: 1
+  mColor: {r: 1, g: 1, b: 1, a: 1}
+  mPivot: 4
+  mWidth: 282
+  mHeight: 60
+  mDepth: 8
+  autoResizeBoxCollider: 0
+  hideIfOffScreen: 0
+  keepAspectRatio: 0
+  aspectRatio: 4.7
+  keepCrispWhenShrunk: 1
+  mTrueTypeFont: {fileID: 0}
+  mFont: {fileID: 114000010432787640, guid: e760b7de648bd4147b960afeea34dbb1, type: 2}
+  mText: New Label
+  mFontSize: 60
+  mFontStyle: 0
+  mAlignment: 0
+  mEncoding: 1
+  mMaxLineCount: 0
+  mEffectStyle: 0
+  mEffectColor: {r: 0, g: 0, b: 0, a: 1}
+  mSymbols: 1
+  mEffectDistance: {x: 1, y: 1}
+  mOverflow: 0
+  mMaterial: {fileID: 0}
+  mApplyGradient: 1
+  mGradientTop: {r: 1, g: 1, b: 1, a: 1}
+  mGradientBottom: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  mSpacingX: 0
+  mSpacingY: 0
+  mUseFloatSpacing: 0
+  mFloatSpacingX: 0
+  mFloatSpacingY: 0
+  mOverflowEllipsis: 0
+  mOverflowWidth: 0
+  mModifier: 0
+  mShrinkToFit: 0
+  mMaxLineWidth: 0
+  mMaxLineHeight: 0
+  mLineWidth: 0
+  mMultiline: 1
 --- !u!1 &2103460418
 GameObject:
   m_ObjectHideFlags: 0
