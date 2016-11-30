@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Text;
-
+using System;
 public class ResultView : MonoBehaviour {
     private Riding ridingStore;
 
@@ -30,23 +30,19 @@ public class ResultView : MonoBehaviour {
         + "37.8769859,127.7366413&";
 
     void OnEnable() {
-        MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
-        ridingStore = msm.ridingStore;
-
         StartCoroutine("setMap");
-        setResult();
     }
 
-    void setResult() {
-        totalDist.text = ridingStore.totalDist.ToString() + " KM";
+    public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed, string resultData) {
+        totalDist.text = mDist.ToString() + " KM";
 
         char delimeter = '.';
-        totalTime.text = ridingStore.totalTime.ToString().Split(delimeter)[0];
+        totalTime.text = mTime.ToString().Split(delimeter)[0];
 
-        avgSpeed.text = ridingStore.avgSpeed.ToString() + " KM/H";
-        maxSpeed.text = ridingStore.maxSpeed.ToString() + " KM/H";
+        avgSpeed.text = mAvgSpeed.ToString() + " KM/H";
+        maxSpeed.text = mMaxSpeed.ToString() + " KM/H";
 
-        reultTestLabel.text = ridingStore.resultData;
+        reultTestLabel.text = resultData;
     }
 
     IEnumerator setMap() {
@@ -69,5 +65,5 @@ public class ResultView : MonoBehaviour {
             + path
             + "key=" + api_key;
         sb.Append(str);
-    }
+    }    
 }

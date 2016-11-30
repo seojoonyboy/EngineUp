@@ -28,7 +28,8 @@ public class RidingView : MonoBehaviour {
         Destroy(gpsManager);
     }
 
-    public void ridingListiner(float currSpeed, float avgSpeed,double dist, string time){
+    public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time){
+        Debug.Log("RIDING LISTENER");
         currSpeedLabel.text = currSpeed.ToString() + " KM/H";
         avgSpeedLabel.text = avgSpeed.ToString() + " KM/H";
         distLabel.text = dist.ToString() + " KM";
