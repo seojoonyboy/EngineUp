@@ -12,8 +12,7 @@ public class Riding : Store<Actions>{
     public float avgSpeed;
     public float maxSpeed = 0;
     public TimeSpan totalTime;
-    public string resultData;
-
+    public StringBuilder resultData = new StringBuilder();
     private string dataFilePath;
     private const float EARTH_RADIUS = 6371;
 
@@ -92,7 +91,12 @@ public class Riding : Store<Actions>{
 
     void _readFile(string path) {
         byte[] bytes = File.ReadAllBytes(path);
-        resultData = System.Text.Encoding.UTF8.GetString(bytes);
+        string data = System.Text.Encoding.UTF8.GetString(bytes);        
+        //resultData.Remove(0, resultData.Length);        
+        resultData.Append(data);
+        Debug.Log(resultData);
+        resultData.Remove(0,1);
+        Debug.Log(resultData);
     }
 
     protected override void _onDispatch(Actions action){
@@ -114,4 +118,6 @@ public class Riding : Store<Actions>{
         }
         _emmetChange();
     }
+
+
 }

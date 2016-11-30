@@ -5,6 +5,5 @@ public class GameManager : Singleton<GameManager> {
     public Dispatcher<Actions> gameDispatcher = new Dispatcher<Actions>();
     public StringBuilder sb = new StringBuilder();
 
-    public User userStore;
-    public RidingResult resultStore;
+    public User userStore;    
 }

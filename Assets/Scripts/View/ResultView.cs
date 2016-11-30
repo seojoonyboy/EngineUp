@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Text;
 using System;
+
 public class ResultView : MonoBehaviour {
-    private Riding ridingStore;
 
     public UILabel
         totalDist,
@@ -33,7 +33,7 @@ public class ResultView : MonoBehaviour {
         StartCoroutine("setMap");
     }
 
-    public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed, string resultData) {
+    public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed) {
         totalDist.text = mDist.ToString() + " KM";
 
         char delimeter = '.';
@@ -41,8 +41,6 @@ public class ResultView : MonoBehaviour {
 
         avgSpeed.text = mAvgSpeed.ToString() + " KM/H";
         maxSpeed.text = mMaxSpeed.ToString() + " KM/H";
-
-        reultTestLabel.text = resultData;
     }
 
     IEnumerator setMap() {
@@ -65,5 +63,5 @@ public class ResultView : MonoBehaviour {
             + path
             + "key=" + api_key;
         sb.Append(str);
-    }    
+    }
 }
