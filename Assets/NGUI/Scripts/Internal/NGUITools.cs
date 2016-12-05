@@ -552,10 +552,18 @@ static public class NGUITools
 
 	static public int CalculateRaycastDepth (GameObject go)
 	{
-		UIWidget w = go.GetComponent<UIWidget>();
-		if (w != null) return w.raycastDepth;
+		Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+		var w = go.GetComponent<UIWidget>();
+		
+		if (w != null)
+		{
+			Profiler.EndSample();
+			return w.raycastDepth;
+		}
 
-		UIWidget[] widgets = go.GetComponentsInChildren<UIWidget>();
+		var widgets = go.GetComponentsInChildren<UIWidget>();
+		Profiler.EndSample();
+		
 		if (widgets.Length == 0) return 0;
 
 		int depth = int.MaxValue;
@@ -1050,69 +1058,39 @@ static public class NGUITools
 
 	/// <summary>
 	/// Finds the specified component on the game object or one of its parents.
+	/// This function has become obsolete with Unity 4.3.
 	/// </summary>
 
 	static public T FindInParents<T> (GameObject go) where T : Component
 	{
 		if (go == null) return null;
-		// Commented out because apparently it causes Unity 4.5.3 to lag horribly:
-		// http://www.tasharen.com/forum/index.php?topic=10882.0
-//#if UNITY_4_3
- #if UNITY_FLASH
-		object comp = go.GetComponent<T>();
- #else
-		T comp = go.GetComponent<T>();
- #endif
-		if (comp == null)
-		{
-			Transform t = go.transform.parent;
 
-			while (t != null && comp == null)
-			{
-				comp = t.gameObject.GetComponent<T>();
-				t = t.parent;
-			}
-		}
- #if UNITY_FLASH
+		Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+		var comp = go.GetComponentInParent<T>();
+		Profiler.EndSample();
+#if UNITY_FLASH
 		return (T)comp;
- #else
+#else
 		return comp;
- #endif
-//#else
-//		return go.GetComponentInParent<T>();
-//#endif
+#endif
 	}
 
 	/// <summary>
 	/// Finds the specified component on the game object or one of its parents.
+	/// This function has become obsolete with Unity 4.3.
 	/// </summary>
 
 	static public T FindInParents<T> (Transform trans) where T : Component
 	{
 		if (trans == null) return null;
-#if UNITY_4_3
- #if UNITY_FLASH
-		object comp = trans.GetComponent<T>();
- #else
-		T comp = trans.GetComponent<T>();
- #endif
-		if (comp == null)
-		{
-			Transform t = trans.transform.parent;
 
-			while (t != null && comp == null)
-			{
-				comp = t.gameObject.GetComponent<T>();
-				t = t.parent;
-			}
-		}
- #if UNITY_FLASH
+		Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+		var comp = trans.GetComponentInParent<T>();
+		Profiler.EndSample();
+#if UNITY_FLASH
 		return (T)comp;
- #else
-		return comp;
- #endif
 #else
-		return trans.GetComponentInParent<T>();
+		return comp;
 #endif
 	}
 
@@ -1422,6 +1400,31 @@ static public class NGUITools
 		// Recurse into children
 		for (int i = 0, imax = t.childCount; i < imax; ++i)
 			MakePixelPerfect(t.GetChild(i));
+	}
+
+	/// <summary>
+	/// Given the root widget, adjust its position so that it fits on the screen.
+	/// </summary>
+
+	static public void FitOnScreen (this Camera cam, Transform t)
+	{
+		var bounds = NGUIMath.CalculateRelativeWidgetBounds(t, t);
+
+		var sp = cam.WorldToScreenPoint(t.position);
+		var min = sp + bounds.min;
+		var max = sp + bounds.max;
+
+		var sw = Screen.width;
+		var sh = Screen.height;
+		var offset = Vector2.zero;
+
+		if (min.x < 0f) offset.x = -min.x;
+		else if (max.x > sw) offset.x = sw - max.x;
+
+		if (min.y < 0f) offset.y = -min.y;
+		else if (max.y > sh) offset.y = sh - max.y;
+
+		if (offset.sqrMagnitude > 0f) t.localPosition += new Vector3(offset.x, offset.y, 0f);
 	}
 
 	/// <summary>
@@ -1895,8 +1898,6 @@ static public class NGUITools
 				Profiler.BeginSample("Editor-only GC allocation (NGUITools.screenSize)");
 				mSizeFrame = frame;
 
-				// There seems to be a Unity 5.4 bug that returns invalid screen size when the mouse is clicked (wtf?) on OSX
-#if !UNITY_EDITOR_OSX
 				if (s_GetSizeOfMainGameView == null && !mCheckedMainViewFunc)
 				{
 					mCheckedMainViewFunc = true;
@@ -1925,11 +1926,14 @@ static public class NGUITools
 
 				if (s_GetSizeOfMainGameView != null)
 				{
+#if UNITY_EDITOR_OSX
+					// There seems to be a Unity 5.4 bug that returns invalid screen size when the mouse is clicked (wtf?) on OSX
+					if (mGameSize.x == 1f && mGameSize.y == 1f) mGameSize = s_GetSizeOfMainGameView();
+#else
 					mGameSize = s_GetSizeOfMainGameView();
-				}
-				else
 #endif
-					mGameSize = new Vector2(Screen.width, Screen.height);
+				}
+				else mGameSize = new Vector2(Screen.width, Screen.height);
 				Profiler.EndSample();
 			}
 			return mGameSize;
