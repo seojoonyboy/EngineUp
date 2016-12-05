@@ -45,7 +45,7 @@ public class MainViewController : MonoBehaviour {
     }
 
     void ridingListener() {
-        Debug.Log("MAIN VIEW RIDING LISTENER");
+        //Debug.Log("MAIN VIEW RIDING LISTENER");
         float currSpeed = ridingStore.curSpeed;
         float avgSpeed = ridingStore.avgSpeed;
         double dist = Math.Round(ridingStore.totalDist,2);

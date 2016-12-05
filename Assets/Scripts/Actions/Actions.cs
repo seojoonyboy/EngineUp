@@ -9,7 +9,9 @@ public enum ActionTypes {
     GET_GPS_DATA,
     RIDING_START,
     RIDING_END,
-    RIDING_RESULT
+    RIDING_RESULT,
+    POST_FAIL,
+    POST_SUCCESS
 }
 public class Actions{
     public ActionTypes type;
@@ -31,6 +33,13 @@ public static class ActionCreator{
             break;
         case ActionTypes.RIDING_RESULT:
             _return = new RidingResultAction();
+        break;
+
+        case ActionTypes.POST_FAIL:
+            _return = new Actions();
+        break;
+        case ActionTypes.POST_SUCCESS:
+            _return = new Actions();
         break;
         }
          _return.type = _type;

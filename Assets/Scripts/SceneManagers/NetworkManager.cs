@@ -20,12 +20,18 @@ public class NetworkManager : Singleton<NetworkManager> {
         UnityWebRequest www = UnityWebRequest.Post(url,form);
         yield return www.Send();
 
+        ActionTypes type = ActionTypes.POST_FAIL;
         if(www.isError) {
+            type = ActionTypes.POST_FAIL;
             Debug.Log(www.error);
         }
 
         else {
+            type = ActionTypes.POST_SUCCESS;
             Debug.Log("FORM UPLOAD COMPLETE");
         }
+
+        Actions action = ActionCreator.createAction(type);
+        GameManager.Instance.gameDispatcher.dispatch(action);
     }
 }

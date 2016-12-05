@@ -8,6 +8,7 @@ using System.Collections;
 public class RidingResult : Store<Actions> {
     public int rewardNum;
     public string url = "http://175.158.15.120:9000/ridings/";
+    public bool isSendSucced = false;
 
     public RidingResult(Dispatcher<Actions> _dispatcher):base(_dispatcher){ }
     
@@ -21,6 +22,15 @@ public class RidingResult : Store<Actions> {
             //NetworkManager network = NetworkManager.Instance;
             NetworkManager.Instance._send(url,act.nickname,act.data.ToString());
             break;
+
+            case ActionTypes.POST_FAIL:
+            isSendSucced = false;
+            break;
+
+            case ActionTypes.POST_SUCCESS:
+            isSendSucced = true;
+            break;            
         }
+        _emmetChange();
     }
 }

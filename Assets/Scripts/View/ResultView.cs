@@ -33,7 +33,7 @@ public class ResultView : MonoBehaviour {
         StartCoroutine("setMap");
     }
 
-    public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed) {
+    public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed, bool isPOSTSucceed) {
         totalDist.text = mDist.ToString() + " KM";
 
         char delimeter = '.';
@@ -41,6 +41,13 @@ public class ResultView : MonoBehaviour {
 
         avgSpeed.text = mAvgSpeed.ToString() + " KM/H";
         maxSpeed.text = mMaxSpeed.ToString() + " KM/H";
+
+        if(isPOSTSucceed) {
+            reultTestLabel.text = "서버 업로드 성공";
+        }
+        else {
+            reultTestLabel.text = "서버 업로드 실패";
+        }
     }
 
     IEnumerator setMap() {

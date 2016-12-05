@@ -33,14 +33,14 @@ public class RidingView : MonoBehaviour {
     }
 
     public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time){
-        Debug.Log("RIDING LISTENER");
+        //Debug.Log("RIDING LISTENER");
         currSpeedLabel.text = currSpeed.ToString() + " KM/H";
         avgSpeedLabel.text = avgSpeed.ToString() + " KM/H";
         distLabel.text = dist.ToString() + " KM";
         timeLabel.text = time;
     }
 
-    public void rigingEnd() {
+    public void ridingEnd() {
         RidingEndAction action = (RidingEndAction)ActionCreator.createAction(ActionTypes.RIDING_END);
         gameManager.gameDispatcher.dispatch(action);
 
