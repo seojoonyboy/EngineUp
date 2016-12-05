@@ -15,6 +15,12 @@ public class RidingResult : Store<Actions> {
         switch(action.type) {
             case ActionTypes.RIDING_END:
             break;
+
+            case ActionTypes.RIDING_RESULT:
+            RidingResultAction act = action as RidingResultAction;
+            //NetworkManager network = NetworkManager.Instance;
+            NetworkManager.Instance._send(url,act.nickname,act.data.ToString());
+            break;
         }
     }
 }

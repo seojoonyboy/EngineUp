@@ -31,7 +31,7 @@ public class SubViewController : MonoBehaviour {
     void resultListener() {
         Debug.Log("RESULT VIEW RIDING LISTENER");
         resultView.setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed);
-        StartCoroutine("_sendToServer");
+        //StartCoroutine("_sendToServer");
     }
 
     IEnumerator _sendToServer() {

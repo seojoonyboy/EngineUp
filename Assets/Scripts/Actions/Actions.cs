@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Text;
 
 public enum ActionTypes {
     GAME_START,
@@ -7,7 +8,8 @@ public enum ActionTypes {
     EDIT_NICKNAME,
     GET_GPS_DATA,
     RIDING_START,
-    RIDING_END
+    RIDING_END,
+    RIDING_RESULT
 }
 public class Actions{
     public ActionTypes type;
@@ -27,6 +29,9 @@ public static class ActionCreator{
         case ActionTypes.RIDING_END:
             _return =  new RidingEndAction();
             break;
+        case ActionTypes.RIDING_RESULT:
+            _return = new RidingResultAction();
+        break;
         }
          _return.type = _type;
         return _return;
@@ -48,4 +53,8 @@ public class GetGPSDataAction : Actions {
 // public class RidingStartAction : Actions {}
 public class RidingEndAction : Actions {
 
+}
+
+public class RidingResultAction : EditNickNameAction {
+    public StringBuilder data = new StringBuilder();
 }
