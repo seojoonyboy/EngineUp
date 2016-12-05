@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 
 public class MainSceneTest : MonoBehaviour {
-    public GameObject gameManager;
+    public GameObject 
+        gameManager,
+        networkManager;
+
     void Awake() {
         if(GameManager.Instance == null){
             Instantiate(gameManager);
@@ -13,5 +16,9 @@ public class MainSceneTest : MonoBehaviour {
 
         act.nickname = "테스트닉네임";
         GameManager.Instance.gameDispatcher.dispatch(act);
+
+        if(NetworkManager.Instance == null) {
+            Instantiate(networkManager);
+        }
     }
 }
