@@ -31,5 +31,6 @@ public class SubViewController : MonoBehaviour {
     void resultListener() {
         Debug.Log("Result Listener");
         resultView.setResult(ridingStore.totalDist,ridingStore.totalTime,ridingStore.avgSpeed,ridingStore.maxSpeed, ridingResultStore.isSendSucced);
+        resultView.setMapLine(ridingStore.resultData);
     }
 }

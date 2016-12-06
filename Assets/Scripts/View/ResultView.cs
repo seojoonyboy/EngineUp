@@ -19,7 +19,7 @@ public class ResultView : MonoBehaviour {
         mWidth,
         mHeight;
 
-    public UITexture mapTexture;
+    public GameObject map;
     private StringBuilder sb;
     //https://maps.googleapis.com/maps/api/staticmap?center=37.881561,127.730199&zoom=14&size=640x400&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyBtDjeVHb2nspGojQpo-n-n1mf5_l_o6tk
     public string
@@ -28,10 +28,6 @@ public class ResultView : MonoBehaviour {
         path = "path=color:0x0000ff|weight:5|"
         + "37.880035,%20127.729925"+ "|"
         + "37.8769859,127.7366413&";
-
-    void OnEnable() {
-        StartCoroutine("setMap");
-    }
 
     public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed, bool isPOSTSucceed) {
         totalDist.text = mDist.ToString() + " KM";
@@ -50,15 +46,19 @@ public class ResultView : MonoBehaviour {
         }
     }
 
-    IEnumerator setMap() {
-        makeURL();
-        WWW www = new WWW(sb.ToString());
-        yield return www;
+    public void setMapLine(StringBuilder sb) {
+        string[] arr = sb.ToString().Split('\n');
 
-        mapTexture.material.mainTexture = www.texture;
-        mapTexture.transform.localScale = Vector3.one;
+        string[] lat = new string[arr.Length];
+        string[] lon = new string[arr.Length];
 
-        mapTexture.MakePixelPerfect();
+        for(int i=0; i<arr.Length-1;i++) {
+            string[] tmp = arr[i].Split('|');
+            lat[i] = tmp[1];
+            lon[i] = tmp[2];
+            //Debug.Log(lot[i]);
+        }
+        map.GetComponent<MapLine>().drawLine(lat,lon);
     }
 
     private void makeURL() {
