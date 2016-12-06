@@ -21,6 +21,7 @@ public class RidingResult : Store<Actions> {
             RidingResultAction act = action as RidingResultAction;
             //NetworkManager network = NetworkManager.Instance;
             NetworkManager.Instance._send(url,act.nickname,act.data.ToString());
+            _emmetChange();
             break;
 
             case ActionTypes.POST_FAIL:
@@ -29,8 +30,7 @@ public class RidingResult : Store<Actions> {
 
             case ActionTypes.POST_SUCCESS:
             isSendSucced = true;
-            break;            
+            break;
         }
-        _emmetChange();
     }
 }
