@@ -56,7 +56,6 @@ public class ResultView : MonoBehaviour {
             string[] tmp = arr[i].Split('|');
             lat[i] = tmp[1];
             lon[i] = tmp[2];
-            //Debug.Log(lot[i]);
         }
         map.GetComponent<MapLine>().drawLine(lat,lon);
     }
