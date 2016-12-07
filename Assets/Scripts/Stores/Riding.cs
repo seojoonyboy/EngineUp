@@ -20,24 +20,49 @@ public class Riding : Store<Actions>{
 
     private void _gpsOperation(LocationInfo loc){
         totalTime = DateTime.Now - startTime;
-        _writeData(loc);
-        if(_preLocation == null){
+
+        //첫 실행시
+        if(_preLocation == null) {
             _preLocation = loc;
             return;
-        } else {
-            if(_preLocation.Value.timestamp == loc.timestamp){return;}
-            float curDistance = calcDist(_preLocation.Value, loc);
-            curDistance = float.IsNaN(curDistance)?0:curDistance;
-            totalDist += curDistance;
-            float intervalTime = (float)(loc.timestamp - _preLocation.Value.timestamp);
-            curSpeed = (curDistance / intervalTime) * 3600f;
-            avgSpeed = totalDist / (float)totalTime.TotalHours;
         }
+
+        //LocationInfo Data Filter
+        if(_filter(loc)){
+            //Filter를 거친 Data만 Write
+            _writeData(loc);
+        }
+
+        //Filter를 거친 경우만 아래 연산 진행
+        float curDistance = calcDist(_preLocation.Value,loc);
+        curDistance = float.IsNaN(curDistance) ? 0 : curDistance;
+        totalDist += curDistance;
+        float intervalTime = (float)(loc.timestamp - _preLocation.Value.timestamp);
+        curSpeed = (curDistance / intervalTime) * 3600f;
+        avgSpeed = totalDist / (float)totalTime.TotalHours;
+
         if(maxSpeed < curSpeed) {
             maxSpeed = curSpeed;
-        }        
+        }
         _preLocation = loc;
         // Debug.Log(loc.timestamp);
+    }
+
+    bool _filter(LocationInfo loc) {
+        bool result = false;
+        if(loc.horizontalAccuracy != 0 && loc.verticalAccuracy != 0) {
+            if(loc.timestamp != 0) {
+                if(loc.timestamp != _preLocation.Value.timestamp) {
+                    result = true;
+                    Debug.Log("valid gps data");
+                }
+                else Debug.Log("filtered, because of invalid timestamp. current and previous time stamp is same!");
+            }
+            else Debug.Log("filtered, because of invalid timestamp. your time stamp value equals zero");
+        }
+        else Debug.Log("filtered, because of invalid accuracy. your gps accuracy is zero");
+
+        return result;
     }
 
     float calcDist(LocationInfo prePos, LocationInfo curPos) {
@@ -56,7 +81,7 @@ public class Riding : Store<Actions>{
         float c = 2 * Mathf.Atan2(Mathf.Sqrt(a), Mathf.Sqrt(1 - a));
 
         return EARTH_RADIUS * c;
-    }
+    }    
 
     void _writeData(LocationInfo loc){
         System.Text.StringBuilder _sb = GameManager.Instance.sb;
