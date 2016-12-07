@@ -24,7 +24,7 @@ public class MainViewController : MonoBehaviour {
             Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
             GameManager.Instance.gameDispatcher.dispatch(act);
             ridingPanel.SetActive(true);
-            avatar.SetActive(false);
+            offAvatar();
             break;
         }
     }
@@ -53,5 +53,13 @@ public class MainViewController : MonoBehaviour {
         char delimeter = '.';
         string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
         ridingView.refreshTxt(currSpeed, avgSpeed, dist, time);
+    }
+
+    public void onAvatar() {
+        avatar.SetActive(true);
+    }
+
+    public void offAvatar() {
+        avatar.SetActive(false);
     }
 }

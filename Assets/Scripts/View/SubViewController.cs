@@ -6,7 +6,7 @@ public class SubViewController : MonoBehaviour {
     public GameObject
         resultPanel;
 
-    public ResultView resultView;
+    private ResultView resultView;
     private Riding ridingStore;
     private RidingResult ridingResultStore;
 
@@ -20,6 +20,10 @@ public class SubViewController : MonoBehaviour {
 
     public void onResultPanel() {
         resultPanel.SetActive(true);
+    }
+
+    public void offResultPanel() {
+        resultPanel.SetActive(false);
     }
 
     void addListener() {
