@@ -26,11 +26,14 @@ public class RidingResult : Store<Actions> {
 
             case ActionTypes.POST_FAIL:
             isSendSucced = false;
+            _emmetChange();
             break;
 
             case ActionTypes.POST_SUCCESS:
             isSendSucced = true;
+            _emmetChange();
             break;
         }
+        
     }
 }

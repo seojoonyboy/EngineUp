@@ -5,17 +5,16 @@ using System;
 public class MainViewController : MonoBehaviour {
     public GameObject
         ridingPanel,
-        uploadPanel,
         avatar;
 
-    public RidingView ridingView;
+    private RidingView ridingView;
     private Riding ridingStore;
 
     void Start() {    
         MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
         ridingStore = msm.ridingStore;
 
-        addListener();        
+        addListener();
     }
 
     public void onMainBtnEvent(MAIN_BUTTON type) {
@@ -29,14 +28,8 @@ public class MainViewController : MonoBehaviour {
         }
     }
 
-    public void onUploadPanel() {
+    public void offRidingPanel() {
         ridingPanel.SetActive(false);
-        uploadPanel.SetActive(true);
-    }
-
-    public void offUploadPanel() {
-        //avatar.SetActive(true);
-        uploadPanel.SetActive(false);
     }
 
     void addListener() {
