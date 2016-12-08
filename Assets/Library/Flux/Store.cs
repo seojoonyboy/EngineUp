@@ -32,7 +32,7 @@ namespace Flux{
                 return _changed;
             }
         }
-        protected void _emmetChange(){
+        protected void _emitChange(){
             Assert.IsTrue(_dispatcher.isDispatching, _className+"._emmetChange(): Must be invoked while dispatching.");
             _changed = true;
         }

@@ -141,7 +141,7 @@ public class Riding : Store<Actions>{
             _readFile(dataFilePath);
             break;
         }
-        _emmetChange();
+        _emitChange();
     }
 
 

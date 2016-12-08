@@ -21,17 +21,17 @@ public class RidingResult : Store<Actions> {
             RidingResultAction act = action as RidingResultAction;
             //NetworkManager network = NetworkManager.Instance;
             NetworkManager.Instance._send(url,act.nickname,act.data.ToString());
-            _emmetChange();
+            _emitChange();
             break;
 
             case ActionTypes.POST_FAIL:
             isSendSucced = false;
-            _emmetChange();
+            _emitChange();
             break;
 
             case ActionTypes.POST_SUCCESS:
             isSendSucced = true;
-            _emmetChange();
+            _emitChange();
             break;
         }
         
