@@ -41,24 +41,24 @@ public class AvatarViewController : MonoBehaviour {
         menuPanel.SetActive(false);
     }
 
-    public void moveToHair() {
-        StartCoroutine("move", avatarElementPos[0].transform.position);
+    public void CustomBtnClick(int type) {
+        moveCam(type);
     }
 
-    public void moveToHead() {
-        StartCoroutine("move", avatarElementPos[1].transform.position);
-    }
+    public void moveCam(int type) {
+        int arrIndex = type;
 
-    public void moveToBody() {
-        StartCoroutine("move", avatarElementPos[2].transform.position);
-        Debug.Log("endPos : " + avatarElementPos[2].transform.position);
+        if(arrIndex != -1) {
+            Camera.main.transform.position = avatarElementPos[arrIndex].transform.position;
+        }       
     }
 
     public void returnToOrigin() {
-        StopCoroutine("move");
+        //StopCoroutine("move");
         Camera.main.transform.position = cameraOriginPos;
     }
 
+    //Camera 자연스러운 이동을 위한 code
     IEnumerator move(Vector3 endPos) {
         float journeyLength = Vector3.Distance(cameraOriginPos, endPos);
         endPos.z -= 1f;

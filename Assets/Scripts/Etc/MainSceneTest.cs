@@ -10,12 +10,12 @@ public class MainSceneTest : MonoBehaviour {
             Instantiate(gameManager);
         }
         var _gameManager = GameManager.Instance;
-        _gameManager.userStore = new User(_gameManager.gameDispatcher);
+        //_gameManager.userStore = new User(_gameManager.gameDispatcher);
 
-        EditNickNameAction act = (EditNickNameAction)ActionCreator.createAction(ActionTypes.EDIT_NICKNAME);
+        //EditNickNameAction act = (EditNickNameAction)ActionCreator.createAction(ActionTypes.EDIT_NICKNAME);
 
-        act.nickname = "테스트닉네임";
-        GameManager.Instance.gameDispatcher.dispatch(act);
+        //act.nickname = "테스트닉네임";
+        //GameManager.Instance.gameDispatcher.dispatch(act);
 
         if(NetworkManager.Instance == null) {
             Instantiate(networkManager);
