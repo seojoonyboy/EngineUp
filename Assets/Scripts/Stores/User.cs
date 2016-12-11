@@ -21,12 +21,13 @@ public class User : Store<Actions> {
     void getUserData(HttpResponse response){
         if(response.isError){
             Debug.Log(response.errorMessage);
-            if(response.responseCode == 404) return;    //해당유저 없음
-        } else {    //유저있음 닉네임 받고 화면 전환 처리
+        } else if(response.responseCode>=200 && response.responseCode < 300) {    //유저있음 닉네임 받고 화면 전환 처리
             Debug.Log(response.data);
             UserData data = UserData.fromJSON(response.data);
             nickName = data.nickName;
             _emitChange();
+        } else {
+            if(response.responseCode == 404) return;    //해당유저 없음
         }
     }
 

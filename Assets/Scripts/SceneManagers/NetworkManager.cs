@@ -80,9 +80,5 @@ public class HttpResponse {
         isError = _request.isError;
         errorMessage = _request.error;
         data = _request.downloadHandler.text;
-        if (responseCode < 200 || responseCode >= 300) {
-            isError = true;
-            errorMessage = data;
-        }
     }
 }
