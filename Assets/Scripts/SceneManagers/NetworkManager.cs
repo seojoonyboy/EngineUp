@@ -19,7 +19,7 @@ public class NetworkManager : Singleton<NetworkManager> {
         UnityWebRequest www;
         switch(method){
             case "POST":
-                www = UnityWebRequest.Post(url, data.ToString());
+                www = UnityWebRequest.Post(url, data);
                 break;
             case "PUT":
                 www = UnityWebRequest.Put(url, data.ToString());

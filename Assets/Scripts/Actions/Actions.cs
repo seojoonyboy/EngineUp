@@ -11,7 +11,8 @@ public enum ActionTypes {
     RIDING_END,
     RIDING_RESULT,
     POST_FAIL,
-    POST_SUCCESS
+    POST_SUCCESS,
+    USER_CREATE
 }
 public class Actions{
     public ActionTypes type;
@@ -36,14 +37,16 @@ public static class ActionCreator{
             break;
         case ActionTypes.RIDING_RESULT:
             _return = new RidingResultAction();
-        break;
-
+            break;
         case ActionTypes.POST_FAIL:
             _return = new Actions();
-        break;
+            break;
         case ActionTypes.POST_SUCCESS:
             _return = new Actions();
-        break;
+            break;
+        case ActionTypes.USER_CREATE:
+            _return = new UserCreateAction();
+            break;
         }
          _return.type = _type;
         return _return;
@@ -64,9 +67,14 @@ public class GetGPSDataAction : Actions {
 
 // public class RidingStartAction : Actions {}
 public class RidingEndAction : Actions {
-
+    
 }
 
 public class RidingResultAction : EditNickNameAction {
     public StringBuilder data = new StringBuilder();
+}
+
+public class UserCreateAction :Actions {
+    public string deviceId;
+    public string nickname;
 }

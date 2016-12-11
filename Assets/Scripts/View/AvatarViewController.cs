@@ -22,11 +22,15 @@ public class AvatarViewController : MonoBehaviour {
     }
 
     public void OnConfirm() {
+        GameManager gameManager = GameManager.Instance;
         string nickName = menuPanel.transform.Find("NickNameBox").GetComponent<UIInput>().value;
-        EditNickNameAction action = (EditNickNameAction)ActionCreator.createAction(ActionTypes.EDIT_NICKNAME);
+        //EditNickNameAction action = (EditNickNameAction)ActionCreator.createAction(ActionTypes.EDIT_NICKNAME);
+        //action.nickname = nickName;
+        //GameManager.Instance.gameDispatcher.dispatch(action);
+        UserCreateAction action = ActionCreator.createAction(ActionTypes.USER_CREATE) as UserCreateAction;
         action.nickname = nickName;
-        GameManager.Instance.gameDispatcher.dispatch(action);
-        //Debug.Log(GameManager.Instance.userStore.nickName);
+        action.deviceId = gameManager.deviceId;
+        gameManager.gameDispatcher.dispatch(action);
     }
 
     public void OnSelectPanel() {

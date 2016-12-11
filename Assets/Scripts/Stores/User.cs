@@ -1,21 +1,21 @@
 ﻿using Flux;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class User : Store<Actions> {
     // prop
     public string nickName;
-
+    NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
     public User(Dispatcher<Actions> _dispatcher) : base(_dispatcher){}
 
     void gameStart(){
-        var networkManager = NetworkManager.Instance;
-        var strBuffer = GameManager.Instance.sb;
-        strBuffer.Remove(0,strBuffer.Length);
-        strBuffer.Append(networkManager.baseUrl)
-            .Append("usesrs/")
+        var strBuilder = GameManager.Instance.sb;
+        strBuilder.Remove(0,strBuilder.Length);
+        strBuilder.Append(networkManager.baseUrl)
+            .Append("users/")
             .Append(GameManager.Instance.deviceId).Append("/");
-        networkManager.request("GET", strBuffer.ToString(), getUserData);
+        networkManager.request("GET",strBuilder.ToString(), getUserData);
     }
 
     void getUserData(HttpResponse response){
@@ -25,10 +25,39 @@ public class User : Store<Actions> {
             Debug.Log(response.data);
             UserData data = UserData.fromJSON(response.data);
             nickName = data.nickName;
-            _emitChange();
+            //_emitChange();
         } else {
             if(response.responseCode == 404) return;    //해당유저 없음
         }
+    }
+
+    void userCreateCallback(HttpResponse response) {
+        //Debug.Log("USER CREATE CALLBACK");
+        //Debug.Log(response.data);
+        if(response.isError) {
+            Debug.Log(response.errorMessage);
+        }
+        else if(response.responseCode >= 200 && response.responseCode < 300) {    //유저있음 닉네임 받고 화면 전환 처리
+            Debug.Log(response.data);
+            UserData data = UserData.fromJSON(response.data);
+            nickName = data.nickName;
+        }
+        else {
+            if(response.responseCode == 404) return;    //해당유저 없음
+        }
+    }
+
+    void userCreate(string nickName, string deviceId) {
+        var strBuilder = GameManager.Instance.sb;
+        strBuilder.Remove(0,strBuilder.Length);
+        strBuilder.Append(networkManager.baseUrl)
+            .Append("users/");
+        WWWForm form = new WWWForm();
+
+        form.AddField("nickName",nickName);
+        form.AddField("deviceId",deviceId);
+
+        networkManager.request("POST",strBuilder.ToString(),form,userCreateCallback);
     }
 
     protected override void _onDispatch(Actions action){
@@ -37,7 +66,13 @@ public class User : Store<Actions> {
             gameStart();
             break;
         case ActionTypes.EDIT_NICKNAME:
-            nickName = (action as EditNickNameAction).nickname;
+            //nickName = (action as EditNickNameAction).nickname;
+            break;
+        case ActionTypes.USER_CREATE:
+            //Debug.Log("USER CREATE ACTION");
+            nickName = (action as UserCreateAction).nickname;
+            string deviceId = (action as UserCreateAction).deviceId; 
+            userCreate(nickName, deviceId);
             break;
         }
     }
