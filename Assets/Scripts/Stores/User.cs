@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 public class User : Store<Actions> {
     // prop
     public string nickName;
+    public bool isUserExist = false;
     NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
     public User(Dispatcher<Actions> _dispatcher) : base(_dispatcher){}
@@ -16,18 +17,21 @@ public class User : Store<Actions> {
             .Append("users/")
             .Append(GameManager.Instance.deviceId).Append("/");
         networkManager.request("GET",strBuilder.ToString(), getUserData);
+        Debug.Log(strBuilder);        
     }
 
     void getUserData(HttpResponse response){
+        Debug.Log(response.responseCode);
         if(response.isError){
             Debug.Log(response.errorMessage);
-        } else if(response.responseCode>=200 && response.responseCode < 300) {    //유저있음 닉네임 받고 화면 전환 처리
+        } else if(response.responseCode>=200 && response.responseCode < 300) {//유저있음 닉네임 받고 화면 전환 처리
             Debug.Log(response.data);
             UserData data = UserData.fromJSON(response.data);
             nickName = data.nickName;
+            isUserExist = true;
             //_emitChange();
         } else {
-            if(response.responseCode == 404) return;    //해당유저 없음
+            if(response.responseCode == 404) return;//해당유저 없음
         }
     }
 
@@ -37,13 +41,13 @@ public class User : Store<Actions> {
         if(response.isError) {
             Debug.Log(response.errorMessage);
         }
-        else if(response.responseCode >= 200 && response.responseCode < 300) {    //유저있음 닉네임 받고 화면 전환 처리
+        else if(response.responseCode >= 200 && response.responseCode < 300) {//유저있음 닉네임 받고 화면 전환 처리
             Debug.Log(response.data);
             UserData data = UserData.fromJSON(response.data);
             nickName = data.nickName;
         }
         else {
-            if(response.responseCode == 404) return;    //해당유저 없음
+            if(response.responseCode == 404) return;//해당유저 없음
         }
     }
 
