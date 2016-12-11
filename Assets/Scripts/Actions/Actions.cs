@@ -21,6 +21,9 @@ public static class ActionCreator{
     public static Actions createAction(ActionTypes _type){
         Actions _return = null;
         switch(_type){
+        case ActionTypes.GAME_START:
+            _return = new GameStartAction();
+            break;
         case ActionTypes.EDIT_NICKNAME:
             _return = new EditNickNameAction();
             break;
@@ -47,7 +50,7 @@ public static class ActionCreator{
     }
 }
 
-public class StartAction : Actions{
+public class GameStartAction : Actions{
     public string message;
 }
 
