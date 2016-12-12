@@ -3,6 +3,6 @@ public class MainSceneManager : SceneManager {
     public RidingResult resultStore;
     void Start(){
         ridingStore = new Riding(GameManager.Instance.gameDispatcher);
-        resultStore = new RidingResult(GameManager.Instance.gameDispatcher);
+        // resultStore = new RidingResult(GameManager.Instance.gameDispatcher);
     }
 }

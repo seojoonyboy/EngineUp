@@ -32,8 +32,10 @@ public static class ActionCreator{
             _return = new GetGPSDataAction();
             break;
         case ActionTypes.RIDING_START:
+            _return = new RidingStartAction();
+            break;
         case ActionTypes.RIDING_END:
-            _return =  new RidingEndAction();
+            _return = new RidingEndAction();
             break;
         case ActionTypes.RIDING_RESULT:
             _return = new RidingResultAction();
@@ -71,7 +73,10 @@ public class GetGPSDataAction : Actions {
     public LocationInfo GPSInfo;
 }
 
-// public class RidingStartAction : Actions {}
+public class RidingStartAction : NetworkAction {
+
+}
+
 public class RidingEndAction : Actions {
 
 }

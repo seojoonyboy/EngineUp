@@ -29,7 +29,7 @@ public class SubViewController : MonoBehaviour {
     void addListener() {
         resultView = resultPanel.GetComponent<ResultView>();
         //store에 리스너를 등록
-        ridingResultStore.addListener(resultListener);
+        // ridingResultStore.addListener(resultListener);
     }
 
     void resultListener() {

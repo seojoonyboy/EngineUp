@@ -6,6 +6,10 @@ using System.Text;
 
 public class Riding : Store<Actions>{
     LocationInfo? _preLocation = null;
+    LocationInfo[] postBuffer;
+    int postBufferCounter;
+    int ridingId;
+    bool isRiding;
     DateTime startTime;
     public float totalDist;
     public float curSpeed;
@@ -15,25 +19,72 @@ public class Riding : Store<Actions>{
     public StringBuilder resultData = new StringBuilder();
     private string dataFilePath;
     private const float EARTH_RADIUS = 6371;
+    NetworkManager networkManager = NetworkManager.Instance;
+    NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
-    public Riding(Dispatcher<Actions> _dispatcher):base(_dispatcher){}
+    public Riding(Dispatcher<Actions> _dispatcher):base(_dispatcher){
+        postBuffer = new LocationInfo[20];
+        postBufferCounter = 0;
+    }
+
+    void _gpsSend(){
+        System.Text.StringBuilder _sb = GameManager.Instance.sb;
+        _sb.Remove(0,_sb.Length);
+        for (var i=0; i<postBufferCounter; i++){
+            var loc = postBuffer[i];
+            _sb.Append(loc.altitude).Append("|")
+            .Append(loc.latitude).Append("|")
+            .Append(loc.longitude).Append("|")
+            .Append(loc.timestamp).Append("|")
+            .Append(loc.horizontalAccuracy).Append("|")
+            .Append(loc.verticalAccuracy).Append("\n");
+        }
+        var coordData = _sb.ToString();
+
+        _sb.Remove(0,_sb.Length);
+        _sb.Append(networkManager.baseUrl)
+            .Append("ridings/")
+            .Append(ridingId)
+            .Append("/?deviceId=")
+            .Append(GameManager.Instance.deviceId);
+
+        WWWForm f = new WWWForm();
+        f.AddField("distance", totalDist.ToString());
+        f.AddField("runningTime", totalTime.ToString());
+        f.AddField("avrSpeed", avgSpeed.ToString());
+        f.AddField("maxSpeed", maxSpeed.ToString());
+        f.AddField("coordData", coordData);
+
+        networkManager.request("PUT", _sb.ToString(), f, _gpsSendCallback);
+        postBufferCounter = 0;
+    }
+
+    void _gpsSendCallback(HttpResponse response){
+        Debug.Log(response.data);
+    }
 
     private void _gpsOperation(LocationInfo loc){
+        Debug.Log("_gpsOperation");
         totalTime = DateTime.Now - startTime;
 
-        //Ã¹ ½ÇÇà½Ã
+        //Ã¹ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if(_preLocation == null) {
             _preLocation = loc;
             return;
         }
 
         //LocationInfo Data Filter
-        if(_filter(loc)){
-            //Filter¸¦ °ÅÄ£ Data¸¸ Write
-            _writeData(loc);
+        if( /*_filter(loc) ||*/ true){
+            Debug.Log(loc);
+            if(postBufferCounter < postBuffer.Length){
+                postBuffer[postBufferCounter] = loc;
+                postBufferCounter++;
+            } else {
+                _gpsSend();
+            }
         }
 
-        //Filter¸¦ °ÅÄ£ °æ¿ì¸¸ ¾Æ·¡ ¿¬»ê ÁøÇà
+        //Filterï¿½ï¿½ ï¿½ï¿½Ä£ ï¿½ï¿½ï¿½ì¸¸ ï¿½Æ·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         float curDistance = calcDist(_preLocation.Value,loc);
         curDistance = float.IsNaN(curDistance) ? 0 : curDistance;
         totalDist += curDistance;
@@ -81,7 +132,7 @@ public class Riding : Store<Actions>{
         float c = 2 * Mathf.Atan2(Mathf.Sqrt(a), Mathf.Sqrt(1 - a));
 
         return EARTH_RADIUS * c;
-    }    
+    }
 
     void _writeData(LocationInfo loc){
         System.Text.StringBuilder _sb = GameManager.Instance.sb;
@@ -116,33 +167,81 @@ public class Riding : Store<Actions>{
 
     void _readFile(string path) {
         byte[] bytes = File.ReadAllBytes(path);
-        string data = System.Text.Encoding.UTF8.GetString(bytes);        
-        //resultData.Remove(0, resultData.Length);        
+        string data = System.Text.Encoding.UTF8.GetString(bytes);
+        //resultData.Remove(0, resultData.Length);
         resultData.Append(data);
         Debug.Log(resultData);
         resultData.Remove(0,1);
         Debug.Log(resultData);
     }
 
+    void ridingStart(RidingStartAction act){
+        switch(act.status){
+        case NetworkAction.statusTypes.REQUEST:
+            _initRiding();
+            var sb = GameManager.Instance.sb;
+            sb.Remove(0,sb.Length)
+                .Append(networkManager.baseUrl)
+                .Append("ridings/")
+                .Append("?deviceId=")
+                .Append(GameManager.Instance.deviceId);
+            WWWForm form = new WWWForm();
+            form.AddField("distance", 0);
+            networkManager.request("POST", sb.ToString(),
+                form, ncExt.networkCallback(dispatcher, act));
+            break;
+        case NetworkAction.statusTypes.SUCCESS:
+            Debug.Log("riding start success");
+            RidingData ridingData = RidingData.fromJSON(act.response.data);
+            ridingId = ridingData.id;
+            break;
+        case NetworkAction.statusTypes.FAIL:
+            Debug.Log("riding start fail");
+            Debug.Log(act.response.data);
+            break;
+        }
+    }
+
+    void _initRiding(){
+        startTime = DateTime.Now;
+        totalDist = 0;
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        ridingId = 0;
+        isRiding = true;
+    }
+
     protected override void _onDispatch(Actions action){
         switch(action.type){
         case ActionTypes.RIDING_START:
-            startTime = DateTime.Now;
-            totalDist = 0;
-            _dataFileInit(startTime);
-            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            ridingStart(action as RidingStartAction);
+            _emitChange();
             break;
         case ActionTypes.GET_GPS_DATA:
             GetGPSDataAction _act = action as GetGPSDataAction;
             _gpsOperation(_act.GPSInfo);
+            _emitChange();
             break;
         case ActionTypes.RIDING_END:
             Screen.sleepTimeout = SleepTimeout.SystemSetting;
-            _readFile(dataFilePath);
+            // _readFile(dataFilePath);
+            _gpsSend();
+            isRiding = false;
+            _emitChange();
             break;
         }
-        _emitChange();
     }
 
 
+}
+
+class RidingData {
+    public int id;
+    public string distance;
+    public string runningTime;
+    public string avrSpeed;
+    public string maxSpeed;
+
+    public static RidingData fromJSON(string json){
+        return JsonUtility.FromJson<RidingData>(json);
+    }
 }
