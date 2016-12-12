@@ -28,10 +28,6 @@ public class RidingView : MonoBehaviour {
         gpsManager = Instantiate(gpsPref);
     }
 
-    void OnDisable() {
-        Destroy(gpsManager);
-    }
-
     public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time){
         //Debug.Log("RIDING LISTENER");
         currSpeedLabel.text = currSpeed.ToString() + " KM/H";
@@ -49,5 +45,9 @@ public class RidingView : MonoBehaviour {
         Debug.Log(ridingStore.resultData);
         resultAction.data = ridingStore.resultData;
         gameManager.gameDispatcher.dispatch(resultAction);
+    }
+
+    public void stopGPSReceive() {
+        Destroy(gpsManager);
     }
 }

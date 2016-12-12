@@ -29,7 +29,7 @@ public class ResultView : MonoBehaviour {
         + "37.880035,%20127.729925"+ "|"
         + "37.8769859,127.7366413&";
 
-    public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed, bool isPOSTSucceed) {
+    public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed) {
         totalDist.text = mDist.ToString() + " KM";
 
         char delimeter = '.';
@@ -37,13 +37,6 @@ public class ResultView : MonoBehaviour {
 
         avgSpeed.text = mAvgSpeed.ToString() + " KM/H";
         maxSpeed.text = mMaxSpeed.ToString() + " KM/H";
-
-        if(isPOSTSucceed) {
-            reultTestLabel.text = "서버 업로드 성공";
-        }
-        else {
-            reultTestLabel.text = "서버 업로드 실패";
-        }
     }
 
     public void setMapLine(StringBuilder sb) {

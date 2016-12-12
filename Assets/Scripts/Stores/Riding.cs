@@ -1,4 +1,4 @@
-using Flux;
+﻿using Flux;
 using UnityEngine;
 using System;
 using System.IO;
@@ -9,7 +9,7 @@ public class Riding : Store<Actions>{
     LocationInfo[] postBuffer;
     int postBufferCounter;
     int ridingId;
-    bool isRiding;
+    public bool isRiding;
     DateTime startTime;
     public float totalDist;
     public float curSpeed;

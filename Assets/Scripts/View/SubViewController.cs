@@ -8,12 +8,10 @@ public class SubViewController : MonoBehaviour {
 
     private ResultView resultView;
     private Riding ridingStore;
-    private RidingResult ridingResultStore;
 
     void Start() {
         MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
         ridingStore = msm.ridingStore;
-        ridingResultStore = msm.resultStore;
 
         addListener();
     }
@@ -29,12 +27,12 @@ public class SubViewController : MonoBehaviour {
     void addListener() {
         resultView = resultPanel.GetComponent<ResultView>();
         //store에 리스너를 등록
-        // ridingResultStore.addListener(resultListener);
+        //ridingResultStore.addListener(resultListener);
     }
 
     void resultListener() {
         Debug.Log("Result Listener");
-        resultView.setResult(ridingStore.totalDist,ridingStore.totalTime,ridingStore.avgSpeed,ridingStore.maxSpeed, ridingResultStore.isSendSucced);
+        resultView.setResult(ridingStore.totalDist,ridingStore.totalTime,ridingStore.avgSpeed,ridingStore.maxSpeed);
         resultView.setMapLine(ridingStore.resultData);
     }
 }

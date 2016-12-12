@@ -34,7 +34,7 @@ public class MainViewController : MonoBehaviour {
 
     void addListener() {
         ridingView = ridingPanel.GetComponent<RidingView>();
-        ridingStore.addListener(ridingListener);        
+        ridingStore.addListener(ridingListener);
     }
 
     void ridingListener() {
@@ -46,6 +46,10 @@ public class MainViewController : MonoBehaviour {
         char delimeter = '.';
         string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
         ridingView.refreshTxt(currSpeed, avgSpeed, dist, time);
+
+        if(!ridingStore.isRiding) {
+            ridingView.stopGPSReceive();
+        }
     }
 
     public void onAvatar() {
