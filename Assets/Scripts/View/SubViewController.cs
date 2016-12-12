@@ -26,13 +26,12 @@ public class SubViewController : MonoBehaviour {
 
     void addListener() {
         resultView = resultPanel.GetComponent<ResultView>();
-        //store에 리스너를 등록
-        //ridingResultStore.addListener(resultListener);
+        ridingStore.addListener(resultListener);
     }
 
     void resultListener() {
         Debug.Log("Result Listener");
         resultView.setResult(ridingStore.totalDist,ridingStore.totalTime,ridingStore.avgSpeed,ridingStore.maxSpeed);
-        resultView.setMapLine(ridingStore.resultData);
+        //resultView.setMapLine(ridingStore.resultData);
     }
 }
