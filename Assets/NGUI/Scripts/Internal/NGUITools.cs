@@ -552,17 +552,29 @@ static public class NGUITools
 
 	static public int CalculateRaycastDepth (GameObject go)
 	{
+#if UNITY_5_5_OR_NEWER
+		UnityEngine.Profiling.Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+#else
 		Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+#endif
 		var w = go.GetComponent<UIWidget>();
 		
 		if (w != null)
 		{
+#if UNITY_5_5_OR_NEWER
+			UnityEngine.Profiling.Profiler.EndSample();
+#else
 			Profiler.EndSample();
+#endif
 			return w.raycastDepth;
 		}
 
 		var widgets = go.GetComponentsInChildren<UIWidget>();
+#if UNITY_5_5_OR_NEWER
+		UnityEngine.Profiling.Profiler.EndSample();
+#else
 		Profiler.EndSample();
+#endif
 		
 		if (widgets.Length == 0) return 0;
 
@@ -1065,9 +1077,15 @@ static public class NGUITools
 	{
 		if (go == null) return null;
 
+#if UNITY_5_5_OR_NEWER
+		UnityEngine.Profiling.Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+		var comp = go.GetComponentInParent<T>();
+		UnityEngine.Profiling.Profiler.EndSample();
+#else
 		Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
 		var comp = go.GetComponentInParent<T>();
 		Profiler.EndSample();
+#endif
 #if UNITY_FLASH
 		return (T)comp;
 #else
@@ -1084,9 +1102,15 @@ static public class NGUITools
 	{
 		if (trans == null) return null;
 
+#if UNITY_5_5_OR_NEWER
+		UnityEngine.Profiling.Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+		var comp = trans.GetComponentInParent<T>();
+		UnityEngine.Profiling.Profiler.EndSample();
+#else
 		Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
 		var comp = trans.GetComponentInParent<T>();
 		Profiler.EndSample();
+#endif
 #if UNITY_FLASH
 		return (T)comp;
 #else
@@ -1880,7 +1904,7 @@ static public class NGUITools
 #if UNITY_EDITOR
 	static int mSizeFrame = -1;
 	static Func<Vector2> s_GetSizeOfMainGameView;
-	static Vector2 mGameSize = Vector2.one;
+	[System.NonSerialized] static Vector2 mGameSize = Vector2.one;
 	[System.NonSerialized] static bool mCheckedMainViewFunc = false;
 
 	/// <summary>
@@ -1895,7 +1919,11 @@ static public class NGUITools
 
 			if (mSizeFrame != frame || !Application.isPlaying)
 			{
+#if UNITY_5_5_OR_NEWER
+				UnityEngine.Profiling.Profiler.BeginSample("Editor-only GC allocation (NGUITools.screenSize)");
+#else
 				Profiler.BeginSample("Editor-only GC allocation (NGUITools.screenSize)");
+#endif
 				mSizeFrame = frame;
 
 				if (s_GetSizeOfMainGameView == null && !mCheckedMainViewFunc)
@@ -1926,15 +1954,19 @@ static public class NGUITools
 
 				if (s_GetSizeOfMainGameView != null)
 				{
-#if UNITY_EDITOR_OSX
+//#if UNITY_EDITOR_OSX
 					// There seems to be a Unity 5.4 bug that returns invalid screen size when the mouse is clicked (wtf?) on OSX
-					if (mGameSize.x == 1f && mGameSize.y == 1f) mGameSize = s_GetSizeOfMainGameView();
-#else
+					//if (mGameSize.x == 1f && mGameSize.y == 1f) mGameSize = s_GetSizeOfMainGameView();
+//#else
 					mGameSize = s_GetSizeOfMainGameView();
-#endif
+//#endif
 				}
 				else mGameSize = new Vector2(Screen.width, Screen.height);
+#if UNITY_5_5_OR_NEWER
+				UnityEngine.Profiling.Profiler.EndSample();
+#else
 				Profiler.EndSample();
+#endif
 			}
 			return mGameSize;
 		}
