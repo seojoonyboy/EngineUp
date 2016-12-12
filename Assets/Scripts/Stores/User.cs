@@ -4,79 +4,83 @@ using UnityEngine.Networking;
 
 public class User : Store<Actions> {
     // prop
-    public string nickName;
-    public bool isUserExist = false;
+    public string nickName = null;
     NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
     public User(Dispatcher<Actions> _dispatcher) : base(_dispatcher){}
 
-    void gameStart(){
-        var strBuilder = GameManager.Instance.sb;
-        strBuilder.Remove(0,strBuilder.Length);
-        strBuilder.Append(networkManager.baseUrl)
-            .Append("users/")
-            .Append(GameManager.Instance.deviceId).Append("/");
-        networkManager.request("GET",strBuilder.ToString(), getUserData);
-        Debug.Log(strBuilder);        
-    }
+    NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
-    void getUserData(HttpResponse response){
-        Debug.Log(response.responseCode);
-        if(response.isError){
-            Debug.Log(response.errorMessage);
-        } else if(response.responseCode>=200 && response.responseCode < 300) {//유저있음 닉네임 받고 화면 전환 처리
-            Debug.Log(response.data);
-            UserData data = UserData.fromJSON(response.data);
+    void gameStart(GameStartAction payload){
+        switch(payload.status){
+        case NetworkAction.statusTypes.REQUEST:
+            var strBuilder = GameManager.Instance.sb;
+            strBuilder.Remove(0,strBuilder.Length);
+            strBuilder.Append(networkManager.baseUrl)
+                .Append("users/")
+                .Append(GameManager.Instance.deviceId).Append("/");
+            networkManager.request("GET",strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+            break;
+        case NetworkAction.statusTypes.SUCCESS: // 유저 정보 있음!!!
+            UserData data = UserData.fromJSON(payload.response.data);
             nickName = data.nickName;
-            isUserExist = true;
-            //_emitChange();
-        } else {
-            if(response.responseCode == 404) return;//해당유저 없음
+            Debug.Log("유저정보 있음");
+            _emitChange();
+            break;
+        case NetworkAction.statusTypes.FAIL:    // 유저 정보 없음!!
+            Debug.Log("유저정보 없음");
+            break;
         }
     }
-
     void userCreateCallback(HttpResponse response) {
-        //Debug.Log("USER CREATE CALLBACK");
-        //Debug.Log(response.data);
         if(response.isError) {
             Debug.Log(response.errorMessage);
         }
-        else if(response.responseCode >= 200 && response.responseCode < 300) {//유저있음 닉네임 받고 화면 전환 처리
+        else if(response.responseCode >= 200 && response.responseCode < 300) {  //유저있음 닉네임 받고 화면 전환 처리
             Debug.Log(response.data);
             UserData data = UserData.fromJSON(response.data);
             nickName = data.nickName;
         }
         else {
-            if(response.responseCode == 404) return;//해당유저 없음
+            if(response.responseCode == 404) return;    //해당유저 없음
         }
     }
 
-    void userCreate(string nickName, string deviceId) {
-        var strBuilder = GameManager.Instance.sb;
-        strBuilder.Remove(0,strBuilder.Length);
-        strBuilder.Append(networkManager.baseUrl)
-            .Append("users/");
-        WWWForm form = new WWWForm();
+    void userCreate(UserCreateAction act) {
+        switch(act.status){
+        case NetworkAction.statusTypes.REQUEST:
+            var strBuilder = GameManager.Instance.sb;
+            strBuilder.Remove(0,strBuilder.Length);
+            strBuilder.Append(networkManager.baseUrl)
+                .Append("users/");
+            WWWForm form = new WWWForm();
+            form.AddField("nickName",act.nickName);
+            form.AddField("deviceId",act.deviceId);
+            networkManager.request("POST",strBuilder.ToString(),form, ncExt.networkCallback(dispatcher, act));
+            break;
+        case NetworkAction.statusTypes.SUCCESS:
+            UserData data = UserData.fromJSON(act.response.data);
+            nickName = data.nickName;
+            _emitChange();
+            break;
+        case NetworkAction.statusTypes.FAIL:
+            // create 실패
+            break;
+        }
 
-        form.AddField("nickName",nickName);
-        form.AddField("deviceId",deviceId);
-
-        networkManager.request("POST",strBuilder.ToString(),form,userCreateCallback);
     }
 
     protected override void _onDispatch(Actions action){
         switch(action.type){
         case ActionTypes.GAME_START:
-            gameStart();
+            var _act = action as GameStartAction;
+            gameStart(_act);
             break;
         case ActionTypes.EDIT_NICKNAME:
             //nickName = (action as EditNickNameAction).nickname;
             break;
         case ActionTypes.USER_CREATE:
-            //Debug.Log("USER CREATE ACTION");
-            nickName = (action as UserCreateAction).nickname;
-            string deviceId = (action as UserCreateAction).deviceId; 
-            userCreate(nickName, deviceId);
+            userCreate(action as UserCreateAction);
             break;
         }
     }

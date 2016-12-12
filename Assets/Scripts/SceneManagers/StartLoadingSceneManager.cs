@@ -25,8 +25,7 @@ public class StartLoadingSceneManager : SceneManager {
     }
 
     void userListener() {
-        isUserExist = userStore.isUserExist;
-        if(isUserExist) {
+        if(!string.IsNullOrEmpty(userStore.nickName)) {
             Debug.Log("Go to Main Scene");
             loadMainScene();
         }

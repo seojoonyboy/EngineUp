@@ -53,7 +53,13 @@ public static class ActionCreator{
     }
 }
 
-public class GameStartAction : Actions{
+
+public class NetworkAction : Actions {
+    public enum statusTypes {REQUEST, SUCCESS, FAIL};
+    public statusTypes status = statusTypes.REQUEST;
+    public HttpResponse response;
+}
+public class GameStartAction : NetworkAction{
     public string message;
 }
 
@@ -67,14 +73,14 @@ public class GetGPSDataAction : Actions {
 
 // public class RidingStartAction : Actions {}
 public class RidingEndAction : Actions {
-    
+
 }
 
 public class RidingResultAction : EditNickNameAction {
     public StringBuilder data = new StringBuilder();
 }
 
-public class UserCreateAction :Actions {
+public class UserCreateAction : NetworkAction {
     public string deviceId;
-    public string nickname;
+    public string nickName;
 }

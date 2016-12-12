@@ -3,13 +3,13 @@ using System.Collections;
 using UnityEngine.EventSystems;
 
 public class AvatarViewController : MonoBehaviour {
-    public GameObject 
+    public GameObject
         selectPanel,
         menuPanel;
 
     public Transform[] avatarElementPos;
     private Vector3 cameraOriginPos;
-    private float 
+    private float
         startTime,
         speed = 3f;
 
@@ -28,7 +28,7 @@ public class AvatarViewController : MonoBehaviour {
         //action.nickname = nickName;
         //GameManager.Instance.gameDispatcher.dispatch(action);
         UserCreateAction action = ActionCreator.createAction(ActionTypes.USER_CREATE) as UserCreateAction;
-        action.nickname = nickName;
+        action.nickName = nickName;
         action.deviceId = gameManager.deviceId;
         gameManager.gameDispatcher.dispatch(action);
     }
@@ -54,7 +54,7 @@ public class AvatarViewController : MonoBehaviour {
 
         if(arrIndex != -1) {
             Camera.main.transform.position = avatarElementPos[arrIndex].transform.position;
-        }       
+        }
     }
 
     public void returnToOrigin() {
