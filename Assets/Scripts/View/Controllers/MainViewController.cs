@@ -5,14 +5,21 @@ using System;
 public class MainViewController : MonoBehaviour {
     public GameObject
         ridingPanel,
-        avatar;
+        avatar,
+        topPanel;
 
     private RidingView ridingView;
     private Riding ridingStore;
+    private User userStore;
+    private TopView topView;
 
-    void Start() {    
+    void Start() {
+        topPanel = gameObject.transform.Find("TopPanel").gameObject;
+        topView = topPanel.GetComponent<TopView>();
+        
         MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
         ridingStore = msm.ridingStore;
+        userStore = GameManager.Instance.userStore;
 
         addListener();
     }
@@ -35,6 +42,7 @@ public class MainViewController : MonoBehaviour {
     void addListener() {
         ridingView = ridingPanel.GetComponent<RidingView>();
         ridingStore.addListener(ridingListener);
+        userStore.addListener(userListener);
     }
 
     void ridingListener() {
@@ -50,6 +58,10 @@ public class MainViewController : MonoBehaviour {
         if(!ridingStore.isRiding) {
             ridingView.stopGPSReceive();
         }
+    }
+
+    void userListener() {
+        topView.setNickName(userStore.nickName);
     }
 
     public void onAvatar() {
