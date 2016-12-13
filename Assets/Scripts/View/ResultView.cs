@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Text;
 using System;
+using System.Collections;
 
 public class ResultView : MonoBehaviour {
 
@@ -31,17 +32,15 @@ public class ResultView : MonoBehaviour {
         maxSpeed.text = mMaxSpeed.ToString() + " KM/H";
     }
 
-    public void setMapLine(StringBuilder sb) {
-        string[] arr = sb.ToString().Split('\n');
+    public void setMapLine(ref ArrayList coordList) {
+        string[] lat = new string[coordList.Count];
+        string[] lon = new string[coordList.Count];
 
-        string[] lat = new string[arr.Length];
-        string[] lon = new string[arr.Length];
-
-        for(int i=0; i<arr.Length-1;i++) {
-            string[] tmp = arr[i].Split('|');
-            lat[i] = tmp[1];
-            lon[i] = tmp[2];
-        }
+        for(int i=0; i<coordList.Count;i++) {
+            lat[i] = ((coordData)coordList[i]).latitude.ToString();
+            lon[i] = ((coordData)coordList[i]).longitude.ToString();
+            Debug.Log("Lat : " + lat[i] + ", Lon" + lon[i]);
+        }        
         map.GetComponent<MapLine>().drawLine(lat,lon);
     }
 }

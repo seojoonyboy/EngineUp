@@ -3,7 +3,7 @@ using UnityEngine;
 using System;
 using System.IO;
 using System.Text;
-
+using System.Collections;
 public class Riding : Store<Actions>{
     LocationInfo? _preLocation = null;
     LocationInfo[] postBuffer;
@@ -22,9 +22,12 @@ public class Riding : Store<Actions>{
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
+    public ArrayList coordList;
+
     public Riding(Dispatcher<Actions> _dispatcher):base(_dispatcher){
         postBuffer = new LocationInfo[20];
         postBufferCounter = 0;
+        coordList = new ArrayList();
     }
 
     void _gpsSend(){
@@ -67,24 +70,29 @@ public class Riding : Store<Actions>{
         Debug.Log("_gpsOperation");
         totalTime = DateTime.Now - startTime;
 
-        //ù ������
+        //첫 data
         if(_preLocation == null) {
             _preLocation = loc;
             return;
         }
 
         //LocationInfo Data Filter
-        if( /*_filter(loc) ||*/ true){
-            Debug.Log(loc);
+        if(_filter(loc)){
+            //Debug.Log(loc);
             if(postBufferCounter < postBuffer.Length){
                 postBuffer[postBufferCounter] = loc;
                 postBufferCounter++;
+
+                coordData data = new coordData(loc.longitude,loc.latitude);
+                coordList.Add(data);
             } else {
                 _gpsSend();
             }
+        } else {
+            return;
         }
 
-        //Filter�� ��ģ ���츸 �Ʒ� ���� ����
+        //Filter를 거친 유효한 Data인 경우
         float curDistance = calcDist(_preLocation.Value,loc);
         curDistance = float.IsNaN(curDistance) ? 0 : curDistance;
         totalDist += curDistance;
@@ -96,7 +104,6 @@ public class Riding : Store<Actions>{
             maxSpeed = curSpeed;
         }
         _preLocation = loc;
-        // Debug.Log(loc.timestamp);
     }
 
     bool _filter(LocationInfo loc) {
@@ -243,5 +250,15 @@ class RidingData {
 
     public static RidingData fromJSON(string json){
         return JsonUtility.FromJson<RidingData>(json);
+    }
+}
+
+class coordData {
+    public float longitude;
+    public float latitude;
+
+    public coordData(float longitude, float latitude) {
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 }
