@@ -70,25 +70,23 @@ public class Riding : Store<Actions>{
         Debug.Log("_gpsOperation");
         totalTime = DateTime.Now - startTime;
 
-        //첫 data
-        if(_preLocation == null) {
-            _preLocation = loc;
-            return;
-        }
-
         //LocationInfo Data Filter
         if(_filter(loc)){
             //Debug.Log(loc);
-            if(postBufferCounter < postBuffer.Length){
-                postBuffer[postBufferCounter] = loc;
-                postBufferCounter++;
+            postBuffer[postBufferCounter] = loc;
+            postBufferCounter++;
 
-                coordData data = new coordData(loc.longitude,loc.latitude);
-                coordList.Add(data);
-            } else {
+            coordData data = new coordData(loc.longitude,loc.latitude);
+            coordList.Add(data);
+
+            if(postBufferCounter >= postBuffer.Length){
                 _gpsSend();
             }
-        } else {
+        }
+
+        //첫 data
+        if(_preLocation == null) {
+            _preLocation = loc;
             return;
         }
 
