@@ -67,21 +67,16 @@ public class Riding : Store<Actions>{
     }
 
     private void _gpsOperation(LocationInfo loc){
-        Debug.Log("_gpsOperation");
-        totalTime = DateTime.Now - startTime;
+        if(!_filter(loc)){ return; } // 필터 적용
+        //Debug.Log(loc);
+        postBuffer[postBufferCounter] = loc;
+        postBufferCounter++;
 
-        //LocationInfo Data Filter
-        if(_filter(loc)){
-            //Debug.Log(loc);
-            postBuffer[postBufferCounter] = loc;
-            postBufferCounter++;
+        coordData data = new coordData(loc.longitude,loc.latitude);
+        coordList.Add(data);
 
-            coordData data = new coordData(loc.longitude,loc.latitude);
-            coordList.Add(data);
-
-            if(postBufferCounter >= postBuffer.Length){
-                _gpsSend();
-            }
+        if(postBufferCounter >= postBuffer.Length){
+            _gpsSend();
         }
 
         //첫 data
@@ -105,20 +100,11 @@ public class Riding : Store<Actions>{
     }
 
     bool _filter(LocationInfo loc) {
-        bool result = false;
-        if(loc.horizontalAccuracy != 0 && loc.verticalAccuracy != 0) {
-            if(loc.timestamp != 0) {
-                if(loc.timestamp != _preLocation.Value.timestamp) {
-                    result = true;
-                    Debug.Log("valid gps data");
-                }
-                else Debug.Log("filtered, because of invalid timestamp. current and previous time stamp is same!");
-            }
-            else Debug.Log("filtered, because of invalid timestamp. your time stamp value equals zero");
-        }
-        else Debug.Log("filtered, because of invalid accuracy. your gps accuracy is zero");
+        if( loc.horizontalAccuracy != 0 && loc.verticalAccuracy != 0 ) { return false; }
+        if( loc.timestamp != 0 ) { return false; }
+        if( loc.timestamp != _preLocation.Value.timestamp ) { return false; }
 
-        return result;
+        return true;
     }
 
     float calcDist(LocationInfo prePos, LocationInfo curPos) {
@@ -222,6 +208,7 @@ public class Riding : Store<Actions>{
             _emitChange();
             break;
         case ActionTypes.GET_GPS_DATA:
+            totalTime = DateTime.Now - startTime;
             GetGPSDataAction _act = action as GetGPSDataAction;
             _gpsOperation(_act.GPSInfo);
             _emitChange();
