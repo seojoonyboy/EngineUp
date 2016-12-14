@@ -40,7 +40,7 @@ public class Riding : Store<Actions>{
             .Append(loc.longitude).Append("|")
             .Append(loc.timestamp).Append("|")
             .Append(loc.horizontalAccuracy).Append("|")
-            .Append(loc.verticalAccuracy).Append("\n");
+            .Append(loc.verticalAccuracy).Append("@");
         }
         var coordData = _sb.ToString();
 
@@ -63,11 +63,12 @@ public class Riding : Store<Actions>{
     }
 
     void _gpsSendCallback(HttpResponse response){
+        Debug.Log(response.responseCode);
         Debug.Log(response.data);
     }
 
     private void _gpsOperation(LocationInfo loc){
-        Debug.Log(loc);
+        //Debug.Log("List Count : " + coordList.Count);
         if(!_filter(loc)){ return; } // 필터 적용
         postBuffer[postBufferCounter] = loc;
         postBufferCounter++;

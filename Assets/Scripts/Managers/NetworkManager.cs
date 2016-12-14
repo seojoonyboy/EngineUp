@@ -22,8 +22,8 @@ public class NetworkManager : Singleton<NetworkManager> {
                 www = UnityWebRequest.Post(url, data);
                 break;
             case "PUT":
-                www = UnityWebRequest.Post(url, data);
-                www.method = "PUT";
+                www = UnityWebRequest.Put(url,data.data);
+                www.SetRequestHeader("Content-Type","application/x-www-form-urlencoded");
                 break;
             case "DELETE":
                 www = UnityWebRequest.Delete(url);
