@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Text;
 using System;
-using System.Collections;
 
 public class ResultView : MonoBehaviour {
 
@@ -22,14 +20,14 @@ public class ResultView : MonoBehaviour {
 
     public GameObject map;
 
-    public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed) {
-        totalDist.text = mDist.ToString() + " KM";
+    public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed) {        
+        totalDist.text = (Math.Round(mDist, 2, MidpointRounding.AwayFromZero)).ToString() + " KM";
 
         char delimeter = '.';
         totalTime.text = mTime.ToString().Split(delimeter)[0];
 
-        avgSpeed.text = mAvgSpeed.ToString() + " KM/H";
-        maxSpeed.text = mMaxSpeed.ToString() + " KM/H";
+        avgSpeed.text = (Math.Round(mAvgSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
+        maxSpeed.text = (Math.Round(mMaxSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
     }
 
     public void setMapLine(ref ArrayList coordList) {
@@ -40,7 +38,7 @@ public class ResultView : MonoBehaviour {
             lat[i] = ((coordData)coordList[i]).latitude.ToString();
             lon[i] = ((coordData)coordList[i]).longitude.ToString();
             Debug.Log("Lat : " + lat[i] + ", Lon" + lon[i]);
-        }        
+        }
         map.GetComponent<MapLine>().drawLine(lat,lon);
     }
 }
