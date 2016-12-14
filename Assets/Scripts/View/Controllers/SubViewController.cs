@@ -21,6 +21,7 @@ public class SubViewController : MonoBehaviour {
     }
 
     public void offResultPanel() {
+        OnlineMaps.instance.RemoveAllDrawingElements();
         resultPanel.SetActive(false);
     }
 
