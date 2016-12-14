@@ -168,6 +168,7 @@ public class Riding : Store<Actions>{
     }
 
     void ridingStart(RidingStartAction act){
+        coordList.Clear();
         switch(act.status){
         case NetworkAction.statusTypes.REQUEST:
             _initRiding();
