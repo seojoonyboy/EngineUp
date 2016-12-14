@@ -67,8 +67,8 @@ public class Riding : Store<Actions>{
     }
 
     private void _gpsOperation(LocationInfo loc){
+        Debug.Log(loc);
         if(!_filter(loc)){ return; } // 필터 적용
-        //Debug.Log(loc);
         postBuffer[postBufferCounter] = loc;
         postBufferCounter++;
 
@@ -100,9 +100,10 @@ public class Riding : Store<Actions>{
     }
 
     bool _filter(LocationInfo loc) {
-        if( loc.horizontalAccuracy != 0 && loc.verticalAccuracy != 0 ) { return false; }
-        if( loc.timestamp != 0 ) { return false; }
-        if( loc.timestamp != _preLocation.Value.timestamp ) { return false; }
+        if( loc.horizontalAccuracy == 0 || loc.verticalAccuracy == 0 ) { return false; }
+        if( loc.timestamp == 0 ) { return false; }
+        if( _preLocation == null ) { return true; }
+        if( loc.timestamp == _preLocation.Value.timestamp ) { return false; }
 
         return true;
     }
