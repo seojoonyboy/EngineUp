@@ -53,10 +53,10 @@ public class Riding : Store<Actions>{
             .Append(GameManager.Instance.deviceId);
 
         WWWForm f = new WWWForm();
-        f.AddField("distance", Math.Round(totalDist,3).ToString());
+        f.AddField("distance", totalDist.ToString());
         f.AddField("runningTime", totalTime.ToString());
-        f.AddField("avrSpeed", Math.Round(avgSpeed,2).ToString());
-        f.AddField("maxSpeed", Math.Round(maxSpeed,2).ToString());
+        f.AddField("avrSpeed", avgSpeed.ToString());
+        f.AddField("maxSpeed", maxSpeed.ToString());
         f.AddField("coordData", coordData);
 
         networkManager.request("PUT", _sb.ToString(), f, _gpsSendCallback);
@@ -232,10 +232,10 @@ public class Riding : Store<Actions>{
 
 class RidingData {
     public int id;
-    public string distance;
+    public float distance;
     public string runningTime;
-    public string avrSpeed;
-    public string maxSpeed;
+    public float avrSpeed;
+    public float maxSpeed;
 
     public static RidingData fromJSON(string json){
         return JsonUtility.FromJson<RidingData>(json);
