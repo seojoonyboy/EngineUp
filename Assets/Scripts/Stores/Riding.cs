@@ -103,6 +103,7 @@ public class Riding : Store<Actions>{
 
     bool _filter(LocationInfo loc) {
         if( loc.horizontalAccuracy == 0 || loc.verticalAccuracy == 0 ) { return false; }
+        if( loc.horizontalAccuracy > 20 || loc.horizontalAccuracy > 20) { return false; }
         if( loc.timestamp == 0 ) { return false; }
         if( _preLocation == null ) { return true; }
         if( loc.timestamp == _preLocation.Value.timestamp ) { return false; }
