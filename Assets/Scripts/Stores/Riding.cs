@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
+
 public class Riding : Store<Actions>{
     LocationInfo? _preLocation = null;
     LocationInfo[] postBuffer;
@@ -52,10 +53,10 @@ public class Riding : Store<Actions>{
             .Append(GameManager.Instance.deviceId);
 
         WWWForm f = new WWWForm();
-        f.AddField("distance", totalDist.ToString());
+        f.AddField("distance", Math.Round(totalDist,3).ToString());
         f.AddField("runningTime", totalTime.ToString());
-        f.AddField("avrSpeed", avgSpeed.ToString());
-        f.AddField("maxSpeed", maxSpeed.ToString());
+        f.AddField("avrSpeed", Math.Round(avgSpeed,2).ToString());
+        f.AddField("maxSpeed", Math.Round(maxSpeed,2).ToString());
         f.AddField("coordData", coordData);
 
         networkManager.request("PUT", _sb.ToString(), f, _gpsSendCallback);
