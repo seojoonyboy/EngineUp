@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.Networking;
 
 public class SubViewController : MonoBehaviour {
     public GameObject
@@ -31,7 +29,7 @@ public class SubViewController : MonoBehaviour {
     }
 
     void resultListener() {
-        Debug.Log("Result Listener");
+        //Debug.Log("Result Listener");
         if(!ridingStore.isRiding) {
             resultView.setResult(ridingStore.totalDist,ridingStore.totalTime,ridingStore.avgSpeed,ridingStore.maxSpeed);
             resultView.setMapLine(ref ridingStore.coordList);

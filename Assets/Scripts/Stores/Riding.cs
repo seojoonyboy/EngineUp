@@ -165,9 +165,7 @@ public class Riding : Store<Actions>{
         string data = System.Text.Encoding.UTF8.GetString(bytes);
         //resultData.Remove(0, resultData.Length);
         resultData.Append(data);
-        Debug.Log(resultData);
         resultData.Remove(0,1);
-        Debug.Log(resultData);
     }
 
     void ridingStart(RidingStartAction act){

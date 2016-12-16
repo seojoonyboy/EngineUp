@@ -1,6 +1,5 @@
 ﻿using Flux;
 using UnityEngine;
-using UnityEngine.Networking;
 
 public class User : Store<Actions> {
     // prop

@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 
 public class TopView : MonoBehaviour {
     UILabel nickNameLabel;
@@ -10,7 +8,7 @@ public class TopView : MonoBehaviour {
     }
 
     public void setNickName(string nickName) {
-        Debug.Log("Change NickName : " + nickName);
+        //Log("Change NickName : " + nickName);
         nickNameLabel.text = nickName;
     }
 }

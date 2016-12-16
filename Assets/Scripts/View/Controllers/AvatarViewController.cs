@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.EventSystems;
 
 public class AvatarViewController : MonoBehaviour {
     public GameObject
@@ -18,15 +17,12 @@ public class AvatarViewController : MonoBehaviour {
     void Start() {
         cameraOriginPos = Camera.main.transform.position;
         startTime = Time.time;
-        Debug.Log(startTime);
+        //Debug.Log(startTime);
     }
 
     public void OnConfirm() {
         GameManager gameManager = GameManager.Instance;
         string nickName = menuPanel.transform.Find("NickNameBox").GetComponent<UIInput>().value;
-        //EditNickNameAction action = (EditNickNameAction)ActionCreator.createAction(ActionTypes.EDIT_NICKNAME);
-        //action.nickname = nickName;
-        //GameManager.Instance.gameDispatcher.dispatch(action);
         UserCreateAction action = ActionCreator.createAction(ActionTypes.USER_CREATE) as UserCreateAction;
         action.nickName = nickName;
         action.deviceId = gameManager.deviceId;
