@@ -7,6 +7,7 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// This is an internally-created script used by the UI system. You shouldn't be attaching it manually.
@@ -1074,8 +1075,8 @@ public class UIDrawCall : MonoBehaviour
 
 	static public void MoveToScene (UnityEngine.SceneManagement.Scene scene)
 	{
-		foreach (var dc in activeList) UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(dc.gameObject, scene);
-		foreach (var dc in inactiveList) UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(dc.gameObject, scene);
+		foreach (var dc in activeList) SceneManager.MoveGameObjectToScene(dc.gameObject, scene);
+		foreach (var dc in inactiveList) SceneManager.MoveGameObjectToScene(dc.gameObject, scene);
 	}
 #endif
 }

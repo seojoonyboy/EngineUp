@@ -10,6 +10,7 @@ using UnityEngine;
 
 #if UNITY_5_3P
 using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 #endif
 
 [CustomEditor(typeof(OnlineMapsTextureControl))]
@@ -232,7 +233,7 @@ public class OnlineMapsTextureControlEditor : Editor
             if (!Application.isPlaying)
             {
 #if UNITY_5_3P
-                EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 #endif
             }
             else api.Redraw();

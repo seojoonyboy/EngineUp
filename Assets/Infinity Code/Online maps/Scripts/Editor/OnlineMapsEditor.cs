@@ -21,6 +21,7 @@ using Object = UnityEngine.Object;
 
 #if UNITY_5_3P
 using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 #endif
 
 [CustomEditor(typeof (OnlineMaps))]
@@ -1004,7 +1005,7 @@ public class OnlineMapsEditor : Editor
             if (!Application.isPlaying)
             {
 #if UNITY_5_3P
-                EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 #endif
             }
             else api.Redraw();

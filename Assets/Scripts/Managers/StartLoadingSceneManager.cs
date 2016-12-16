@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-
-public class StartLoadingSceneManager : SceneManager {
+using UnityEngine.SceneManagement;
+public class StartLoadingSceneManager : fbl_SceneManager {
     GameManager gm;
     User userStore;
     bool isUserExist = false;
@@ -17,7 +17,7 @@ public class StartLoadingSceneManager : SceneManager {
     }
 
     public void loadMainScene() {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Main");
+        SceneManager.LoadScene("Main");
     }
 
     void addListener() {
