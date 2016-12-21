@@ -41,8 +41,9 @@ public class AvatarViewController : MonoBehaviour {
         menuPanel.SetActive(false);
     }
 
-    public void CustomBtnClick(int type) {
-        moveCam(type);
+    public void ButtonMessage(GameObject obj) {
+        int index = obj.GetComponent<ButtonIndex>().index;
+        moveCam(index);
     }
 
     public void moveCam(int type) {

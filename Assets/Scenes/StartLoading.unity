@@ -779,6 +779,34 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7a457fa152e88d340a1dc3f572e76c60, type: 3}
   m_IsPrefabParent: 0
+--- !u!1 &272170515 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100236, guid: 7a457fa152e88d340a1dc3f572e76c60, type: 3}
+  m_PrefabInternal: {fileID: 272170514}
+--- !u!1 &272170516 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100000, guid: 7a457fa152e88d340a1dc3f572e76c60, type: 3}
+  m_PrefabInternal: {fileID: 272170514}
+--- !u!1 &272170517 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100232, guid: 7a457fa152e88d340a1dc3f572e76c60, type: 3}
+  m_PrefabInternal: {fileID: 272170514}
+--- !u!1 &272170518 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100224, guid: 7a457fa152e88d340a1dc3f572e76c60, type: 3}
+  m_PrefabInternal: {fileID: 272170514}
+--- !u!1 &272170519 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100220, guid: 7a457fa152e88d340a1dc3f572e76c60, type: 3}
+  m_PrefabInternal: {fileID: 272170514}
+--- !u!1 &272170520 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100222, guid: 7a457fa152e88d340a1dc3f572e76c60, type: 3}
+  m_PrefabInternal: {fileID: 272170514}
+--- !u!1 &272170521 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100238, guid: 7a457fa152e88d340a1dc3f572e76c60, type: 3}
+  m_PrefabInternal: {fileID: 272170514}
 --- !u!1 &286670790
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,6 +818,8 @@ GameObject:
   - 114: {fileID: 286670792}
   - 114: {fileID: 286670794}
   - 65: {fileID: 286670793}
+  - 114: {fileID: 286670795}
+  - 114: {fileID: 286670796}
   m_Layer: 5
   m_Name: Item0
   m_TagString: Untagged
@@ -889,6 +919,49 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollView: {fileID: 0}
   draggablePanel: {fileID: 0}
+--- !u!114 &286670795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 286670790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tweenTarget: {fileID: 286670790}
+  hover: {r: 0.88235295, g: 0.78431374, b: 0.5882353, a: 1}
+  pressed: {r: 0.7176471, g: 0.6392157, b: 0.48235294, a: 1}
+  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  duration: 0.2
+  dragHighlight: 0
+  hoverSprite: 
+  pressedSprite: 
+  disabledSprite: 
+  hoverSprite2D: {fileID: 0}
+  pressedSprite2D: {fileID: 0}
+  disabledSprite2D: {fileID: 0}
+  pixelSnap: 0
+  onClick:
+  - mTarget: {fileID: 947147868}
+    mMethodName: ButtonMessage
+    mParameters:
+    - obj: {fileID: 286670790}
+      field: 
+    oneShot: 0
+--- !u!114 &286670796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 286670790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 025785dcb8795ed42a43c08055aa5773, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 0
 --- !u!1 &326997973
 GameObject:
   m_ObjectHideFlags: 0
@@ -1398,7 +1471,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 5.2579365
+  aspectRatio: 1.0714285
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -1524,6 +1597,12 @@ MonoBehaviour:
     mMethodName: OnSelectPanel
     mParameters: []
     oneShot: 0
+  - mTarget: {fileID: 947147866}
+    mMethodName: ButtonMessage
+    mParameters:
+    - obj: {fileID: 694755467}
+      field: 
+    oneShot: 0
 --- !u!114 &694755471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1591,7 +1670,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 0
-  viewController: {fileID: 947147865}
 --- !u!1 &740317126
 GameObject:
   m_ObjectHideFlags: 0
@@ -1766,7 +1844,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 8.633333
+  aspectRatio: 1.6
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -2279,6 +2357,7 @@ GameObject:
   - 114: {fileID: 912801971}
   - 114: {fileID: 912801970}
   - 65: {fileID: 912801969}
+  - 114: {fileID: 912801972}
   m_Layer: 5
   m_Name: Item2
   m_TagString: Untagged
@@ -2378,6 +2457,18 @@ MonoBehaviour:
   mAtlas: {fileID: 11400000, guid: 62adb30369acbf943a67cee0f69267a3, type: 2}
   mSpriteName: Button
   mFillCenter: 1
+--- !u!114 &912801972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 912801967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 025785dcb8795ed42a43c08055aa5773, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 2
 --- !u!4 &933524077
 Transform:
   m_ObjectHideFlags: 0
@@ -2499,8 +2590,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 947147867}
   - 114: {fileID: 947147866}
+  - 114: {fileID: 947147868}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2536,6 +2628,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
+--- !u!114 &947147868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 947147865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 911e1a79a5f6c6d46b40189664c72177, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  avatar: {fileID: 272170515}
+  charParts:
+  - {fileID: 272170521}
+  - {fileID: 272170520}
+  - {fileID: 272170519}
+  - {fileID: 272170518}
+  bicycleParts:
+  - {fileID: 272170517}
+  - {fileID: 272170516}
+  mats:
+  - {fileID: 2100000, guid: 03a45fdeabb56924f8c8a7b4d0aa8381, type: 2}
+  - {fileID: 2100000, guid: 404ee75673a4628419b20478d19b734a, type: 2}
 --- !u!4 &1012160885
 Transform:
   m_ObjectHideFlags: 0
@@ -3227,6 +3342,12 @@ MonoBehaviour:
     mMethodName: OnSelectPanel
     mParameters: []
     oneShot: 0
+  - mTarget: {fileID: 947147866}
+    mMethodName: ButtonMessage
+    mParameters:
+    - obj: {fileID: 1532171950}
+      field: 
+    oneShot: 0
 --- !u!114 &1532171954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3294,7 +3415,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
-  viewController: {fileID: 947147865}
 --- !u!1 &1535558241
 GameObject:
   m_ObjectHideFlags: 0
@@ -3374,6 +3494,12 @@ MonoBehaviour:
     mMethodName: OnSelectPanel
     mParameters: []
     oneShot: 0
+  - mTarget: {fileID: 947147866}
+    mMethodName: ButtonMessage
+    mParameters:
+    - obj: {fileID: 1535558241}
+      field: 
+    oneShot: 0
 --- !u!114 &1535558245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3441,7 +3567,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 2
-  viewController: {fileID: 947147865}
 --- !u!1 &1550412628
 GameObject:
   m_ObjectHideFlags: 0
@@ -3550,6 +3675,7 @@ GameObject:
   - 114: {fileID: 1581478526}
   - 114: {fileID: 1581478525}
   - 65: {fileID: 1581478524}
+  - 114: {fileID: 1581478527}
   m_Layer: 5
   m_Name: Item3
   m_TagString: Untagged
@@ -3649,6 +3775,18 @@ MonoBehaviour:
   mAtlas: {fileID: 11400000, guid: 62adb30369acbf943a67cee0f69267a3, type: 2}
   mSpriteName: Button
   mFillCenter: 1
+--- !u!114 &1581478527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1581478522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 025785dcb8795ed42a43c08055aa5773, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 3
 --- !u!1001 &1625128754
 Prefab:
   m_ObjectHideFlags: 0
@@ -3840,6 +3978,12 @@ MonoBehaviour:
     mMethodName: OnSelectPanel
     mParameters: []
     oneShot: 0
+  - mTarget: {fileID: 947147866}
+    mMethodName: ButtonMessage
+    mParameters:
+    - obj: {fileID: 1654364267}
+      field: 
+    oneShot: 0
 --- !u!114 &1654364271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3907,7 +4051,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 2
-  viewController: {fileID: 947147865}
 --- !u!1 &1698380858
 GameObject:
   m_ObjectHideFlags: 0
@@ -4269,6 +4412,7 @@ GameObject:
   - 114: {fileID: 1946442982}
   - 114: {fileID: 1946442981}
   - 65: {fileID: 1946442980}
+  - 114: {fileID: 1946442983}
   m_Layer: 5
   m_Name: Item1
   m_TagString: Untagged
@@ -4368,6 +4512,18 @@ MonoBehaviour:
   mAtlas: {fileID: 11400000, guid: 62adb30369acbf943a67cee0f69267a3, type: 2}
   mSpriteName: Button
   mFillCenter: 1
+--- !u!114 &1946442983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1946442978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 025785dcb8795ed42a43c08055aa5773, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 1
 --- !u!1 &2029750870
 GameObject:
   m_ObjectHideFlags: 0

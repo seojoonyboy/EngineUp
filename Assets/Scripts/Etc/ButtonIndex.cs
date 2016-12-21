@@ -1,11 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using UnityEngine.EventSystems;
 public class ButtonIndex : MonoBehaviour {
     public int index = -1;
-    public GameObject viewController;
-
-    public void OnClick() {
-        viewController.GetComponent<AvatarViewController>().CustomBtnClick(index);
-    }
 }
