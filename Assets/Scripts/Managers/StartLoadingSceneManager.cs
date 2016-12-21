@@ -17,7 +17,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     }
 
     public void loadMainScene() {
-        //SceneManager.LoadScene("Main");
+        SceneManager.LoadScene("Main");
     }
 
     void addListener() {
