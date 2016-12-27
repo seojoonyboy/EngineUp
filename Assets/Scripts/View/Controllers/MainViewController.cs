@@ -4,6 +4,7 @@ using System;
 public class MainViewController : MonoBehaviour {
     public GameObject
         ridingPanel,
+        communityPanel,
         avatar,
         topPanel;
 
@@ -31,11 +32,19 @@ public class MainViewController : MonoBehaviour {
             ridingPanel.SetActive(true);
             offAvatar();
             break;
+
+            case MAIN_BUTTON.COMMUNITY:
+            communityPanel.SetActive(true);
+            break;
         }
     }
 
     public void offRidingPanel() {
         ridingPanel.SetActive(false);
+    }
+
+    public void offCommunityPanel() {
+        communityPanel.SetActive(false);
     }
 
     void addListener() {

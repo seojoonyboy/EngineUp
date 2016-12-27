@@ -5,7 +5,7 @@ public enum MAIN_BUTTON {
     HOME,
     ITEM,
     AVATAR,
-    HISTORY,
+    COMMUNITY,
     SHOP,
     RIDING,
     BATTLE
@@ -15,6 +15,7 @@ public class MainButtonListener : MonoBehaviour {
     public UIButton[] mainBtns;
     void Start() {
         addMainBtnEvent(0,MAIN_BUTTON.RIDING);
+        addMainBtnEvent(1, MAIN_BUTTON.COMMUNITY);
     }
 
     private void addMainBtnEvent(int index,MAIN_BUTTON type) {

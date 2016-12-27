@@ -6,7 +6,7 @@ public class SpriteMove : MonoBehaviour {
     public Transform[] targets;
 
     void Start() {
-        StartCoroutine("move");
+        //StartCoroutine("move");
     }
 
     IEnumerator move() {
@@ -23,6 +23,6 @@ public class SpriteMove : MonoBehaviour {
             }
             yield return new WaitForSeconds(0.5f);
             
-        }        
+        }
     }
 }
