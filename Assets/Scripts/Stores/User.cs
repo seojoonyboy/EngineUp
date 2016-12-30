@@ -17,17 +17,15 @@ public class User : Store<Actions> {
             strBuilder.Remove(0,strBuilder.Length);
             strBuilder.Append(networkManager.baseUrl)
                 .Append("users/")
-                .Append(GameManager.Instance.deviceId).Append("/");
+                .Append(GameManager.Instance.deviceId);
             networkManager.request("GET",strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
             break;
         case NetworkAction.statusTypes.SUCCESS: // 유저 정보 있음!!!
             UserData data = UserData.fromJSON(payload.response.data);
             nickName = data.nickName;
-            Debug.Log("유저정보 있음");
             _emitChange();
             break;
         case NetworkAction.statusTypes.FAIL:    // 유저 정보 없음!!
-            Debug.Log("유저정보 없음");
             break;
         }
     }
@@ -51,7 +49,7 @@ public class User : Store<Actions> {
             var strBuilder = GameManager.Instance.sb;
             strBuilder.Remove(0,strBuilder.Length);
             strBuilder.Append(networkManager.baseUrl)
-                .Append("users/");
+                .Append("users");
             WWWForm form = new WWWForm();
             form.AddField("nickName",act.nickName);
             form.AddField("deviceId",act.deviceId);
@@ -60,9 +58,12 @@ public class User : Store<Actions> {
         case NetworkAction.statusTypes.SUCCESS:
             UserData data = UserData.fromJSON(act.response.data);
             nickName = data.nickName;
+            Debug.Log("user 생성 성공");
             _emitChange();
             break;
         case NetworkAction.statusTypes.FAIL:
+            Debug.Log("user 생성 실패");
+            Debug.Log("Error Msg : " + act.response.errorMessage);
             // create 실패
             break;
         }
