@@ -49,14 +49,9 @@ public class Riding : Store<Actions>{
         _sb.Append(networkManager.baseUrl)
             .Append("ridings/")
             .Append(ridingId)
-            .Append("/?deviceId=")
+            .Append("?deviceId=")
             .Append(GameManager.Instance.deviceId);
-
         WWWForm f = new WWWForm();
-        f.AddField("distance", totalDist.ToString());
-        f.AddField("runningTime", totalTime.ToString());
-        f.AddField("avrSpeed", avgSpeed.ToString());
-        f.AddField("maxSpeed", maxSpeed.ToString());
         f.AddField("coordData", coordData);
 
         networkManager.request("PUT", _sb.ToString(), f, _gpsSendCallback);
@@ -66,10 +61,14 @@ public class Riding : Store<Actions>{
     void _gpsSendCallback(HttpResponse response){
         Debug.Log(response.responseCode);
         Debug.Log(response.data);
+        RidingData ridingData = RidingData.fromJSON(response.data);
+
+        totalDist = ridingData.distance;
+        avgSpeed = ridingData.avgSpeed;
+        maxSpeed = ridingData.maxSpeed;
     }
 
     private void _gpsOperation(LocationInfo loc){
-        //Debug.Log("List Count : " + coordList.Count);
         if(!_filter(loc)){ return; } // 필터 적용
         postBuffer[postBufferCounter] = loc;
         postBufferCounter++;
@@ -86,18 +85,6 @@ public class Riding : Store<Actions>{
             _preLocation = loc;
             return;
         }
-
-        //Filter를 거친 유효한 Data인 경우
-        float curDistance = calcDist(_preLocation.Value,loc);
-        curDistance = float.IsNaN(curDistance) ? 0 : curDistance;
-        totalDist += curDistance;
-        float intervalTime = (float)(loc.timestamp - _preLocation.Value.timestamp);
-        curSpeed = (curDistance / intervalTime) * 3600f;
-        avgSpeed = totalDist / (float)totalTime.TotalHours;
-
-        if(maxSpeed < curSpeed) {
-            maxSpeed = curSpeed;
-        }
         _preLocation = loc;
     }
 
@@ -109,24 +96,6 @@ public class Riding : Store<Actions>{
         if( loc.timestamp == _preLocation.Value.timestamp ) { return false; }
 
         return true;
-    }
-
-    float calcDist(LocationInfo prePos, LocationInfo curPos) {
-        float newLatitude = curPos.latitude;
-        float newLongitude = curPos.longitude;
-        float lastLatitude = prePos.latitude;
-        float lastLongitude = prePos.longitude;
-
-        float deltaLatitude = (newLatitude - lastLatitude) * Mathf.Deg2Rad;
-        float deltaLongitude = (newLongitude - lastLongitude) * Mathf.Deg2Rad;
-
-        float a = Mathf.Pow(Mathf.Sin(deltaLongitude / 2), 2)
-            + Mathf.Cos(lastLatitude * Mathf.Deg2Rad) * Mathf.Cos(newLatitude * Mathf.Deg2Rad)
-            * Mathf.Pow(Mathf.Sin(deltaLongitude / 2), 2);
-
-        float c = 2 * Mathf.Atan2(Mathf.Sqrt(a), Mathf.Sqrt(1 - a));
-
-        return EARTH_RADIUS * c;
     }
 
     void _writeData(LocationInfo loc){
@@ -176,8 +145,7 @@ public class Riding : Store<Actions>{
             var sb = GameManager.Instance.sb;
             sb.Remove(0,sb.Length)
                 .Append(networkManager.baseUrl)
-                .Append("ridings/")
-                .Append("?deviceId=")
+                .Append("ridings?deviceId=")
                 .Append(GameManager.Instance.deviceId);
             WWWForm form = new WWWForm();
             form.AddField("distance", 0);
@@ -233,7 +201,7 @@ class RidingData {
     public int id;
     public float distance;
     public string runningTime;
-    public float avrSpeed;
+    public float avgSpeed;
     public float maxSpeed;
 
     public static RidingData fromJSON(string json){
