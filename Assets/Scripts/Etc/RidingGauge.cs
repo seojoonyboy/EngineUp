@@ -21,7 +21,11 @@ public class RidingGauge : MonoBehaviour {
 
     void ridingListiner() {
         //Debug.Log(ridingStore.curSpeed);
-        slider.value = ridingStore.curSpeed / maxSpeed;
-        //slider.value = 1;
+        if(ridingStore.avgSpeed >= maxSpeed) {
+            slider.value = maxSpeed;
+        }
+        else {
+            slider.value = ridingStore.avgSpeed;
+        }
     }
 }
