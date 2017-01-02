@@ -51,20 +51,6 @@ public class User : Store<Actions> {
         }
     }
 
-    void userCreateCallback(HttpResponse response) {
-        if(response.isError) {
-            Debug.Log(response.errorMessage);
-        }
-        else if(response.responseCode >= 200 && response.responseCode < 300) {  //유저있음 닉네임 받고 화면 전환 처리
-            Debug.Log(response.data);
-            UserData data = UserData.fromJSON(response.data);
-            nickName = data.nickName;
-        }
-        else {
-            if(response.responseCode == 404) return;    //해당유저 없음
-        }
-    }
-
     void userCreate(UserCreateAction act) {
         switch(act.status){
         case NetworkAction.statusTypes.REQUEST:
