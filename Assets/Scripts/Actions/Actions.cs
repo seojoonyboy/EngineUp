@@ -12,8 +12,10 @@ public enum ActionTypes {
     RIDING_RESULT,
     POST_FAIL,
     POST_SUCCESS,
-    USER_CREATE
+    USER_CREATE,
+    GET_COMMUNITY_DATA
 }
+
 public class Actions{
     public ActionTypes type;
 }
@@ -63,6 +65,10 @@ public class NetworkAction : Actions {
 }
 public class GameStartAction : NetworkAction{
     public string message;
+}
+
+public class GetCommunityAction : NetworkAction {
+
 }
 
 public class EditNickNameAction : Actions{
