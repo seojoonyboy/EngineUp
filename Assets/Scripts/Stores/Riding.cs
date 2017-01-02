@@ -26,7 +26,7 @@ public class Riding : Store<Actions>{
     public ArrayList coordList;
 
     public Riding(Dispatcher<Actions> _dispatcher):base(_dispatcher){
-        postBuffer = new LocationInfo[20];
+        postBuffer = new LocationInfo[10];
         postBufferCounter = 0;
         coordList = new ArrayList();
     }
