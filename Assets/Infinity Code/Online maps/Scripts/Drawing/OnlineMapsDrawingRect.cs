@@ -26,24 +26,24 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// </summary>
     public float borderWeight = 1;
     
-    private List<Vector2> points;
-    private float _height = 1;
-    private float _width = 1;
-    private float _x = 0;
-    private float _y = 0;
+    private double[] points;
+    private double _height = 1;
+    private double _width = 1;
+    private double _x = 0;
+    private double _y = 0;
 
     /// <summary>
     /// Center point of the rectangle.
     /// </summary>
     public override Vector2 center
     {
-        get { return new Vector2(x + width / 2, y + height / 2); }
+        get { return new Vector2((float)(_x + _width / 2), (float)(_y + _height / 2)); }
     }
 
     /// <summary>
     /// Gets or sets the width of the rectangle. Geographic coordinates.
     /// </summary>
-    public float width
+    public double width
     {
         get { return _width; }
         set
@@ -56,7 +56,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// <summary>
     /// Gets or sets the height of the rectangle. Geographic coordinates.
     /// </summary>
-    public float height
+    public double height
     {
         get { return _height; }
         set
@@ -69,7 +69,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// <summary>
     /// Gets or sets the x position of the rectangle. Geographic coordinates.
     /// </summary>
-    public float x
+    public double x
     {
         get { return _x; }
         set
@@ -82,7 +82,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// <summary>
     /// Gets or sets the y position of the rectangle. Geographic coordinates.
     /// </summary>
-    public float y
+    public double y
     {
         get { return _y; }
         set
@@ -99,7 +99,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     {
         get
         {
-            return new Vector2(x, y);
+            return new Vector2((float)_x, (float)_y);
         }
         set
         {
@@ -117,11 +117,11 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     {
         get
         {
-            return new Vector2(x + width, y);
+            return new Vector2((float)(_x + _width), (float)_y);
         }
         set
         {
-            float b = _y + _height;
+            double b = _y + _height;
             _width = value.x - _x;
             _y = value.y;
             _height = b - _y;
@@ -136,11 +136,11 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     {
         get
         {
-            return new Vector2(x, y + height);
+            return new Vector2((float)_x, (float)(_y + _height));
         }
         set
         {
-            float r = _x + _width;
+            double r = _x + _width;
             _x = value.x;
             _height = value.y - _y;
             _width = r - _x;
@@ -155,7 +155,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     {
         get
         {
-            return new Vector2(x + width, y + height);
+            return new Vector2((float)(_x + _width), (float)(_y + _height));
         }
         set
         {
@@ -172,7 +172,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// <param name="y">Position Y. Geographic coordinates.</param>
     /// <param name="width">Width. Geographic coordinates.</param>
     /// <param name="height">Height. Geographic coordinates.</param>
-    public OnlineMapsDrawingRect(float x, float y, float width, float height)
+    public OnlineMapsDrawingRect(double x, double y, double width, double height)
     {
         _x = x;
         _y = y;
@@ -341,8 +341,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
 
         InitMesh(control, "Rect", borderColor, backgroundColor);
 
-        api.GetTopLeftPosition(out tlx, out tly);
-        api.GetBottomRightPosition(out brx, out bry);
+        api.GetCorners(out tlx, out tly, out brx, out bry);
 
         List<Vector2> localPoints = GetLocalPoints(points, true, false);
 
@@ -553,12 +552,12 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
 
     private void InitPoints()
     {
-        points = new List<Vector2>
+        points = new [] 
         {
-            new Vector2(_x, _y),
-            new Vector2(_x + _width, _y),
-            new Vector2(_x + _width, _y + _height),
-            new Vector2(_x, _y + _height)
+            _x, _y,
+            _x + _width, _y,
+            _x + _width, _y + _height,
+            _x, _y + _height
         };
         OnlineMaps.instance.needRedraw = true;
     }
@@ -568,5 +567,10 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
         base.DisposeLate();
 
         points = null;
+    }
+
+    public override bool Validate()
+    {
+        return points != null;
     }
 }

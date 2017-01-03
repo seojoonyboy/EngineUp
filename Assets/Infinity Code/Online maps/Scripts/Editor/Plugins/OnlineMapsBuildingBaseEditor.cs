@@ -17,7 +17,7 @@ public class OnlineMapsBuildingBaseEditor:Editor
     {
         EditorGUILayout.LabelField("Meta count: " + building.metaInfo.Length);
         EditorGUI.BeginDisabledGroup(true);
-        foreach (OnlineMapsBuildingMetaInfo item in building.metaInfo) EditorGUILayout.TextField(item.title, item.info);
+        foreach (OnlineMapsBuildingBase.MetaInfo item in building.metaInfo) EditorGUILayout.TextField(item.title, item.info);
         EditorGUI.EndDisabledGroup();
     }
 }

@@ -1,7 +1,7 @@
 ﻿/*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
-#if !UNITY_4_3 && !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7
+#if !UNITY_4_6 && !UNITY_4_7
 #define UNITY_5_0P
 #endif
 
@@ -13,8 +13,9 @@ public class OnlineMapsMarker3DPropertyDrawer : PropertyDrawer
 {
     public static bool isRemoved = false;
     public static bool? isEnabledChanged;
+    public static float? isRotationChanged;
 
-    private const int countFields = 7;
+    private const int countFields = 8;
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
@@ -62,6 +63,11 @@ public class OnlineMapsMarker3DPropertyDrawer : PropertyDrawer
             DrawProperty(property, "range", ref rect, new GUIContent("Zooms"));
 
             DrawProperty(property, "_scale", ref rect);
+
+            EditorGUI.BeginChangeCheck();
+            DrawProperty(property, "_rotationY", ref rect);
+            if (EditorGUI.EndChangeCheck() && Application.isPlaying) isRotationChanged = property.FindPropertyRelative("_rotationY").floatValue;
+
             DrawProperty(property, "label", ref rect);
             DrawProperty(property, "prefab", ref rect);
 

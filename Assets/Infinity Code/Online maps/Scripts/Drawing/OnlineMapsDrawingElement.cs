@@ -2,6 +2,7 @@
 /*   http://www.infinity-code.com   */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -79,7 +80,6 @@ public class OnlineMapsDrawingElement
     {
         get
         {
-
             return gameObject.activeSelf;
         }
         set
@@ -166,10 +166,6 @@ public class OnlineMapsDrawingElement
         Vector3 prevS2 = Vector3.zero;
 
         int c = activePoints.Count - 1;
-        if (verticles.Count + c * 4 > verticles.Capacity) verticles.Capacity = verticles.Count + c * 4;
-        if (uv.Count + c * 4 > uv.Capacity) uv.Capacity = uv.Count + c * 4;
-        if (normals.Count + c * 4 > normals.Capacity) normals.Capacity = normals.Count + c * 4;
-        if (triangles.Count + c * 6 > triangles.Capacity) triangles.Capacity = triangles.Count + c * 6;
 
         for (int i = 0; i < activePoints.Count; i++)
         {
@@ -179,7 +175,7 @@ public class OnlineMapsDrawingElement
             Vector3 s1 = Vector3.zero;
             Vector3 s2 = Vector3.zero;
 
-            if (i == 0 || i == activePoints.Count - 1)
+            if (i == 0 || i == c)
             {
                 float p1x, p1z, p2x, p2z;
 
@@ -311,7 +307,7 @@ public class OnlineMapsDrawingElement
         activePoints.Clear();
     }
 
-    protected void DrawLineToBuffer(Color32[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom, List<Vector2> points, Color32 color, float weight, bool closed, bool invertY)
+    protected void DrawLineToBuffer(Color32[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom, IEnumerable points, Color32 color, float weight, bool closed, bool invertY)
     {
         if (color.a == 0) return;
 
@@ -320,7 +316,7 @@ public class OnlineMapsDrawingElement
 
         int maxX = 1 << zoom;
 
-        int off = closed ? 1 : 0;
+        //int off = closed ? 1 : 0;
         int w = Mathf.RoundToInt(weight);
 
         double ppx1 = 0;
@@ -330,21 +326,111 @@ public class OnlineMapsDrawingElement
         int by1 = bufferPosition.y;
         int by2 = by1 + bufferHeight / OnlineMapsUtils.tileSize;
 
-        int count = points.Count;
+        //int count = points.Count();
+        int valueType = -1; // 0 - Vector2, 1 - float, 2 - double
+        object firstValue = null;
+        object secondValue = null;
+        object v1 = null;
+        object v2 = null;
+        object v3 = null;
+        object v4 = null;
+        int i = 0;
 
-        for (int j = 0; j < count + off - 1; j++)
+        foreach (object p in points)
         {
-            Vector2 p1 = points[j];
-            Vector2 p2 = points[j + 1 >= count ? j - count + 1 : j + 1];
+            if (valueType == -1)
+            {
+                firstValue = p;
+                if (p is Vector2) valueType = 0;
+                else if (p is float) valueType = 1;
+                else if (p is double) valueType = 2;
+            }
 
-            double p1tx, p1ty, p2tx, p2ty;
-            api.projection.CoordinatesToTile(p1.x, p1.y, zoom, out p1tx, out p1ty);
-            api.projection.CoordinatesToTile(p2.x, p2.y, zoom, out p2tx, out p2ty);
+            v4 = v3;
+            v3 = v2;
+            v2 = v1;
+            v1 = p;
 
-            if ((p1tx < bx1 && p2tx < bx1) || (p1tx > bx2 && p2tx > bx2)) continue;
-            if ((p1ty < by1 && p2ty < by1) || (p1ty > by2 && p2ty > by2)) continue;
+            if (i == 1) secondValue = p;
 
-            DrawLinePartToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, color, sx, sy, p1tx, p1ty, p2tx, p2ty, j, maxX, ref ppx1, w, invertY);
+            double p1tx = 0, p1ty = 0, p2tx = 0, p2ty = 0;
+            bool drawPart = false;
+
+            if (valueType == 0)
+            {
+                if (i > 0)
+                {
+                    Vector2 p1 = (Vector2)v2;
+                    Vector2 p2 = (Vector2)v1;
+
+                    api.projection.CoordinatesToTile(p1.x, p1.y, zoom, out p1tx, out p1ty);
+                    api.projection.CoordinatesToTile(p2.x, p2.y, zoom, out p2tx, out p2ty);
+                    drawPart = true;
+                }
+            }
+            else if (i > 2 && i % 2 == 1)
+            {
+                if (valueType == 1)
+                {
+                    api.projection.CoordinatesToTile((float)v4, (float)v3, zoom, out p1tx, out p1ty);
+                    api.projection.CoordinatesToTile((float)v2, (float)v1, zoom, out p2tx, out p2ty);
+                }
+                else if (valueType == 2)
+                {
+                    api.projection.CoordinatesToTile((double)v4, (double)v3, zoom, out p1tx, out p1ty);
+                    api.projection.CoordinatesToTile((double)v2, (double)v1, zoom, out p2tx, out p2ty);
+                }
+                drawPart = true;
+            }
+
+            if (drawPart)
+            {
+                if ((p1tx < bx1 && p2tx < bx1) || (p1tx > bx2 && p2tx > bx2))
+                {
+
+                }
+                else if ((p1ty < by1 && p2ty < by1) || (p1ty > by2 && p2ty > by2))
+                {
+
+                }
+                else DrawLinePartToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, color, sx, sy, p1tx, p1ty, p2tx, p2ty, i, maxX, ref ppx1, w, invertY);
+            }
+
+            i++;
+        }
+
+        if (closed && i > 0)
+        {
+            double p1tx = 0, p1ty = 0, p2tx = 0, p2ty = 0;
+
+            if (valueType == 0)
+            {
+                Vector2 p1 = (Vector2)firstValue;
+                Vector2 p2 = (Vector2)v1;
+
+                api.projection.CoordinatesToTile(p1.x, p1.y, zoom, out p1tx, out p1ty);
+                api.projection.CoordinatesToTile(p2.x, p2.y, zoom, out p2tx, out p2ty);
+            }
+            else if (valueType == 1)
+            {
+                api.projection.CoordinatesToTile((float)firstValue, (float)secondValue, zoom, out p1tx, out p1ty);
+                api.projection.CoordinatesToTile((float)v2, (float)v1, zoom, out p2tx, out p2ty);
+            }
+            else if (valueType == 2)
+            {
+                api.projection.CoordinatesToTile((double)firstValue, (double)secondValue, zoom, out p1tx, out p1ty);
+                api.projection.CoordinatesToTile((double)v2, (double)v1, zoom, out p2tx, out p2ty);
+            }
+
+            if ((p1tx < bx1 && p2tx < bx1) || (p1tx > bx2 && p2tx > bx2))
+            {
+                    
+            }
+            else if ((p1ty < by1 && p2ty < by1) || (p1ty > by2 && p2ty > by2))
+            {
+                    
+            }
+            else DrawLinePartToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, color, sx, sy, p1tx, p1ty, p2tx, p2ty, i, maxX, ref ppx1, w, invertY);
         }
     }
 
@@ -481,33 +567,83 @@ public class OnlineMapsDrawingElement
         
     }
 
-    protected void FillPoly(Color32[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom, List<Vector2> points, Color32 color, bool invertY)
+    protected void FillPoly(Color32[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom, IEnumerable points, Color32 color, bool invertY)
     {
         float alpha = color.a / 255f;
         if (color.a == 0) return;
 
-        double[] bufferPoints = new double[points.Count * 2];
+        int countPoints = points.Cast<object>().Count();
+
+        double[] bufferPoints = null;
 
         double minX = double.MaxValue;
         double maxX = double.MinValue;
         double minY = double.MaxValue;
         double maxY = double.MinValue;
 
-        for (int i = 0; i < points.Count; i++)
+        int valueType = -1; // 0 - Vector2, 1 - float, 2 - double
+        object v1 = null, v2 = null;
+
+        int i = 0;
+
+        foreach (object p in points)
         {
-            Vector2 point = points[i];
-            double tx, ty;
-            api.projection.CoordinatesToTile(point.x, point.y, zoom, out tx, out ty);
-            tx = (tx - bufferPosition.x) * OnlineMapsUtils.tileSize;
-            ty = (ty - bufferPosition.y) * OnlineMapsUtils.tileSize;
+            if (valueType == -1)
+            {
+                if (p is Vector2)
+                {
+                    valueType = 0;
+                    bufferPoints = new double[countPoints * 2];
+                }
+                else if (p is float)
+                {
+                    valueType = 1;
+                    bufferPoints = new double[countPoints];
+                }
+                else if (p is double)
+                {
+                    valueType = 2;
+                    bufferPoints = new double[countPoints];
+                }
+            }
 
-            if (tx < minX) minX = tx;
-            if (tx > maxX) maxX = tx;
-            if (ty < minY) minY = ty;
-            if (ty > maxY) maxY = ty;
+            v2 = v1;
+            v1 = p;
 
-            bufferPoints[i * 2] = tx;
-            bufferPoints[i * 2 + 1] = ty;
+            if (valueType == 0)
+            {
+                Vector2 point = (Vector2)p;
+                double tx, ty;
+                api.projection.CoordinatesToTile(point.x, point.y, zoom, out tx, out ty);
+                tx = (tx - bufferPosition.x) * OnlineMapsUtils.tileSize;
+                ty = (ty - bufferPosition.y) * OnlineMapsUtils.tileSize;
+
+                if (tx < minX) minX = tx;
+                if (tx > maxX) maxX = tx;
+                if (ty < minY) minY = ty;
+                if (ty > maxY) maxY = ty;
+
+                bufferPoints[i * 2] = tx;
+                bufferPoints[i * 2 + 1] = ty;
+            }
+            else if (i % 2 == 1)
+            {
+                double tx = 0, ty = 0;
+                if (valueType == 1) api.projection.CoordinatesToTile((float)v2, (float)v1, zoom, out tx, out ty);
+                else if (valueType == 2) api.projection.CoordinatesToTile((double)v2, (double)v1, zoom, out tx, out ty);
+                tx = (tx - bufferPosition.x) * OnlineMapsUtils.tileSize;
+                ty = (ty - bufferPosition.y) * OnlineMapsUtils.tileSize;
+
+                if (tx < minX) minX = tx;
+                if (tx > maxX) maxX = tx;
+                if (ty < minY) minY = ty;
+                if (ty > maxY) maxY = ty;
+
+                bufferPoints[i - 1] = tx;
+                bufferPoints[i] = ty;
+            }
+
+            i++;
         }
 
         if (maxX < 0 || minX > bufferWidth || maxY < 0 || minY > bufferHeight) return;
@@ -619,7 +755,7 @@ public class OnlineMapsDrawingElement
         }
     }
 
-    protected List<Vector2> GetLocalPoints(List<Vector2> points, bool closed = false, bool optimize = true)
+    protected List<Vector2> GetLocalPoints(IEnumerable points, bool closed = false, bool optimize = true)
     {
         double sx, sy;
         int apiZoom = api.buffer.apiZoom;
@@ -628,11 +764,11 @@ public class OnlineMapsDrawingElement
 
         int maxX = 1 << api.zoom;
 
-        int off = closed ? 1 : 0;
-        int pointsCount = points.Count;
-        int maxI = pointsCount + off;
+        //int off = closed ? 1 : 0;
+        //int pointsCount = points.Count;
+        //int maxI = pointsCount + off;
 
-        List<Vector2> localPoints = new List<Vector2>(Mathf.Min(maxI, 1024));
+        List<Vector2> localPoints = new List<Vector2>(1024);
 
         double ppx = 0;
         double scaleX = OnlineMapsUtils.tileSize * api.tilesetSize.x / api.tilesetWidth;
@@ -640,7 +776,113 @@ public class OnlineMapsDrawingElement
 
         double prx = 0, pry = 0;
 
-        for (int i = 0; i < maxI; i++)
+        object v1 = null, v2 = null;
+        int i = 0;
+        int valueType = -1; // 0 - Vector2, 1 - float, 2 - double
+        bool isOptimized = false;
+        double px = 0, py = 0;
+
+        foreach (object p in points)
+        {
+            if (valueType == -1)
+            {
+                if (p is Vector2) valueType = 0;
+                else if (p is float) valueType = 1;
+                else if (p is double) valueType = 2;
+            }
+
+            v2 = v1;
+            v1 = p;
+
+            bool useValue = false;
+
+            if (valueType == 0)
+            {
+                Vector2 point = (Vector2)p;
+                projection.CoordinatesToTile(point.x, point.y, apiZoom, out px, out py);
+                useValue = true;
+            }
+            else if (i % 2 == 1)
+            {
+                if (valueType == 1) projection.CoordinatesToTile((float)v2, (float)v1, apiZoom, out px, out py);
+                else if (valueType == 2) projection.CoordinatesToTile((double)v2, (double)v1, apiZoom, out px, out py);
+                useValue = true;
+            }
+
+            i++;
+
+            if (!useValue) continue;
+
+            isOptimized = false;
+
+            if (optimize && i > 0)
+            {
+                if ((prx - px) * (prx - px) + (pry - py) * (pry - py) < 0.001)
+                {
+                    isOptimized = true;
+                    continue;
+                }
+            }
+
+            prx = px;
+            pry = py;
+
+            px -= sx;
+            py -= sy;
+
+            if (i == 0)
+            {
+                if (px < maxX * -0.25) px += maxX;
+                else if (px > maxX * 0.75) px -= maxX;
+            }
+            else
+            {
+                double gpx = px + maxX;
+                double lpx = px - maxX;
+
+                if (Math.Abs(ppx - gpx) < Math.Abs(ppx - px)) px = gpx;
+                else if (Math.Abs(ppx - lpx) < Math.Abs(ppx - px)) px = lpx;
+            }
+
+            ppx = px;
+
+            double rx1 = px * scaleX;
+            double ry1 = py * scaleY;
+
+            Vector2 np = new Vector2((float)rx1, (float)ry1);
+            localPoints.Add(np);
+        }
+
+        if (isOptimized)
+        {
+            px -= sx;
+            py -= sy;
+
+            if (i == 0)
+            {
+                if (px < maxX * -0.25) px += maxX;
+                else if (px > maxX * 0.75) px -= maxX;
+            }
+            else
+            {
+                double gpx = px + maxX;
+                double lpx = px - maxX;
+
+                if (Math.Abs(ppx - gpx) < Math.Abs(ppx - px)) px = gpx;
+                else if (Math.Abs(ppx - lpx) < Math.Abs(ppx - px)) px = lpx;
+            }
+
+            double rx1 = px * scaleX;
+            double ry1 = py * scaleY;
+
+            Vector2 np = new Vector2((float)rx1, (float)ry1);
+            localPoints.Add(np);
+
+        }
+
+        if (closed) localPoints.Add(localPoints[0]);
+
+        /*for (int i = 0; i < maxI; i++)
         {
             int ci = i;
             if (ci >= pointsCount) ci -= pointsCount;
@@ -682,7 +924,7 @@ public class OnlineMapsDrawingElement
             Vector2 np = new Vector2((float)rx1, (float)ry1);
             localPoints.Add(np);
             if (localPoints.Count == localPoints.Capacity) localPoints.Capacity += 1024;
-        }
+        }*/
         return localPoints;
     }
 
@@ -703,11 +945,9 @@ public class OnlineMapsDrawingElement
         return false;
     }
 
-    protected void InitLineMesh(List<Vector2> points, OnlineMapsTileSetControl control, out List<Vector3> verticles, out List<Vector3> normals, out List<int> triangles, out List<Vector2> uv, float weight, bool closed = false)
+    protected void InitLineMesh(IEnumerable points, OnlineMapsTileSetControl control, out List<Vector3> verticles, out List<Vector3> normals, out List<int> triangles, out List<Vector2> uv, float weight, bool closed = false)
     {
-        api.GetTopLeftPosition(out tlx, out tly);
-        api.GetBottomRightPosition(out brx, out bry);
-
+        api.GetCorners(out tlx, out tly, out brx, out bry);
         if (brx < tlx) brx += 360;
 
         List<Vector2> localPoints = GetLocalPoints(points, closed);
@@ -845,5 +1085,10 @@ public class OnlineMapsDrawingElement
     protected void UpdateMaterialsQuote(OnlineMapsTileSetControl control, int index)
     {
         foreach (Material material in materials) material.renderQueue = control.drawingShader.renderQueue + index;
+    }
+
+    public virtual bool Validate()
+    {
+        return true;
     }
 }

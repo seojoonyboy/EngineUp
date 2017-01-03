@@ -1,8 +1,6 @@
 ﻿/*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
-#if !UNITY_4_3 && !UNITY_4_5
-
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,7 +18,8 @@ namespace InfinityCode.OnlineMapsExamples
         private GameObject container;
         private bool needUpdateMarkers;
         private Canvas canvas;
-        private OnlineMaps api;
+        private OnlineMaps map;
+        private OnlineMapsControlBase control;
 
         public static uGUICustomMarkerEngineExample instance
         {
@@ -47,9 +46,12 @@ namespace InfinityCode.OnlineMapsExamples
             (markerGameObject.transform as RectTransform).SetParent(_instance.markerContainer);
             markerGameObject.transform.localScale = Vector3.one;
             uGUICustomMarkerExample marker = markerGameObject.GetComponent<uGUICustomMarkerExample>();
+            if (marker == null) marker = markerGameObject.AddComponent<uGUICustomMarkerExample>();
+
             marker.text = text;
             marker.lng = lng;
             marker.lat = lat;
+
             markers.Add(marker);
             _instance.UpdateMarker(marker);
             return marker;
@@ -58,7 +60,6 @@ namespace InfinityCode.OnlineMapsExamples
         private void OnEnable()
         {
             _instance = this;
-            api = OnlineMaps.instance;
             markers = new List<uGUICustomMarkerExample>();
             canvas = markerContainer.GetComponentInParent<Canvas>();
         }
@@ -92,36 +93,13 @@ namespace InfinityCode.OnlineMapsExamples
 
         private void Start () 
         {
-            OnlineMaps.instance.OnMapUpdated += UpdateMarkers;
+            map = OnlineMaps.instance;
+            control = OnlineMapsControlBase.instance;
 
-            if (OnlineMapsControlBase.instance is OnlineMapsControlBase3D) OnlineMapsControlBase3D.instance.OnCameraControl += UpdateMarkers;
+            map.OnMapUpdated += UpdateMarkers;
+            if (control is OnlineMapsControlBase3D) OnlineMapsControlBase3D.instance.OnCameraControl += UpdateMarkers;
 
-            AddMarker(new Vector2(), "12");
-        }
-
-        public void GetPosition(double lng, double lat, double tlx, double tly, out double px, out double py)
-        {
-            double dx, dy, dtx, dty;
-            api.projection.CoordinatesToTile(lng, lat, api.buffer.apiZoom, out dx, out dy);
-            api.projection.CoordinatesToTile(tlx, tly, api.buffer.apiZoom, out dtx, out dty);
-            dx -= dtx;
-            dy -= dty;
-            int maxX = 1 << api.zoom;
-            if (dx < maxX / -2) dx += maxX;
-            px = dx * OnlineMapsUtils.tileSize;
-            py = dy * OnlineMapsUtils.tileSize;
-        }
-
-        public Vector2 GetScreenPosition(double lng, double lat, double tlx, double tly)
-        {
-            double mx, my;
-            GetPosition(lng, lat, tlx, tly, out mx, out my);
-            mx /= api.width;
-            my /= api.height;
-            Rect mapRect = OnlineMapsControlBase.instance.GetRect();
-            mx = mapRect.x + mapRect.width * mx;
-            my = mapRect.y + mapRect.height - mapRect.height * my;
-            return new Vector2((float)mx, (float)my);
+            AddMarker(map.position, "Example Marker");
         }
 
         private void UpdateMarkers()
@@ -133,24 +111,29 @@ namespace InfinityCode.OnlineMapsExamples
         {
             double tlx, tly, brx, bry;
 
-            int countX = api.width / OnlineMapsUtils.tileSize;
-            int countY = api.height / OnlineMapsUtils.tileSize;
+            int countX = map.width / OnlineMapsUtils.tileSize;
+            int countY = map.height / OnlineMapsUtils.tileSize;
 
             double px, py;
-            api.projection.CoordinatesToTile(api.buffer.apiPosition.x, api.buffer.apiPosition.y, api.buffer.apiZoom, out px, out py);
+            map.projection.CoordinatesToTile(map.buffer.apiPosition.x, map.buffer.apiPosition.y, map.buffer.apiZoom, out px, out py);
 
             px -= countX / 2f;
             py -= countY / 2f;
 
-            api.projection.TileToCoordinates(px, py, api.buffer.apiZoom, out tlx, out tly);
+            map.projection.TileToCoordinates(px, py, map.buffer.apiZoom, out tlx, out tly);
 
             px += countX;
             py += countY;
 
-            api.projection.TileToCoordinates(px, py, api.buffer.apiZoom, out brx, out bry);
+            map.projection.TileToCoordinates(px, py, map.buffer.apiZoom, out brx, out bry);
 
-            px = marker.lng;
-            py = marker.lat;
+            UpdateMarker(marker, tlx, tly, brx, bry);
+        }
+
+        private void UpdateMarker(uGUICustomMarkerExample marker, double tlx, double tly, double brx, double bry)
+        {
+            double px = marker.lng;
+            double py = marker.lat;
 
             if (px < tlx || px > brx || py < bry || py > tly)
             {
@@ -158,8 +141,7 @@ namespace InfinityCode.OnlineMapsExamples
                 return;
             }
 
-            Vector2 screenPosition = GetScreenPosition(px, py, tlx, tly);
-
+            Vector2 screenPosition = control.GetScreenPosition(px, py);
             RectTransform markerRectTransform = marker.transform as RectTransform;
 
             if (!marker.gameObject.activeSelf) marker.gameObject.SetActive(true);
@@ -172,5 +154,3 @@ namespace InfinityCode.OnlineMapsExamples
         }
     }
 }
-
-#endif

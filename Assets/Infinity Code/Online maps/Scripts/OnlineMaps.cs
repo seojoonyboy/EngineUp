@@ -1,7 +1,7 @@
 /*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+#if UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
 #define UNITY_5_2L
 #else 
 #define UNITY_5_3P
@@ -26,13 +26,18 @@ using UnityEditor;
 /// </summary>
 [AddComponentMenu("Infinity Code/Online Maps/Online Maps")]
 [Serializable]
-public class OnlineMaps : MonoBehaviour
+public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
 {
 #region Variables
     /// <summary>
     /// The current version of Online Maps
     /// </summary>
-    public const string version = "2.4.0.62";
+    public const string version = "2.5.1.4";
+
+    /// <summary>
+    /// The maximum zoom level.
+    /// </summary>
+    public const int MAXZOOM = 20;
 
     /// <summary>
     /// The maximum number simultaneously downloading tiles.
@@ -66,12 +71,33 @@ public class OnlineMaps : MonoBehaviour
     /// The event which is caused by garbage collection.\n
     /// This allows you to manage the work of the garbage collector.
     /// </summary>
+    [Obsolete]
     public Action OnGCCollect;
+
+    /// <summary>
+    /// The event is invoked at the end LateUpdate.
+    /// </summary>
+    public Action OnLateUpdateAfter;
+
+    /// <summary>
+    /// The event is called at the start LateUpdate.
+    /// </summary>
+    public Action OnLateUpdateBefore;
 
     /// <summary>
     /// Event which is called after the redrawing of the map.
     /// </summary>
     public Action OnMapUpdated;
+
+    /// <summary>
+    /// The event occurs after the addition of the marker.
+    /// </summary>
+    public Action<OnlineMapsMarker> OnMarkerAdded;
+
+    /// <summary>
+    /// The event occurs after generating buffer and before update control to preload tiles for tileset.
+    /// </summary>
+    public Action OnPreloadTiles;
 
     /// <summary>
     /// Event caused when preparing tooltip style.
@@ -96,6 +122,11 @@ public class OnlineMaps : MonoBehaviour
     /// Return TRUE to prevent using built-in manager.
     /// </summary>
     public Predicate<int> OnRemoveMarkerAt;
+
+    /// <summary>
+    /// Invoked before saving settings.
+    /// </summary>
+    public Action OnSaveSettings;
 
     /// <summary>
     /// Event is called before Update.
@@ -137,6 +168,16 @@ public class OnlineMaps : MonoBehaviour
     /// {quad} - uniquely identifies a single tile at a particular level of detail.
     /// </summary>
     public string customProviderURL = "http://localhost/{zoom}/{y}/{x}";
+
+    /// <summary>
+    /// URL of custom traffic provider.\n
+    /// Support tokens:\n
+    /// {x} - tile x\n
+    /// {y} - tile y\n
+    /// {zoom} - zoom level\n
+    /// {quad} - uniquely identifies a single tile at a particular level of detail.
+    /// </summary>
+    public string customTrafficProviderURL = "http://localhost/{zoom}/{y}/{x}";
 
     /// <summary>
     /// Alignment marker default.
@@ -197,11 +238,6 @@ public class OnlineMaps : MonoBehaviour
     /// Use AddMarker, RemoveMarker and RemoveAllMarkers.
     /// </summary>
     public OnlineMapsMarker[] markers;
-
-    /// <summary>
-    /// Specifies that need to collect the garbage.
-    /// </summary>
-    public bool needGC;
 
     /// <summary>
     /// A flag that indicates that need to redraw the map.
@@ -316,6 +352,14 @@ public class OnlineMaps : MonoBehaviour
     /// </summary>
     public bool traffic = false;
 
+    [NonSerialized]
+    public OnlineMapsTrafficProvider trafficProvider;
+
+    /// <summary>
+    /// ID of current traffic provider.
+    /// </summary>
+    public string trafficProviderID = "googlemaps";
+
     /// <summary>
     /// Map type.
     /// </summary>
@@ -375,18 +419,14 @@ public class OnlineMaps : MonoBehaviour
     private OnlineMapsProvider.MapType _activeType;
 
     private OnlineMapsBuffer _buffer;
-    private List<OnlineMapsGoogleAPIQuery> _googleQueries;
     private bool _labels;
     private string _language;
     private string _mapType;
     private bool _traffic;
     
     private Texture2D activeTexture;
-    private Action<bool> checkConnectioCallback;
-    private OnlineMapsWWW checkConnectionWWW;
     private Color[] defaultColors;
     private OnlineMapsTile downloads;
-    private long lastGC;
     private OnlineMapsRedrawType redrawType = OnlineMapsRedrawType.none;
     private OnlineMapsMarker rolledMarker;
     private GUIStyle tooltipStyle;
@@ -402,7 +442,13 @@ public class OnlineMaps : MonoBehaviour
     private double topLeftLatitude;
     private double topLeftLongitude;
 
-#endregion
+    [SerializeField]
+    private string _activeTypeSettings;
+
+    private string _trafficProviderID;
+    private OnlineMapsProjection _projection;
+
+    #endregion
 
 #region Properties
 
@@ -421,7 +467,12 @@ public class OnlineMaps : MonoBehaviour
     {
         get
         {
-            if (_activeType == null || _activeType.fullID != mapType) _activeType = OnlineMapsProvider.FindMapType(mapType);
+            if (_activeType == null || _activeType.fullID != mapType)
+            {
+                _activeType = OnlineMapsProvider.FindMapType(mapType);
+                _projection = _activeType.provider.projection;
+                mapType = _activeType.fullID;
+            }
             return _activeType;
         }
         set
@@ -429,7 +480,8 @@ public class OnlineMaps : MonoBehaviour
             if (_activeType == value) return;
 
             _activeType = value;
-            mapType = value.fullID;
+            _projection = _activeType.provider.projection;
+            _mapType = mapType = value.fullID;
 
             if (Application.isPlaying) RedrawImmediately();
         }
@@ -470,15 +522,6 @@ public class OnlineMaps : MonoBehaviour
         get { return buffer.status; }
     }
 
-    private List<OnlineMapsGoogleAPIQuery> googleQueries
-    {
-        get
-        {
-            if (_googleQueries == null) _googleQueries = new List<OnlineMapsGoogleAPIQuery>();
-            return _googleQueries;
-        }
-    }
-
     /// <summary>
     /// Coordinates of the center point of the map.
     /// </summary>
@@ -498,7 +541,8 @@ public class OnlineMaps : MonoBehaviour
     {
         get
         {
-            return activeType.provider.projection;
+            if (_projection == null) _projection = activeType.provider.projection;
+            return _projection;
         }
     }
 
@@ -526,7 +570,7 @@ public class OnlineMaps : MonoBehaviour
         get { return _zoom; }
         set
         {
-            int z = Mathf.Clamp(value, 3, 20);
+            int z = Mathf.Clamp(value, 3, MAXZOOM);
             if (zoomRange != null) z = zoomRange.CheckAndFix(z);
             z = CheckMapSize(z);
             if (_zoom == z) return;
@@ -553,17 +597,13 @@ public class OnlineMaps : MonoBehaviour
     /// </param>
     public void AddDrawingElement(OnlineMapsDrawingElement element)
     {
-        drawingElements.Add(element);
-        needRedraw = true;
-    }
-
-    /// <summary>
-    /// Adds a new request to the Google API in the processing queue.
-    /// </summary>
-    /// <param name="query">Queue</param>
-    public void AddGoogleAPIQuery(OnlineMapsGoogleAPIQuery query)
-    {
-        googleQueries.Add(query);
+        if (element.Validate())
+        {
+            drawingElements.Add(element);
+            needRedraw = allowRedraw = true;
+            redrawType = OnlineMapsRedrawType.full;
+            buffer.updateBackBuffer = true;
+        }
     }
 
     /// <summary>
@@ -580,7 +620,9 @@ public class OnlineMaps : MonoBehaviour
         marker.Init();
         needRedraw = allowRedraw = true;
         Array.Resize(ref markers, markers.Length + 1);
-        return markers[markers.Length - 1] = marker;
+        markers[markers.Length - 1] = marker;
+        if (OnMarkerAdded != null) OnMarkerAdded(marker);
+        return marker;
     }
 
     /// <summary>
@@ -662,6 +704,11 @@ public class OnlineMaps : MonoBehaviour
         Array.Resize(ref markers, markers.Length + 1);
         markers[markers.Length - 1] = marker;
         needRedraw = allowRedraw = true;
+        redrawType = OnlineMapsRedrawType.full;
+        buffer.updateBackBuffer = true;
+
+        if (OnMarkerAdded != null) OnMarkerAdded(marker);
+
         return marker;
     }
 
@@ -686,6 +733,8 @@ public class OnlineMaps : MonoBehaviour
         }
 
         needRedraw = allowRedraw = true;
+        redrawType = OnlineMapsRedrawType.full;
+        buffer.updateBackBuffer = true;
     }
 
     public void Awake()
@@ -735,8 +784,9 @@ public class OnlineMaps : MonoBehaviour
         {
             _labels = labels;
             _language = language;
-            _mapType = mapType;
+
             activeType = OnlineMapsProvider.FindMapType(mapType);
+            _mapType = mapType = activeType.fullID;
 
             if (_buffer != null)
             {
@@ -749,14 +799,16 @@ public class OnlineMaps : MonoBehaviour
                 renderThread = null;
 #endif
             }
-
-            GCCollect();
             
             Redraw();
         }
-        if (traffic != _traffic)
+        if (traffic != _traffic || trafficProviderID != _trafficProviderID)
         {
             _traffic = traffic;
+
+            _trafficProviderID = trafficProviderID;
+            trafficProvider = OnlineMapsTrafficProvider.GetByID(trafficProviderID);
+
             OnlineMapsTile[] tiles;
             lock (OnlineMapsTile.tiles)
             {
@@ -766,9 +818,14 @@ public class OnlineMaps : MonoBehaviour
             {
                 foreach (OnlineMapsTile tile in tiles)
                 {
-                    if (!string.IsNullOrEmpty(tile.trafficURL))
+                    tile.trafficProvider = trafficProvider;
+                    tile.trafficWWW = OnlineMapsUtils.GetWWW(tile.trafficURL);
+                    tile.trafficWWW.customData = tile;
+                    tile.trafficWWW.OnComplete += OnTrafficWWWComplete;
+                    if (tile.trafficTexture != null)
                     {
-                        tile.trafficWWW = OnlineMapsUtils.GetWWW(tile.trafficURL);
+                        OnlineMapsUtils.DestroyImmediate(tile.trafficTexture);
+                        tile.trafficTexture = null;
                     }
                 }
             }
@@ -776,10 +833,15 @@ public class OnlineMaps : MonoBehaviour
             {
                 foreach (OnlineMapsTile tile in tiles)
                 {
-                    tile.trafficTexture = null;
+                    if (tile.trafficTexture != null)
+                    {
+                        OnlineMapsUtils.DestroyImmediate(tile.trafficTexture);
+                        tile.trafficTexture = null;
+                    }
                     tile.trafficWWW = null;
                 }
             }
+            Redraw();
         }
     }
 
@@ -809,143 +871,24 @@ public class OnlineMaps : MonoBehaviour
                 }
             }
 
-            if (control is OnlineMapsControlBase3D) ((OnlineMapsControlBase3D) control).UpdateControl();
+            if (OnPreloadTiles != null) OnPreloadTiles();
+            if (control is OnlineMapsControlBase3D) (control as OnlineMapsControlBase3D).UpdateControl();
 
             if (OnMapUpdated != null) OnMapUpdated();
         }
+
         buffer.status = OnlineMapsBufferStatus.wait;
-    }
-
-    private void CheckDownloadComplete()
-    {
-        if (checkConnectionWWW != null)
-        {
-            if (checkConnectionWWW.isDone)
-            {
-                checkConnectioCallback(string.IsNullOrEmpty(checkConnectionWWW.error));
-                checkConnectionWWW = null;
-                checkConnectioCallback = null;
-            }
-        }
-
-        if (OnlineMapsTile.tiles.Count == 0) return;
-
-        long startTicks = DateTime.Now.Ticks;
-
-        OnlineMapsTile[] tiles;
-
-        lock (OnlineMapsTile.tiles)
-        {
-            tiles = OnlineMapsTile.tiles.ToArray();
-        }
-        foreach (OnlineMapsTile tile in tiles)
-        {
-            if (DateTime.Now.Ticks - startTicks > 20000) break;
-
-            if (tile.status == OnlineMapsTileStatus.loading && tile.www == null) tile.status = OnlineMapsTileStatus.none;
-
-            if (tile.status == OnlineMapsTileStatus.loading && tile.www != null && tile.www.isDone)
-            {
-                if (string.IsNullOrEmpty(tile.www.error))
-                {
-                    if (target == OnlineMapsTarget.texture)
-                    {
-                        tile.OnDownloadComplete();
-                        if (tile.status != OnlineMapsTileStatus.error) buffer.ApplyTile(tile);
-                    }
-                    else
-                    {
-                        Texture2D tileTexture = new Texture2D(256, 256, TextureFormat.RGB24, false)
-                        {
-                            wrapMode = TextureWrapMode.Clamp
-                        };
-
-                        if (useSoftwareJPEGDecoder) OnlineMapsTile.LoadTexture(tileTexture, tile.www.bytes);
-                        else tile.www.LoadImageIntoTexture(tileTexture);
-
-                        tile.CheckTextureSize(tileTexture);
-
-                        if (tile.status != OnlineMapsTileStatus.error && tile.status != OnlineMapsTileStatus.disposed)
-                        {
-                            tile.texture = tileTexture;
-                            tile.status = OnlineMapsTileStatus.loaded;
-                        }
-                    }
-
-                    if (tile.status != OnlineMapsTileStatus.error && tile.status != OnlineMapsTileStatus.disposed)
-                    {
-                        if (OnlineMapsTile.OnTileDownloaded != null) OnlineMapsTile.OnTileDownloaded(tile);
-                    }
-
-                    CheckRedrawType();
-                }
-                else tile.OnDownloadError();
-
-                tile.www = null;
-            }
-
-            if (tile.status == OnlineMapsTileStatus.loaded && tile.trafficWWW != null && tile.trafficWWW.isDone)
-            {
-                if (string.IsNullOrEmpty(tile.trafficWWW.error))
-                {
-                    if (target == OnlineMapsTarget.texture)
-                    {
-                        if (tile.OnLabelDownloadComplete()) buffer.ApplyTile(tile);
-                    }
-                    else
-                    {
-                        Texture2D trafficTexture = new Texture2D(256, 256, TextureFormat.RGB24, false)
-                        {
-                            wrapMode = TextureWrapMode.Clamp
-                        };
-                        if (useSoftwareJPEGDecoder) OnlineMapsTile.LoadTexture(trafficTexture, tile.trafficWWW.bytes);
-                        else tile.trafficWWW.LoadImageIntoTexture(trafficTexture);
-                        tile.trafficTexture = trafficTexture;
-                    }
-
-                    if (OnlineMapsTile.OnTrafficDownloaded != null) OnlineMapsTile.OnTrafficDownloaded(tile);
-
-                    CheckRedrawType();
-                }
-
-                tile.trafficWWW = null;
-            }
-        }
-
-        StartDownloading();
-    }
-
-    private void CheckGoogleAPIQuery()
-    {
-        if (googleQueries != null)
-        {
-            bool reqDelete = false;
-            List<OnlineMapsGoogleAPIQuery> queries = googleQueries.Select(q => q).ToList();
-            foreach (OnlineMapsGoogleAPIQuery item in queries)
-            {
-                item.CheckComplete();
-                if (item.status != OnlineMapsQueryStatus.downloading)
-                {
-                    item.Destroy();
-                    reqDelete = true;
-                }
-            }
-            if (reqDelete)
-            {
-                googleQueries.RemoveAll(f => f.status == OnlineMapsQueryStatus.disposed);
-            }
-        }
     }
 
     private int CheckMapSize(int z)
     {
         try
         {
-            int maxX = (2 << z) / 2 * OnlineMapsUtils.tileSize;
-            int maxY = (2 << z) / 2 * OnlineMapsUtils.tileSize;
-            int w = (target == OnlineMapsTarget.texture) ? texture.width : tilesetWidth;
-            int h = (target == OnlineMapsTarget.texture) ? texture.height : tilesetHeight;
-            if (maxX <= w || maxY <= h) return CheckMapSize(z + 1);
+            int maxX = (1 << z) * OnlineMapsUtils.tileSize;
+            int maxY = (1 << z) * OnlineMapsUtils.tileSize;
+            int w = target == OnlineMapsTarget.texture ? texture.width : tilesetWidth;
+            int h = target == OnlineMapsTarget.texture ? texture.height : tilesetHeight;
+            if (maxX < w || maxY < h) return CheckMapSize(z + 1);
         }
         catch{}
         
@@ -987,8 +930,11 @@ public class OnlineMaps : MonoBehaviour
         string url = tempTile.url;
         tempTile.Dispose();
 
-        checkConnectioCallback = callback;
-        checkConnectionWWW = OnlineMapsUtils.GetWWW(url);
+        OnlineMapsWWW checkConnectionWWW = OnlineMapsUtils.GetWWW(url);
+        checkConnectionWWW.OnComplete += www =>
+        {
+            callback(string.IsNullOrEmpty(www.error));
+        };
     }
 
     /// <summary>
@@ -1004,30 +950,6 @@ public class OnlineMaps : MonoBehaviour
             if (ev == OnlineMapsEvents.changedPosition && OnChangePosition != null) OnChangePosition();
             else if (ev == OnlineMapsEvents.changedZoom && OnChangeZoom != null) OnChangeZoom();
         }
-    }
-
-    /// <summary>
-    /// Unloads unused assets and initializes the garbage collection.
-    /// </summary>
-    public void GCCollect()
-    {
-        try
-        {
-            lastGC = DateTime.Now.Ticks;
-            needGC = false;
-            if (OnGCCollect != null) OnGCCollect();
-#if UNITY_5_2L
-            else
-            {
-                Resources.UnloadUnusedAssets();
-                GC.Collect();
-            }
-#endif
-        }
-        catch
-        {
-        }
-        
     }
 
     /// <summary>
@@ -1060,6 +982,17 @@ public class OnlineMaps : MonoBehaviour
         if (bottomRightLatitude == 0 && bottomRightLongitude == 0) UpdateBottonRightPosition();
         lng = bottomRightLongitude;
         lat = bottomRightLatitude;
+    }
+
+    public void GetCorners(out double tlx, out double tly, out double brx, out double bry)
+    {
+        if (bottomRightLatitude == 0 && bottomRightLongitude == 0) UpdateBottonRightPosition();
+        if (topLeftLatitude == 0 && topLeftLongitude == 0) UpdateTopLeftPosition();
+
+        brx = bottomRightLongitude;
+        bry = bottomRightLatitude;
+        tlx = topLeftLongitude;
+        tly = topLeftLatitude;
     }
 
     /// <summary>
@@ -1122,6 +1055,32 @@ public class OnlineMaps : MonoBehaviour
     }
 
     /// <summary>
+    /// Get the tile coordinates of the corners of the map
+    /// </summary>
+    /// <param name="tlx">Left tile X</param>
+    /// <param name="tly">Top tile Y</param>
+    /// <param name="brx">Right tile X</param>
+    /// <param name="bry">Bottom tile Y</param>
+    public void GetTileCorners(out double tlx, out double tly, out double brx, out double bry)
+    {
+        if (bottomRightLatitude == 0 && bottomRightLongitude == 0) UpdateBottonRightPosition();
+        if (topLeftLatitude == 0 && topLeftLongitude == 0) UpdateTopLeftPosition();
+
+        projection.CoordinatesToTile(topLeftLongitude, topLeftLatitude, _zoom, out tlx, out tly);
+        projection.CoordinatesToTile(bottomRightLongitude, bottomRightLatitude, _zoom, out brx, out bry);
+    }
+
+    /// <summary>
+    /// Get the tile coordinates of the map
+    /// </summary>
+    /// <param name="px">Tile X</param>
+    /// <param name="py">Tile Y</param>
+    public void GetTilePosition(out double px, out double py)
+    {
+        projection.CoordinatesToTile(longitude, latitude, _zoom, out px, out py);
+    }
+
+    /// <summary>
     /// Get the top-left corner of the map.
     /// </summary>
     /// <param name="lng">Longitude</param>
@@ -1135,11 +1094,31 @@ public class OnlineMaps : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (control == null || lockRedraw) return;
-        CheckBufferComplete();
-        StartBuffer();
+        if (OnLateUpdateBefore != null) OnLateUpdateBefore();
 
-        if (needGC || DateTime.Now.Ticks - lastGC > OnlineMapsUtils.second * 5) GCCollect();
+        if (control == null || lockRedraw) return;
+        StartBuffer();
+        CheckBufferComplete();
+
+        if (OnLateUpdateAfter != null) OnLateUpdateAfter();
+    }
+
+    public void OnAfterDeserialize()
+    {
+        try
+        {
+            activeType.LoadSettings(_activeTypeSettings);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogWarning(exception.Message + "\n" + exception.StackTrace);
+            //throw;
+        }
+    }
+
+    public void OnBeforeSerialize()
+    {
+        _activeTypeSettings = activeType.GetSettings();
     }
 
     private void OnDestroy()
@@ -1166,8 +1145,6 @@ public class OnlineMaps : MonoBehaviour
 
         drawingElements = null;
         markers = null;
-
-        GCCollect();
     }
 
     private void OnDisable ()
@@ -1189,7 +1166,6 @@ public class OnlineMaps : MonoBehaviour
 
         OnChangePosition = null;
         OnChangeZoom = null;
-        OnGCCollect = null;
         OnMapUpdated = null;
         OnMapUpdated = null;
         OnUpdateBefore = null;
@@ -1216,14 +1192,17 @@ public class OnlineMaps : MonoBehaviour
         if (string.IsNullOrEmpty(mapType)) mapType = OnlineMapsProvider.Upgrade((int) provider, type);
 #pragma warning restore 612, 618
 
-        _mapType = mapType;
         activeType = OnlineMapsProvider.FindMapType(mapType);
+        _mapType = mapType = activeType.fullID;
+
+        trafficProvider = OnlineMapsTrafficProvider.GetByID(trafficProviderID);
 
         if (language == "") language = activeType.provider.twoLetterLanguage ? "en" : "eng";
 
         _language = language;
         _labels = labels;
         _traffic = traffic;
+        _trafficProviderID = trafficProviderID;
 
         UpdateTopLeftPosition();
         UpdateBottonRightPosition();
@@ -1356,7 +1335,102 @@ public class OnlineMaps : MonoBehaviour
     {
         GUIContent tip = new GUIContent(text);
         Vector2 size = style.CalcSize(tip);
-        GUI.Label(new Rect(position.x - size.x / 2, Screen.height - position.y - size.y - 20, size.x + 10, size.y + 5), text, style);
+        GUI.Label(new Rect(position.x - size.x / 2 - 5, Screen.height - position.y - size.y - 20, size.x + 10, size.y + 5), text, style);
+    }
+
+    private void OnPostRender()
+    {
+        Debug.Log("OnPostRender");
+        
+    }
+
+    private void OnTileWWWComplete(OnlineMapsWWW www)
+    {
+        OnlineMapsTile tile = www.customData as OnlineMapsTile;
+        
+        if (tile == null) return;
+
+        if (tile.status == OnlineMapsTileStatus.disposed)
+        {
+            tile.www = null;
+            return;
+        }
+
+        if (string.IsNullOrEmpty(www.error))
+        {
+            if (target == OnlineMapsTarget.texture)
+            {
+                tile.OnDownloadComplete();
+                if (tile.status != OnlineMapsTileStatus.error) buffer.ApplyTile(tile);
+            }
+            else
+            {
+                Texture2D tileTexture = new Texture2D(256, 256, TextureFormat.RGB24, false)
+                {
+                    wrapMode = TextureWrapMode.Clamp
+                };
+
+                if (useSoftwareJPEGDecoder) OnlineMapsTile.LoadTexture(tileTexture, www.bytes);
+                else www.LoadImageIntoTexture(tileTexture);
+
+                tileTexture.name = tile.zoom + "x" + tile.x + "x" + tile.y;
+
+                tile.CheckTextureSize(tileTexture);
+
+                if (tile.status != OnlineMapsTileStatus.error && tile.status != OnlineMapsTileStatus.disposed)
+                {
+                    tile.texture = tileTexture;
+                    tile.status = OnlineMapsTileStatus.loaded;
+                }
+            }
+
+            if (tile.status != OnlineMapsTileStatus.error && tile.status != OnlineMapsTileStatus.disposed)
+            {
+                if (OnlineMapsTile.OnTileDownloaded != null) OnlineMapsTile.OnTileDownloaded(tile);
+            }
+
+            CheckRedrawType();
+        }
+        else tile.OnDownloadError();
+
+        tile.www = null;
+    }
+
+    public void OnTrafficWWWComplete(OnlineMapsWWW www)
+    {
+        OnlineMapsTile tile = www.customData as OnlineMapsTile;
+        
+        if (tile == null) return;
+
+        if (tile.status == OnlineMapsTileStatus.disposed)
+        {
+            tile.trafficWWW = null;
+            return;
+        }
+
+        if (string.IsNullOrEmpty(www.error))
+        {
+            if (target == OnlineMapsTarget.texture)
+            {
+                if (tile.OnLabelDownloadComplete()) buffer.ApplyTile(tile);
+            }
+            else
+            {
+                Texture2D trafficTexture = new Texture2D(256, 256, TextureFormat.RGB24, false)
+                {
+                    wrapMode = TextureWrapMode.Clamp
+                };
+                if (useSoftwareJPEGDecoder) OnlineMapsTile.LoadTexture(trafficTexture, www.bytes);
+                else tile.trafficWWW.LoadImageIntoTexture(trafficTexture);
+                tile.trafficTexture = trafficTexture;
+            }
+
+            if (OnlineMapsTile.OnTrafficDownloaded != null) OnlineMapsTile.OnTrafficDownloaded(tile);
+
+            CheckRedrawType();
+        }
+
+        tile.trafficWWW = null;
     }
 
     /// <summary>
@@ -1377,21 +1451,22 @@ public class OnlineMaps : MonoBehaviour
     {
         OnlineMapsThreadManager.Dispose();
 
-        if (_buffer != null)
+        if (renderInThread)
         {
-            _buffer.Dispose();
-            _buffer = null;
-        }
+            if (_buffer != null)
+            {
+                _buffer.Dispose();
+                _buffer = null;
+            }
 
 #if NETFX_CORE
-        if (renderThread != null) renderThread.Dispose();
+            if (renderThread != null) renderThread.Dispose();
 #endif
 #if !UNITY_WEBGL
-        renderThread = null;
+            renderThread = null;
 #endif
-
-
-        GCCollect();
+        }
+        else StartBuffer();
 
         Redraw();
     }
@@ -1458,10 +1533,20 @@ public class OnlineMaps : MonoBehaviour
     {
         if (OnRemoveMarker != null && OnRemoveMarker(marker)) return;
 
-        List<OnlineMapsMarker> ms = markers.ToList();
-        ms.Remove(marker);
+        int index = -1;
+        for (int i = 0; i < markers.Length; i++)
+        {
+            if (markers[i] == marker)
+            {
+                index = i;
+                break;
+            }
+        }
+
+        if (index == -1) return;
+        for (int i = index; i < markers.Length - 1; i++) markers[i] = markers[i + 1];
         if (disposeMarker) marker.Dispose();
-        markers = ms.ToArray();
+        Array.Resize(ref markers, markers.Length - 1);
         Redraw();
     }
 
@@ -1476,11 +1561,9 @@ public class OnlineMaps : MonoBehaviour
         if (markerIndex < 0 || markerIndex >= markers.Length) return;
 
         OnlineMapsMarker marker = markers[markerIndex];
-
-        List<OnlineMapsMarker> ms = markers.ToList();
-        ms.Remove(marker);
         marker.Dispose();
-        markers = ms.ToArray();
+        for (int i = markerIndex; i < markers.Length - 1; i++) markers[i] = markers[i + 1];
+        Array.Resize(ref markers, markers.Length - 1);        
         Redraw();
     }
 
@@ -1515,7 +1598,9 @@ public class OnlineMaps : MonoBehaviour
     /// <returns></returns>
     public OnlineMapsXML SaveSettings(OnlineMapsXML parent)
     {
-        OnlineMapsXML element = parent.Create("Settings");
+        if (OnSaveSettings != null) OnSaveSettings();
+
+         OnlineMapsXML element = parent.Create("Settings");
 
         element.Create("Position", position);
         element.Create("Zoom", zoom);
@@ -1732,19 +1817,62 @@ public class OnlineMaps : MonoBehaviour
         long startTick = DateTime.Now.Ticks;
 
         int countDownload = 0;
-
-        IEnumerable tiles;
+        OnlineMapsTile[] downloadTiles = null;
+        int c = 0;
 
         lock (OnlineMapsTile.tiles)
         {
-            countDownload = OnlineMapsTile.tiles.Count(t => t.status == OnlineMapsTileStatus.loading);
-            if (countDownload >= maxTileDownloads) return;
+            List<OnlineMapsTile> tiles = OnlineMapsTile.tiles;
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                OnlineMapsTile tile = tiles[i];
+                if (tile.status == OnlineMapsTileStatus.loading && tile.www != null)
+                {
+                    countDownload++;
+                    if (countDownload >= maxTileDownloads) return;
+                }
+            }
 
-            tiles = OnlineMapsTile.tiles.Where(t => t.status == OnlineMapsTileStatus.none).OrderBy(t => t.zoom).Take(maxTileDownloads - countDownload).ToList();
+            int needDownload = maxTileDownloads - countDownload;
+            downloadTiles = new OnlineMapsTile[needDownload];
+
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                OnlineMapsTile tile = tiles[i];
+                if (tile.status != OnlineMapsTileStatus.none) continue;
+
+                if (c == 0)
+                {
+                    downloadTiles[0] = tile;
+                    c++;
+                }
+                else
+                {
+                    int index = c;
+                    int index2 = index - 1;
+
+                    while (index2 >= 0)
+                    {
+                        if (downloadTiles[index2].zoom <= tile.zoom) break;
+
+                        index2--;
+                        index--;
+                    }
+
+                    if (index < needDownload)
+                    {
+                        for (int j = needDownload - 1; j > index ; j--) downloadTiles[j] = downloadTiles[j - 1];
+                        downloadTiles[index] = tile;
+                        if (c < needDownload) c++;
+                    }
+                }
+            }
         }
-        foreach (OnlineMapsTile tile in tiles)
+
+        for (int i = 0; i < c; i++)
         {
             if (DateTime.Now.Ticks - startTick > 20000) break;
+            OnlineMapsTile tile = downloadTiles[i];
 
             countDownload++;
             if (countDownload > maxTileDownloads) break;
@@ -1790,13 +1918,23 @@ public class OnlineMaps : MonoBehaviour
 
         if (loadOnline)
         {
+            if (tile.www != null)
+            {
+                Debug.Log("tile has www " + tile + "   " + tile.status);
+                return;
+            }
+
             tile.www = OnlineMapsUtils.GetWWW(tile.url);
+            tile.www.customData = tile;
+            tile.www.OnComplete += OnTileWWWComplete;
             tile.status = OnlineMapsTileStatus.loading;
         }
 
         if (traffic && !string.IsNullOrEmpty(tile.trafficURL))
         {
             tile.trafficWWW = OnlineMapsUtils.GetWWW(tile.trafficURL);
+            tile.trafficWWW.customData = tile;
+            tile.trafficWWW.OnComplete += OnTrafficWWWComplete;
         }
     }
 
@@ -1844,8 +1982,7 @@ public class OnlineMaps : MonoBehaviour
         if (OnUpdateBefore != null) OnUpdateBefore();
         
         CheckBaseProps();
-        CheckGoogleAPIQuery();
-        CheckDownloadComplete();
+        StartDownloading();
 
         if (OnUpdateLate != null) OnUpdateLate();
     }

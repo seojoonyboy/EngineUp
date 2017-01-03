@@ -21,9 +21,9 @@ namespace InfinityCode.OnlineMapsExamples
         /// <summary>
         /// Line width.
         /// </summary>
-        public float borderWeight;
+        public float borderWeight = 1;
 
-        private OnlineMaps api;
+        private OnlineMaps map;
         private bool changed = false;
         private List<OnlineMapsMarker> markers = new List<OnlineMapsMarker>();
         private List<Vector2> markerPositions = new List<Vector2>();
@@ -51,10 +51,10 @@ namespace InfinityCode.OnlineMapsExamples
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 // Get the geographical coordinates of the cursor.
-                Vector2 cursorCoords = api.control.GetCoords();
+                Vector2 cursorCoords = map.control.GetCoords();
 
                 // Create a new marker at the specified coordinates.
-                OnlineMapsMarker marker = api.AddMarker(cursorCoords, markerTexture, "Marker " + (api.markers.Length + 1));
+                OnlineMapsMarker marker = map.AddMarker(cursorCoords, markerTexture, "Marker " + (map.markers.Length + 1));
 
                 // Save marker and coordinates.
                 markerPositions.Add(cursorCoords);
@@ -68,7 +68,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void Start()
         {
             // Get a reference to an instance of the map.
-            api = OnlineMaps.instance;
+            map = OnlineMaps.instance;
 
             _borderWeight = borderWeight;
         }
@@ -81,7 +81,7 @@ namespace InfinityCode.OnlineMapsExamples
                 if (polygon != null)
                 {
                     polygon.borderWeight = borderWeight;
-                    api.Redraw();
+                    map.Redraw();
                 }
             }
 
@@ -95,7 +95,7 @@ namespace InfinityCode.OnlineMapsExamples
             // If the number of points is less than 3, then return.
             if (markers.Count < 3)
             {
-                api.Redraw();
+                map.Redraw();
                 return;
             }
 
@@ -107,7 +107,7 @@ namespace InfinityCode.OnlineMapsExamples
                 polygon = new OnlineMapsDrawingPoly(markerPositions, Color.black, borderWeight, new Color(1, 1, 1, 0.3f));
 
                 // Add an element to the map.
-                api.AddDrawingElement(polygon);
+                map.AddDrawingElement(polygon);
             }
 
             // Calculates area of ​​the polygon.
@@ -137,7 +137,7 @@ namespace InfinityCode.OnlineMapsExamples
 
             Debug.Log("Area: " + area + " km^2");
 
-            api.Redraw();
+            map.Redraw();
         }
     }
 }

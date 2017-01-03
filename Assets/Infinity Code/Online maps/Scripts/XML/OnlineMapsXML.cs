@@ -67,6 +67,9 @@ public class OnlineMapsXML : IEnumerable
         get { return _element; }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the current node has any attributes. 
+    /// </summary>
     public bool hasAttributes
     {
         get
@@ -79,6 +82,9 @@ public class OnlineMapsXML : IEnumerable
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating the presence of the child nodes from the current node.
+    /// </summary>
     public bool hasChildNodes
     {
         get
@@ -778,7 +784,10 @@ public class OnlineMapsXML : IEnumerable
 
     public IEnumerator GetEnumerator()
     {
-        return new OnlineMapsXMLEnum(this);
+        for (int i = 0; i < count; i++)
+        {
+            yield return this[i];
+        }
     }
 
     public Vector2 GetLatLng(string subNodeName)
@@ -816,6 +825,18 @@ public class OnlineMapsXML : IEnumerable
     }
 
     /// <summary>
+    /// Converts XMLNode coordinates from Google Maps into Vector2.
+    /// </summary>
+    /// <param name="node">XMLNode coordinates from Google Maps.</param>
+    /// <returns>Coordinates as Vector2.</returns>
+    public static Vector2 GetVector2FromNode(OnlineMapsXML node)
+    {
+        float lng = node.Get<float>("lng");
+        float lat = node.Get<float>("lat");
+        return new Vector2(lng, lat);
+    }
+
+    /// <summary>
     /// Loads the XML from a string.
     /// </summary>
     /// <param name="xmlString">XML string.</param>
@@ -828,9 +849,9 @@ public class OnlineMapsXML : IEnumerable
             document.LoadXml(xmlString);
             return new OnlineMapsXML(document.DocumentElement);
         }
-        catch (Exception exception)
+        catch
         {
-            Debug.Log(exception.Message + "\n" + exception.StackTrace);
+            Debug.Log("Can not load XML from string:\n" + xmlString);
             return new OnlineMapsXML();
         }
     }

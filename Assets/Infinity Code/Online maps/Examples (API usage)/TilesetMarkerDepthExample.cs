@@ -27,12 +27,12 @@ namespace InfinityCode.OnlineMapsExamples
 
         private void Start()
         {
-            OnlineMaps api = OnlineMaps.instance;
+            OnlineMaps map = OnlineMaps.instance;
 
             // Create markers.
-            api.AddMarker(new Vector2(0, 0));
-            api.AddMarker(new Vector2(0, 0.01f));
-            api.AddMarker(new Vector2(0, -0.01f));
+            map.AddMarker(new Vector2(0, 0));
+            map.AddMarker(new Vector2(0, 0.01f));
+            map.AddMarker(new Vector2(0, -0.01f));
 
             // Sets a new comparer.
             OnlineMapsTileSetControl.instance.markerComparer = new MarkerComparer();
@@ -40,11 +40,11 @@ namespace InfinityCode.OnlineMapsExamples
             // Get the center point and zoom the best for all markers.
             Vector2 center;
             int zoom;
-            OnlineMapsUtils.GetCenterPointAndZoom(api.markers, out center, out zoom);
+            OnlineMapsUtils.GetCenterPointAndZoom(map.markers, out center, out zoom);
 
             // Change the position and zoom of the map.
-            api.position = center;
-            api.zoom = zoom;
+            map.position = center;
+            map.zoom = zoom;
         }
     }
 }

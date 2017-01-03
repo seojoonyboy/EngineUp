@@ -9,10 +9,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-
-#if !UNITY_4_3 && !UNITY_4_5
 using UnityEngine.UI;
-#endif
 
 #if IGUI
 using iGUI;
@@ -64,6 +61,7 @@ public class OnlineMapsWizard : EditorWindow
     private static string[] providersTitle;
     private static int providerIndex;
     private static OnlineMapsProvider[] providers;
+    private bool useCache = true;
 
     private float CheckCameraDistance(Camera tsCamera)
     {
@@ -74,6 +72,19 @@ public class OnlineMapsWizard : EditorWindow
         if (distance <= tsCamera.farClipPlane) return -1;
 
         return distance;
+    }
+
+    private bool CheckMapInScene()
+    {
+        OnlineMaps map = FindObjectOfType<OnlineMaps>();
+        if (map != null)
+        {
+            EditorGUILayout.HelpBox("In the scene already have a map. You can only use one instance of map in the scene.", MessageType.Error);
+            if (GUILayout.Button("Delete map")) OnlineMapsUtils.DestroyImmediate(map.gameObject);
+            if (GUILayout.Button("Close Wizard")) Close();
+            return true;
+        }
+        return false;
     }
 
     private void CheckThirdPartyDirectives(ref bool allowCreate)
@@ -122,6 +133,212 @@ public class OnlineMapsWizard : EditorWindow
         }
     }
 
+    private void CreateMap()
+    {
+        OnlineMaps map = CreateMapGameObject();
+        GameObject go = map.gameObject;
+        if (use3DControl == 0)
+        {
+            Texture2D texture = CreateTexture(map);
+
+            if (mapControl2D == 0)
+            {
+                go.AddComponent<OnlineMapsGUITextureControl>();
+                GUITexture guiTexture = go.GetComponent<GUITexture>();
+                guiTexture.texture = texture;
+                go.transform.localPosition = new Vector3(0.5f, 0.5f);
+                go.transform.localScale = Vector3.zero;
+                guiTexture.pixelInset = new Rect(textureWidth / -2, textureHeight / -2, textureWidth, textureHeight);
+            }
+            else if (mapControl2D == 1)
+            {
+                go.AddComponent<OnlineMapsSpriteRendererControl>();
+                SpriteRenderer spriteRenderer = go.GetComponent<SpriteRenderer>();
+                spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, textureWidth, textureHeight), Vector2.zero);
+                go.AddComponent<BoxCollider>();
+            }
+            else if (mapControl2D == 2 || mapControl2D == 3)
+            {
+                RectTransform rectTransform = go.AddComponent<RectTransform>();
+                rectTransform.SetParent(uGUIParent.transform as RectTransform);
+                go.AddComponent<CanvasRenderer>();
+                rectTransform.localPosition = Vector3.zero;
+                rectTransform.anchorMax = rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                rectTransform.sizeDelta = new Vector2(textureWidth, textureHeight);
+
+                if (mapControl2D == 2)
+                {
+                    go.AddComponent<OnlineMapsUIImageControl>();
+                    Image image = go.AddComponent<Image>();
+                    image.sprite = Sprite.Create(texture, new Rect(0, 0, textureWidth, textureHeight), Vector2.zero);
+                }
+                else
+                {
+                    go.AddComponent<OnlineMapsUIRawImageControl>();
+                    RawImage image = go.AddComponent<RawImage>();
+                    image.texture = texture;
+                }
+            }
+#if NGUI
+            else if (mapControl2D == 4)
+            {
+                go.layer = NGUIParent.layer;
+                UITexture uiTexture = go.AddComponent<UITexture>();
+                uiTexture.mainTexture = texture;
+                uiTexture.width = textureWidth;
+                uiTexture.height = textureHeight;
+                go.transform.parent = NGUIParent.transform;
+                go.transform.localPosition = Vector3.zero;
+                go.transform.localScale = Vector3.one;
+                go.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                BoxCollider boxCollider = go.AddComponent<BoxCollider>();
+                boxCollider.size = new Vector3(textureWidth, textureHeight, 0);
+                go.AddComponent<OnlineMapsNGUITextureControl>();
+            }
+#endif
+#if DFGUI
+            else if (mapControl2D == 5)
+            {
+                go.transform.parent = DFGUIParent.transform;
+
+                dfTextureSprite textureSprite = go.AddComponent<dfTextureSprite>();
+                textureSprite.Texture = texture;
+                textureSprite.Width = textureWidth;
+                textureSprite.Height = textureHeight;
+                textureSprite.Pivot = dfPivotPoint.MiddleCenter;
+                textureSprite.transform.localPosition = Vector3.zero;
+
+                go.AddComponent<OnlineMapsDFGUITextureControl>();
+            }
+#endif
+#if IGUI
+            else if (mapControl2D == 6)
+            {
+                go.transform.parent = IGUIParent.transform;
+
+                iGUIImage image = go.AddComponent<iGUIImage>();
+                image.image = texture;
+                image.positionAndSize = new Rect(0, 0, 1, 1);
+
+                go.AddComponent<OnlineMapsIGUITextureControl>();
+            }
+#endif
+
+            map.useSmartTexture = smartTexture;
+            map.redrawOnPlay = true;
+        }
+        else
+        {
+            OnlineMapsControlBase3D control3D = null;
+
+            if (mapControl3D == 0)
+            {
+                map.target = OnlineMapsTarget.tileset;
+                map.tilesetWidth = tilesetWidth;
+                map.tilesetHeight = tilesetHeight;
+                map.tilesetSize = tilesetSize;
+                map.renderInThread = false;
+
+                OnlineMapsTileSetControl ts = go.AddComponent<OnlineMapsTileSetControl>();
+                control3D = ts;
+                ts.useElevation = useElevation;
+                ts.bingAPI = bingAPI;
+                ts.smoothZoom = smoothZoom;
+                ts.tileMaterial = tileMaterial;
+                ts.markerMaterial = markerMaterial;
+                ts.tilesetShader = tilesetShader;
+                ts.drawingShader = drawingShader;
+                ts.markerShader = markerShader;
+
+                if (moveCameraToTileset)
+                {
+                    GameObject cameraGO = activeCamera.gameObject;
+                    float minSide = Mathf.Min(tilesetSize.x, tilesetSize.y);
+                    Vector3 position = new Vector3(tilesetSize.x / -2, minSide, tilesetSize.y / 2);
+                    cameraGO.transform.position = position;
+                    cameraGO.transform.rotation = Quaternion.Euler(90, 180, 0);
+                }
+
+                if (useBuildings)
+                {
+                    go.AddComponent<OnlineMapsBuildings>();
+                }
+            }
+            else if (mapControl3D == 1)
+            {
+                Texture2D texture = CreateTexture(map);
+                control3D = go.AddComponent<OnlineMapsTextureControl>();
+                Renderer renderer = go.GetComponent<Renderer>();
+                renderer.sharedMaterial = new Material(Shader.Find("Diffuse"));
+                renderer.sharedMaterial.mainTexture = texture;
+                map.useSmartTexture = smartTexture;
+                map.redrawOnPlay = true;
+            }
+
+            if (control3D != null)
+            {
+                control3D.activeCamera = activeCamera;
+                control3D.allowCameraControl = allowCameraControl;
+            }
+        }
+
+        if (useLocationService) go.AddComponent<OnlineMapsLocationService>();
+        if (useRWT) go.AddComponent<OnlineMapsRWTConnector>();
+        if (useCache) go.AddComponent<OnlineMapsCache>();
+
+        EditorGUIUtility.PingObject(go);
+        Selection.activeGameObject = go;
+    }
+
+    private OnlineMaps CreateMapGameObject()
+    {
+        GameObject go;
+        if (use3DControl == 1 && mapControl3D == 1) go = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        else go = new GameObject("Map");
+
+        OnlineMaps map = go.AddComponent<OnlineMaps>();
+
+        map.source = source;
+        map.mapType = activeMapType.ToString();
+        map.webplayerProxyURL = webplayerProxyURL;
+        map.labels = labels;
+        map.customProviderURL = customProviderURL;
+        map.language = language;
+        map.traffic = traffic;
+        map.redrawOnPlay = true;
+
+        return map;
+    }
+
+    private Texture2D CreateTexture(OnlineMaps map)
+    {
+        string texturePath = string.Format("Assets/{0}.png", textureFilename);
+        map.texture = new Texture2D(textureWidth, textureHeight);
+        File.WriteAllBytes(texturePath, map.texture.EncodeToPNG());
+        AssetDatabase.Refresh();
+        TextureImporter textureImporter = AssetImporter.GetAtPath(texturePath) as TextureImporter;
+        if (textureImporter != null)
+        {
+            textureImporter.mipmapEnabled = false;
+            textureImporter.isReadable = true;
+#if UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4
+            textureImporter.textureFormat = TextureImporterFormat.RGB24;
+#endif
+            textureImporter.maxTextureSize = Mathf.Max(textureWidth, textureHeight);
+
+            if (use3DControl == 0 && (mapControl2D == 1 || mapControl2D == 2))
+            {
+                textureImporter.spriteImportMode = SpriteImportMode.Single;
+                textureImporter.npotScale = TextureImporterNPOTScale.None;
+            }
+
+            AssetDatabase.ImportAsset(texturePath, ImportAssetOptions.ForceUpdate);
+            map.texture = (Texture2D)AssetDatabase.LoadAssetAtPath(texturePath, typeof(Texture2D));
+        }
+        return map.texture;
+    }
+
     private void DrawControls(ref bool allowCreate)
     {
         if (use3DControl == 0)
@@ -142,18 +359,9 @@ public class OnlineMapsWizard : EditorWindow
         if (use3DControl == 0)
         {
             EditorGUI.BeginChangeCheck();
-            mapControl2D = GUILayout.SelectionGrid(mapControl2D,
-                new[] {"GUITexture", "SpriteRenderer", "UIImage", "UIRawImage", "NGUI", "DF-GUI", "iGUI"}, 1, "toggle");
+            mapControl2D = GUILayout.SelectionGrid(mapControl2D, new[] {"GUITexture", "SpriteRenderer", "UIImage", "UIRawImage", "NGUI", "DF-GUI", "iGUI"}, 1, "toggle");
             if (EditorGUI.EndChangeCheck()) InitSteps();
             CheckThirdPartyDirectives(ref allowCreate);
-
-#if UNITY_4_3 || UNITY_4_5
-            if (mapControl2D == 2 || mapControl2D == 3)
-            {
-                allowCreate = false;
-                EditorGUILayout.HelpBox("To use UIImage and UIRawImage needs Unity v4.6 or higher.", MessageType.Error);
-            }
-#endif
         }
         else
         {
@@ -201,6 +409,7 @@ public class OnlineMapsWizard : EditorWindow
     private void DrawMore(ref bool allowcreate)
     {
         EditorGUILayout.LabelField("More Features");
+        useCache = EditorGUILayout.Toggle("Cache: ", useCache);
         useLocationService = EditorGUILayout.Toggle("Location Service (GPS): ", useLocationService);
         traffic = EditorGUILayout.Toggle("Traffic: ", traffic);
         useRWT = EditorGUILayout.Toggle("Real World Terrain", useRWT);
@@ -389,13 +598,11 @@ public class OnlineMapsWizard : EditorWindow
         EditorGUILayout.HelpBox("Select the parent GameObject in the scene.", MessageType.Warning);
         uGUIParent = EditorGUILayout.ObjectField("Parent: ", uGUIParent, typeof (GameObject), true) as GameObject;
         if (uGUIParent == null) allowCreate = false;
-#if !UNITY_4_3 && !UNITY_4_5
         else if (uGUIParent.GetComponent<CanvasRenderer>() == null && uGUIParent.GetComponent<Canvas>() == null)
         {
             EditorGUILayout.HelpBox("Selected the wrong parent. Parent must contain the Canvas or Canvas Renderer.", MessageType.Error);
             allowCreate = false;
         }
-#endif
     }
 
     private void InitSteps()
@@ -426,8 +633,7 @@ public class OnlineMapsWizard : EditorWindow
             steps.Add(DrawTilesetMaterialsAndShaders);
             steps.Add(DrawTilesetMore);
 
-            if (useElevation)
-                steps.Add(DrawElevation);
+            if (useElevation) steps.Add(DrawElevation);
         }
     }
 
@@ -473,215 +679,6 @@ public class OnlineMapsWizard : EditorWindow
         EditorGUI.EndDisabledGroup();
 
         EditorGUILayout.EndHorizontal();
-    }
-
-    private bool CheckMapInScene()
-    {
-        OnlineMaps map = FindObjectOfType<OnlineMaps>();
-        if (map != null)
-        {
-            EditorGUILayout.HelpBox("In the scene already have a map. You can only use one instance of map in the scene.", MessageType.Error);
-            if (GUILayout.Button("Delete map")) OnlineMapsUtils.DestroyImmediate(map.gameObject);
-            if (GUILayout.Button("Close Wizard")) Close();
-            return true;
-        }
-        return false;
-    }
-
-    private void CreateMap()
-    {
-        OnlineMaps map = CreateMapGameObject();
-        GameObject go = map.gameObject;
-        if (use3DControl == 0)
-        {
-            Texture2D texture = CreateTexture(map);
-
-            if (mapControl2D == 0)
-            {
-                go.AddComponent<OnlineMapsGUITextureControl>();
-                GUITexture guiTexture = go.GetComponent<GUITexture>();
-                guiTexture.texture = texture;
-                go.transform.localPosition = new Vector3(0.5f, 0.5f);
-                go.transform.localScale = Vector3.zero;
-                guiTexture.pixelInset = new Rect(textureWidth / -2, textureHeight / -2, textureWidth, textureHeight);
-            }
-            else if (mapControl2D == 1)
-            {
-                go.AddComponent<OnlineMapsSpriteRendererControl>();
-                SpriteRenderer spriteRenderer = go.GetComponent<SpriteRenderer>();
-                spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, textureWidth, textureHeight), Vector2.zero);
-                go.AddComponent<BoxCollider>();
-            }
-#if !UNITY_4_3 && !UNITY_4_5
-            else if (mapControl2D == 2 || mapControl2D == 3)
-            {
-                RectTransform rectTransform = go.AddComponent<RectTransform>();
-                rectTransform.SetParent(uGUIParent.transform as RectTransform);
-                go.AddComponent<CanvasRenderer>();
-                rectTransform.localPosition = Vector3.zero;
-                rectTransform.anchorMax = rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-                rectTransform.pivot = new Vector2(0.5f, 0.5f);
-                rectTransform.sizeDelta = new Vector2(textureWidth, textureHeight);
-
-                if (mapControl2D == 2)
-                {
-                    go.AddComponent<OnlineMapsUIImageControl>();
-                    Image image = go.AddComponent<Image>();
-                    image.sprite = Sprite.Create(texture, new Rect(0, 0, textureWidth, textureHeight), Vector2.zero);
-                }
-                else
-                {
-                    go.AddComponent<OnlineMapsUIRawImageControl>();
-                    RawImage image = go.AddComponent<RawImage>();
-                    image.texture = texture;
-                }
-            }
-#endif
-#if NGUI
-            else if (mapControl2D == 4)
-            {
-                go.layer = NGUIParent.layer;
-                UITexture uiTexture = go.AddComponent<UITexture>();
-                uiTexture.mainTexture = texture;
-                uiTexture.width = textureWidth;
-                uiTexture.height = textureHeight;
-                go.transform.parent = NGUIParent.transform;
-                go.transform.localPosition = Vector3.zero;
-                go.transform.localScale = Vector3.one;
-                go.transform.localRotation = Quaternion.Euler(Vector3.zero);
-                BoxCollider boxCollider = go.AddComponent<BoxCollider>();
-                boxCollider.size = new Vector3(textureWidth, textureHeight, 0);
-                go.AddComponent<OnlineMapsNGUITextureControl>();
-            }
-#endif
-#if DFGUI
-            else if (mapControl2D == 5)
-            {
-                go.transform.parent = DFGUIParent.transform;
-
-                dfTextureSprite textureSprite = go.AddComponent<dfTextureSprite>();
-                textureSprite.Texture = texture;
-                textureSprite.Width = textureWidth;
-                textureSprite.Height = textureHeight;
-                textureSprite.Pivot = dfPivotPoint.MiddleCenter;
-                textureSprite.transform.localPosition = Vector3.zero;
-
-                go.AddComponent<OnlineMapsDFGUITextureControl>();
-            }
-#endif
-#if IGUI
-            else if (mapControl2D == 6)
-            {
-                go.transform.parent = IGUIParent.transform;
-
-                iGUIImage image = go.AddComponent<iGUIImage>();
-                image.image = texture;
-                image.positionAndSize = new Rect(0, 0, 1, 1);
-
-                go.AddComponent<OnlineMapsIGUITextureControl>();
-            }
-#endif
-
-            map.useSmartTexture = smartTexture;
-            map.redrawOnPlay = true;
-        }
-        else
-        {
-            OnlineMapsControlBase3D control3D = null;
-
-            if (mapControl3D == 0)
-            {
-                map.target = OnlineMapsTarget.tileset;
-                map.tilesetWidth = tilesetWidth;
-                map.tilesetHeight = tilesetHeight;
-                map.tilesetSize = tilesetSize;
-
-                OnlineMapsTileSetControl ts = go.AddComponent<OnlineMapsTileSetControl>();
-                control3D = ts;
-                ts.useElevation = useElevation;
-                ts.bingAPI = bingAPI;
-                ts.smoothZoom = smoothZoom;
-                ts.tileMaterial = tileMaterial;
-                ts.markerMaterial = markerMaterial;
-                ts.tilesetShader = tilesetShader;
-                ts.drawingShader = drawingShader;
-                ts.markerShader = markerShader;
-
-                if (moveCameraToTileset)
-                {
-                    GameObject cameraGO = activeCamera.gameObject;
-                    float minSide = Mathf.Min(tilesetSize.x, tilesetSize.y);
-                    Vector3 position = new Vector3(tilesetSize.x / -2, minSide, tilesetSize.y / 2);
-                    cameraGO.transform.position = position;
-                    cameraGO.transform.rotation = Quaternion.Euler(90, 180, 0);
-                }
-
-                if (useBuildings)
-                {
-                    go.AddComponent<OnlineMapsBuildings>();
-                }
-            }
-            else if (mapControl3D == 1)
-            {
-                control3D = go.AddComponent<OnlineMapsTextureControl>();
-                map.useSmartTexture = smartTexture;
-                map.redrawOnPlay = true;
-            }
-
-            if (control3D != null)
-            {
-                control3D.activeCamera = activeCamera;
-                control3D.allowCameraControl = allowCameraControl;
-            }
-        }
-
-        if (useLocationService) go.AddComponent<OnlineMapsLocationService>();
-        if (useRWT) go.AddComponent<OnlineMapsRWTConnector>();
-
-        EditorGUIUtility.PingObject(go);
-        Selection.activeGameObject = go;
-    }
-
-    private Texture2D CreateTexture(OnlineMaps map)
-    {
-        string texturePath = string.Format("Assets/{0}.png", textureFilename);
-        map.texture = new Texture2D(textureWidth, textureHeight);
-        File.WriteAllBytes(texturePath, map.texture.EncodeToPNG());
-        AssetDatabase.Refresh();
-        TextureImporter textureImporter = AssetImporter.GetAtPath(texturePath) as TextureImporter;
-        if (textureImporter != null)
-        {
-            textureImporter.mipmapEnabled = false;
-            textureImporter.isReadable = true;
-            textureImporter.textureFormat = TextureImporterFormat.RGB24;
-            textureImporter.maxTextureSize = Mathf.Max(textureWidth, textureHeight);
-
-            if (use3DControl == 0 && (mapControl2D == 1 || mapControl2D == 2))
-            {
-                textureImporter.spriteImportMode = SpriteImportMode.Single;
-                textureImporter.npotScale = TextureImporterNPOTScale.None;
-            }
-
-            AssetDatabase.ImportAsset(texturePath, ImportAssetOptions.ForceUpdate);
-            map.texture = (Texture2D)AssetDatabase.LoadAssetAtPath(texturePath, typeof(Texture2D));
-        }
-        return map.texture;
-    }
-
-    private OnlineMaps CreateMapGameObject()
-    {
-        GameObject go = new GameObject("Map");
-        OnlineMaps map = go.AddComponent<OnlineMaps>();
-
-        map.source = source;
-        map.mapType = activeMapType.ToString();
-        map.webplayerProxyURL = webplayerProxyURL;
-        map.labels = labels;
-        map.customProviderURL = customProviderURL;
-        map.language = language;
-        map.traffic = traffic;
-
-        return map;
     }
 
     [MenuItem("GameObject/Infinity Code/Online Maps/Map Wizard", false, 0)]

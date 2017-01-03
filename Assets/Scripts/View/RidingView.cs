@@ -41,8 +41,6 @@ public class RidingView : MonoBehaviour {
 
         RidingResultAction resultAction = (RidingResultAction)ActionCreator.createAction(ActionTypes.RIDING_RESULT);
         resultAction.nickname = userStore.nickName;
-        Debug.Log(ridingStore.resultData);
-        resultAction.data = ridingStore.resultData;
         gameManager.gameDispatcher.dispatch(resultAction);
     }
 

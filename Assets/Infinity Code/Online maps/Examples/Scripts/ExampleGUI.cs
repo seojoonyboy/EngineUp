@@ -8,14 +8,9 @@ namespace InfinityCode.OnlineMapsDemos
     [AddComponentMenu("Infinity Code/Online Maps/Demos/ExampleGUI")]
     public class ExampleGUI : MonoBehaviour
     {
-        private OnlineMaps api;
+        private OnlineMaps map;
         private GUIStyle rowStyle;
         private string search = "";
-
-        private void OnEnable()
-        {
-            api = GetComponent<OnlineMaps>();
-        }
 
         private void OnGUI()
         {
@@ -28,12 +23,12 @@ namespace InfinityCode.OnlineMapsDemos
 
             GUILayout.BeginArea(new Rect(5, 40, 30, 255), GUI.skin.box);
 
-            if (GUILayout.Button("-")) api.zoom--;
+            if (GUILayout.Button("-")) map.zoom--;
 
             for (int i = 3; i < 21; i++)
-                if (GUILayout.Button("", rowStyle, GUILayout.Height(10))) api.zoom = i;
+                if (GUILayout.Button("", rowStyle, GUILayout.Height(10))) map.zoom = i;
 
-            if (GUILayout.Button("+")) api.zoom++;
+            if (GUILayout.Button("+")) map.zoom++;
 
             GUILayout.EndArea();
 
@@ -48,11 +43,11 @@ namespace InfinityCode.OnlineMapsDemos
 
         private void FindLocation()
         {
-            OnlineMapsFindLocation.Find(search).OnComplete += delegate(string s)
+            OnlineMapsGoogleGeocoding.Find(search).OnComplete += delegate(string s)
             {
                 try
                 {
-                    Vector2 position = OnlineMapsFindLocation.GetCoordinatesFromResult(s);
+                    Vector2 position = OnlineMapsGoogleGeocoding.GetCoordinatesFromResult(s);
                     if (position != Vector2.zero) OnlineMaps.instance.position = position;
                     else Debug.Log(s);
                 }
@@ -61,6 +56,11 @@ namespace InfinityCode.OnlineMapsDemos
                     Debug.Log(s);
                 }
             };
+        }
+
+        private void Start()
+        {
+            map = OnlineMaps.instance;
         }
     }
 }

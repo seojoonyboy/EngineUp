@@ -50,17 +50,13 @@ public class OnlineMapsJPEGDecoder
         {
             posb = null;
             comp = new Component[3];
-            //block = new int[64];
             qtab = new byte[4][];
             vlctab = new Code[4][];
             for (byte i = 0; i < 4; i++)
             {
                 qtab[i] = new byte[64];
                 vlctab[i] = new Code[65536];
-                if (i < comp.Length)
-                {
-                    comp[i] = new Component();
-                }
+                if (i < 3) comp[i] = new Component();
             }
         }
     }
@@ -105,16 +101,11 @@ public class OnlineMapsJPEGDecoder
         38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63 };
 
     private Context context;
+    private int[] block;
 
     private void ByteAlign()
     {
         context.bufbits &= 0xF8;
-    }
-
-    private static byte CF(int x)
-    {
-        int v = ((x) + 64) >> 7;
-        return (byte)((v < 0) ? 0 : ((v > 0xff) ? 255 : v));
     }
 
     private void ColIDCT(int[] blk, int coef, byte[] pixels, int outv, int stride)
@@ -129,7 +120,7 @@ public class OnlineMapsJPEGDecoder
              | (x7 = blk[coef + 8 * 3])) == 0)
         {
             int v0 = ((blk[coef] + 32) >> 6) + 128;
-            x1 = (byte)((v0 < 0) ? 0 : ((v0 > 0xff) ? 255 : v0));
+            x1 = (byte)(v0 < 0 ? 0 : (v0 > 0xff ? 255 : v0));
             for (x0 = 8; x0 != 0; --x0)
             {
                 pixels[outv] = (byte)x1;
@@ -169,14 +160,14 @@ public class OnlineMapsJPEGDecoder
         int v7 = ((x3 - x2) >> 14) + 128;
         int v8 = ((x7 - x1) >> 14) + 128;
 
-        pixels[outv] = (byte)((v1 < 0) ? 0 : ((v1 > 0xff) ? 255 : v1)); outv += stride;
-        pixels[outv] = (byte)((v2 < 0) ? 0 : ((v2 > 0xff) ? 255 : v2)); outv += stride;
-        pixels[outv] = (byte)((v3 < 0) ? 0 : ((v3 > 0xff) ? 255 : v3)); outv += stride;
-        pixels[outv] = (byte)((v4 < 0) ? 0 : ((v4 > 0xff) ? 255 : v4)); outv += stride;
-        pixels[outv] = (byte)((v5 < 0) ? 0 : ((v5 > 0xff) ? 255 : v5)); outv += stride;
-        pixels[outv] = (byte)((v6 < 0) ? 0 : ((v6 > 0xff) ? 255 : v6)); outv += stride;
-        pixels[outv] = (byte)((v7 < 0) ? 0 : ((v7 > 0xff) ? 255 : v7)); outv += stride;
-        pixels[outv] = (byte)((v8 < 0) ? 0 : ((v8 > 0xff) ? 255 : v8));
+        pixels[outv] = (byte)(v1 < 0 ? 0 : (v1 > 0xff ? 255 : v1)); outv += stride;
+        pixels[outv] = (byte)(v2 < 0 ? 0 : (v2 > 0xff ? 255 : v2)); outv += stride;
+        pixels[outv] = (byte)(v3 < 0 ? 0 : (v3 > 0xff ? 255 : v3)); outv += stride;
+        pixels[outv] = (byte)(v4 < 0 ? 0 : (v4 > 0xff ? 255 : v4)); outv += stride;
+        pixels[outv] = (byte)(v5 < 0 ? 0 : (v5 > 0xff ? 255 : v5)); outv += stride;
+        pixels[outv] = (byte)(v6 < 0 ? 0 : (v6 > 0xff ? 255 : v6)); outv += stride;
+        pixels[outv] = (byte)(v7 < 0 ? 0 : (v7 > 0xff ? 255 : v7)); outv += stride;
+        pixels[outv] = (byte)(v8 < 0 ? 0 : (v8 > 0xff ? 255 : v8));
     }
 
     private void Convert()
@@ -206,9 +197,9 @@ public class OnlineMapsJPEGDecoder
                     int r = (y + 359 * cr) >> 8;
                     int g = (y - 88 * cb - 183 * cr) >> 8;
                     int b = (y + 454 * cb) >> 8;
-                    context.rgb[prgb++] = (byte)((r < 0) ? 0 : ((r > 0xff) ? 255 : r));
-                    context.rgb[prgb++] = (byte)((g < 0) ? 0 : ((g > 0xff) ? 255 : g));
-                    context.rgb[prgb++] = (byte)((b < 0) ? 0 : ((b > 0xff) ? 255 : b));
+                    context.rgb[prgb++] = (byte)(r < 0 ? 0 : (r > 0xff ? 255 : r));
+                    context.rgb[prgb++] = (byte)(g < 0 ? 0 : (g > 0xff ? 255 : g));
+                    context.rgb[prgb++] = (byte)(b < 0 ? 0 : (b > 0xff ? 255 : b));
                 }
                 py += context.comp[0].stride;
                 pcb += context.comp[1].stride;
@@ -236,6 +227,8 @@ public class OnlineMapsJPEGDecoder
 
     private void Decode(byte[] jpeg)
     {
+        block = new int[64];
+
         try
         {
             context = new Context {posb = jpeg, pos = 0, size = jpeg.Length & 0x7FFFFFFF};
@@ -244,7 +237,6 @@ public class OnlineMapsJPEGDecoder
             Skip(2);
             while (context.error == JPEGResult.OK)
             {
-                //if ((context.size < 2) || (context.posb[context.pos] != 0xFF)) Throw(JPEGResult.SYNTAX_ERROR);
                 Skip(2);
                 switch (context.posb[context.pos - 1])
                 {
@@ -255,10 +247,8 @@ public class OnlineMapsJPEGDecoder
                     case 0xDA: DecodeScan(); break;
                     case 0xFE: SkipMarker(); break;
                     default:
-                        if ((context.posb[context.pos - 1] & 0xF0) == 0xE0)
-                            SkipMarker();
-                        else
-                            Throw(JPEGResult.UNSUPPORTED);
+                        if ((context.posb[context.pos - 1] & 0xF0) == 0xE0) SkipMarker();
+                        else Throw(JPEGResult.UNSUPPORTED);
                         break;
                 }
             }
@@ -280,9 +270,9 @@ public class OnlineMapsJPEGDecoder
         byte discard = 0;
         byte code = 0;
         int coef = 0;
-        int[] block = new int[64];
+
         c.dcpred += GetVLC(context.vlctab[c.dctabsel], ref discard);
-        block[0] = (c.dcpred) * context.qtab[c.qtsel][0];
+        block[0] = c.dcpred * context.qtab[c.qtsel][0];
         do
         {
             int value = GetVLC(context.vlctab[c.actabsel], ref code);
@@ -292,10 +282,10 @@ public class OnlineMapsJPEGDecoder
             if (coef > 63) Throw(JPEGResult.SYNTAX_ERROR);
             block[ZZ[coef]] = value * context.qtab[c.qtsel][coef];
         } while (coef < 63);
-        for (coef = 0; coef < 64; coef += 8)
-            RowIDCT(block, coef);
-        for (coef = 0; coef < 8; ++coef)
-            ColIDCT(block, coef, c.pixels, outv + coef, c.stride);
+
+        for (coef = 0; coef < 64; coef += 8) RowIDCT(block, coef);
+        for (coef = 0; coef < 8; ++coef) ColIDCT(block, coef, c.pixels, outv + coef, c.stride);
+        for (coef = 0; coef < 64; coef++) block[coef] = 0;
     }
 
     private void DecodeDHT()
@@ -356,8 +346,7 @@ public class OnlineMapsJPEGDecoder
             int i = context.posb[context.pos];
             if ((i & 0xFC) != 0) Throw(JPEGResult.SYNTAX_ERROR);
             byte[] t = context.qtab[i];
-            for (i = 0; i < 64; ++i)
-                t[i] = context.posb[context.pos + i + 1];
+            for (i = 0; i < 64; ++i) t[i] = context.posb[context.pos + i + 1];
             Skip(65);
         }
         if (context.length != 0) Throw(JPEGResult.SYNTAX_ERROR);
@@ -542,7 +531,7 @@ public class OnlineMapsJPEGDecoder
         if (bits == 0) return 0;
         value = ShowBits(bits);
         SkipBits(bits);
-        if (value < (1 << (bits - 1))) value += ((-1) << bits) + 1;
+        if (value < 1 << (bits - 1)) value += (-1 << bits) + 1;
         return value;
     }
 
@@ -647,8 +636,7 @@ public class OnlineMapsJPEGDecoder
 
     private void SkipBits(int bits)
     {
-        if (context.bufbits < bits)
-            ShowBits(bits);
+        if (context.bufbits < bits) ShowBits(bits);
         context.bufbits -= bits;
     }
 
@@ -667,62 +655,113 @@ public class OnlineMapsJPEGDecoder
 
     private void UpsampleH(Component c)
     {
-        int xmax = c.width - 3;
+        int w = c.width, h = c.height;
+        int xmax = w - 3;
         int lin = 0, lout = 0;
-        byte[] outv = new byte[(c.width * c.height) << 1];
-        for (int y = c.height; y != 0; --y)
+        byte[] outv = new byte[(w * h) << 1];
+        byte[] p = c.pixels;
+
+        for (int y = h; y != 0; --y)
         {
             int linp1 = lin + 1;
             int linp2 = lin + 2;
             int linp3 = lin + 3;
-            outv[lout] = CF(CF2A * c.pixels[lin] + CF2B * c.pixels[linp1]);
-            outv[lout + 1] = CF(CF3X * c.pixels[lin] + CF3Y * c.pixels[linp1] + CF3Z * c.pixels[linp2]);
-            outv[lout + 2] = CF(CF3A * c.pixels[lin] + CF3B * c.pixels[linp1] + CF3C * c.pixels[linp2]);
+            byte b1 = p[lin];
+            byte b2 = p[linp1];
+            byte b3 = p[linp2];
+            int v = (CF2A * b1 + CF2B * b2 + 64) >> 7;
+            outv[lout] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+            v = (CF3X * b1 + CF3Y * b2 + CF3Z * b3 + 64) >> 7;
+            outv[lout + 1] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+            v = (CF3A * b1 + CF3B * b2 + CF3C * b3 + 64) >> 7;
+            outv[lout + 2] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
 
             int loutp3 = lout + 3;
             int loutp4 = lout + 4;
 
             for (int x = 0; x < xmax; ++x)
             {
-                outv[loutp3 + (x << 1)] = CF(CF4A * c.pixels[lin + x] + CF4B * c.pixels[linp1 + x] + CF4C * c.pixels[linp2 + x] + CF4D * c.pixels[linp3 + x]);
-                outv[loutp4 + (x << 1)] = CF(CF4D * c.pixels[lin + x] + CF4C * c.pixels[linp1 + x] + CF4B * c.pixels[linp2 + x] + CF4A * c.pixels[linp3 + x]);
+                b1 = p[lin + x];
+                b2 = p[linp1 + x];
+                b3 = p[linp2 + x];
+                byte b4 = p[linp3 + x];
+                v = (CF4A * b1 + CF4B * b2 + CF4C * b3 + CF4D * b4 + 64) >> 7;
+                outv[loutp3 + (x << 1)] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+                v = (CF4D * b1 + CF4C * b2 + CF4B * b3 + CF4A * b4 + 64) >> 7;
+                outv[loutp4 + (x << 1)] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
             }
             lin += c.stride;
-            lout += c.width << 1;
+            lout += w << 1;
             int lins1 = lin - 1;
             int lins2 = lin - 2;
             int lins3 = lin - 3;
-            outv[lout - 3] = CF(CF3A * c.pixels[lins1] + CF3B * c.pixels[lins2] + CF3C * c.pixels[lins3]);
-            outv[lout - 2] = CF(CF3X * c.pixels[lins1] + CF3Y * c.pixels[lins2] + CF3Z * c.pixels[lins3]);
-            outv[lout - 1] = CF(CF2A * c.pixels[lins1] + CF2B * c.pixels[lins2]);
+            b1 = p[lins1];
+            b2 = p[lins2];
+            b3 = p[lins3];
+            v = (CF3A * b1 + CF3B * b2 + CF3C * b3 + 64) >> 7;
+            outv[lout - 3] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+            v = (CF3X * b1 + CF3Y * b2 + CF3Z * b3 + 64) >> 7;
+            outv[lout - 2] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+            v = (CF2A * b1 + CF2B * b2 + 64) >> 7;
+            outv[lout - 1] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
         }
         c.width <<= 1;
-        c.stride = c.width;
+        c.stride = w;
         c.pixels = outv;
     }
 
     private void UpsampleV(Component c)
     {
-        int w = c.width, s1 = c.stride, s2 = s1 + s1;
-        byte[] outv = new byte[(c.width * c.height) << 1];
+        int w = c.width, h = c.height, s1 = c.stride, s2 = s1 + s1;
+        byte[] outv = new byte[(w * h) << 1];
+        byte[] p = c.pixels;
+
         for (int x = 0; x < w; ++x)
         {
             int cin = x;
             int cout = x;
-            outv[cout] = CF(CF2A * c.pixels[cin] + CF2B * c.pixels[cin + s1]); cout += w;
-            outv[cout] = CF(CF3X * c.pixels[cin] + CF3Y * c.pixels[cin + s1] + CF3Z * c.pixels[cin + s2]); cout += w;
-            outv[cout] = CF(CF3A * c.pixels[cin] + CF3B * c.pixels[cin + s1] + CF3C * c.pixels[cin + s2]); cout += w;
+            byte b1 = p[cin];
+            byte b3 = p[cin + s2];
             cin += s1;
-            for (int y = c.height - 3; y != 0; --y)
+            byte b2 = p[cin];
+
+            int v = (CF2A * b1 + CF2B * b2 + 64) >> 7;
+            outv[cout] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+            cout += w;
+            v = (CF3X * b1 + CF3Y * b2 + CF3Z * b3 + 64) >> 7;
+            outv[cout] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+            cout += w;
+            v = (CF3A * b1 + CF3B * b2 + CF3C * b3 + 64) >> 7;
+            outv[cout] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+            cout += w;
+            
+            for (int y = h - 3; y != 0; --y)
             {
-                outv[cout] = CF(CF4A * c.pixels[cin + -s1] + CF4B * c.pixels[cin] + CF4C * c.pixels[cin + s1] + CF4D * c.pixels[cin + s2]); cout += w;
-                outv[cout] = CF(CF4D * c.pixels[cin + -s1] + CF4C * c.pixels[cin] + CF4B * c.pixels[cin + s1] + CF4A * c.pixels[cin + s2]); cout += w;
+                b1 = p[cin];
+                b3 = p[cin + s2];
+                byte b4 = p[cin - s1];
                 cin += s1;
+                b2 = p[cin];
+                v = (CF4A * b4 + CF4B * b1 + CF4C * b2 + CF4D * b3 + 64) >> 7;
+                outv[cout] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+                cout += w;
+                v = (CF4D * b4 + CF4C * b1 + CF4B * b2 + CF4A * b3 + 64) >> 7;
+                outv[cout] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+                cout += w;
+                
             }
             cin += s1;
-            outv[cout] = CF(CF3A * c.pixels[cin] + CF3B * c.pixels[cin - s1] + CF3C * c.pixels[cin - s2]); cout += w;
-            outv[cout] = CF(CF3X * c.pixels[cin] + CF3Y * c.pixels[cin - s1] + CF3Z * c.pixels[cin - s2]); cout += w;
-            outv[cout] = CF(CF2A * c.pixels[cin] + CF2B * c.pixels[cin - s1]);
+            b1 = p[cin];
+            b2 = p[cin - s1];
+            b3 = p[cin - s2];
+            v = (CF3A * b1 + CF3B * b2 + CF3C * b3 + 64) >> 7;
+            outv[cout] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+            cout += w;
+            v = (CF3X * b1 + CF3Y * b2 + CF3Z * b3 + 64) >> 7;
+            outv[cout] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
+            cout += w;
+            v = (CF2A * b1 + CF2B * b2 + 64) >> 7;
+            outv[cout] = (byte)(v < 0 ? 0 : (v > 0xff ? 255 : v));
         }
         c.height <<= 1;
         c.stride = c.width;

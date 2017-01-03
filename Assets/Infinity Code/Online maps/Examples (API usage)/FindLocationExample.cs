@@ -34,7 +34,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void Start()
         {
             // Start search Chicago.
-            OnlineMapsGoogleAPIQuery query = OnlineMapsFindLocation.Find("Chicago");
+            OnlineMapsGoogleGeocoding query = OnlineMapsGoogleGeocoding.Find("Chicago");
 
             // Specifies that search results should be sent to OnFindLocationComplete.
             query.OnComplete += OnFindLocationComplete;
@@ -46,7 +46,7 @@ namespace InfinityCode.OnlineMapsExamples
             if (logResponse) Debug.Log(result);
 
             // Get the coordinates of the first found location.
-            Vector2 position = OnlineMapsFindLocation.GetCoordinatesFromResult(result);
+            Vector2 position = OnlineMapsGoogleGeocoding.GetCoordinatesFromResult(result);
 
             if (position != Vector2.zero)
             {
@@ -68,8 +68,8 @@ namespace InfinityCode.OnlineMapsExamples
                         OnlineMapsXML northeast = bounds["northeast"];
 
                         // Get coordinates from nodes
-                        Vector2 sw = OnlineMapsFindLocation.GetVector2FromNode(southwest);
-                        Vector2 ne = OnlineMapsFindLocation.GetVector2FromNode(northeast);
+                        Vector2 sw = OnlineMapsXML.GetVector2FromNode(southwest);
+                        Vector2 ne = OnlineMapsXML.GetVector2FromNode(northeast);
 
                         // Get best zoom
                         Vector2 center;

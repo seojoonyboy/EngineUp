@@ -1,8 +1,6 @@
 ﻿/*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
-#if !UNITY_4_3 && !UNITY_4_5
-
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,7 +32,7 @@ namespace InfinityCode.OnlineMapsExamples
             {
                 if (tooltip == null)
                 {
-                    tooltip = Instantiate(tooltipPrefab);
+                    tooltip = Instantiate(tooltipPrefab) as GameObject;
                     (tooltip.transform as RectTransform).SetParent(container.transform);
                 }
                 Vector2 screenPosition = OnlineMapsControlBase.instance.GetScreenPosition(marker.position);
@@ -53,5 +51,3 @@ namespace InfinityCode.OnlineMapsExamples
         }
     }
 }
-
-#endif

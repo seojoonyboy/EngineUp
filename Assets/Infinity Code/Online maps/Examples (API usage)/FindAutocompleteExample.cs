@@ -11,12 +11,17 @@ namespace InfinityCode.OnlineMapsExamples
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/FindAutocompleteExample")]
     public class FindAutocompleteExample : MonoBehaviour
     {
+        /// <summary>
+        /// Google API Key
+        /// </summary>
+        public string apiKey;
+
         private void Start()
         {
             // Makes a request to Google Places Autocomplete API.
-            OnlineMapsFindAutocomplete.Find(
+            OnlineMapsGooglePlacesAutocomplete.Find(
                 "Los ang",
-                "" // <----------------------------- Google API Key
+                apiKey
                 ).OnComplete += OnComplete;
         }
 
@@ -27,7 +32,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void OnComplete(string s)
         {
             // Trying to get an array of results.
-            OnlineMapsFindAutocompleteResult[] results = OnlineMapsFindAutocomplete.GetResults(s);
+            OnlineMapsGooglePlacesAutocompleteResult[] results = OnlineMapsGooglePlacesAutocomplete.GetResults(s);
 
             // If there is no result
             if (results == null)
@@ -38,7 +43,7 @@ namespace InfinityCode.OnlineMapsExamples
             }
 
             // Log description of each result.
-            foreach (OnlineMapsFindAutocompleteResult result in results)
+            foreach (OnlineMapsGooglePlacesAutocompleteResult result in results)
             {
                 Debug.Log(result.description);
             }

@@ -1,7 +1,7 @@
 /*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
-#if !UNITY_4_3 && !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#if !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
 #define UNITY_5_3P
 #endif
 
@@ -13,7 +13,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 #endif
 
-[CustomEditor(typeof(OnlineMapsTextureControl))]
+[CustomEditor(typeof(OnlineMapsTextureControl), true)]
 public class OnlineMapsTextureControlEditor : Editor
 {
     protected OnlineMapsControlBase3D control;
@@ -99,7 +99,7 @@ public class OnlineMapsTextureControlEditor : Editor
         }
     }
 
-    protected void DrawMarkersGUI(ref bool dirty)
+    protected void DrawMarkers3DGUI(ref bool dirty)
     {
         EditorGUILayout.BeginVertical(GUI.skin.box);
         showMarkers = OnlineMapsEditor.Foldout(showMarkers, string.Format("3D markers (Count: {0})", pMarkers3D.arraySize));
@@ -123,6 +123,7 @@ public class OnlineMapsTextureControlEditor : Editor
 
                 if (OnlineMapsMarker3DPropertyDrawer.isRemoved) removedIndex = i;
                 if (OnlineMapsMarker3DPropertyDrawer.isEnabledChanged.HasValue) control.markers3D[i].enabled = OnlineMapsMarker3DPropertyDrawer.isEnabledChanged.Value;
+                if (OnlineMapsMarker3DPropertyDrawer.isRotationChanged.HasValue) control.markers3D[i].rotationY = OnlineMapsMarker3DPropertyDrawer.isRotationChanged.Value;
 
                 EditorGUILayout.EndHorizontal();
             }
@@ -130,7 +131,8 @@ public class OnlineMapsTextureControlEditor : Editor
 
             if (removedIndex != -1)
             {
-                ArrayUtility.RemoveAt(ref control.markers3D, removedIndex);
+                if (Application.isPlaying) OnlineMapsControlBase3D.instance.RemoveMarker3DAt(removedIndex);
+                else ArrayUtility.RemoveAt(ref control.markers3D, removedIndex);
                 dirty = true;
             }
 
@@ -143,15 +145,16 @@ public class OnlineMapsTextureControlEditor : Editor
                     OnlineMapsMarker3D marker = new OnlineMapsMarker3D
                     {
                         position = control.GetComponent<OnlineMaps>().position,
-                        scale = pMarker3DScale.floatValue
+                        scale = pMarker3DScale.floatValue,
+                        prefab = pDefault3DMarker.objectReferenceValue != null? pDefault3DMarker.objectReferenceValue as GameObject: null
                     };
                     ArrayUtility.Add(ref control.markers3D, marker);
                 }
                 else
                 {
-                    GameObject prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    GameObject prefab = pDefault3DMarker.objectReferenceValue != null ? pDefault3DMarker.objectReferenceValue as GameObject : GameObject.CreatePrimitive(PrimitiveType.Cube);
                     control.AddMarker3D(OnlineMaps.instance.position, prefab);
-                    OnlineMapsUtils.DestroyImmediate(prefab);
+                    if (pDefault3DMarker.objectReferenceValue == null) OnlineMapsUtils.DestroyImmediate(prefab);
                 }
                 dirty = true;
             }
@@ -214,13 +217,13 @@ public class OnlineMapsTextureControlEditor : Editor
         float oldWidth = EditorGUIUtility.labelWidth;
         EditorGUIUtility.labelWidth = 170;
 
-        OnlineMaps api = OnlineMapsControlBaseEditor.GetOnlineMaps(control);
-        OnlineMapsControlBaseEditor.CheckTarget(api, OnlineMapsTarget.texture, ref dirty);
+        OnlineMaps map = OnlineMapsControlBaseEditor.GetOnlineMaps(control);
+        OnlineMapsControlBaseEditor.CheckTarget(map, OnlineMapsTarget.texture, ref dirty);
 
         OnlineMapsControlBaseEditor.CheckMultipleInstances(control, ref dirty);
 
         DrawPropsGUI(ref dirty);
-        DrawMarkersGUI(ref dirty);
+        DrawMarkers3DGUI(ref dirty);
 
         EditorGUIUtility.labelWidth = oldWidth;
 
@@ -228,7 +231,7 @@ public class OnlineMapsTextureControlEditor : Editor
 
         if (dirty)
         {
-            EditorUtility.SetDirty(api);
+            EditorUtility.SetDirty(map);
             EditorUtility.SetDirty(control);
             if (!Application.isPlaying)
             {
@@ -236,7 +239,7 @@ public class OnlineMapsTextureControlEditor : Editor
                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 #endif
             }
-            else api.Redraw();
+            else map.Redraw();
         }
     }
 }

@@ -65,6 +65,9 @@ public class OnlineMapsXMLList : IEnumerable
 
     public IEnumerator GetEnumerator()
     {
-        return new OnlineMapsXMLListEnum(this);
+        for (int i = 0; i < count; i++)
+        {
+            yield return this[i];
+        }
     }
 }

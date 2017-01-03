@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 /// <summary>
@@ -18,10 +16,14 @@ public class OnlineMapsLocationService : MonoBehaviour
 {
     private static OnlineMapsLocationService _instance;
 
+    public delegate void OnGetLocationDelegate(out float longitude, out float latitude);
+
     /// <summary>
     /// This event is called when the user rotates the device.
     /// </summary>
     public Action<float> OnCompassChanged;
+
+    public OnGetLocationDelegate OnGetLocation;
 
     /// <summary>
     /// This event is called when changed your GPS location.
@@ -53,6 +55,8 @@ public class OnlineMapsLocationService : MonoBehaviour
     /// </summary>
     public float desiredAccuracy = 10;
 
+    public bool disableEmulatorInPublish = true;
+
     /// <summary>
     /// Emulated compass trueHeading.\n
     /// Do not use.\n
@@ -70,7 +74,7 @@ public class OnlineMapsLocationService : MonoBehaviour
     /// <summary>
     /// Specifies whether to search for a location by IP.
     /// </summary>
-    public bool findLocationByIP = true;
+    public bool findLocationByIP = false;
 
     /// <summary>
     /// Tooltip of the marker.
@@ -106,7 +110,7 @@ public class OnlineMapsLocationService : MonoBehaviour
     /// <summary>
     /// Current GPS coordinates.\n
     /// <strong>Important: position not available Start, because GPS is not already initialized. \n
-    /// Use OnLocationChanged event, to determine the initialization of GPS.</strong>
+    /// Use OnLocationInited event, to determine the initialization of GPS.</strong>
     /// </summary>
     public Vector2 position = Vector2.zero;
 
@@ -155,9 +159,6 @@ public class OnlineMapsLocationService : MonoBehaviour
     private double lastLocationInfoTimestamp;
     private float _speed = 0;
     private bool started = false;
-
-    //private string errorMessage = "";
-    private OnlineMapsWWW findByIPRequest;
 
     /// <summary>
     /// Instance of LocationService.
@@ -209,11 +210,6 @@ public class OnlineMapsLocationService : MonoBehaviour
         if (api != null) api.OnChangePosition += OnChangePosition;
     }
 
-    /*private void OnGUI()
-    {
-        if (!string.IsNullOrEmpty(errorMessage)) GUI.Label(new Rect(5, 5, Screen.width, 300), errorMessage);
-    }*/
-
     public OnlineMapsXML Save(OnlineMapsXML parent)
     {
         OnlineMapsXML element = parent.Create("LocationService");
@@ -257,10 +253,61 @@ public class OnlineMapsLocationService : MonoBehaviour
         if (findLocationByIP)
         {
 #if UNITY_EDITOR || !UNITY_WEBGL
-            findByIPRequest = OnlineMapsUtils.GetWWW("http://www.geoplugin.net/php.gp");
+            OnlineMapsWWW findByIPRequest = OnlineMapsUtils.GetWWW("https://ipinfo.io/json");
 #else
-            findByIPRequest = OnlineMapsUtils.GetWWW("http://service.infinity-code.com/getlocation.php");
+            OnlineMapsWWW findByIPRequest = OnlineMapsUtils.GetWWW("http://service.infinity-code.com/getlocation.php");
 #endif
+            findByIPRequest.OnComplete += OnFindLocationByIPComplete;
+        }
+    }
+
+    private void OnFindLocationByIPComplete(OnlineMapsWWW www)
+    {
+        if (!string.IsNullOrEmpty(www.error)) return;
+
+        string response = www.text;
+        if (string.IsNullOrEmpty(response)) return;
+
+        int index = 0;
+        string s = "\"loc\": \"";
+        float lat = 0, lng = 0;
+        bool finded = false;
+        for (int i = 0; i < response.Length; i++)
+        {
+            if (response[i] == s[index])
+            {
+                index++;
+                if (index >= s.Length)
+                {
+                    i++;
+                    int startIndex = i;
+                    while (true)
+                    {
+                        char c = response[i];
+                        if (c == ',')
+                        {
+                            lat = float.Parse(response.Substring(startIndex, i - startIndex));
+                            i++;
+                            startIndex = i;
+                        }
+                        else if (c == '"')
+                        {
+                            lng = float.Parse(response.Substring(startIndex, i - startIndex));
+                            finded = true;
+                            break;
+                        }
+                        i++;
+                    }
+                    break;
+                }
+            }
+            else index = 0;
+        }
+
+        if (finded)
+        {
+            if (useGPSEmulator) emulatorPosition = new Vector2(lng, lat);
+            else if (position == Vector2.zero) position = new Vector2(lng, lat);
         }
     }
 
@@ -313,33 +360,9 @@ public class OnlineMapsLocationService : MonoBehaviour
             }
 
 #if !UNITY_EDITOR
-            useGPSEmulator = false;
+            if (disableEmulatorInPublish) useGPSEmulator = false;
 #endif
             bool positionChanged = false;
-
-            if (findByIPRequest != null && findByIPRequest.isDone)
-            {
-                if (string.IsNullOrEmpty(findByIPRequest.error))
-                {
-                    string response = findByIPRequest.text;
-                    Match latMath = Regex.Match(response, "geoplugin_latitude\";.*?\"(\\d*\\.\\d*)\"");
-                    Match lngMath = Regex.Match(response, "geoplugin_longitude\";.*?\"(\\d*\\.\\d*)\"");
-
-                    if (latMath.Success && lngMath.Success)
-                    {
-                        float lng = float.Parse(lngMath.Groups[1].Value);
-                        float lat = float.Parse(latMath.Groups[1].Value);
-
-                        if (useGPSEmulator) emulatorPosition = new Vector2(lng, lat);
-                        else if (position == Vector2.zero)
-                        {
-                            position = new Vector2(lng, lat);
-                            positionChanged = true;
-                        }
-                    }
-                }
-                findByIPRequest = null;
-            }
 
             if (createMarkerInUserPosition && _marker == null && (useGPSEmulator || position != Vector2.zero)) UpdateMarker();
 
@@ -347,20 +370,13 @@ public class OnlineMapsLocationService : MonoBehaviour
 
             bool compassChanged = false;
 
-#if !UNITY_EDITOR
-	        UpdateCompassFromInput(ref compassChanged);
-#else
             if (useGPSEmulator) UpdateCompassFromEmulator(ref compassChanged);
             else UpdateCompassFromInput(ref compassChanged);
-#endif
 
-#if !UNITY_EDITOR
             UpdateSpeed();
-            UpdatePositionFromInput(ref positionChanged);
-#else
+
             if (useGPSEmulator) UpdatePositionFromEmulator(ref positionChanged);
             else UpdatePositionFromInput(ref positionChanged);
-#endif
 
             if (positionChanged)
             {
@@ -503,14 +519,25 @@ public class OnlineMapsLocationService : MonoBehaviour
 
     private void UpdatePositionFromInput(ref bool positionChanged)
     {
-        if (position.x != Input.location.lastData.longitude)
+        float longitude;
+        float latitude;
+
+        if (OnGetLocation != null) OnGetLocation(out longitude, out latitude);
+        else
         {
-            position.x = Input.location.lastData.longitude;
+            LocationInfo data = Input.location.lastData;
+            longitude = data.longitude;
+            latitude = data.latitude;
+        }
+
+        if (position.x != longitude)
+        {
+            position.x = longitude;
             positionChanged = true;
         }
-        if (position.y != Input.location.lastData.latitude)
+        if (position.y != latitude)
         {
-            position.y = Input.location.lastData.latitude;
+            position.y = latitude;
             positionChanged = true;
         }
     }
@@ -520,11 +547,15 @@ public class OnlineMapsLocationService : MonoBehaviour
         LocationInfo lastData = Input.location.lastData;
         if (lastLocationInfoTimestamp == lastData.timestamp) return;
 
+        float longitude = lastData.longitude; 
+        float latitude = lastData.latitude;
+        if (OnGetLocation != null) OnGetLocation(out longitude, out latitude);
+
         lastLocationInfoTimestamp = lastData.timestamp;
 
         if (lastPositions == null) lastPositions = new List<LastPositionItem>();
 
-        lastPositions.Add(new LastPositionItem(lastData.longitude, lastData.latitude, lastData.timestamp));
+        lastPositions.Add(new LastPositionItem(longitude, latitude, lastData.timestamp));
         while (lastPositions.Count > maxPositionCount) lastPositions.RemoveAt(0);
 
         if (lastPositions.Count < 2)

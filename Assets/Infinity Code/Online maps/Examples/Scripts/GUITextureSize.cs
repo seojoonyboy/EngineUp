@@ -8,26 +8,42 @@ namespace InfinityCode.OnlineMapsDemos
     [AddComponentMenu("Infinity Code/Online Maps/Demos/GUITextureSize")]
     public class GUITextureSize : MonoBehaviour
     {
+        private int screenWidth;
+        private int screenHeight;
+
         private void Start()
         {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+            UpdateTexture();
+        }
+
+        private void Update()
+        {
+            if (screenWidth != Screen.width || screenHeight != Screen.height) UpdateTexture();
+        }
+
+        private void UpdateTexture()
+        {
+#if UNITY_4_6
             GUITexture gt = guiTexture;
             Rect pi = guiTexture.pixelInset;
 #else
             GUITexture gt = GetComponent<GUITexture>();
             Rect pi = gt.pixelInset;
 #endif
-            float sw = Screen.width / (float) gt.texture.width;
-            float sh = Screen.height / (float) gt.texture.height;
+            screenWidth = Screen.width;
+            screenHeight = Screen.height;
+
+            float sw = screenWidth / (float) gt.texture.width;
+            float sh = screenHeight / (float) gt.texture.height;
 
             if (sw > sh)
             {
-                pi.width = Screen.width;
+                pi.width = screenWidth;
                 pi.height = sw * gt.texture.height;
             }
             else
             {
-                pi.height = Screen.height;
+                pi.height = screenHeight;
                 pi.width = sh * gt.texture.width;
             }
 

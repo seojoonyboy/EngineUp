@@ -160,11 +160,11 @@ public static class OnlineMapsPrefs
 
             marker.SetPosition(mx, my);
             
-            Debug.Log(m["Range"].outerXml);
             marker.range = m.Get<OnlineMapsRange>("Range");
             marker.label = m.Get<string>("Label");
             marker.prefab = GetObject(m.Get<int>("Prefab")) as GameObject;
             marker.rotation = Quaternion.Euler(m.Get<Vector3>("Rotation"));
+            marker.scale = m.Get<float>("Scale");
             markers.Add(marker);
         }
         control.markers3D = markers.ToArray();
@@ -219,7 +219,7 @@ public static class OnlineMapsPrefs
                 }
             }
 
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+#if UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
 #else
             if (EditorPrefs.HasKey("OnlineMapsRefreshAssets"))
             {

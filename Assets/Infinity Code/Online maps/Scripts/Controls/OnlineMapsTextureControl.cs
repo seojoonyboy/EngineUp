@@ -32,16 +32,15 @@ public class OnlineMapsTextureControl : OnlineMapsControlBase3D
         r.x = r.x - 0.5f;
         r.y = r.y - 0.5f;
 
-        int countX = api.width / OnlineMapsUtils.tileSize;
-        int countY = api.height / OnlineMapsUtils.tileSize;
+        int countX = map.width / OnlineMapsUtils.tileSize;
+        int countY = map.height / OnlineMapsUtils.tileSize;
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetTilePosition(out px, out py);
 
         px += countX * r.x;
         py -= countY * r.y;
-        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
+        map.projection.TileToCoordinates(px, py, map.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
@@ -60,16 +59,15 @@ public class OnlineMapsTextureControl : OnlineMapsControlBase3D
         r.x = r.x - 0.5f;
         r.y = r.y - 0.5f;
 
-        int countX = api.width / OnlineMapsUtils.tileSize;
-        int countY = api.height / OnlineMapsUtils.tileSize;
+        int countX = map.width / OnlineMapsUtils.tileSize;
+        int countY = map.height / OnlineMapsUtils.tileSize;
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetTilePosition(out px, out py);
 
         px += countX * r.x;
         py -= countY * r.y;
-        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
+        map.projection.TileToCoordinates(px, py, map.zoom, out lng, out lat);
         return true;
     }
 

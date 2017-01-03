@@ -48,19 +48,16 @@ namespace InfinityCode.OnlineMapsExamples
             // Gets rotationRate
             Vector3 rate = Input.gyro.rotationRate;
 
-            // Gets map position
-            double lng, lat;
-            map.GetPosition(out lng, out lat);
-
-            // Converts the geographic coordinates to the tile coordinates.
+            // Gets map tile position
             double tx, ty;
-            map.projection.CoordinatesToTile(lng, lat, map.zoom, out tx, out ty);
+            map.GetTilePosition(out tx, out ty);
 
             // Move tile coordinates
             tx += rate.x * speed;
             ty += rate.y * speed;
 
             // Converts the tile coordinates to the geographic coordinates.
+            double lng, lat;
             map.projection.TileToCoordinates(tx, ty, map.zoom, out lng, out lat);
 
             // Set map position

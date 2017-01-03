@@ -60,7 +60,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void Start()
         {
             // Looking for a route between locations.
-            OnlineMapsFindDirection.Find(fromPlace, toPlace).OnComplete += OnComplete;
+            OnlineMapsGoogleDirections.Find(fromPlace, toPlace).OnComplete += OnComplete;
         }
 
         private void OnComplete(string response)

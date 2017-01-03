@@ -20,7 +20,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void ChangeMapTexture()
         {
             // Change display texture
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+#if UNITY_4_6
             GUITexture gt = guiTexture;
 #else
             GUITexture gt = GetComponent<GUITexture>();
@@ -45,7 +45,7 @@ namespace InfinityCode.OnlineMapsExamples
 
         private void Start()
         {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+#if UNITY_4_6
             GUITexture gt = guiTexture;
 #else
             GUITexture gt = GetComponent<GUITexture>();

@@ -29,7 +29,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void Start()
         {
             // Get instance of OnlineMapsControlBase3D (Texture or Tileset)
-            OnlineMapsControlBase3D control = GetComponent<OnlineMapsControlBase3D>();
+            OnlineMapsControlBase3D control = OnlineMapsControlBase3D.instance;
 
             if (control == null)
             {

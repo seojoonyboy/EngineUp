@@ -14,7 +14,7 @@ namespace InfinityCode.OnlineMapsExamples
     {
         private void Start()
         {
-            OnlineMaps api = OnlineMaps.instance;
+            OnlineMaps map = OnlineMaps.instance;
 
             List<Vector2> line = new List<Vector2>
             {
@@ -35,14 +35,14 @@ namespace InfinityCode.OnlineMapsExamples
             };
 
             // Draw line
-            api.AddDrawingElement(new OnlineMapsDrawingLine(line, Color.green, 5));
+            map.AddDrawingElement(new OnlineMapsDrawingLine(line, Color.green, 5));
 
             // Draw filled transparent poly
-            api.AddDrawingElement(new OnlineMapsDrawingPoly(poly, Color.red, 1, new Color(1, 1, 1, 0.5f)));
+            map.AddDrawingElement(new OnlineMapsDrawingPoly(poly, Color.red, 1, new Color(1, 1, 1, 0.5f)));
 
             // Draw filled rectangle
             // (position, size, borderColor, borderWeight, backgroundColor)
-            api.AddDrawingElement(new OnlineMapsDrawingRect(new Vector2(2, 2), new Vector2(1, 1), Color.green, 1,
+            map.AddDrawingElement(new OnlineMapsDrawingRect(new Vector2(2, 2), new Vector2(1, 1), Color.green, 1,
                 Color.blue));
         }
     }

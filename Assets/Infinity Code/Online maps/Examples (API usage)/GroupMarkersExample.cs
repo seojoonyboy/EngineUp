@@ -54,11 +54,9 @@ namespace InfinityCode.OnlineMapsExamples
 
         private void GroupMarkers()
         {
-            OnlineMapsProjection projection = OnlineMaps.instance.projection;
-
             List<MarkerGroup> groups = new List<MarkerGroup>();
 
-            for (int zoom = 20; zoom >= 3; zoom--)
+            for (int zoom = OnlineMaps.MAXZOOM; zoom >= 3; zoom--)
             {
                 List<OnlineMapsMarker> ms = markers.Select(m => m).ToList();
 
@@ -66,11 +64,8 @@ namespace InfinityCode.OnlineMapsExamples
                 {
                     OnlineMapsMarker marker = ms[j];
                     MarkerGroup group = null;
-                    double mx, my;
-                    marker.GetPosition(out mx, out my);
-
                     double px, py;
-                    projection.CoordinatesToTile(mx, my, zoom, out px, out py);
+                    marker.GetTilePosition(out px, out py);
 
                     int k = j + 1;
 
@@ -78,11 +73,8 @@ namespace InfinityCode.OnlineMapsExamples
                     {
                         OnlineMapsMarker marker2 = ms[k];
 
-                        double m2x, m2y;
-                        marker2.GetPosition(out m2x, out m2y);
-
                         double p2x, p2y;
-                        projection.CoordinatesToTile(m2x, m2y, zoom, out p2x, out p2y);
+                        marker2.GetTilePosition(out p2x, out p2y);
 
                         if (OnlineMapsUtils.Magnitude(px, py, p2x, p2y) < distance)
                         {

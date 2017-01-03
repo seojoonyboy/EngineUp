@@ -41,7 +41,7 @@ public class OnlineMapsMarkerBillboard : OnlineMapsMarkerInstanceBase
         if (texture != null)
         {
             spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0));
-#if !UNITY_4_3 && !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#if !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
             spriteRenderer.flipX = true;
 #endif
         }

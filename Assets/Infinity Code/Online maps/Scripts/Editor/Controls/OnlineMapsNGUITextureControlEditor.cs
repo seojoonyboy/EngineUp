@@ -1,7 +1,7 @@
 ﻿/*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
-#if !UNITY_4_3 && !UNITY_4_5 && !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#if !UNITY_4_6 && !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
 #define UNITY_5_3P
 #endif
 
@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 #endif
 
 
-[CustomEditor(typeof(OnlineMapsNGUITextureControl))]
+[CustomEditor(typeof(OnlineMapsNGUITextureControl), true)]
 public class OnlineMapsNGUITextureControlEditor : Editor
 {
 #if NGUI
@@ -24,9 +24,9 @@ public class OnlineMapsNGUITextureControlEditor : Editor
 #if NGUI
     private void OnEnable()
     {
-        OnlineMaps api = OnlineMapsControlBaseEditor.GetOnlineMaps(target as OnlineMapsControlBase);
+        OnlineMaps map = OnlineMapsControlBaseEditor.GetOnlineMaps(target as OnlineMapsControlBase);
 
-        if (api.GetComponent<BoxCollider>() == null) noColliderWarning = true;
+        if (map.GetComponent<BoxCollider>() == null) noColliderWarning = true;
     }
 #endif
 
@@ -37,8 +37,8 @@ public class OnlineMapsNGUITextureControlEditor : Editor
         OnlineMapsControlBase control = target as OnlineMapsControlBase;
         OnlineMapsControlBaseEditor.CheckMultipleInstances(control, ref dirty);
 
-        OnlineMaps api = OnlineMapsControlBaseEditor.GetOnlineMaps(control);
-        OnlineMapsControlBaseEditor.CheckTarget(api, OnlineMapsTarget.texture, ref dirty);
+        OnlineMaps map = OnlineMapsControlBaseEditor.GetOnlineMaps(control);
+        OnlineMapsControlBaseEditor.CheckTarget(map, OnlineMapsTarget.texture, ref dirty);
 
 #if !NGUI
         if (GUILayout.Button("Enable NGUI"))
@@ -53,8 +53,8 @@ public class OnlineMapsNGUITextureControlEditor : Editor
             EditorGUILayout.HelpBox("Potential problem detected:\nGameObject has no BoxCollider, so you can not control the map.", MessageType.Warning);
             if (GUILayout.Button("Add BoxCollider"))
             {
-                BoxCollider bc = api.gameObject.AddComponent<BoxCollider>();
-                UITexture uiTexture = api.GetComponent<UITexture>();
+                BoxCollider bc = map.gameObject.AddComponent<BoxCollider>();
+                UITexture uiTexture = map.GetComponent<UITexture>();
                 if (uiTexture != null) bc.size = uiTexture.localSize;
             }
 
@@ -66,7 +66,7 @@ public class OnlineMapsNGUITextureControlEditor : Editor
 
         if (dirty)
         {
-            EditorUtility.SetDirty(api);
+            EditorUtility.SetDirty(map);
             EditorUtility.SetDirty(control);
             if (!Application.isPlaying)
             {
@@ -74,7 +74,7 @@ public class OnlineMapsNGUITextureControlEditor : Editor
                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 #endif
             }
-            else api.Redraw();
+            else map.Redraw();
         }
     }
 }

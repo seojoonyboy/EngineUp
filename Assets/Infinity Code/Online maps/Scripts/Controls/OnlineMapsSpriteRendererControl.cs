@@ -30,7 +30,7 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
         {
             if (_cl == null)
             {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
+#if UNITY_4_6 || UNITY_4_7
                 _cl = collider;
 #else
                 _cl = GetComponent<Collider>();
@@ -46,7 +46,7 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
         {
             if (_cl2D == null)
             {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
+#if UNITY_4_6 || UNITY_4_7
                 _cl2D = collider2D;
 #else
                 _cl2D = GetComponent<Collider2D>();
@@ -56,7 +56,6 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
         }
     }
 
-#if !UNITY_4_3
     public override Vector2 GetCoords(Vector2 position)
     {
         Vector2 coords2D = GetCoords2D(position);
@@ -75,25 +74,17 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
 
         Vector2 r = new Vector3(size.x - .5f, size.y - .5f);
 
-        int countX = api.width / OnlineMapsUtils.tileSize;
-        int countY = api.height / OnlineMapsUtils.tileSize;
+        int countX = map.width / OnlineMapsUtils.tileSize;
+        int countY = map.height / OnlineMapsUtils.tileSize;
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
-        //Vector2 p = OnlineMapsUtils.LatLongToTilef(api.position, api.zoom);
+        map.GetTilePosition(out px, out py);
         px -= countX * r.x;
         py += countY * r.y;
 
-        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
+        map.projection.TileToCoordinates(px, py, map.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
-#else
-    public override Vector2 GetCoords(Vector2 position)
-    {
-        return GetCoords3D(position);
-    }
-#endif
 
     private Vector2 GetCoords3D(Vector2 position)
     {
@@ -109,16 +100,15 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
 
         Vector2 r = new Vector3((size.x - .5f), (size.y - .5f));
 
-        int countX = api.width / OnlineMapsUtils.tileSize;
-        int countY = api.height / OnlineMapsUtils.tileSize;
+        int countX = map.width / OnlineMapsUtils.tileSize;
+        int countY = map.height / OnlineMapsUtils.tileSize;
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetTilePosition(out px, out py);
         px -= countX * r.x;
         py += countY * r.y;
         
-        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
+        map.projection.TileToCoordinates(px, py, map.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
@@ -136,16 +126,15 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
 
         Vector2 r = new Vector3(size.x - .5f, size.y - .5f);
 
-        int countX = api.width / OnlineMapsUtils.tileSize;
-        int countY = api.height / OnlineMapsUtils.tileSize;
+        int countX = map.width / OnlineMapsUtils.tileSize;
+        int countY = map.height / OnlineMapsUtils.tileSize;
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetTilePosition(out px, out py);
         px -= countX * r.x;
         py += countY * r.y;
 
-        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
+        map.projection.TileToCoordinates(px, py, map.zoom, out lng, out lat);
         return true;
     }
 
@@ -163,7 +152,7 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
     {
         base.SetTexture(texture);
         MaterialPropertyBlock props = new MaterialPropertyBlock();
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
+#if UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2
         props.AddTexture("_MainTex", texture);
 #else
         props.SetTexture("_MainTex", texture);

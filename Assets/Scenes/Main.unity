@@ -1301,7 +1301,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: aspectRatio
-      value: 3.5
+      value: 3.6349206
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: mFontSize
@@ -2113,7 +2113,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 18.48634
+  aspectRatio: 5.7377048
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -2316,7 +2316,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 40.807693
+  aspectRatio: 12.346154
   mType: 0
   mFillDirection: 4
   mFillAmount: 1
@@ -5279,7 +5279,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: aspectRatio
-      value: 3.5
+      value: 3.6349206
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: mFontSize
@@ -6464,9 +6464,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 786515367}
   - 114: {fileID: 786515368}
-  - 114: {fileID: 786515369}
   - 114: {fileID: 786515371}
-  - 65: {fileID: 786515370}
+  - 114: {fileID: 786515370}
+  - 65: {fileID: 786515369}
   - 114: {fileID: 786515372}
   m_Layer: 5
   m_Name: Map
@@ -6549,7 +6549,38 @@ MonoBehaviour:
   mShader: {fileID: 4800000, guid: e75727d9555d9d14ca51d91908c681bc, type: 3}
   mBorder: {x: 0, y: 0, z: 0, w: 0}
   mFixedAspect: 0
---- !u!114 &786515369
+--- !u!65 &786515369
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 786515366}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1050, y: 495, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &786515370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 786515366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a138987a59cbc3841956fbb07e86bb62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeTexture: {fileID: 0}
+  allowAddMarkerByM: 1
+  allowZoom: 1
+  allowUserControl: 1
+  isMapDrag: 0
+  invertTouchZoom: 0
+  zoomInOnDoubleClick: 1
+  zoomMode: 0
+--- !u!114 &786515371
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -6563,6 +6594,7 @@ MonoBehaviour:
   allowRedraw: 1
   control: {fileID: 0}
   customProviderURL: http://localhost/{zoom}/{y}/{x}
+  customTrafficProviderURL: http://localhost/{zoom}/{y}/{x}
   defaultMarkerAlign: 7
   defaultMarkerTexture: {fileID: 2800000, guid: ea7eb0aa8eaab054a91d4219f9719f63,
     type: 3}
@@ -6574,7 +6606,6 @@ MonoBehaviour:
   language: en
   lockRedraw: 0
   markers: []
-  needGC: 0
   needRedraw: 1
   notInteractUnderGUI: 1
   provider: 2
@@ -6606,6 +6637,7 @@ MonoBehaviour:
   tooltipBackgroundTexture: {fileID: 2800000, guid: a8d1734e646100c4e83635fecf978e15,
     type: 3}
   traffic: 0
+  trafficProviderID: googlemaps
   type: 0
   useCurrentZoomTiles: 0
   useSoftwareJPEGDecoder: 0
@@ -6613,41 +6645,11 @@ MonoBehaviour:
   useWebplayerProxy: 1
   webplayerProxyURL: http://service.infinity-code.com/redirect.php?
   width: 0
-  latitude: 37.87936
+  latitude: 37.87919
   longitude: 127.7418
   _position: {x: 0, y: 0}
-  _zoom: 14
---- !u!65 &786515370
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 786515366}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1038.5, y: 487.9, z: 0}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &786515371
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 786515366}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a138987a59cbc3841956fbb07e86bb62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activeTexture: {fileID: 0}
-  allowAddMarkerByM: 1
-  allowZoom: 1
-  allowUserControl: 1
-  isMapDrag: 0
-  invertTouchZoom: 0
-  zoomInOnDoubleClick: 1
-  zoomMode: 0
+  _zoom: 18
+  _activeTypeSettings: 
 --- !u!114 &786515372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8672,7 +8674,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 40.807693
+  aspectRatio: 12.346154
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -13853,7 +13855,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 11.521276
+  aspectRatio: 3.6489363
   mType: 1
   mFillDirection: 4
   mFillAmount: 1

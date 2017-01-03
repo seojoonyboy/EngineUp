@@ -27,10 +27,10 @@ namespace InfinityCode.OnlineMapsExamples
 
         private void Start()
         {
-            OnlineMaps api = OnlineMaps.instance;
-            marker = api.AddMarker(api.position);
-            fromPosition = api.topLeftPosition;
-            toPosition = api.bottomRightPosition;
+            OnlineMaps map = OnlineMaps.instance;
+            marker = map.AddMarker(map.position);
+            fromPosition = map.topLeftPosition;
+            toPosition = map.bottomRightPosition;
         }
 
         private void Update()

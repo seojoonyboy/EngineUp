@@ -1,14 +1,14 @@
 ﻿/*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
-#if !UNITY_4_3 && !UNITY_4_5
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-using Image = UnityEngine.UI.Image;
-using Sprite = UnityEngine.Sprite;
+#if CURVEDUI
+using CurvedUI;
+#endif
 
 /// <summary>
 /// Class control the map for the uGUI UI Image.
@@ -17,6 +17,10 @@ using Sprite = UnityEngine.Sprite;
 public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
 {
     private Image image;
+
+#if CURVEDUI
+    private CurvedUISettings curvedUI;
+#endif
 
     /// <summary>
     /// Singleton instance of OnlineMapsUIImageControl control.
@@ -30,7 +34,7 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
     {
         get
         {
-            if (image.canvas.renderMode == UnityEngine.RenderMode.ScreenSpaceOverlay) return null;
+            if (image.canvas.renderMode == RenderMode.ScreenSpaceOverlay) return null;
             return image.canvas.worldCamera;
         }
     }
@@ -57,10 +61,24 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
 
     public override Vector2 GetCoords(Vector2 position)
     {
-        if (!RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, position, worldCamera)) return Vector2.zero;
-
         Vector2 point;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(image.rectTransform, position, worldCamera, out point);
+
+#if CURVEDUI
+        if (curvedUI != null)
+        {
+            Camera activeCamera = image.canvas.renderMode == RenderMode.ScreenSpaceOverlay ? Camera.main : image.canvas.worldCamera;
+            if (!curvedUI.RaycastToCanvasSpace(activeCamera.ScreenPointToRay(position), out point)) return Vector2.zero;
+            Vector3 worldPoint = image.canvas.transform.localToWorldMatrix.MultiplyPoint(point);
+            point = image.rectTransform.worldToLocalMatrix.MultiplyPoint(worldPoint);
+        }
+        else
+        {
+#endif
+            if (!RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, position, worldCamera)) return Vector2.zero;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(image.rectTransform, position, worldCamera, out point);
+#if CURVEDUI
+        }
+#endif
 
         Rect rect = image.GetPixelAdjustedRect();
 
@@ -70,27 +88,42 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
 
         Vector2 r = new Vector2(size.x - .5f, size.y - .5f);
 
-        int countX = api.width / OnlineMapsUtils.tileSize;
-        int countY = api.height / OnlineMapsUtils.tileSize;
+        int countX = map.width / OnlineMapsUtils.tileSize;
+        int countY = map.height / OnlineMapsUtils.tileSize;
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetTilePosition(out px, out py);
 
         px -= countX * r.x;
         py += countY * r.y;
 
-        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
+        map.projection.TileToCoordinates(px, py, map.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
     public override bool GetCoords(out double lng, out double lat, Vector2 position)
     {
         lng = lat = 0;
-        if (!RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, position, worldCamera)) return false;
-
+        
         Vector2 point;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(image.rectTransform, position, worldCamera, out point);
+
+#if CURVEDUI
+        if (curvedUI != null)
+        {
+            Camera activeCamera = image.canvas.renderMode == RenderMode.ScreenSpaceOverlay ? Camera.main : image.canvas.worldCamera;
+
+            if (!curvedUI.RaycastToCanvasSpace(activeCamera.ScreenPointToRay(position), out point)) return false;
+            Vector3 worldPoint = image.canvas.transform.localToWorldMatrix.MultiplyPoint(point);
+            point = image.rectTransform.worldToLocalMatrix.MultiplyPoint(worldPoint);
+        }
+        else
+        {
+#endif
+            if (!RectTransformUtility.RectangleContainsScreenPoint(image.rectTransform, position, worldCamera)) return false;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(image.rectTransform, position, worldCamera, out point);
+#if CURVEDUI
+        }
+#endif
 
         Rect rect = image.GetPixelAdjustedRect();
 
@@ -100,17 +133,16 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
 
         Vector2 r = new Vector2(size.x - .5f, size.y - .5f);
 
-        int countX = api.width / OnlineMapsUtils.tileSize;
-        int countY = api.height / OnlineMapsUtils.tileSize;
+        int countX = map.width / OnlineMapsUtils.tileSize;
+        int countY = map.height / OnlineMapsUtils.tileSize;
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetTilePosition(out px, out py);
 
         px -= countX * r.x;
         py += countY * r.y;
 
-        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
+        map.projection.TileToCoordinates(px, py, map.zoom, out lng, out lat);
         return true;
     }
 
@@ -136,6 +168,13 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
     {
         Vector2 inputPosition = GetInputPosition();
 
+#if CURVEDUI
+        if (curvedUI != null)
+        {
+            Camera activeCamera = image.canvas.renderMode == RenderMode.ScreenSpaceOverlay ? Camera.main : image.canvas.worldCamera;
+            return curvedUI.RaycastToCanvasSpace(activeCamera.ScreenPointToRay(inputPosition), out inputPosition);
+        }
+#endif
         PointerEventData pe = new PointerEventData(EventSystem.current);
         pe.position = inputPosition;
         List<RaycastResult> hits = new List<RaycastResult>();
@@ -148,6 +187,13 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
 
     protected override bool HitTest(Vector2 position)
     {
+#if CURVEDUI
+        if (curvedUI != null)
+        {
+            Camera activeCamera = image.canvas.renderMode == RenderMode.ScreenSpaceOverlay ? Camera.main : image.canvas.worldCamera;
+            return curvedUI.RaycastToCanvasSpace(activeCamera.ScreenPointToRay(position), out position);
+        }        
+#endif
         PointerEventData pe = new PointerEventData(EventSystem.current);
         pe.position = position;
         List<RaycastResult> hits = new List<RaycastResult>();
@@ -166,6 +212,10 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
             Debug.LogError("Can not find Image.");
             OnlineMapsUtils.DestroyImmediate(this);
         }
+
+#if CURVEDUI
+        curvedUI = image.canvas.GetComponent<CurvedUISettings>();
+#endif
     }
 
     public override void SetTexture(Texture2D texture)
@@ -174,4 +224,3 @@ public class OnlineMapsUIImageControl : OnlineMapsControlBase2D
         image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
     }
 }
-#endif

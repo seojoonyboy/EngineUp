@@ -13,11 +13,10 @@ using Random = UnityEngine.Random;
 [AddComponentMenu("")]
 public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
 {
-    //private OnlineMapsOSMWay way;
     public static List<int> roofIndices;
-    public static List<OnlineMapsOSMNode> usedNodes;
+    private static Shader defaultShader;
 
-    private static void AnalizeHouseRoofType(OnlineMapsOSMWay way, ref float baseHeight, ref OnlineMapsBuildingRoofType roofType, ref float roofHeight)
+    private static void AnalizeHouseRoofType(OnlineMapsOSMWay way, ref float baseHeight, ref RoofType roofType, ref float roofHeight)
     {
         string roofShape = way.GetTagValue("roof:shape");
         string roofHeightStr = way.GetTagValue("roof:height");
@@ -28,21 +27,21 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
             {
                 GetHeightFromString(roofHeightStr, ref roofHeight);
                 baseHeight -= roofHeight;
-                roofType = OnlineMapsBuildingRoofType.dome;
+                roofType = RoofType.dome;
             }
         }
         else if (!String.IsNullOrEmpty(roofHeightStr))
         {
             GetHeightFromString(roofHeightStr, ref roofHeight);
             baseHeight -= roofHeight;
-            roofType = OnlineMapsBuildingRoofType.dome;
+            roofType = RoofType.dome;
         }
         else if (!String.IsNullOrEmpty(minHeightStr))
         {
             float totalHeight = baseHeight;
             GetHeightFromString(minHeightStr, ref baseHeight);
             roofHeight = totalHeight - baseHeight;
-            roofType = OnlineMapsBuildingRoofType.dome;
+            roofType = RoofType.dome;
         }
     }
 
@@ -90,7 +89,7 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
     {
         if (CheckIgnoredBuildings(way)) return null;
 
-        if (usedNodes == null) usedNodes = new List<OnlineMapsOSMNode>(30);
+        List<OnlineMapsOSMNode> usedNodes = new List<OnlineMapsOSMNode>(30);
         way.GetNodes(nodes, usedNodes);
         List<Vector3> points = GetLocalPoints(usedNodes);
 
@@ -119,14 +118,15 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         if (points.Count < 3) return null;
 
         Vector4 cp = new Vector4(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
-        foreach (Vector3 point in points)
+        for (int i = 0; i < points.Count; i++)
         {
+            Vector3 point = points[i];
             if (point.x < cp.x) cp.x = point.x;
             if (point.z < cp.y) cp.y = point.z;
             if (point.x > cp.z) cp.z = point.x;
             if (point.z > cp.w) cp.w = point.z;
         }
-        
+
         Vector3 centerPoint = new Vector3((cp.z + cp.x) / 2, 0, (cp.y + cp.w) / 2);
 
         for (int i = 0; i < points.Count; i++) points[i] -= centerPoint;
@@ -147,20 +147,25 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         Material roofMaterial;
         Vector2 scale = Vector2.one;
 
+        if (defaultShader == null) defaultShader = Shader.Find("Diffuse");
+
         if (material != null)
         {
-            wallMaterial = new Material(material.wall);
-            roofMaterial = new Material(material.roof);
+            if (material.wall != null) wallMaterial = new Material(material.wall);
+            else wallMaterial = new Material(defaultShader);
+
+            if (material.roof != null) roofMaterial = new Material(material.roof);
+            else roofMaterial = new Material(defaultShader);
+
             scale = material.scale;
         }
         else
         {
-            Shader shader = Shader.Find("Diffuse");
-            wallMaterial = new Material(shader);
-            roofMaterial = new Material(shader);
+            wallMaterial = new Material(defaultShader);
+            roofMaterial = new Material(defaultShader);
         }
 
-        OnlineMapsBuildingRoofType roofType = OnlineMapsBuildingRoofType.flat;
+        RoofType roofType = RoofType.flat;
         AnalizeHouseTags(way, ref wallMaterial, ref roofMaterial, ref baseHeight);
         AnalizeHouseRoofType(way, ref baseHeight, ref roofType, ref roofHeight);
 
@@ -178,6 +183,8 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         };
 
         OnlineMapsBuildingBuiltIn building = houseGO.AddComponent<OnlineMapsBuildingBuiltIn>();
+        building.way = way;
+        building.nodes = usedNodes;
         houseGO.transform.localPosition = centerPoint;
         houseGO.transform.localRotation = Quaternion.Euler(Vector3.zero);
 
@@ -233,7 +240,7 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         return building;
     }
 
-    private void CreateHouseRoof(List<Vector3> baseVerticles, float baseHeight, float roofHeight, OnlineMapsBuildingRoofType roofType, ref List<Vector3> vertices, ref List<Vector2> uvs, ref List<int> triangles)
+    private void CreateHouseRoof(List<Vector3> baseVerticles, float baseHeight, float roofHeight, RoofType roofType, ref List<Vector3> vertices, ref List<Vector2> uvs, ref List<int> triangles)
     {
         float[] roofPoints = new float[baseVerticles.Count * 2];
         List<Vector3> roofVertices = new List<Vector3>(baseVerticles.Count);
@@ -261,8 +268,9 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
             float maxX = float.MinValue;
             float maxZ = float.MinValue;
 
-            foreach (Vector3 v in roofVertices)
+            for (int i = 0; i < roofVertices.Count; i++)
             {
+                Vector3 v = roofVertices[i];
                 if (v.x < minX) minX = v.x;
                 if (v.z < minZ) minZ = v.z;
                 if (v.x > maxX) maxX = v.x;
@@ -272,9 +280,11 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
             float offX = maxX - minX;
             float offZ = maxZ - minZ;
 
-            foreach (Vector3 v in roofVertices) uvs.Add(new Vector2((v.x - minX) / offX, (v.z - minZ) / offZ));
-            
-            //uvs.AddRange(roofVertices.Select(v => new Vector2((v.x - minX) / offX, (v.z - minZ) / offZ)));
+            for (int i = 0; i < roofVertices.Count; i++)
+            {
+                Vector3 v = roofVertices[i];
+                uvs.Add(new Vector2((v.x - minX) / offX, (v.z - minZ) / offZ));
+            }
 
             int triangleOffset = vertices.Count;
             for (int i = 0; i < triangles.Count; i++) triangles[i] += triangleOffset;
@@ -308,14 +318,14 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         vertices.Add(roofTopPoint);
     }
 
-    private static void CreateHouseRoofTriangles(int countVertices, List<Vector3> vertices, OnlineMapsBuildingRoofType roofType, float[] roofPoints, float baseHeight, float roofHeight, ref List<int> triangles)
+    private static void CreateHouseRoofTriangles(int countVertices, List<Vector3> vertices, RoofType roofType, float[] roofPoints, float baseHeight, float roofHeight, ref List<int> triangles)
     {
-        if (roofType == OnlineMapsBuildingRoofType.flat)
+        if (roofType == RoofType.flat)
         {
             if (roofIndices == null) roofIndices = new List<int>(60);
             triangles.AddRange(OnlineMapsUtils.Triangulate(roofPoints, countVertices, roofIndices));
         }
-        else if (roofType == OnlineMapsBuildingRoofType.dome) CreateHouseRoofDome(baseHeight + roofHeight, vertices, triangles);
+        else if (roofType == RoofType.dome) CreateHouseRoofDome(baseHeight + roofHeight, vertices, triangles);
     }
 
     private static int CreateHouseRoofVerticles(List<Vector3> baseVerticles, List<Vector3> verticles, float[] roofPoints, float baseHeight)
@@ -432,21 +442,34 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         {
             int i1 = i * 2;
             int i2 = i * 2 + 2;
+
+            while (i1 >= countVertices) i1 -= countVertices;
+            while (i2 >= countVertices) i2 -= countVertices;
+
+            float sqrMagnitude = (vertices[i1] - vertices[i2]).sqrMagnitude;
+            perimeter += sqrMagnitude;
+        }
+
+        perimeter = Mathf.Sqrt(perimeter);
+
+        for (int i = 0; i <= halfVerticesCount; i++)
+        {
+            int i1 = i * 2;
+            int i2 = i * 2 + 2;
             
             while (i1 >= countVertices) i1 -= countVertices;
             while (i2 >= countVertices) i2 -= countVertices;
 
             float magnitude = (vertices[i1] - vertices[i2]).magnitude;
-            perimeter += magnitude;
 
             if (i < halfVerticesCount)
             {
                 float curU = currentDistance / perimeter;
                 uvs.Add(new Vector2(curU, 0));
                 uvs.Add(new Vector2(curU, 1));
-
-                currentDistance += magnitude;
             }
+
+            currentDistance += magnitude;
         }
 
         int southIndex = -1;
@@ -473,27 +496,15 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         return angle1 < angle2;
     }
 
-    private static bool GetHeightFromString(string str, ref float height)
+    public override void Dispose()
     {
-        if (!String.IsNullOrEmpty(str))
-        {
-            if (!float.TryParse(str, out height))
-            {
-                if (str.Substring(str.Length - 2, 2) == "cm")
-                {
-                    if (float.TryParse(str.Substring(0, str.Length - 2), out height))
-                    {
-                        height /= 10;
-                        return true;
-                    }
-                }
-                else if (str.Substring(str.Length - 1, 1) == "m")
-                {
-                    return float.TryParse(str.Substring(0, str.Length - 1), out height);
-                }
-            }
-        }
-        return false;
+        base.Dispose();
+
+        if (way != null) way.Dispose();
+        way = null;
+
+        if (nodes != null) foreach (OnlineMapsOSMNode node in nodes) node.Dispose();
+        nodes = null;
     }
 
     private static OnlineMapsBuildingMaterial GetRandomMaterial(OnlineMapsBuildings container)
@@ -503,7 +514,7 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         return container.materials[Random.Range(0, container.materials.Length)];
     }
 
-    private static Color StringToColor(string str)
+    public static Color StringToColor(string str)
     {
         str = str.ToLower();
         if (str == "black") return Color.black;
@@ -518,16 +529,25 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
 
         try
         {
-            string hex = (str + "000000").Substring(1, 6);
-            byte[] cb =
-                Enumerable.Range(0, hex.Length)
-                    .Where(x => x % 2 == 0)
-                    .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                    .ToArray();
-            return new Color32(cb[0], cb[1], cb[2], 255);
+            int len = str.Length;
+            if (len > 7) len = 7;
+            byte prevB = 0;
+            byte[] rgb = new byte[3];
+            int j = 0;
+
+            for (int i = 1; i < len; i++)
+            {
+                char c = i < len ? str[i] : '0';
+                byte b = (byte) (c - (c < 58 ? 48 : 87));
+                if (i % 2 == 1) prevB = b;
+                else rgb[j++] = (byte)(prevB * 16 + b);
+            }
+
+            return new Color32(rgb[0], rgb[1], rgb[2], 255);
         }
-        catch
+        catch (Exception exception)
         {
+            Debug.Log(exception.Message + "\n" + exception.StackTrace);
             return Color.white;
         }
     }

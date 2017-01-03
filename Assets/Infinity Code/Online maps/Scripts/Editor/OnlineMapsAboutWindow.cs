@@ -1,11 +1,14 @@
 ﻿/*     INFINITY CODE 2013-2016      */
 /*   http://www.infinity-code.com   */
 
+using System;
 using UnityEditor;
 using UnityEngine;
 
 public class OnlineMapsAboutWindow:EditorWindow
 {
+    private string years = "2013-" + DateTime.Now.Year;
+
     [MenuItem("GameObject/Infinity Code/Online Maps/About", false, 3)]
     public static void OpenWindow()
     {
@@ -25,6 +28,6 @@ public class OnlineMapsAboutWindow:EditorWindow
         GUILayout.Label("Online Maps", titleStyle);
         GUILayout.Label("version " + OnlineMaps.version, textStyle);
         GUILayout.Label("created Infinity Code", textStyle);
-        GUILayout.Label("2013-2016", textStyle);
+        GUILayout.Label(years, textStyle);
     }
 }

@@ -13,7 +13,9 @@ public class OnlineMapsImporter : AssetPostprocessor
 			TextureImporter textureImporter = assetImporter as TextureImporter;
 			textureImporter.mipmapEnabled = false;
 			textureImporter.isReadable = true;
-			textureImporter.textureFormat = TextureImporterFormat.RGB24;
+#if UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4
+            textureImporter.textureFormat = TextureImporterFormat.RGB24;
+#endif
             textureImporter.wrapMode = TextureWrapMode.Clamp;
 			textureImporter.maxTextureSize = 256;
 		}

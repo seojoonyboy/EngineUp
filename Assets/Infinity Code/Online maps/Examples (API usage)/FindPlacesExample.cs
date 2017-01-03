@@ -12,13 +12,19 @@ namespace InfinityCode.OnlineMapsExamples
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/FindPlacesExample")]
     public class FindPlacesExample : MonoBehaviour
     {
+        /// <summary>
+        /// Google API Key
+        /// </summary>
+        public string apiKey;
+
         private void Start()
         {
             // Makes a request to Google Places API.
-            OnlineMapsFindPlaces.FindNearby(
-                "ADD YOUR OWN KEY HERE", // <----------------------------- Google API Key
-                new OnlineMapsFindPlaces.NearbyParams(
-                    new Vector2(151.1957362f, -33.8670522f), // X - Longitude, Y - Latitude
+            OnlineMapsGooglePlaces.FindNearby(
+                apiKey,
+                new OnlineMapsGooglePlaces.NearbyParams(
+                    151.1957362f, // Longitude
+                    -33.8670522f, // Latitude
                     5000) // Radius
                 {
                     types = "food"
@@ -32,7 +38,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void OnComplete(string s)
         {
             // Trying to get an array of results.
-            OnlineMapsFindPlacesResult[] results = OnlineMapsFindPlaces.GetResults(s);
+            OnlineMapsGooglePlacesResult[] results = OnlineMapsGooglePlaces.GetResults(s);
 
             // If there is no result
             if (results == null)
@@ -44,7 +50,7 @@ namespace InfinityCode.OnlineMapsExamples
 
             List<OnlineMapsMarker> markers = new List<OnlineMapsMarker>();
 
-            foreach (OnlineMapsFindPlacesResult result in results)
+            foreach (OnlineMapsGooglePlacesResult result in results)
             {
                 // Log name and location of each result.
                 Debug.Log(result.name);

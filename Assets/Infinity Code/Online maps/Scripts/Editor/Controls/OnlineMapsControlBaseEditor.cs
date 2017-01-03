@@ -6,7 +6,7 @@ using System.Globalization;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(OnlineMapsControlBase))]
+[CustomEditor(typeof(OnlineMapsControlBase), true)]
 public class OnlineMapsControlBaseEditor:Editor
 {
     public static void CheckMultipleInstances(OnlineMapsControlBase control, ref bool dirty)
@@ -36,10 +36,10 @@ public class OnlineMapsControlBaseEditor:Editor
         }
     }
 
-    public static void CheckTarget(OnlineMaps api, OnlineMapsTarget target, ref bool dirty)
+    public static void CheckTarget(OnlineMaps map, OnlineMapsTarget target, ref bool dirty)
     {
-        if (api == null) return;
-        if (api.target == target) return;
+        if (map == null) return;
+        if (map.target == target) return;
 
         EditorGUILayout.BeginVertical(GUI.skin.box);
 
@@ -48,7 +48,7 @@ public class OnlineMapsControlBaseEditor:Editor
         EditorGUILayout.HelpBox("Problem detected:\nWrong target.\nFor this control target must be " + targetName + "!", MessageType.Error);
         if (GUILayout.Button("Fix Target"))
         {
-            api.target = target;
+            map.target = target;
             dirty = true;
         }
 
@@ -58,9 +58,9 @@ public class OnlineMapsControlBaseEditor:Editor
     public static OnlineMaps GetOnlineMaps(OnlineMapsControlBase control)
     {
         if (control == null) return null;
-        OnlineMaps api = control.GetComponent<OnlineMaps>();
+        OnlineMaps map = control.GetComponent<OnlineMaps>();
 
-        if (api == null)
+        if (map == null)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box);
 
@@ -68,14 +68,14 @@ public class OnlineMapsControlBaseEditor:Editor
 
             if (GUILayout.Button("Add OnlineMaps Component"))
             {
-                api = control.gameObject.AddComponent<OnlineMaps>();
-                UnityEditorInternal.ComponentUtility.MoveComponentUp(api);
-                if (control is OnlineMapsTileSetControl) api.target = OnlineMapsTarget.tileset;
+                map = control.gameObject.AddComponent<OnlineMaps>();
+                UnityEditorInternal.ComponentUtility.MoveComponentUp(map);
+                if (control is OnlineMapsTileSetControl) map.target = OnlineMapsTarget.tileset;
             }
 
             EditorGUILayout.EndVertical();
         }
-        return api;
+        return map;
     }
 
     public override void OnInspectorGUI()

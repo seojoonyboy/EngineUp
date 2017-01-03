@@ -86,6 +86,7 @@ public class OnlineMapsGPXObject
                 else if (n.name == "rte") instance.routes.Add(new Route(n));
                 else if (n.name == "trk") instance.tracks.Add(new Track(n));
                 else if (n.name == "metadata") instance.metadata = new Meta(n);
+                else if (n.name == "extensions") instance.extensions = n;
                 else Debug.Log(n.name);
             }
         }

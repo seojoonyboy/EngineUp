@@ -21,17 +21,17 @@ namespace InfinityCode.OnlineMapsExamples
         {
             if (!PlayerPrefs.HasKey(key)) return;
 
-            OnlineMaps api = OnlineMaps.instance;
+            OnlineMaps map = OnlineMaps.instance;
 
             OnlineMapsXML prefs = OnlineMapsXML.Load(PlayerPrefs.GetString(key));
 
             OnlineMapsXML generalSettings = prefs["General"];
-            api.position = generalSettings.Get<Vector2>("Coordinates");
-            api.zoom = generalSettings.Get<int>("Zoom");
+            map.position = generalSettings.Get<Vector2>("Coordinates");
+            map.zoom = generalSettings.Get<int>("Zoom");
 
             List<OnlineMapsMarker> markers = new List<OnlineMapsMarker>();
 
-            api.markers = markers.ToArray();
+            map.markers = markers.ToArray();
         }
 
         private void OnGUI()
@@ -42,20 +42,20 @@ namespace InfinityCode.OnlineMapsExamples
 
         private void SaveState()
         {
-            OnlineMaps api = OnlineMaps.instance;
+            OnlineMaps map = OnlineMaps.instance;
 
             OnlineMapsXML prefs = new OnlineMapsXML("Map");
 
             // Save position and zoom
             OnlineMapsXML generalSettings = prefs.Create("General");
-            generalSettings.Create("Coordinates", api.position);
-            generalSettings.Create("Zoom", api.zoom);
+            generalSettings.Create("Coordinates", map.position);
+            generalSettings.Create("Zoom", map.zoom);
 
             // Save 2D markers
-            api.SaveMarkers(prefs);
+            map.SaveMarkers(prefs);
 
             // Save 3D markers
-            api.GetComponent<OnlineMapsControlBase3D>().SaveMarkers3D(prefs);
+            OnlineMapsControlBase3D.instance.SaveMarkers3D(prefs);
 
             // Save settings to PlayerPrefs
             PlayerPrefs.SetString(key, prefs.outerXml);

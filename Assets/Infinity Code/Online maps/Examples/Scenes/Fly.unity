@@ -217,6 +217,7 @@ GameObject:
   - 4: {fileID: 368749494}
   - 114: {fileID: 368749493}
   - 114: {fileID: 368749492}
+  - 114: {fileID: 368749495}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -242,6 +243,7 @@ MonoBehaviour:
   isMapDrag: 0
   invertTouchZoom: 0
   zoomInOnDoubleClick: 1
+  zoomMode: 0
   activeCamera: {fileID: 1424423002}
   allowAddMarker3DByN: 1
   allowDefaultMarkerEvents: 0
@@ -250,10 +252,12 @@ MonoBehaviour:
   cameraDistance: 100
   cameraRotation: {x: 0, y: 0}
   cameraSpeed: {x: 1, y: 1}
+  default3DMarker: {fileID: 0}
   marker2DMode: 0
   marker2DSize: 100
   markers3D: []
   marker3DScale: 1
+  maxCameraRotationX: 80
   bingAPI: 
   checkMarker2DVisibility: 0
   colliderType: 1
@@ -266,6 +270,8 @@ MonoBehaviour:
     maxLimit: 20
     minLimit: 3
   elevationScale: 1
+  elevationBottomMode: 0
+  elevationResolution: 32
   lockYScale: 0
   markerMaterial: {fileID: 0}
   markerShader: {fileID: 30, guid: 0000000000000000f000000000000000, type: 0}
@@ -274,7 +280,7 @@ MonoBehaviour:
   smoothZoomMaxScale: 3.4028235e+38
   smoothZoomStarted: 0
   originalPosition: {x: 0, y: 0, z: 0}
-  smoothZoomMode: 0
+  originalScale: {x: 0, y: 0, z: 0}
   tileMaterial: {fileID: 0}
   tilesetShader: {fileID: 4800000, guid: e951aa0c126d1a7409bfec1296857a7b, type: 3}
   useElevation: 0
@@ -293,6 +299,7 @@ MonoBehaviour:
   allowRedraw: 1
   control: {fileID: 0}
   customProviderURL: 687474703a2f2f6c6f63616c686f73742f7b7a6f6f6d7d2f7b797d2f7b787d
+  customTrafficProviderURL: 687474703a2f2f6c6f63616c686f73742f7b7a6f6f6d7d2f7b797d2f7b787d
   defaultMarkerAlign: 7
   defaultMarkerTexture: {fileID: 2800000, guid: ea7eb0aa8eaab054a91d4219f9719f63,
     type: 3}
@@ -308,11 +315,10 @@ MonoBehaviour:
   language: 656e
   lockRedraw: 0
   markers: []
-  needGC: 0
   needRedraw: 1
   notInteractUnderGUI: 1
   provider: 0
-  mapType: 6172636769732e736174656c6c697465
+  mapType: 6172636769732e776f726c64696d6167657279
   redrawOnPlay: 0
   renderInThread: 1
   resourcesPath: 4f6e6c696e654d61707354696c65732f7b7a6f6f6d7d2f7b787d2f7b797d
@@ -333,12 +339,14 @@ MonoBehaviour:
       min: 0
       maxLimit: 20
       minLimit: 3
+    _enabled: 1
     latitude: 0
     longitude: 0
     _scale: 1
   tooltipBackgroundTexture: {fileID: 2800000, guid: a8d1734e646100c4e83635fecf978e15,
     type: 3}
   traffic: 0
+  trafficProviderID: 676f6f676c656d617073
   type: 0
   useCurrentZoomTiles: 0
   useSoftwareJPEGDecoder: 0
@@ -350,6 +358,7 @@ MonoBehaviour:
   longitude: 8.84636116027832
   _position: {x: 0, y: 0}
   _zoom: 13
+  _activeTypeSettings: 
 --- !u!4 &368749494
 Transform:
   m_ObjectHideFlags: 0
@@ -363,6 +372,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+--- !u!114 &368749495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 368749491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed3c476c58b6b054d9469cbe6c8fa060, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileCacheLocation: 0
+  fileCacheCustomPath: 
+  fileCacheTilePath: 54696c6543616368652f7b7069647d2f7b6d69647d2f7b6c62737d2f7b6c6e677d2f7b7a6f6f6d7d2f7b787d2f7b797d
+  fileCacheUnloadRate: 0.3
+  maxFileCacheSize: 100
+  maxMemoryCacheSize: 10
+  memoryCacheUnloadRate: 0.3
+  useFileCache: 1
+  useMemoryCache: 1
 --- !u!1 &580776021
 GameObject:
   m_ObjectHideFlags: 0

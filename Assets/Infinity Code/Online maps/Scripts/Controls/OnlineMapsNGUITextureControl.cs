@@ -49,16 +49,15 @@ public class OnlineMapsNGUITextureControl : OnlineMapsControlBase2D
         localPos.y = localPos.y / uiWidget.localSize.y;
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetTilePosition(out px, out py);
 
-        int countX = api.texture.width / OnlineMapsUtils.tileSize;
-        int countY = api.texture.height / OnlineMapsUtils.tileSize;
+        int countX = map.texture.width / OnlineMapsUtils.tileSize;
+        int countY = map.texture.height / OnlineMapsUtils.tileSize;
 
         px += countX * localPos.x;
         py -= countY * localPos.y;
 
-        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
+        map.projection.TileToCoordinates(px, py, map.zoom, out lng, out lat);
 
         return true;
     }
@@ -83,8 +82,8 @@ public class OnlineMapsNGUITextureControl : OnlineMapsControlBase2D
         if (UICamera.currentCamera == null) return Vector2.zero;
 
         Vector2 mapPos = GetPosition(coords);
-        mapPos.x = (mapPos.x / api.width - 0.5f) * uiWidget.localSize.x;
-        mapPos.y = (0.5f - mapPos.y / api.height) * uiWidget.localSize.y;
+        mapPos.x = (mapPos.x / map.width - 0.5f) * uiWidget.localSize.x;
+        mapPos.y = (0.5f - mapPos.y / map.height) * uiWidget.localSize.y;
         Vector3 worldPos = transform.TransformPoint(mapPos);
         Vector3 screenPosition = UICamera.currentCamera.WorldToScreenPoint(worldPos);
         return screenPosition;

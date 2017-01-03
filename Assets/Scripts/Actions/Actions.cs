@@ -51,6 +51,9 @@ public static class ActionCreator{
         case ActionTypes.USER_CREATE:
             _return = new UserCreateAction();
             break;
+        case ActionTypes.GET_COMMUNITY_DATA:
+            _return = new GetCommunityAction();
+            break;
         }
          _return.type = _type;
         return _return;

@@ -11,14 +11,14 @@ namespace InfinityCode.OnlineMapsExamples
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/CustomDownloadTileExample")]
     public class CustomDownloadTileExample : MonoBehaviour
     {
-        private OnlineMaps api;
+        private OnlineMaps map;
 
         private void Start()
         {
-            api = OnlineMaps.instance;
+            map = OnlineMaps.instance;
 
             // Subscribe to the tile download event.
-            api.OnStartDownloadTile += OnStartDownloadTile;
+            map.OnStartDownloadTile += OnStartDownloadTile;
         }
 
         private void OnStartDownloadTile(OnlineMapsTile tile)
@@ -28,13 +28,13 @@ namespace InfinityCode.OnlineMapsExamples
             // Here your code to load tile texture from any source.
 
             // Apply your texture in the buffer and redraws the map.
-            if (api.target == OnlineMapsTarget.texture)
+            if (map.target == OnlineMapsTarget.texture)
             {
                 // Apply tile texture
                 tile.ApplyTexture(tileTexture as Texture2D);
 
                 // Send tile to buffer
-                api.buffer.ApplyTile(tile);
+                map.buffer.ApplyTile(tile);
             }
             else
             {
@@ -46,7 +46,7 @@ namespace InfinityCode.OnlineMapsExamples
             }
 
             // Redraw map (using best redraw type)
-            api.CheckRedrawType();
+            map.CheckRedrawType();
         }
     }
 }

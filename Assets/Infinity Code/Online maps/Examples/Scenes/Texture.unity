@@ -191,6 +191,7 @@ GameObject:
   - 114: {fileID: 1364592958}
   - 114: {fileID: 1364592959}
   - 114: {fileID: 1364592960}
+  - 114: {fileID: 1364592961}
   m_Layer: 0
   m_Name: Map plane
   m_TagString: Untagged
@@ -273,6 +274,7 @@ MonoBehaviour:
   allowRedraw: 1
   control: {fileID: 0}
   customProviderURL: 687474703a2f2f6c6f63616c686f73742f7b7a6f6f6d7d2f7b797d2f7b787d
+  customTrafficProviderURL: 687474703a2f2f6c6f63616c686f73742f7b7a6f6f6d7d2f7b797d2f7b787d
   defaultMarkerAlign: 7
   defaultMarkerTexture: {fileID: 2800000, guid: ea7eb0aa8eaab054a91d4219f9719f63,
     type: 3}
@@ -294,6 +296,7 @@ MonoBehaviour:
       min: 3
       maxLimit: 20
       minLimit: 3
+    _enabled: 1
     latitude: 51.49641036987305
     longitude: -0.2581616938114166
     _scale: 1
@@ -306,7 +309,6 @@ MonoBehaviour:
       height: 1
     texture: {fileID: 2800000, guid: ea7eb0aa8eaab054a91d4219f9719f63, type: 3}
     _rotation: 0
-  needGC: 0
   needRedraw: 1
   notInteractUnderGUI: 1
   provider: 1
@@ -331,12 +333,14 @@ MonoBehaviour:
       min: 0
       maxLimit: 20
       minLimit: 3
+    _enabled: 1
     latitude: 0
     longitude: 0
     _scale: 1
   tooltipBackgroundTexture: {fileID: 2800000, guid: a8d1734e646100c4e83635fecf978e15,
     type: 3}
   traffic: 0
+  trafficProviderID: 676f6f676c656d617073
   type: 0
   useCurrentZoomTiles: 0
   useSoftwareJPEGDecoder: 0
@@ -348,6 +352,7 @@ MonoBehaviour:
   longitude: -0.2581616938114166
   _position: {x: 0, y: 0}
   _zoom: 12
+  _activeTypeSettings: 
 --- !u!114 &1364592959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,6 +371,7 @@ MonoBehaviour:
   isMapDrag: 0
   invertTouchZoom: 0
   zoomInOnDoubleClick: 1
+  zoomMode: 0
   activeCamera: {fileID: 1232913771}
   allowAddMarker3DByN: 1
   allowDefaultMarkerEvents: 0
@@ -374,10 +380,12 @@ MonoBehaviour:
   cameraDistance: 10
   cameraRotation: {x: 0, y: 0}
   cameraSpeed: {x: 1, y: 1}
+  default3DMarker: {fileID: 0}
   marker2DMode: 0
   marker2DSize: 100
   markers3D: []
   marker3DScale: 1
+  maxCameraRotationX: 80
 --- !u!114 &1364592960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -389,3 +397,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffce9600aab3c5041b4b049a4028d9c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1364592961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1364592953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed3c476c58b6b054d9469cbe6c8fa060, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileCacheLocation: 0
+  fileCacheCustomPath: 
+  fileCacheTilePath: 54696c6543616368652f7b7069647d2f7b6d69647d2f7b6c62737d2f7b6c6e677d2f7b7a6f6f6d7d2f7b787d2f7b797d
+  fileCacheUnloadRate: 0.3
+  maxFileCacheSize: 100
+  maxMemoryCacheSize: 10
+  memoryCacheUnloadRate: 0.3
+  useFileCache: 1
+  useMemoryCache: 1

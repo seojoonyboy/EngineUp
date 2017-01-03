@@ -80,10 +80,10 @@ namespace InfinityCode.OnlineMapsDemos
 
             Color defBackgroundColor = GUI.backgroundColor;
 
-            for (int i = 20; i > 2; i--)
+            for (int i = OnlineMaps.MAXZOOM; i > 2; i--)
             {
                 if (api.zoom == i) GUI.backgroundColor = Color.green;
-                if (GUI.Button(new Rect(5, 115 + (20 - i) * 15, 50, 10), "")) api.zoom = i;
+                if (GUI.Button(new Rect(5, 115 + (OnlineMaps.MAXZOOM - i) * 15, 50, 10), "")) api.zoom = i;
                 GUI.backgroundColor = defBackgroundColor;
             }
 
@@ -93,8 +93,8 @@ namespace InfinityCode.OnlineMapsDemos
 
             GUI.Label(new Rect(75, 10, 150, 50), "Find place:");
             search = GUI.TextField(new Rect(200, 10, Screen.width - 320, 30), search);
-            if (Event.current.type == EventType.KeyUp && (Event.current.keyCode == KeyCode.KeypadEnter || Event.current.keyCode == KeyCode.Return)) OnlineMapsFindLocation.Find(search).OnComplete += OnFindLocationComplete;
-            if (GUI.Button(new Rect(Screen.width - 110, 10, 100, 30), "Search")) OnlineMapsFindLocation.Find(search).OnComplete += OnFindLocationComplete;
+            if (Event.current.type == EventType.KeyUp && (Event.current.keyCode == KeyCode.KeypadEnter || Event.current.keyCode == KeyCode.Return)) OnlineMapsGoogleGeocoding.Find(search).OnComplete += OnFindLocationComplete;
+            if (GUI.Button(new Rect(Screen.width - 110, 10, 100, 30), "Search")) OnlineMapsGoogleGeocoding.Find(search).OnComplete += OnFindLocationComplete;
 
             GUI.Label(new Rect(75, 45, 100, 30), "Show:");
 
@@ -111,7 +111,7 @@ namespace InfinityCode.OnlineMapsDemos
 
         private void OnFindLocationComplete(string result)
         {
-            Vector2 position = OnlineMapsFindLocation.GetCoordinatesFromResult(result);
+            Vector2 position = OnlineMapsGoogleGeocoding.GetCoordinatesFromResult(result);
 
             if (position == Vector2.zero) return;
 

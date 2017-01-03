@@ -185,20 +185,13 @@ public class OnlineMapsUpdater : EditorWindow
 
     private void OnEnable()
     {
-        if (EditorPrefs.HasKey(invoiceNumberKey))
-            invoiceNumber = EditorPrefs.GetString(invoiceNumberKey);
+        if (EditorPrefs.HasKey(invoiceNumberKey)) invoiceNumber = EditorPrefs.GetString(invoiceNumberKey);
         else invoiceNumber = "";
 
-        if (EditorPrefs.HasKey(channelKey)) 
-            channel = (OnlineMapsUpdateChannel)EditorPrefs.GetInt(channelKey);
+        if (EditorPrefs.HasKey(channelKey)) channel = (OnlineMapsUpdateChannel)EditorPrefs.GetInt(channelKey);
         else channel = OnlineMapsUpdateChannel.stable;
 
-        string[] files = Directory.GetFiles("Assets", "HelpIcon.png", SearchOption.AllDirectories);
-        if (files.Length > 0)
-        {
-            Texture helpIcon = AssetDatabase.LoadAssetAtPath(files[0], typeof(Texture)) as Texture;
-            helpContent = new GUIContent(helpIcon, "You can find out your Invoice Number in the email confirming the purchase, or page the user in Unity Asset Store.\nClick to go to the Unity Asset Store.");
-        }
+        helpContent = new GUIContent(OnlineMapsEditorUtils.LoadAsset<Texture2D>("Icons\\HelpIcon.png"), "You can find out your Invoice Number in the email confirming the purchase, or page the user in Unity Asset Store.\nClick to go to the Unity Asset Store.");
     }
 
     private void OnDestroy()
@@ -238,7 +231,6 @@ public class OnlineMapsUpdater : EditorWindow
     }
 
     [MenuItem("GameObject/Infinity Code/Online Maps/Check Updates", false, 2)]
-    //[MenuItem("Component/Infinity Code/Online Maps/Check Updates")]
     public static void OpenWindow()
     {
         GetWindow<OnlineMapsUpdater>(false, "Online Maps Updater", true);

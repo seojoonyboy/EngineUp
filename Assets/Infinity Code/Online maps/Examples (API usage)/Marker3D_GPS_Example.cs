@@ -18,7 +18,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void Start()
         {
             // Gets the current 3D control.
-            OnlineMapsControlBase3D control = GetComponent<OnlineMapsControlBase3D>();
+            OnlineMapsControlBase3D control = OnlineMapsControlBase3D.instance;
             if (control == null)
             {
                 Debug.LogError("You must use the 3D control (Texture or Tileset).");

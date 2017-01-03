@@ -71,10 +71,13 @@ public class OnlineMapsBuildings : MonoBehaviour
 
     private static OnlineMapsBuildings _instance;
 
+    [NonSerialized]
+    public Dictionary<string, OnlineMapsBuildingBase> buildings;
+
     /// <summary>
     /// Range of zoom, in which the building will be created.
     /// </summary>
-    public OnlineMapsRange zoomRange = new OnlineMapsRange(19, 20);
+    public OnlineMapsRange zoomRange = new OnlineMapsRange(19, OnlineMaps.MAXZOOM);
 
     /// <summary>
     /// Range levels of buildings, if the description of the building is not specified.
@@ -114,16 +117,15 @@ public class OnlineMapsBuildings : MonoBehaviour
     private OnlineMapsVector2i topLeft;
     private OnlineMapsVector2i bottomRight;
 
-    private Dictionary<string, OnlineMapsBuildingBase> buildings = new Dictionary<string, OnlineMapsBuildingBase>();
-    private Dictionary<string, OnlineMapsBuildingBase> unusedBuildings = new Dictionary<string, OnlineMapsBuildingBase>();
-    private List<OnlineMapsBuildingsNodeData> newBuildingsData = new List<OnlineMapsBuildingsNodeData>();
+    private Dictionary<string, OnlineMapsBuildingBase> unusedBuildings;
+    private Queue<OnlineMapsBuildingsNodeData> newBuildingsData;
 
     private bool sendBuildingsReceived = false;
     private string requestData;
     private float lastRequestTime;
     private OnlineMapsOSMAPIQuery osmRequest;
 
-    private static OnlineMaps api
+    private static OnlineMaps map
     {
         get { return OnlineMaps.instance; }
     }
@@ -144,6 +146,23 @@ public class OnlineMapsBuildings : MonoBehaviour
         get { return buildings.Select(b => b.Value); }
     }
 
+    public void CreateBuilding(OnlineMapsBuildingsNodeData data)
+    {
+        if (OnCreateBuilding != null && !OnCreateBuilding(data)) return;
+        if (buildings.ContainsKey(data.way.id) || unusedBuildings.ContainsKey(data.way.id)) return;
+
+        OnlineMapsBuildingBase building = null;
+
+        building = OnlineMapsBuildingBuiltIn.Create(this, data.way, data.nodes);
+
+        if (building != null)
+        {
+            building.LoadMeta(data.way);
+            if (OnBuildingCreated != null) OnBuildingCreated(building);
+            unusedBuildings.Add(data.way.id, building);
+        }
+    }
+
     private void GenerateBuildings()
     {
         long startTicks = DateTime.Now.Ticks;
@@ -151,32 +170,14 @@ public class OnlineMapsBuildings : MonoBehaviour
 
         lock (newBuildingsData)
         {
-            while (newBuildingsData.Count > 0)
+            int newBuildingIndex = newBuildingsData.Count;
+            while (newBuildingIndex > 0)
             {
                 if (maxBuilding > 0 && unusedBuildings.Count + buildings.Count >= maxBuilding) break;
 
-                OnlineMapsBuildingsNodeData data = newBuildingsData[0];
-                newBuildingsData.RemoveAt(0);
-
-                if (OnCreateBuilding != null && !OnCreateBuilding(data))
-                {
-                    data.Dispose();
-                    continue;
-                }
-
-                if (buildings.ContainsKey(data.way.id) || unusedBuildings.ContainsKey(data.way.id))
-                {
-                    data.Dispose();
-                    continue;
-                }
-
-                OnlineMapsBuildingBase building = OnlineMapsBuildingBuiltIn.Create(this, data.way, data.nodes);
-                if (building != null)
-                {
-                    building.LoadMeta(data.way);
-                    if (OnBuildingCreated != null) OnBuildingCreated(building);
-                    unusedBuildings.Add(data.way.id, building);
-                }
+                newBuildingIndex--;
+                OnlineMapsBuildingsNodeData data = newBuildingsData.Dequeue();
+                CreateBuilding(data);
 
                 data.Dispose();
 
@@ -184,15 +185,14 @@ public class OnlineMapsBuildings : MonoBehaviour
             }
         }
 
-        OnlineMapsBuildingBuiltIn.usedNodes = null;
         OnlineMapsBuildingBuiltIn.roofIndices = null;
     }
 
     private void LoadNewBuildings()
     {
         double tlx, tly, brx, bry;
-        api.projection.TileToCoordinates(topLeft.x, topLeft.y, api.zoom, out tlx, out tly);
-        api.projection.TileToCoordinates(bottomRight.x, bottomRight.y, api.zoom, out brx, out bry);
+        map.projection.TileToCoordinates(topLeft.x, topLeft.y, map.zoom, out tlx, out tly);
+        map.projection.TileToCoordinates(bottomRight.x, bottomRight.y, map.zoom, out brx, out bry);
 
         requestData = String.Format("node({0},{1},{2},{3});way(bn)[{4}];(._;>;);out;", bry, tlx, tly, brx, "'building'");
         if (OnPrepareRequest != null) requestData = OnPrepareRequest(requestData, new Vector2((float)tlx, (float)tly), new Vector2((float)brx, (float)bry));
@@ -208,13 +208,13 @@ public class OnlineMapsBuildings : MonoBehaviour
             List<OnlineMapsOSMWay> ways;
             List<OnlineMapsOSMRelation> relations;
 
-            OnlineMapsOSMAPIQuery.ParseOSMResponse(response, out nodes, out ways, out relations);
+            OnlineMapsOSMAPIQuery.ParseOSMResponseFast(response, out nodes, out ways, out relations);
 
             lock (newBuildingsData)
             {
                 foreach (OnlineMapsOSMWay way in ways)
                 {
-                    newBuildingsData.Add(new OnlineMapsBuildingsNodeData(way, nodes));
+                    newBuildingsData.Enqueue(new OnlineMapsBuildingsNodeData(way, nodes));
                 }
             }
 
@@ -222,7 +222,7 @@ public class OnlineMapsBuildings : MonoBehaviour
         };
 
 #if !UNITY_WEBGL
-        if (api.renderInThread) OnlineMapsThreadManager.AddThreadAction(action);
+        if (map.renderInThread) OnlineMapsThreadManager.AddThreadAction(action);
         else action();
 #else
         action();
@@ -234,6 +234,15 @@ public class OnlineMapsBuildings : MonoBehaviour
     private void OnEnable()
     {
         _instance = this;
+
+        buildings = new Dictionary<string, OnlineMapsBuildingBase>();
+        unusedBuildings = new Dictionary<string, OnlineMapsBuildingBase>();
+        newBuildingsData = new Queue<OnlineMapsBuildingsNodeData>();
+
+        buildingContainer = new GameObject("Buildings");
+        buildingContainer.transform.parent = transform;
+        buildingContainer.transform.localPosition = Vector3.zero;
+        buildingContainer.transform.localRotation = Quaternion.Euler(Vector3.zero);
     }
 
     private void SendRequest()
@@ -249,13 +258,8 @@ public class OnlineMapsBuildings : MonoBehaviour
 
     private void Start()
     {
-        buildingContainer = new GameObject("Buildings");
-        buildingContainer.transform.parent = transform;
-        buildingContainer.transform.localPosition = Vector3.zero;
-        buildingContainer.transform.localRotation = Quaternion.Euler(Vector3.zero);
-
-        api.OnChangePosition += UpdateBuildings;
-        api.OnChangeZoom += UpdateBuildingsScale;
+        map.OnChangePosition += UpdateBuildings;
+        map.OnChangeZoom += UpdateBuildingsScale;
 
         UpdateBuildings();
     }
@@ -292,17 +296,14 @@ public class OnlineMapsBuildings : MonoBehaviour
 
     private void UpdateBuildings()
     {
-        if (!zoomRange.InRange(api.zoom))
+        if (!zoomRange.InRange(map.zoom))
         {
             RemoveAllBuildings();
             return;
         }
 
         double tlx, tly, brx, bry;
-        api.GetTopLeftPosition(out tlx, out tly);
-        api.GetBottomRightPosition(out brx, out bry);
-        api.projection.CoordinatesToTile(tlx, tly, api.zoom, out tlx, out tly);
-        api.projection.CoordinatesToTile(brx, bry, api.zoom, out brx, out bry);
+        map.GetTileCorners(out tlx, out tly, out brx, out bry);
 
         OnlineMapsVector2i newTopLeft = new OnlineMapsVector2i((int)Math.Round(tlx - 2), (int)Math.Round(tly - 2));
         OnlineMapsVector2i newBottomRight = new OnlineMapsVector2i((int)Math.Round(brx + 2), (int)Math.Round(bry + 2));
@@ -326,8 +327,7 @@ public class OnlineMapsBuildings : MonoBehaviour
         Bounds bounds = new Bounds();
 
         double tlx, tly, brx, bry;
-        api.GetTopLeftPosition(out tlx, out tly);
-        api.GetBottomRightPosition(out brx, out bry);
+        map.GetCorners(out tlx, out tly, out brx, out bry);
 
         bounds.min = new Vector3((float)tlx, (float)bry);
         bounds.max = new Vector3((float)brx, (float)tly);
@@ -358,10 +358,9 @@ public class OnlineMapsBuildings : MonoBehaviour
         List<string> destroyKeys = new List<string>();
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetTilePosition(out px, out py);
 
-        float maxDistance = Mathf.Sqrt(Mathf.Pow(api.width / 2 / OnlineMapsUtils.tileSize, 2) + Mathf.Pow(api.height / 2 / OnlineMapsUtils.tileSize, 2)) * 2;
+        float maxDistance = Mathf.Pow(map.width / 2 / OnlineMapsUtils.tileSize, 2) + Mathf.Pow(map.height / 2 / OnlineMapsUtils.tileSize, 2) * 4;
 
         foreach (KeyValuePair<string, OnlineMapsBuildingBase> building in unusedBuildings)
         {
@@ -383,38 +382,42 @@ public class OnlineMapsBuildings : MonoBehaviour
             else
             {
                 double bx, by;
-                api.projection.CoordinatesToTile(value.centerCoordinates.x, value.centerCoordinates.y, api.zoom, out bx, out by);
-                if (OnlineMapsUtils.Magnitude(0, 0, bx - px, by - py) > maxDistance) destroyKeys.Add(building.Key);
+                map.projection.CoordinatesToTile(value.centerCoordinates.x, value.centerCoordinates.y, map.zoom, out bx, out by);
+                if (OnlineMapsUtils.SqrMagnitude(0, 0, bx - px, by - py) > maxDistance) destroyKeys.Add(building.Key);
             }
         }
 
-        foreach (string key in unusedKeys)
+        for (int i = 0; i < unusedKeys.Count; i++)
         {
+            string key = unusedKeys[i];
             OnlineMapsBuildingBase value = buildings[key];
             value.gameObject.SetActive(false);
             unusedBuildings.Add(key, value);
             buildings.Remove(key);
         }
 
-        foreach (string key in usedKeys)
+        for (int i = 0; i < usedKeys.Count; i++)
         {
-            OnlineMapsBuildingBase value = unusedBuildings[key];
             if (maxActiveBuildings > 0 && buildings.Count >= maxActiveBuildings) break;
+
+            string key = usedKeys[i];
+            OnlineMapsBuildingBase value = unusedBuildings[key];
+
             if (OnShowBuilding != null && !OnShowBuilding(value)) continue;
             value.gameObject.SetActive(true);
             buildings.Add(key, value);
             unusedBuildings.Remove(key);
         }
 
-        foreach (string key in destroyKeys)
+        for (int i = 0; i < destroyKeys.Count; i++)
         {
+            string key = destroyKeys[i];
             OnlineMapsBuildingBase value = unusedBuildings[key];
             if (OnBuildingDispose != null) OnBuildingDispose(value);
+            value.Dispose();
             OnlineMapsUtils.DestroyImmediate(value.gameObject);
             unusedBuildings.Remove(key);
         }
-
-        if (destroyKeys.Count > 0) OnlineMaps.instance.needGC = true;
     }
 
     private void UpdateBuildingsScale()
@@ -423,17 +426,17 @@ public class OnlineMapsBuildings : MonoBehaviour
         foreach (KeyValuePair<string, OnlineMapsBuildingBase> building in buildings)
         {
             OnlineMapsBuildingBase value = building.Value;
-            if (value.initialZoom == api.zoom) value.transform.localScale = Vector3.one;
-            else if (value.initialZoom < api.zoom) value.transform.localScale = Vector3.one * (1 << api.zoom - value.initialZoom);
-            else if (value.initialZoom > api.zoom) value.transform.localScale = Vector3.one / (1 << value.initialZoom - api.zoom);
+            if (value.initialZoom == map.zoom) value.transform.localScale = Vector3.one;
+            else if (value.initialZoom < map.zoom) value.transform.localScale = Vector3.one * (1 << map.zoom - value.initialZoom);
+            else if (value.initialZoom > map.zoom) value.transform.localScale = Vector3.one / (1 << value.initialZoom - map.zoom);
         }
 
         foreach (KeyValuePair<string, OnlineMapsBuildingBase> building in unusedBuildings)
         {
             OnlineMapsBuildingBase value = building.Value;
-            if (value.initialZoom == api.zoom) value.transform.localScale = Vector3.one;
-            else if (value.initialZoom < api.zoom) value.transform.localScale = Vector3.one * (1 << api.zoom - value.initialZoom);
-            else if (value.initialZoom > api.zoom) value.transform.localScale = Vector3.one / (1 << value.initialZoom - api.zoom);
+            if (value.initialZoom == map.zoom) value.transform.localScale = Vector3.one;
+            else if (value.initialZoom < map.zoom) value.transform.localScale = Vector3.one * (1 << map.zoom - value.initialZoom);
+            else if (value.initialZoom > map.zoom) value.transform.localScale = Vector3.one / (1 << value.initialZoom - map.zoom);
         }
     }
 }

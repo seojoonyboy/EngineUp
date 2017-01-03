@@ -8,8 +8,7 @@ using UnityEngine;
 /// <summary>
 /// Base class of buildings.
 /// </summary>
-[AddComponentMenu("")]
-public class OnlineMapsBuildingBase:MonoBehaviour
+public abstract class OnlineMapsBuildingBase:MonoBehaviour
 {
     /// <summary>
     /// Events that occur when user click on the building.
@@ -54,12 +53,15 @@ public class OnlineMapsBuildingBase:MonoBehaviour
     /// <summary>
     /// Array of building meta key-value pair.
     /// </summary>
-    public OnlineMapsBuildingMetaInfo[] metaInfo;
+    public MetaInfo[] metaInfo;
 
     /// <summary>
     /// Perimeter of building.
     /// </summary>
     public float perimeter;
+
+    public OnlineMapsOSMWay way;
+    public List<OnlineMapsOSMNode> nodes;
 
     private int lastTouchCount = 0;
 
@@ -108,9 +110,17 @@ public class OnlineMapsBuildingBase:MonoBehaviour
     /// <summary>
     /// Dispose of building.
     /// </summary>
-    public void Dispose()
+    public virtual void Dispose()
     {
         if (OnDispose != null) OnDispose(this);
+
+        OnClick = null;
+        OnDispose = null;
+        OnPress = null;
+        OnRelease = null;
+
+        buildingCollider = null;
+        metaInfo = null;
     }
 
     /// <summary>
@@ -119,16 +129,36 @@ public class OnlineMapsBuildingBase:MonoBehaviour
     /// <param name="item">Object that contains meta description.</param>
     public void LoadMeta(OnlineMapsOSMBase item)
     {
-        metaInfo = new OnlineMapsBuildingMetaInfo[item.tags.Count];
+        metaInfo = new MetaInfo[item.tags.Count];
         for (int i = 0; i < item.tags.Count; i++)
         {
             OnlineMapsOSMTag tag = item.tags[i];
-            metaInfo[i] = new OnlineMapsBuildingMetaInfo()
+            metaInfo[i] = new MetaInfo()
             {
                 info = tag.value,
                 title = tag.key
             };
         }
+    }
+
+    protected static bool GetHeightFromString(string str, ref float height)
+    {
+        if (string.IsNullOrEmpty(str)) return false;
+
+        int l = str.Length;
+        if (!TryGetFloat(str, 0, l, out height))
+        {
+            if (str[l - 2] == 'c' && str[l - 1] == 'm')
+            {
+                if (TryGetFloat(str, 0, l - 2, out height))
+                {
+                    height /= 10;
+                    return true;
+                }
+            }
+            else if (str[l - 1] == 'm') return TryGetFloat(str, 0, l - 1, out height);
+        }
+        return false;
     }
 
     /// <summary>
@@ -154,8 +184,7 @@ public class OnlineMapsBuildingBase:MonoBehaviour
         {
             double px, py;
             api.projection.CoordinatesToTile(nodes[i].lon, nodes[i].lat, api.buffer.apiZoom, out px, out py);
-
-            localPoints.Add(new Vector3((float)(-(px - sx) * sw), 0, (float)((py - sy) * sh)));
+            localPoints.Add(new Vector3((float)((sx - px) * sw), 0, (float)((py - sy) * sh)));
         }
         return localPoints;
     }
@@ -210,6 +239,34 @@ public class OnlineMapsBuildingBase:MonoBehaviour
     }
 #endif
 
+    private static bool TryGetFloat(string s, int index, int count, out float result)
+    {
+        result = 0;
+        long n = 0;
+        bool hasDecimalPoint = false;
+        bool neg = false;
+        long decimalV = 1;
+        for (int x = 0; x < count; x++, index++)
+        {
+            char c = s[index];
+            if (c == '.') hasDecimalPoint = true;
+            else if (c == '-') neg = true;
+            else if (c < '0' || c > '9') return false;
+            else
+            {
+                n *= 10;
+                n += c - '0';
+                if (hasDecimalPoint) decimalV *= 10;
+            }
+        }
+
+        if (neg) n = -n;
+
+        result = n / (float)decimalV;
+
+        return true;
+    }
+
     private void Update()
     {
         if (Input.touchCount != lastTouchCount)
@@ -234,7 +291,7 @@ public class OnlineMapsBuildingBase:MonoBehaviour
     /// <summary>
     /// Type the building's roof.
     /// </summary>
-    protected enum OnlineMapsBuildingRoofType
+    protected enum RoofType
     {
         /// <summary>
         /// Dome roof.
@@ -246,21 +303,20 @@ public class OnlineMapsBuildingBase:MonoBehaviour
         /// </summary>
         flat
     }
-}
-
-/// <summary>
-/// Building meta key-value pair.
-/// </summary>
-[Serializable]
-public class OnlineMapsBuildingMetaInfo
-{
-    /// <summary>
-    /// Meta value.
-    /// </summary>
-    public string info;
 
     /// <summary>
-    /// Meta key.
+    /// Building meta key-value pair.
     /// </summary>
-    public string title;
+    public struct MetaInfo
+    {
+        /// <summary>
+        /// Meta value.
+        /// </summary>
+        public string info;
+
+        /// <summary>
+        /// Meta key.
+        /// </summary>
+        public string title;
+    }
 }

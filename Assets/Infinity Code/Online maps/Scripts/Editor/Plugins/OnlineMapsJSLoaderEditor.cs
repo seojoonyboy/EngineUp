@@ -26,13 +26,8 @@ public class OnlineMapsJSLoaderEditor:Editor
 
     public string FindAsset(string filename)
     {
-#if UNITY_4_3
-        string[] files = Directory.GetFiles(Application.dataPath, filename);
-        return (files.Length > 0) ? files[0] : null;
-#else
         string[] guids = AssetDatabase.FindAssets(filename);
         return (guids != null && guids.Length > 0)? AssetDatabase.GUIDToAssetPath(guids[0]): null;
-#endif
     }
 
     private void ModifyFile(string filename)

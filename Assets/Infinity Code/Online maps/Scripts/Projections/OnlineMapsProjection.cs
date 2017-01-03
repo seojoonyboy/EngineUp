@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*     INFINITY CODE 2013-2016      */
+/*   http://www.infinity-code.com   */
+
+using System;
 
 /// <summary>
 /// The base class of map projection.

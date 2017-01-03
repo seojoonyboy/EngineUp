@@ -2,6 +2,7 @@
 /*   http://www.infinity-code.com   */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -28,9 +29,19 @@ public class OnlineMapsDrawingPoly : OnlineMapsDrawingElement
     public float borderWeight = 1;
 
     /// <summary>
-    /// List of points of the polygon. Geographic coordinates.
+    /// IEnumerable of points of the polygon. Geographic coordinates.\n
+    /// The values can be of type: Vector2, float, double.\n
+    /// If values float or double, the value should go in pairs(longitude, latitude).
     /// </summary>
-    public List<Vector2> points;
+    public IEnumerable points
+    {
+        get { return _points; }
+        set
+        {
+            if (value == null) throw new Exception("Points can not be null.");
+            _points = value;
+        }
+    }
 
     /// <summary>
     /// Center point of the polygon.
@@ -40,10 +51,17 @@ public class OnlineMapsDrawingPoly : OnlineMapsDrawingElement
         get
         {
             Vector2 centerPoint = Vector2.zero;
-            foreach (Vector2 point in points) centerPoint += point;
-            return centerPoint / points.Count;
+            int count = 0;
+            foreach (Vector2 point in points)
+            {
+                centerPoint += point;
+                count++;
+            }
+            return centerPoint / count;
         }
     }
+
+    private IEnumerable _points;
 
     /// <summary>
     /// Creates a new polygon.
@@ -56,18 +74,27 @@ public class OnlineMapsDrawingPoly : OnlineMapsDrawingElement
     /// <summary>
     /// Creates a new polygon.
     /// </summary>
-    /// <param name="points">List of points of the polygon. Geographic coordinates.</param>
-    public OnlineMapsDrawingPoly(List<Vector2> points):this()
+    /// <param name="points">
+    /// IEnumerable of points of the polygon. Geographic coordinates.\n
+    /// The values can be of type: Vector2, float, double.\n
+    /// If values float or double, the value should go in pairs(longitude, latitude).
+    /// </param>
+    public OnlineMapsDrawingPoly(IEnumerable points):this()
     {
-        this.points = points;
+        if (points == null) throw new Exception("Points can not be null.");
+        _points = points;
     }
 
     /// <summary>
     /// Creates a new polygon.
     /// </summary>
-    /// <param name="points">List of points of the polygon. Geographic coordinates.</param>
+    /// <param name="points">
+    /// IEnumerable of points of the polygon. Geographic coordinates.\n
+    /// The values can be of type: Vector2, float, double.\n
+    /// If values float or double, the value should go in pairs(longitude, latitude).
+    /// </param>
     /// <param name="borderColor">Border color of the polygon.</param>
-    public OnlineMapsDrawingPoly(List<Vector2> points, Color borderColor)
+    public OnlineMapsDrawingPoly(IEnumerable points, Color borderColor)
         : this(points)
     {
         this.borderColor = borderColor;
@@ -76,10 +103,14 @@ public class OnlineMapsDrawingPoly : OnlineMapsDrawingElement
     /// <summary>
     /// Creates a new polygon.
     /// </summary>
-    /// <param name="points">List of points of the polygon. Geographic coordinates.</param>
+    /// <param name="points">
+    /// IEnumerable of points of the polygon. Geographic coordinates.\n
+    /// The values can be of type: Vector2, float, double.\n
+    /// If values float or double, the value should go in pairs(longitude, latitude).
+    /// </param>
     /// <param name="borderColor">Border color of the polygon.</param>
     /// <param name="borderWeight">Border weight of the polygon.</param>
-    public OnlineMapsDrawingPoly(List<Vector2> points, Color borderColor, float borderWeight)
+    public OnlineMapsDrawingPoly(IEnumerable points, Color borderColor, float borderWeight)
         : this(points, borderColor)
     {
         this.borderWeight = borderWeight;
@@ -88,14 +119,18 @@ public class OnlineMapsDrawingPoly : OnlineMapsDrawingElement
     /// <summary>
     /// Creates a new polygon.
     /// </summary>
-    /// <param name="points">List of points of the polygon. Geographic coordinates.</param>
+    /// <param name="points">
+    /// IEnumerable of points of the polygon. Geographic coordinates.\n
+    /// The values can be of type: Vector2, float, double.\n
+    /// If values float or double, the value should go in pairs(longitude, latitude).
+    /// </param>
     /// <param name="borderColor">Border color of the polygon.</param>
     /// <param name="borderWeight">Border weight of the polygon.</param>
     /// <param name="backgroundColor">
     /// Background color of the polygon.\n
     /// Note: Not supported in tileset.
     /// </param>
-    public OnlineMapsDrawingPoly(List<Vector2> points, Color borderColor, float borderWeight, Color backgroundColor)
+    public OnlineMapsDrawingPoly(IEnumerable points, Color borderColor, float borderWeight, Color backgroundColor)
         : this(points, borderColor, borderWeight)
     {
         this.backgroundColor = backgroundColor;
@@ -207,6 +242,7 @@ public class OnlineMapsDrawingPoly : OnlineMapsDrawingElement
 
     public override bool HitTest(Vector2 positionLngLat, int zoom)
     {
+        if (points == null) return false;
         return OnlineMapsUtils.IsPointInPolygon(points, positionLngLat.x, positionLngLat.y);
     }
 
@@ -214,6 +250,11 @@ public class OnlineMapsDrawingPoly : OnlineMapsDrawingElement
     {
         base.DisposeLate();
 
-        points = null;
+        _points = null;
+    }
+
+    public override bool Validate()
+    {
+        return _points != null;
     }
 }

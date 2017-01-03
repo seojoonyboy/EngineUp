@@ -28,6 +28,7 @@ public class OnlineMapsLocationServiceEditor:Editor
     private SerializedProperty pUpdateDistance;
     private SerializedProperty pAutoStopUpdateOnInput;
     private SerializedProperty pRestoreAfter;
+    private SerializedProperty pDisableEmulatorInPublish;
 
     private static GUIStyle toggleStyle
     {
@@ -52,6 +53,7 @@ public class OnlineMapsLocationServiceEditor:Editor
         pMarkerTooltip = serializedObject.FindProperty("markerTooltip");
         pUseCompassForMarker = serializedObject.FindProperty("useCompassForMarker");
         pUseGPSEmulator = serializedObject.FindProperty("useGPSEmulator");
+        pDisableEmulatorInPublish = serializedObject.FindProperty("disableEmulatorInPublish");
         pEmulatorPosition = serializedObject.FindProperty("emulatorPosition");
         pEmulatorCompass = serializedObject.FindProperty("emulatorCompass");
         pDesiredAccuracy = serializedObject.FindProperty("desiredAccuracy");
@@ -120,15 +122,21 @@ public class OnlineMapsLocationServiceEditor:Editor
 
         if (pUseGPSEmulator.boolValue && showGPSEmulator)
         {
-            EditorGUILayout.HelpBox("The emulator is automatically disabled on the devices and use the data from the sensors.", MessageType.Info);
+            EditorGUILayout.PropertyField(pDisableEmulatorInPublish);
+            if (pDisableEmulatorInPublish.boolValue) EditorGUILayout.HelpBox("The emulator is automatically disabled on the devices and use the data from the sensors.", MessageType.Info);
 
             if (GUILayout.Button("Copy position from Online Maps"))
             {
-                OnlineMaps api = (target as OnlineMapsLocationService).GetComponent<OnlineMaps>();
-                if (api != null) pEmulatorPosition.vector2Value = api.position;
+                OnlineMaps map = (target as OnlineMapsLocationService).GetComponent<OnlineMaps>();
+                if (map != null) pEmulatorPosition.vector2Value = map.position;
             }
 
-            EditorGUILayout.PropertyField(pEmulatorPosition, new GUIContent("Position (Lng/Lat)"));
+            EditorGUI.BeginChangeCheck();
+
+            Vector2 pos = pEmulatorPosition.vector2Value;
+            pos.y = EditorGUILayout.FloatField("Latitude", pos.y);
+            pos.x = EditorGUILayout.FloatField("Longitude", pos.x);
+            if (EditorGUI.EndChangeCheck()) pEmulatorPosition.vector2Value = pos;
             EditorGUILayout.PropertyField(pEmulatorCompass, new GUIContent("Compass (0-360)"));
         }
 

@@ -2,8 +2,6 @@
 /*   http://www.infinity-code.com   */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -124,6 +122,11 @@ public class OnlineMapsMarkerBase
         }
     }
 
+    protected static OnlineMaps map
+    {
+        get { return OnlineMaps.instance; }
+    }
+
     /// <summary>
     /// Marker coordinates.
     /// </summary>
@@ -158,13 +161,10 @@ public class OnlineMapsMarkerBase
         {
             if (!enabled) return false;
 
-            OnlineMaps api = OnlineMaps.instance;
-
-            if (!range.InRange(api.zoom)) return false;
+            if (!range.InRange(map.zoom)) return false;
 
             double tlx, tly, brx, bry;
-            api.GetTopLeftPosition(out tlx, out tly);
-            api.GetBottomRightPosition(out brx, out bry);
+            map.GetCorners(out tlx, out tly, out brx, out bry);
 
             if (longitude >= tlx && longitude <= brx && latitude >= bry && latitude <= tly) return true;
             return false;
@@ -173,7 +173,7 @@ public class OnlineMapsMarkerBase
 
     public OnlineMapsMarkerBase()
     {
-        range = new OnlineMapsRange(3, 20);
+        range = new OnlineMapsRange(3, OnlineMaps.MAXZOOM);
     }
 
     /// <summary>
@@ -204,6 +204,11 @@ public class OnlineMapsMarkerBase
         lat = latitude;
     }
 
+    public void GetTilePosition(out double px, out double py)
+    {
+        map.projection.CoordinatesToTile(longitude, latitude, map.zoom, out px, out py);
+    }
+
     /// <summary>
     /// Turns the marker in the direction specified coordinates.
     /// </summary>
@@ -227,6 +232,7 @@ public class OnlineMapsMarkerBase
         element.Create("Latitude", latitude);
         element.Create("Range", range);
         element.Create("Label", label);
+        element.Create("Scale", scale);
         return element;
     }
 
@@ -247,6 +253,11 @@ public class OnlineMapsMarkerBase
     public void SetDragable()
     {
         OnPress += OnMarkerPress;
+    }
+
+    public virtual void Update()
+    {
+        
     }
 
     /// <summary>

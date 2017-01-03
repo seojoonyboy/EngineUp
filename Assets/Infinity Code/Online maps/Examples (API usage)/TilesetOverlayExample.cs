@@ -75,15 +75,12 @@ namespace InfinityCode.OnlineMapsExamples
             };
 
             // Init overlay UV
-            OnlineMaps api = OnlineMaps.instance;
+            OnlineMaps map = OnlineMaps.instance;
 
             double tlx, tly, brx, bry;
-            api.GetTopLeftPosition(out tlx, out tly);
-            api.GetBottomRightPosition(out brx, out bry);
-            api.projection.CoordinatesToTile(tlx, tly, api.zoom, out tlx, out tly);
-            api.projection.CoordinatesToTile(brx, bry, api.zoom, out brx, out bry);
+            map.GetTileCorners(out tlx, out tly, out brx, out bry);
 
-            int maxTileCount = 1 << api.zoom;
+            int maxTileCount = 1 << map.zoom;
 
             float uvX1 = (float)(tlx / maxTileCount);
             float uvX2 = (float)(brx / maxTileCount);

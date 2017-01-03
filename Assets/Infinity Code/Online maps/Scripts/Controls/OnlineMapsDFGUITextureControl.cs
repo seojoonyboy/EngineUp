@@ -24,38 +24,38 @@ public class OnlineMapsDFGUITextureControl : OnlineMapsControlBase2D
     public override Vector2 GetCoords(Vector2 position)
     {
         Rect rect = GetRect();
-        int countX = api.texture.width / OnlineMapsUtils.tileSize;
-        int countY = api.texture.height / OnlineMapsUtils.tileSize;
+        int countX = map.texture.width / OnlineMapsUtils.tileSize;
+        int countY = map.texture.height / OnlineMapsUtils.tileSize;
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetPosition(out px, out py);
+        map.projection.CoordinatesToTile(px, py, map.zoom, out px, out py);
 
         float rx = (rect.center.x - position.x) / rect.width * 2;
         float ry = (rect.center.y - position.y) / rect.height * 2;
         px -= countX / 2f * rx;
         py += countY / 2f * ry;
 
-        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
+        map.projection.TileToCoordinates(px, py, map.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
     public override bool GetCoords(out double lng, out double lat, Vector2 position)
     {
         Rect rect = GetRect();
-        int countX = api.texture.width / OnlineMapsUtils.tileSize;
-        int countY = api.texture.height / OnlineMapsUtils.tileSize;
+        int countX = map.texture.width / OnlineMapsUtils.tileSize;
+        int countY = map.texture.height / OnlineMapsUtils.tileSize;
 
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetPosition(out px, out py);
+        map.projection.CoordinatesToTile(px, py, map.zoom, out px, out py);
 
         float rx = (rect.center.x - position.x) / rect.width * 2;
         float ry = (rect.center.y - position.y) / rect.height * 2;
         px -= countX / 2f * rx;
         py += countY / 2f * ry;
 
-        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
+        map.projection.TileToCoordinates(px, py, map.zoom, out lng, out lat);
         return true;
     }
 

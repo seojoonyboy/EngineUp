@@ -63,7 +63,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
     {
         get
         {
-            if (OnlineMaps.instance.target == OnlineMapsTarget.tileset) return _colors;
+            if (map.target == OnlineMapsTarget.tileset) return _colors;
             if (_rotation == 0 && scale == 1) return _colors;
 
             if (_lastRotation != _rotation || _lastScale != _scale) UpdateRotatedBuffer();
@@ -85,7 +85,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
             {
                 _enabled = value;
                 if (OnEnabledChange != null) OnEnabledChange(this);
-                OnlineMaps.instance.Redraw();
+                map.Redraw();
             }
         }
     }
@@ -118,7 +118,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
                 if (Application.isPlaying)
                 {
                     if (!(OnlineMapsControlBase.instance is OnlineMapsTileSetControl)) UpdateRotatedBuffer();
-                    OnlineMaps.instance.Redraw();
+                    map.Redraw();
                 }
             }
         }
@@ -160,29 +160,28 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
     {
         get
         {
-            OnlineMaps api = OnlineMaps.instance;
-            Rect controlRect = api.control.GetRect();
-            Rect uvRect = api.control.uvRect;
+            Rect controlRect = map.control.GetRect();
+            Rect uvRect = map.control.uvRect;
             controlRect.width /= uvRect.width;
             controlRect.height /= uvRect.height;
             controlRect.x -= controlRect.width * uvRect.x;
             controlRect.y -= controlRect.height * uvRect.y;
 
             double tlx, tly;
-            api.GetTopLeftPosition(out tlx, out tly);
-            api.projection.CoordinatesToTile(tlx, tly, api.zoom, out tlx, out tly);
+            map.GetTopLeftPosition(out tlx, out tly);
+            map.projection.CoordinatesToTile(tlx, tly, map.zoom, out tlx, out tly);
             tlx *= OnlineMapsUtils.tileSize;
             tly *= OnlineMapsUtils.tileSize;
 
             double tx, ty;
-            api.projection.CoordinatesToTile(longitude, latitude, api.zoom, out tx, out ty);
+            map.projection.CoordinatesToTile(longitude, latitude, map.zoom, out tx, out ty);
 
             tx *= OnlineMapsUtils.tileSize;
             ty *= OnlineMapsUtils.tileSize;
 
             Vector2 pos = GetAlignedPosition((int)tx, (int)ty);
-            float scaleX = controlRect.width / api.width;
-            float scaleY = controlRect.height / api.height;
+            float scaleX = controlRect.width / map.width;
+            float scaleY = controlRect.height / map.height;
 
             pos.x = Mathf.RoundToInt((float)(pos.x - tlx) * scaleX + controlRect.x);
             pos.y = Mathf.RoundToInt(controlRect.yMax - (float)(pos.y - tly + height) * scaleY);
@@ -259,27 +258,26 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
 
     private Rect GetRect()
     {
-        OnlineMaps api = OnlineMaps.instance;
-        Rect controlRect = api.control.GetRect();
-        Rect uvRect = api.control.uvRect;
+        Rect controlRect = map.control.GetRect();
+        Rect uvRect = map.control.uvRect;
         controlRect.width /= uvRect.width;
         controlRect.height /= uvRect.height;
         controlRect.x -= controlRect.width * uvRect.x;
         controlRect.y -= controlRect.height * uvRect.y;
 
         double tlx, tly;
-        api.projection.CoordinatesToTile(api.buffer.topLeftPosition.x, api.buffer.topLeftPosition.y, api.buffer.apiZoom, out tlx, out tly);
+        map.projection.CoordinatesToTile(map.buffer.topLeftPosition.x, map.buffer.topLeftPosition.y, map.buffer.apiZoom, out tlx, out tly);
         tlx *= OnlineMapsUtils.tileSize;
         tly *= OnlineMapsUtils.tileSize;
 
         double tx, ty;
-        api.projection.CoordinatesToTile(longitude, latitude, api.buffer.apiZoom, out tx, out ty);
+        map.projection.CoordinatesToTile(longitude, latitude, map.buffer.apiZoom, out tx, out ty);
         tx *= OnlineMapsUtils.tileSize;
         ty *= OnlineMapsUtils.tileSize;
 
         Vector2 pos = GetAlignedPosition((int)tx, (int)ty);
-        float scaleX = controlRect.width / api.width;
-        float scaleY = controlRect.height / api.height;
+        float scaleX = controlRect.width / map.width;
+        float scaleY = controlRect.height / map.height;
         pos.x = Mathf.RoundToInt((float)(pos.x - tlx) * scaleX + controlRect.x);
         pos.y = Mathf.RoundToInt(controlRect.yMax - (float)(pos.y - tly + height) * scaleY);
 
@@ -301,7 +299,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
     public bool HitTest(Vector2 coordinates, int zoom)
     {
         double px, py;
-        OnlineMaps.instance.projection.CoordinatesToTile(longitude, latitude, zoom, out px, out py);
+        map.projection.CoordinatesToTile(longitude, latitude, zoom, out px, out py);
         px *= OnlineMapsUtils.tileSize;
         py *= OnlineMapsUtils.tileSize;
 
@@ -312,7 +310,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
 
             OnlineMapsVector2i pos = GetAlignedPosition((int)px, (int)py);
             double mx, my;
-            OnlineMaps.instance.projection.CoordinatesToTile(coordinates.x, coordinates.y, zoom, out mx, out my);
+            map.projection.CoordinatesToTile(coordinates.x, coordinates.y, zoom, out mx, out my);
             mx *= OnlineMapsUtils.tileSize;
             my *= OnlineMapsUtils.tileSize;
 
@@ -326,7 +324,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
             OnlineMapsVector2i pos = GetAlignedPosition((int)px, (int)py);
 
             double mx, my;
-            OnlineMaps.instance.projection.CoordinatesToTile(coordinates.x, coordinates.y, zoom, out mx, out my);
+            map.projection.CoordinatesToTile(coordinates.x, coordinates.y, zoom, out mx, out my);
             mx *= OnlineMapsUtils.tileSize;
             my *= OnlineMapsUtils.tileSize;
 
@@ -341,16 +339,16 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
     {
         if (texture != null)
         {
-            if (OnlineMaps.instance.target == OnlineMapsTarget.texture) _colors = texture.GetPixels32();
+            if (map.target == OnlineMapsTarget.texture) _colors = texture.GetPixels32();
             _width = _textureWidth = texture.width;
             _height = _textureHeight = texture.height;
         }
         else
         {
-            Texture2D defaultTexture = OnlineMaps.instance.defaultMarkerTexture;
+            Texture2D defaultTexture = map.defaultMarkerTexture;
             if (defaultTexture != null)
             {
-                if (OnlineMaps.instance.target == OnlineMapsTarget.texture) _colors = defaultTexture.GetPixels32();
+                if (map.target == OnlineMapsTarget.texture) _colors = defaultTexture.GetPixels32();
                 _width = _textureWidth = defaultTexture.width;
                 _height = _textureHeight = defaultTexture.height;
             }
@@ -360,7 +358,10 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
 
     public override void LookToCoordinates(Vector2 coordinates)
     {
-        rotation = 1.25f - OnlineMapsUtils.Angle2D(coordinates, position) / 360;
+        double p1x, p1y, p2x, p2y;
+        map.projection.CoordinatesToTile(coordinates.x, coordinates.y, 20, out p1x, out p1y);
+        map.projection.CoordinatesToTile(longitude, latitude, 20, out p2x, out p2y);
+        rotation = (float)(1.25 - OnlineMapsUtils.Angle2D(p1x, p1y, p2x, p2y) / 360);
     }
 
     public override OnlineMapsXML Save(OnlineMapsXML parent)
@@ -377,7 +378,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
         _lastRotation = _rotation;
         _lastScale = _scale;
 
-        if ((_rotation == 0 && scale == 1) || OnlineMaps.instance.target == OnlineMapsTarget.tileset)
+        if ((_rotation == 0 && scale == 1) || map.target == OnlineMapsTarget.tileset)
         {
             _width = _textureWidth;
             _height = _textureHeight;

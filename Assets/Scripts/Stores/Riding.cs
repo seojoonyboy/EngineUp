@@ -17,9 +17,6 @@ public class Riding : Store<Actions>{
     public float avgSpeed;
     public float maxSpeed = 0;
     public TimeSpan totalTime;
-    public StringBuilder resultData = new StringBuilder();
-    private string dataFilePath;
-    private const float EARTH_RADIUS = 6371;
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
@@ -98,45 +95,6 @@ public class Riding : Store<Actions>{
         return true;
     }
 
-    void _writeData(LocationInfo loc){
-        System.Text.StringBuilder _sb = GameManager.Instance.sb;
-        _sb.Remove(0,_sb.Length);
-        _sb.Append(loc.altitude).Append("|")
-            .Append(loc.latitude).Append("|")
-            .Append(loc.longitude).Append("|")
-            .Append(loc.timestamp).Append("|")
-            .Append(loc.horizontalAccuracy).Append("|")
-            .Append(loc.verticalAccuracy).Append("\n");
-        File.AppendAllText(dataFilePath, _sb.ToString(), Encoding.UTF8);
-    }
-
-    void _dataFileInit(DateTime now){
-        System.Text.StringBuilder _sb = GameManager.Instance.sb;
-        _sb.Remove(0,_sb.Length);
-        _sb.Append(Application.persistentDataPath).Append("/");
-        string d = now.ToString("s");
-        int count = 0;
-        d = d.Replace("T","")
-            .Replace("-","")
-            .Replace(":","");
-        _sb.Append(d).Append(count);
-        while(File.Exists(_sb.ToString())){
-            count++;
-            _sb.Remove(_sb.Length-1,1);
-            _sb.Append(count);
-        }
-        dataFilePath = _sb.ToString();
-        Debug.Log(dataFilePath);
-    }
-
-    void _readFile(string path) {
-        byte[] bytes = File.ReadAllBytes(path);
-        string data = System.Text.Encoding.UTF8.GetString(bytes);
-        //resultData.Remove(0, resultData.Length);
-        resultData.Append(data);
-        resultData.Remove(0,1);
-    }
-
     void ridingStart(RidingStartAction act){
         coordList.Clear();
         switch(act.status){
@@ -186,15 +144,12 @@ public class Riding : Store<Actions>{
             break;
         case ActionTypes.RIDING_END:
             Screen.sleepTimeout = SleepTimeout.SystemSetting;
-            // _readFile(dataFilePath);
             _gpsSend();
             isRiding = false;
             _emitChange();
             break;
         }
     }
-
-
 }
 
 class RidingData {

@@ -3,7 +3,7 @@
 
 using UnityEditor;
 
-[CustomEditor(typeof(OnlineMapsControlBase2D))]
+[CustomEditor(typeof(OnlineMapsControlBase2D), true)]
 public class OnlineMapsControlBase2DEditor : OnlineMapsControlBaseEditor
 {
 

@@ -73,7 +73,7 @@ public class OnlineMapsDirectionStep
         maneuver = node.Find<string>("maneuver");
         
         string encodedPoints = node.Find<string>("polyline/points");
-        points = OnlineMapsGoogleAPIQuery.DecodePolylinePoints(encodedPoints);
+        points = OnlineMapsUtils.DecodePolylinePoints(encodedPoints);
     }
 
     /// <summary>

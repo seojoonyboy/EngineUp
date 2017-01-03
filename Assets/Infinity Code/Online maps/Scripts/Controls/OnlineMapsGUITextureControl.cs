@@ -26,7 +26,7 @@ public class OnlineMapsGUITextureControl : OnlineMapsControlBase2D
         {
             if (_gTexture == null)
             {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
+#if UNITY_4_6 || UNITY_4_7
                 _gTexture = guiTexture;
 #else
                 _gTexture = GetComponent<GUITexture>();
@@ -39,32 +39,30 @@ public class OnlineMapsGUITextureControl : OnlineMapsControlBase2D
     public override Vector2 GetCoords(Vector2 position)
     {
         Rect rect = screenRect;
-        int countX = api.texture.width / OnlineMapsUtils.tileSize;
-        int countY = api.texture.height / OnlineMapsUtils.tileSize;
+        int countX = map.texture.width / OnlineMapsUtils.tileSize;
+        int countY = map.texture.height / OnlineMapsUtils.tileSize;
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetTilePosition(out px, out py);
         float rx = (rect.center.x - position.x) / rect.width * 2;
         float ry = (rect.center.y - position.y) / rect.height * 2;
         px -= countX / 2f * rx;
         py += countY / 2f * ry;
-        api.projection.TileToCoordinates(px, py, api.zoom, out px, out py);
+        map.projection.TileToCoordinates(px, py, map.zoom, out px, out py);
         return new Vector2((float)px, (float)py);
     }
 
     public override bool GetCoords(out double lng, out double lat, Vector2 position)
     {
         Rect rect = screenRect;
-        int countX = api.texture.width / OnlineMapsUtils.tileSize;
-        int countY = api.texture.height / OnlineMapsUtils.tileSize;
+        int countX = map.texture.width / OnlineMapsUtils.tileSize;
+        int countY = map.texture.height / OnlineMapsUtils.tileSize;
         double px, py;
-        api.GetPosition(out px, out py);
-        api.projection.CoordinatesToTile(px, py, api.zoom, out px, out py);
+        map.GetTilePosition(out px, out py);
         double rx = (rect.center.x - position.x) / rect.width * 2;
         double ry = (rect.center.y - position.y) / rect.height * 2;
         px -= countX / 2f * rx;
         py += countY / 2f * ry;
-        api.projection.TileToCoordinates(px, py, api.zoom, out lng, out lat);
+        map.projection.TileToCoordinates(px, py, map.zoom, out lng, out lat);
         return true;
     }
 

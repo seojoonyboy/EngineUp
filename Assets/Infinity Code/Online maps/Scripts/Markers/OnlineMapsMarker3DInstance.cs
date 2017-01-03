@@ -5,10 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-#if !UNITY_4_3 && !UNITY_4_5
 using UnityEngine.EventSystems;
-#endif
 
 /// <summary>
 /// 3D marker instance class.
@@ -39,7 +36,7 @@ public class OnlineMapsMarker3DInstance : OnlineMapsMarkerInstanceBase
 
     private void Awake()
     {
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
+#if UNITY_4_6 || UNITY_4_7
         Collider cl = collider;
 #else
         Collider cl = GetComponent<Collider>();
@@ -55,13 +52,22 @@ public class OnlineMapsMarker3DInstance : OnlineMapsMarkerInstanceBase
         OnlineMapsControlBase.instance.InvokeBasePress();
 #endif
 
+        pressPoint = OnlineMapsControlBase.instance.GetInputPosition();
+
+        if (EventSystem.current != null)
+        {
+            PointerEventData pe = new PointerEventData(EventSystem.current);
+            pe.position = pressPoint;
+            List<RaycastResult> hits = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pe, hits);
+            if (hits.Count > 0 && hits[0].gameObject != gameObject) return;
+        }
+
         isPressed = true;
         if (marker.OnPress != null) marker.OnPress(marker);
 
         lastClickTimes[0] = lastClickTimes[1];
         lastClickTimes[1] = DateTime.Now.Ticks;
-
-        pressPoint = OnlineMapsControlBase.instance.GetInputPosition();
 
         if (Input.GetKey(KeyCode.LeftControl))
         {
@@ -114,7 +120,7 @@ public class OnlineMapsMarker3DInstance : OnlineMapsMarkerInstanceBase
 
     private void Update()
     {
-        if ((marker as OnlineMapsMarker3D) == null) 
+        if (marker as OnlineMapsMarker3D == null) 
         {
             OnlineMapsUtils.DestroyImmediate(gameObject);
             return;
@@ -134,13 +140,7 @@ public class OnlineMapsMarker3DInstance : OnlineMapsMarkerInstanceBase
             _longitude = mx;
             _latitude = my;
 
-            OnlineMaps map = OnlineMaps.instance;
-
-            double tlx, tly, brx, bry;
-            map.GetTopLeftPosition(out tlx, out tly);
-            map.GetBottomRightPosition(out brx, out bry);
-
-            marker.Update(tlx, tly, brx, bry, map.zoom);
+            marker.Update();
         }
 
         if (_scale != marker.scale)
@@ -160,7 +160,6 @@ public class OnlineMapsMarker3DInstance : OnlineMapsMarkerInstanceBase
 
         Vector2 inputPosition = OnlineMapsControlBase.instance.GetInputPosition();
 
-#if !UNITY_4_3 && !UNITY_4_5
         if (EventSystem.current != null)
         {
             PointerEventData pe = new PointerEventData(EventSystem.current);
@@ -169,7 +168,6 @@ public class OnlineMapsMarker3DInstance : OnlineMapsMarkerInstanceBase
             EventSystem.current.RaycastAll(pe, uiHits);
             if (uiHits.Count > 0 && uiHits[0].gameObject != gameObject) return;
         }
-#endif
 
         int touchCount = 0;
 
