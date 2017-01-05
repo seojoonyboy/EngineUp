@@ -7,22 +7,10 @@ public class FriendsViewController : MonoBehaviour {
     UIGrid grid;
     private User userStore;
 
-    void Start() {
-        Debug.Log("Start");
-        userStore = GameManager.Instance.userStore;
-        grid = gameObject.transform.Find("ScrollView/Grid").GetComponent<UIGrid>();
-        userStore.addListener(userListener);
-
-        GetCommunityAction act = (GetCommunityAction)ActionCreator.createAction(ActionTypes.GET_COMMUNITY_DATA);
-        GameManager.Instance.gameDispatcher.dispatch(act);
-    }
-
-    void userListener() {
-        Debug.Log("Listen");
-    }
-
     public void makeList() {
         Debug.Log("Make List");
+        userStore = GameManager.Instance.userStore;
+        grid = gameObject.transform.Find("ScrollView/Grid").GetComponent<UIGrid>();
         for (int i = 0; i < childNum; i++) {
             GameObject item = Instantiate(container);
             item.transform.SetParent(grid.transform);

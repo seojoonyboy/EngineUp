@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CommunityViewController : MonoBehaviour {
+public class Community_VC : MonoBehaviour {
+    public User userStore;
     FeedViewController feedCtrler;
     FriendsViewController friendsCtrler;
 
-    void Start() {
-        connectChildCtrler();
+    public void onUserListener() {
         initialize();
     }
 
@@ -18,6 +18,9 @@ public class CommunityViewController : MonoBehaviour {
     }
 
     private void initialize() {
+        Debug.Log("Listen User Store in Community_VC");
+        connectChildCtrler();
         friendsCtrler.makeList();
+        feedCtrler.makeList();
     }
 }
