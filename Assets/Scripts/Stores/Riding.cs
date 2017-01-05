@@ -6,11 +6,11 @@ using System.Text;
 using System.Collections;
 
 public class Riding : Store<Actions>{
+    public ActionTypes eventType;
     LocationInfo? _preLocation = null;
     LocationInfo[] postBuffer;
     int postBufferCounter;
     int ridingId;
-    public bool isRiding;
     DateTime startTime;
     public float totalDist;
     public float curSpeed;
@@ -127,7 +127,6 @@ public class Riding : Store<Actions>{
         totalDist = 0;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         ridingId = 0;
-        isRiding = true;
     }
 
     protected override void _onDispatch(Actions action){
@@ -145,10 +144,10 @@ public class Riding : Store<Actions>{
         case ActionTypes.RIDING_END:
             Screen.sleepTimeout = SleepTimeout.SystemSetting;
             _gpsSend();
-            isRiding = false;
             _emitChange();
             break;
         }
+        eventType = action.type;
     }
 }
 

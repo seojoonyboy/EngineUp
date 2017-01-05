@@ -2,23 +2,30 @@
 using System.Collections;
 using System;
 
-public class ResultView : MonoBehaviour {
+public class Result_VC : MonoBehaviour {
 
     public UILabel
         totalDist,
         totalTime,
         avgSpeed,
-        maxSpeed,
-        reultTestLabel;
-
-    public float
-        centerLog,
-        centerLat,
-        zoomLV,
-        mWidth,
-        mHeight;
+        maxSpeed;
 
     public GameObject map;
+    public Riding ridingStore;
+
+    void OnDisable() {
+        map.GetComponent<OnlineMaps>().RemoveAllDrawingElements();
+        gameObject.SetActive(false);
+    }
+
+    public void onRidingListener() {
+        //Debug.Log("On Riding Listener in Result VC");
+        if (ridingStore.eventType == ActionTypes.RIDING_END) {
+            onResultPanel();
+            setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed);
+            setMapLine(ref ridingStore.coordList);
+        }
+    }
 
     public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed) {        
         totalDist.text = (Math.Round(mDist, 2, MidpointRounding.AwayFromZero)).ToString() + " KM";
@@ -40,5 +47,13 @@ public class ResultView : MonoBehaviour {
             Debug.Log("Lat : " + lat[i] + ", Lon" + lon[i]);
         }
         map.GetComponent<MapLine>().drawLine(lat,lon);
+    }
+
+    public void onResultPanel() {
+        gameObject.SetActive(true);
+    }
+
+    public void offResultPanel() {
+        OnDisable();
     }
 }

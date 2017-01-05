@@ -4344,6 +4344,7 @@ GameObject:
   - 4: {fileID: 512075517}
   - 114: {fileID: 512075518}
   - 54: {fileID: 512075519}
+  - 114: {fileID: 512075520}
   m_Layer: 5
   m_Name: CommunityPanel
   m_TagString: Untagged
@@ -4432,6 +4433,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &512075520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 512075516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa15c18076e6bdb47b9f97b002032881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &519097735
 GameObject:
   m_ObjectHideFlags: 0
@@ -5402,18 +5414,18 @@ Prefab:
     - target: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: onClick.Array.data[0].mTarget
       value: 
-      objectReference: {fileID: 978275570}
+      objectReference: {fileID: 978275567}
     - target: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: onClick.Array.data[0].mMethodName
-      value: offResultPanel
+      value: onAvatar
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: onClick.Array.data[1].mTarget
       value: 
-      objectReference: {fileID: 978275567}
+      objectReference: {fileID: 1020560469}
     - target: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: onClick.Array.data[1].mMethodName
-      value: onAvatar
+      value: offResultPanel
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: keepAspectRatio
@@ -6275,6 +6287,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d5facc5c7a874a90b7af2d3b164bbc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resultViewCtrler: {fileID: 1020560469}
+  ridingViewCtrler: {fileID: 645750110}
 --- !u!1 &754726131
 GameObject:
   m_ObjectHideFlags: 0
@@ -8085,7 +8099,6 @@ GameObject:
   - 114: {fileID: 978275567}
   - 114: {fileID: 978275568}
   - 114: {fileID: 978275569}
-  - 114: {fileID: 978275570}
   m_Layer: 5
   m_Name: MainPanel
   m_TagString: Untagged
@@ -8205,18 +8218,6 @@ MonoBehaviour:
   mainBtns:
   - {fileID: 1925767198}
   - {fileID: 1683713682}
---- !u!114 &978275570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 978275564}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4d499fe9fb53b848808f2c2a62617e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  resultPanel: {fileID: 1020560466}
 --- !u!1 &1020560466
 GameObject:
   m_ObjectHideFlags: 0
@@ -8311,12 +8312,11 @@ MonoBehaviour:
   totalTime: {fileID: 1766779233}
   avgSpeed: {fileID: 1175444921}
   maxSpeed: {fileID: 1412542444}
-  reultTestLabel: {fileID: 2055730590}
-  centerLog: 37.88156
-  centerLat: 127.7302
-  zoomLV: 14
-  mWidth: 640
-  mHeight: 400
+  centerLog: 0
+  centerLat: 0
+  zoomLV: 0
+  mWidth: 0
+  mHeight: 0
   map: {fileID: 786515366}
 --- !u!1 &1026364184
 GameObject:
@@ -12296,7 +12296,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 219.00058
+      value: 218.99875
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: m_LocalPosition.y
@@ -12536,12 +12536,12 @@ MonoBehaviour:
     mMethodName: offRidingPanel
     mParameters: []
     oneShot: 0
-  - mTarget: {fileID: 978275570}
-    mMethodName: onResultPanel
-    mParameters: []
-    oneShot: 0
   - mTarget: {fileID: 645750110}
     mMethodName: ridingEnd
+    mParameters: []
+    oneShot: 0
+  - mTarget: {fileID: 1020560469}
+    mMethodName: onResultPanel
     mParameters: []
     oneShot: 0
 --- !u!114 &1641841329

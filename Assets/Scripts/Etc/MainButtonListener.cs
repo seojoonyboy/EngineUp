@@ -19,7 +19,7 @@ public class MainButtonListener : MonoBehaviour {
     }
 
     private void addMainBtnEvent(int index,MAIN_BUTTON type) {
-        EventDelegate eventBtn = new EventDelegate(gameObject.GetComponent<MainViewController>(),"onMainBtnEvent");
+        EventDelegate eventBtn = new EventDelegate(gameObject.GetComponent<MainBtnController>(),"onMainBtnEvent");
 
         eventBtn.parameters[0].value = type;
 

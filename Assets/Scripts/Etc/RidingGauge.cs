@@ -10,8 +10,7 @@ public class RidingGauge : MonoBehaviour {
     void Start() {
         slider = gameObject.GetComponent<UISlider>();
 
-        MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
-        ridingStore = msm.ridingStore;
+        ridingStore = GameManager.Instance.ridingStore;
         ridingStore.addListener(ridingListiner);
     }
 

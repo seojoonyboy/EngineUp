@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
-public class RidingView : MonoBehaviour {
+public class Riding_VC : MonoBehaviour {
     public GameObject gpsPref;
     private GameObject gpsManager;
     private GameManager gameManager;
@@ -12,19 +12,32 @@ public class RidingView : MonoBehaviour {
         distLabel,
         timeLabel;
 
-    private Riding ridingStore;
-    private User userStore;
+    public Riding ridingStore;
+    public User userStore;
 
     LocationInfo currentGPSPosition;
 
     void Start() {
         gameManager = GameManager.Instance;
-        ridingStore = Camera.main.GetComponent<MainSceneManager>().ridingStore;
-        userStore = gameManager.userStore;
     }
 
     void OnEnable() {
         gpsManager = Instantiate(gpsPref);
+    }
+    
+    public void onRidingListener() {
+        float currSpeed = ridingStore.curSpeed;
+        float avgSpeed = ridingStore.avgSpeed;
+        double dist = Math.Round(ridingStore.totalDist, 2);
+
+        char delimeter = '.';
+        string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
+        refreshTxt(currSpeed, avgSpeed, dist, time);
+
+        if (ridingStore.eventType == ActionTypes.RIDING_END) {
+            stopGPSReceive();
+            Debug.Log("Stop GPS RECEIVE");
+        }
     }
 
     public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time){

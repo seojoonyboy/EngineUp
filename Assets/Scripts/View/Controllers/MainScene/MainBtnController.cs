@@ -1,14 +1,13 @@
 ﻿using UnityEngine;
 using System;
 
-public class MainViewController : MonoBehaviour {
+public class MainBtnController : MonoBehaviour {
     public GameObject
         ridingPanel,
         communityPanel,
         avatar,
         topPanel;
 
-    private RidingView ridingView;
     private Riding ridingStore;
     private User userStore;
     private TopView topView;
@@ -17,8 +16,7 @@ public class MainViewController : MonoBehaviour {
         topPanel = gameObject.transform.Find("TopPanel").gameObject;
         topView = topPanel.GetComponent<TopView>();
         
-        MainSceneManager msm = Camera.main.GetComponent<MainSceneManager>();
-        ridingStore = msm.ridingStore;
+        ridingStore = GameManager.Instance.ridingStore;
         userStore = GameManager.Instance.userStore;
 
         addListener();
@@ -48,24 +46,7 @@ public class MainViewController : MonoBehaviour {
     }
 
     void addListener() {
-        ridingView = ridingPanel.GetComponent<RidingView>();
-        ridingStore.addListener(ridingListener);
         userStore.addListener(userListener);
-    }
-
-    void ridingListener() {
-        //Debug.Log("MAIN VIEW RIDING LISTENER");
-        float currSpeed = ridingStore.curSpeed;
-        float avgSpeed = ridingStore.avgSpeed;
-        double dist = Math.Round(ridingStore.totalDist,2);
-
-        char delimeter = '.';
-        string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
-        ridingView.refreshTxt(currSpeed, avgSpeed, dist, time);
-
-        if(!ridingStore.isRiding) {
-            ridingView.stopGPSReceive();
-        }
     }
 
     void userListener() {

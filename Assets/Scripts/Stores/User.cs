@@ -126,9 +126,11 @@ public class User : Store<Actions> {
             userCreate(action as UserCreateAction);
             break;
         case ActionTypes.GET_COMMUNITY_DATA:
+            Debug.Log("GET COMMUNITY DATA");
             getFeeds(action as GetCommunityAction);
             getFriends(action as GetCommunityAction);
             getGroup(action as GetCommunityAction);
+            _emitChange();
             break;
         }
     }
