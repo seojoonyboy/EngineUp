@@ -10,7 +10,7 @@ public enum LocationState {
 }
 
 public class GPSReceiver : MonoBehaviour {
-    private const float gpsInterval = 0.5f;
+    private const float gpsInterval = 1f;
     private LocationState state;
     LocationInfo currGPSInfo;
 
