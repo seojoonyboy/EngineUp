@@ -8,18 +8,7 @@ public class MainBtnController : MonoBehaviour {
         avatar,
         topPanel;
 
-    private Riding ridingStore;
-    private User userStore;
-    private TopView topView;
-
     void Start() {
-        topPanel = gameObject.transform.Find("TopPanel").gameObject;
-        topView = topPanel.GetComponent<TopView>();
-        
-        ridingStore = GameManager.Instance.ridingStore;
-        userStore = GameManager.Instance.userStore;
-
-        addListener();
     }
 
     public void onMainBtnEvent(MAIN_BUTTON type) {
@@ -43,14 +32,6 @@ public class MainBtnController : MonoBehaviour {
 
     public void offCommunityPanel() {
         communityPanel.SetActive(false);
-    }
-
-    void addListener() {
-        userStore.addListener(userListener);
-    }
-
-    void userListener() {
-        topView.setNickName(userStore.nickName);
     }
 
     public void onAvatar() {
