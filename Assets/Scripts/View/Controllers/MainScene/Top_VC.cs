@@ -14,7 +14,9 @@ public class Top_VC : MonoBehaviour {
     }
 
     void onUserListener() {
-        setNickName(userStore.nickName);
+        if(userStore.eventType == ActionTypes.USER_CREATE) {
+            setNickName(userStore.nickName);
+        }
     }
 
     public void setNickName(string nickName) {

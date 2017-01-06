@@ -9,6 +9,7 @@ public class User : Store<Actions> {
     public User(Dispatcher<Actions> _dispatcher) : base(_dispatcher){}
 
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
+    public ActionTypes eventType;
 
     void getUserData(GameStartAction payload){
         switch(payload.status){
@@ -133,6 +134,7 @@ public class User : Store<Actions> {
             _emitChange();
             break;
         }
+        eventType = action.type;
     }
 }
 
