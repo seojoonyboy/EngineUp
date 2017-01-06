@@ -71,7 +71,10 @@ public class GameStartAction : NetworkAction{
 }
 
 public class GetCommunityAction : NetworkAction {
-
+    public enum requestType { ALL, FEEDS, FRIENDS, GROUP };
+    //type default : ALL
+    public requestType type = requestType.ALL;
+    public string keyword;
 }
 
 public class EditNickNameAction : Actions{

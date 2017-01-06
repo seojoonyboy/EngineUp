@@ -5,7 +5,13 @@ public class FriendsViewController : MonoBehaviour {
     public int childNum = 5;
     public GameObject container;
     UIGrid grid;
+    UIInput input;
+
     private User userStore;
+
+    void Start() {
+        input = gameObject.transform.Find("InputBackground/Input").GetComponent<UIInput>();
+    }
 
     public void makeList() {
         userStore = GameManager.Instance.userStore;
@@ -28,5 +34,13 @@ public class FriendsViewController : MonoBehaviour {
         //foreach (Transform child in grid.transform) {
         //    GameObject.Destroy(child.gameObject);
         //}
+    }
+
+    public void search() {
+        string parm = input.value;
+        GetCommunityAction action = ActionCreator.createAction(ActionTypes.GET_COMMUNITY_DATA) as GetCommunityAction;
+        action.type = GetCommunityAction.requestType.FRIENDS;
+        action.keyword = parm;
+        GameManager.Instance.gameDispatcher.dispatch(action);
     }
 }

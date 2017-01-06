@@ -10,6 +10,7 @@ public class MainSceneManager : fbl_SceneManager {
         initialize();
 
         GetCommunityAction act = ActionCreator.createAction(ActionTypes.GET_COMMUNITY_DATA) as GetCommunityAction;
+        act.type = GetCommunityAction.requestType.ALL;
         GameManager.Instance.gameDispatcher.dispatch(act);
     }
 

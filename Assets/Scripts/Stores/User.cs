@@ -36,7 +36,7 @@ public class User : Store<Actions> {
             case NetworkAction.statusTypes.REQUEST:
             var strBuilder = GameManager.Instance.sb;
             strBuilder.Remove(0, strBuilder.Length);
-            //Feed Data를 요청하는 URL
+            //Feed Data 전체를 요청
             //strBuilder.Append(networkManager.baseUrl)
             //    .Append("users/")
             //    .Append(GameManager.Instance.deviceId);
@@ -55,10 +55,18 @@ public class User : Store<Actions> {
             case NetworkAction.statusTypes.REQUEST:
             var strBuilder = GameManager.Instance.sb;
             strBuilder.Remove(0, strBuilder.Length);
-            //Friends Data를 요청하는 URL
-            //strBuilder.Append(networkManager.baseUrl)
-            //    .Append("users/")
-            //    .Append(GameManager.Instance.deviceId);
+            if (string.IsNullOrEmpty(act.keyword)) {
+                //Friends Data 전체를 요청
+                //strBuilder.Append(networkManager.baseUrl)
+                //    .Append("users/")
+                //    .Append(GameManager.Instance.deviceId);
+            }
+            else {
+                //Friends Data를 일부를 요청
+                //strBuilder.Append(networkManager.baseUrl)
+                //    .Append("users/")
+                //    .Append(GameManager.Instance.deviceId);
+            }
             //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
             break;
             case NetworkAction.statusTypes.SUCCESS: // Friends Data 가져오기 성공
@@ -74,10 +82,18 @@ public class User : Store<Actions> {
             case NetworkAction.statusTypes.REQUEST:
             var strBuilder = GameManager.Instance.sb;
             strBuilder.Remove(0, strBuilder.Length);
-            //getGroup Data를 요청하는 URL
-            //strBuilder.Append(networkManager.baseUrl)
-            //    .Append("users/")
-            //    .Append(GameManager.Instance.deviceId);
+            if (string.IsNullOrEmpty(act.keyword)) {
+                //Group Data 전체를 요청
+                //strBuilder.Append(networkManager.baseUrl)
+                //    .Append("users/")
+                //    .Append(GameManager.Instance.deviceId);
+            }
+            else {
+                //Group Data를 일부를 요청
+                //strBuilder.Append(networkManager.baseUrl)
+                //    .Append("users/")
+                //    .Append(GameManager.Instance.deviceId);
+            }
             //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
             break;
             case NetworkAction.statusTypes.SUCCESS: // getGroup Data 가져오기 성공
@@ -127,14 +143,27 @@ public class User : Store<Actions> {
             userCreate(action as UserCreateAction);
             break;
         case ActionTypes.GET_COMMUNITY_DATA:
-            Debug.Log("GET COMMUNITY DATA");
-            getFeeds(action as GetCommunityAction);
-            getFriends(action as GetCommunityAction);
-            getGroup(action as GetCommunityAction);
-            _emitChange();
+            GetCommunityAction act = action as GetCommunityAction;
+            if(act.type == GetCommunityAction.requestType.ALL) {
+                Debug.Log("LOAD ALL COMMUNITY DATA");
+                getFeeds(action as GetCommunityAction);
+                getFriends(action as GetCommunityAction);
+                getGroup(action as GetCommunityAction);
+            }
+
+            if(act.type == GetCommunityAction.requestType.FRIENDS) {
+                Debug.Log("Get Friends Data");
+                Debug.Log("Keyword : " + act.keyword);
+                getFriends(action as GetCommunityAction);
+            }
+
+            if(act.type == GetCommunityAction.requestType.GROUP) {
+                getGroup(action as GetCommunityAction);
+            }
             break;
         }
         eventType = action.type;
+        _emitChange();
     }
 }
 
