@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class FriendsViewController : MonoBehaviour {
     public int childNum = 5;
     public GameObject container;
-    UIGrid grid;
-    UIInput input;
+
+    private GameObject[] itemArr;
+    private UIGrid grid;
+    private UIInput input;
 
     private User userStore;
 
@@ -16,19 +19,33 @@ public class FriendsViewController : MonoBehaviour {
     public void makeList() {
         userStore = GameManager.Instance.userStore;
         grid = gameObject.transform.Find("ScrollView/Grid").GetComponent<UIGrid>();
-        removeList();
+        itemArr = new GameObject[childNum];
+        removeAllList();
         for (int i = 0; i < childNum; i++) {
-            GameObject item = Instantiate(container);
-            item.transform.SetParent(grid.transform);
-            item.transform.localPosition = Vector3.zero;
-            item.transform.localScale = Vector3.one;
+            itemArr[i] = Instantiate(container);
+            itemArr[i].transform.SetParent(grid.transform);
+            itemArr[i].transform.localPosition = Vector3.zero;
+            itemArr[i].transform.localScale = Vector3.one;
+            itemArr[i].transform.Find("Name").GetComponent<UILabel>().text = "친구" + i;
+            GameObject tmp = itemArr[i].transform.Find("RemoveBtn").gameObject;
+            tmp.GetComponent<ButtonIndex>().index = i;
+
+            EventDelegate onClick = new EventDelegate(gameObject.GetComponent<FriendsViewController>(), "delete");
+
+            EventDelegate.Parameter param = new EventDelegate.Parameter();
+            param.obj = tmp;
+            param.field = "index";
+            onClick.parameters[0] = param;
+
+            EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, onClick);
         }
         grid.Reposition();
     }
 
-    void removeList() {
+    void removeAllList() {
         //NGUI Extension Method
-        if(grid.transform.childCount != 0) {
+        Array.Clear(itemArr, 0, itemArr.Length);
+        if (grid.transform.childCount != 0) {
             grid.transform.DestroyChildren();
         }
         //foreach (Transform child in grid.transform) {
@@ -42,5 +59,13 @@ public class FriendsViewController : MonoBehaviour {
         action.type = GetCommunityAction.requestType.FRIENDS;
         action.keyword = parm;
         GameManager.Instance.gameDispatcher.dispatch(action);
+    }
+    
+    public void delete(GameObject obj) {
+        int index = obj.GetComponent<ButtonIndex>().index;
+        Debug.Log("selected index : " + index);
+        Destroy(itemArr[index]);
+        grid.repositionNow = true;
+        grid.Reposition();
     }
 }
