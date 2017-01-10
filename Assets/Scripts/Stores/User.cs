@@ -1,5 +1,6 @@
 ﻿using Flux;
 using UnityEngine;
+using System.Collections;
 
 public class User : Store<Actions> {
     // prop
@@ -10,6 +11,10 @@ public class User : Store<Actions> {
 
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
     public ActionTypes eventType;
+
+    Friends[] myFriends;
+
+    Group[] myGroup;
 
     void getUserData(GameStartAction payload){
         switch(payload.status){
@@ -70,6 +75,7 @@ public class User : Store<Actions> {
             //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
             break;
             case NetworkAction.statusTypes.SUCCESS: // Friends Data 가져오기 성공
+            myFriends = JsonHelper.getJsonArray<Friends>(act.response.data);
             //_emitChange();
             break;
             case NetworkAction.statusTypes.FAIL:    // Friends Data 가져오기 실패
@@ -98,6 +104,7 @@ public class User : Store<Actions> {
             break;
             case NetworkAction.statusTypes.SUCCESS: // getGroup Data 가져오기 성공
             //_emitChange();
+            myGroup = JsonHelper.getJsonArray<Group>(act.response.data);
             break;
             case NetworkAction.statusTypes.FAIL:    // getGroup Data 가져오기 실패
             break;
@@ -177,20 +184,35 @@ class UserData {
     }
 }
 
+[System.Serializable]
 class Feeds {
     public string date;
     public string header;
     public string contents;
+
+    public static Feeds fromJSON(string json) {
+        return JsonUtility.FromJson<Feeds>(json);
+    }
 }
 
+[System.Serializable]
 class Friends {
     public int lv;
     public string nickName;
     public string name;
+
+    public static Friends fromJSON(string json) {
+        return JsonUtility.FromJson<Friends>(json);
+    }
 }
 
+[System.Serializable]
 class Group {
     public string groupName;
     public int memberNum;
     public string location;
+
+    public static Group fromJSON(string json) {
+        return JsonUtility.FromJson<Group>(json);
+    }
 }
