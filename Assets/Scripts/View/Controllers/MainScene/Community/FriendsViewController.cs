@@ -19,14 +19,15 @@ public class FriendsViewController : MonoBehaviour {
     public void makeList() {
         userStore = GameManager.Instance.userStore;
         grid = gameObject.transform.Find("ScrollView/Grid").GetComponent<UIGrid>();
-        itemArr = new GameObject[childNum];
+        itemArr = new GameObject[userStore.myFriends.Length];
         removeAllList();
-        for (int i = 0; i < childNum; i++) {
+        for (int i = 0; i < itemArr.Length; i++) {
             itemArr[i] = Instantiate(container);
             itemArr[i].transform.SetParent(grid.transform);
             itemArr[i].transform.localPosition = Vector3.zero;
             itemArr[i].transform.localScale = Vector3.one;
-            itemArr[i].transform.Find("Name").GetComponent<UILabel>().text = "친구" + i;
+            itemArr[i].transform.Find("Name").GetComponent<UILabel>().text = userStore.myFriends[i].id;
+            itemArr[i].transform.Find("Portrait/LevelBg/Label").GetComponent<UILabel>().text = userStore.myFriends[i].Level;
             GameObject tmp = itemArr[i].transform.Find("RemoveBtn").gameObject;
             tmp.GetComponent<ButtonIndex>().index = i;
 
@@ -67,5 +68,6 @@ public class FriendsViewController : MonoBehaviour {
         Destroy(itemArr[index]);
         grid.repositionNow = true;
         grid.Reposition();
+        
     }
 }

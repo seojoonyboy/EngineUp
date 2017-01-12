@@ -12,7 +12,7 @@ public class User : Store<Actions> {
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
     public ActionTypes eventType;
 
-    Friends[] myFriends;
+    public Friend[] myFriends;
 
     Group[] myGroup;
 
@@ -72,10 +72,13 @@ public class User : Store<Actions> {
                 //    .Append("users/")
                 //    .Append(GameManager.Instance.deviceId);
             }
+            TextAsset friends = Resources.Load<TextAsset>("myFriends");
+            myFriends = JsonHelper.getJsonArray<Friend>(friends.text);
+            Debug.Log(myFriends[0].id);
             //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
             break;
             case NetworkAction.statusTypes.SUCCESS: // Friends Data 가져오기 성공
-            myFriends = JsonHelper.getJsonArray<Friends>(act.response.data);
+            
             //_emitChange();
             break;
             case NetworkAction.statusTypes.FAIL:    // Friends Data 가져오기 실패
@@ -104,7 +107,7 @@ public class User : Store<Actions> {
             break;
             case NetworkAction.statusTypes.SUCCESS: // getGroup Data 가져오기 성공
             //_emitChange();
-            myGroup = JsonHelper.getJsonArray<Group>(act.response.data);
+            
             break;
             case NetworkAction.statusTypes.FAIL:    // getGroup Data 가져오기 실패
             break;
@@ -185,7 +188,7 @@ class UserData {
 }
 
 [System.Serializable]
-class Feeds {
+public class Feeds {
     public string date;
     public string header;
     public string contents;
@@ -196,18 +199,18 @@ class Feeds {
 }
 
 [System.Serializable]
-class Friends {
-    public int lv;
-    public string nickName;
-    public string name;
+public class Friend {
+    public string id;
+    public string Level;
+    public string[] Active;
 
-    public static Friends fromJSON(string json) {
-        return JsonUtility.FromJson<Friends>(json);
+    public static Friend fromJSON(string json) {
+        return JsonUtility.FromJson<Friend>(json);
     }
 }
 
 [System.Serializable]
-class Group {
+public class Group {
     public string groupName;
     public int memberNum;
     public string location;
