@@ -13,7 +13,8 @@ public enum ActionTypes {
     POST_FAIL,
     POST_SUCCESS,
     USER_CREATE,
-    GET_COMMUNITY_DATA
+    GET_COMMUNITY_DATA,
+    DELETE_COMMUNITY_DATA
 }
 
 public class Actions{
@@ -54,6 +55,9 @@ public static class ActionCreator{
         case ActionTypes.GET_COMMUNITY_DATA:
             _return = new GetCommunityAction();
             break;
+        case ActionTypes.DELETE_COMMUNITY_DATA:
+            _return = new DeleteCommunityAction();
+            break;
         }
          _return.type = _type;
         return _return;
@@ -75,6 +79,10 @@ public class GetCommunityAction : NetworkAction {
     //type default : ALL
     public requestType type = requestType.ALL;
     public string keyword;
+}
+
+public class DeleteCommunityAction : NetworkAction {
+    public int key_id;
 }
 
 public class EditNickNameAction : Actions{

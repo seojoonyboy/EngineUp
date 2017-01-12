@@ -171,6 +171,10 @@ public class User : Store<Actions> {
                 getGroup(action as GetCommunityAction);
             }
             break;
+        case ActionTypes.DELETE_COMMUNITY_DATA:
+            DeleteCommunityAction deleteAction = action as DeleteCommunityAction;
+            Debug.Log(deleteAction.key_id);
+            break;
         }
         eventType = action.type;
         _emitChange();

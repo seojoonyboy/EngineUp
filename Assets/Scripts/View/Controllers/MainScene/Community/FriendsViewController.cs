@@ -9,11 +9,13 @@ public class FriendsViewController : MonoBehaviour {
     private GameObject[] itemArr;
     private UIGrid grid;
     private UIInput input;
+    private GameManager gameManager;
 
     private User userStore;
 
     void Start() {
         input = gameObject.transform.Find("InputBackground/Input").GetComponent<UIInput>();
+        gameManager = GameManager.Instance;
     }
 
     public void makeList() {
@@ -59,7 +61,7 @@ public class FriendsViewController : MonoBehaviour {
         GetCommunityAction action = ActionCreator.createAction(ActionTypes.GET_COMMUNITY_DATA) as GetCommunityAction;
         action.type = GetCommunityAction.requestType.FRIENDS;
         action.keyword = parm;
-        GameManager.Instance.gameDispatcher.dispatch(action);
+        gameManager.gameDispatcher.dispatch(action);
     }
     
     public void delete(GameObject obj) {
@@ -68,6 +70,8 @@ public class FriendsViewController : MonoBehaviour {
         Destroy(itemArr[index]);
         grid.repositionNow = true;
         grid.Reposition();
-        
+        DeleteCommunityAction action = ActionCreator.createAction(ActionTypes.DELETE_COMMUNITY_DATA) as DeleteCommunityAction;
+        action.key_id = index;
+        gameManager.gameDispatcher.dispatch(action);
     }
 }
