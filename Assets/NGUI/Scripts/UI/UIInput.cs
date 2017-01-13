@@ -595,7 +595,8 @@ public class UIInput : MonoBehaviour
 
 		if (label != null && NGUITools.GetActive(this))
 		{
-			mValue = value;
+			mValue = label.text;
+            mValue = value;
 #if MOBILE
 			if (mKeyboard != null)
 			{
@@ -751,7 +752,7 @@ public class UIInput : MonoBehaviour
 
 			// There seems to be an inconsistency between IME on Windows, and IME on OSX.
 			// On Windows, Input.inputString is always empty while IME is active. On the OSX it is not.
-			if (string.IsNullOrEmpty(ime) && !string.IsNullOrEmpty(Input.inputString))
+			if (!string.IsNullOrEmpty(Input.inputString))
 			{
 				// Process input ignoring non-printable characters as they are not consistent.
 				// Windows has them, OSX may not. They get handled inside OnGUI() instead.
