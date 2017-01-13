@@ -8,7 +8,17 @@ public class Community_VC : MonoBehaviour {
 
     public void onUserListener() {
         if(userStore.eventType == ActionTypes.GET_COMMUNITY_DATA) {
-            makeCommunityList();
+            if (!userStore.isSearch) {
+                makeCommunityList();
+                return;
+            }
+
+            if(userStore.community_req_type == GetCommunityAction.requestType.FRIENDS) {
+                friendsCtrler.onSerchResult();
+            }
+            else if(userStore.community_req_type == GetCommunityAction.requestType.GROUP) {
+
+            }
         }
     }
 
@@ -16,5 +26,9 @@ public class Community_VC : MonoBehaviour {
         Debug.Log("Listen User Store in Community_VC");
         friendsCtrler.makeList();
         feedCtrler.makeList();
+    }
+
+    private void makeSearchedList() {
+
     }
 }

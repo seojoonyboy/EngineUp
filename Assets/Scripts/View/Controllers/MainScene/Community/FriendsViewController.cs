@@ -47,6 +47,7 @@ public class FriendsViewController : MonoBehaviour {
 
     void removeAllList() {
         //NGUI Extension Method
+        Debug.Log("remove");
         Array.Clear(itemArr, 0, itemArr.Length);
         if (grid.transform.childCount != 0) {
             grid.transform.DestroyChildren();
@@ -63,6 +64,18 @@ public class FriendsViewController : MonoBehaviour {
         action.keyword = parm;
         gameManager.gameDispatcher.dispatch(action);
     }
+
+    public void onSerchResult() {
+        removeAllList();
+        foreach(Friend friend in userStore.list) {
+            GameObject item = Instantiate(container);
+            item.transform.Find("Name").GetComponent<UILabel>().text = friend.id;
+            item.transform.SetParent(grid.transform);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localScale = Vector3.one;
+        }
+        grid.Reposition();
+    }
     
     public void delete(GameObject obj) {
         int index = obj.GetComponent<ButtonIndex>().index;
@@ -73,5 +86,13 @@ public class FriendsViewController : MonoBehaviour {
         DeleteCommunityAction action = ActionCreator.createAction(ActionTypes.DELETE_COMMUNITY_DATA) as DeleteCommunityAction;
         action.key_id = index;
         gameManager.gameDispatcher.dispatch(action);
+    }
+
+    public void OnCloseButton() {
+
+    }
+
+    public void OffCloseButton() {
+
     }
 }

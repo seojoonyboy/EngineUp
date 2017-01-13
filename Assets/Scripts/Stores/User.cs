@@ -1,18 +1,26 @@
 ﻿using Flux;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class User : Store<Actions> {
     // prop
     public string nickName = null;
+    public bool isSearch = false;
+    
     NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
     public User(Dispatcher<Actions> _dispatcher) : base(_dispatcher){}
 
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
     public ActionTypes eventType;
+    public GetCommunityAction.requestType community_req_type;
 
-    public Friend[] myFriends;
+    public Friend[] 
+        myFriends,
+        allUsers;
+
+    public List<Friend> list = new List<Friend>();
 
     Group[] myGroup;
 
@@ -65,16 +73,33 @@ public class User : Store<Actions> {
                 //strBuilder.Append(networkManager.baseUrl)
                 //    .Append("users/")
                 //    .Append(GameManager.Instance.deviceId);
+                TextAsset friends = Resources.Load<TextAsset>("myFriends");
+                myFriends = JsonHelper.getJsonArray<Friend>(friends.text);
+                TextAsset allUsersData = Resources.Load<TextAsset>("user");
+                allUsers = JsonHelper.getJsonArray<Friend>(allUsersData.text);
             }
             else {
                 //Friends Data를 일부를 요청
                 //strBuilder.Append(networkManager.baseUrl)
                 //    .Append("users/")
                 //    .Append(GameManager.Instance.deviceId);
+                list.Clear();
+                isSearch = true;
+                for (int i=0; i<allUsers.Length; i++) {
+                    if(act.keyword.Length == 1) {
+                        if (string.Equals(act.keyword, allUsers[i].id[0].ToString(), System.StringComparison.OrdinalIgnoreCase)) {
+                            list.Add(allUsers[i]);
+                            Debug.Log(allUsers[i].id);
+                        }
+                    }
+                    else {
+                        if (allUsers[i].id.Contains(act.keyword)) {
+                            list.Add(allUsers[i]);
+                            Debug.Log(allUsers[i].id);
+                        }
+                    }
+                }
             }
-            TextAsset friends = Resources.Load<TextAsset>("myFriends");
-            myFriends = JsonHelper.getJsonArray<Friend>(friends.text);
-            Debug.Log(myFriends[0].id);
             //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
             break;
             case NetworkAction.statusTypes.SUCCESS: // Friends Data 가져오기 성공
@@ -153,23 +178,25 @@ public class User : Store<Actions> {
             userCreate(action as UserCreateAction);
             break;
         case ActionTypes.GET_COMMUNITY_DATA:
+            isSearch = false;
             GetCommunityAction act = action as GetCommunityAction;
             if(act.type == GetCommunityAction.requestType.ALL) {
-                Debug.Log("LOAD ALL COMMUNITY DATA");
+                //Debug.Log("LOAD ALL COMMUNITY DATA");
                 getFeeds(action as GetCommunityAction);
                 getFriends(action as GetCommunityAction);
                 getGroup(action as GetCommunityAction);
             }
 
             if(act.type == GetCommunityAction.requestType.FRIENDS) {
-                Debug.Log("Get Friends Data");
-                Debug.Log("Keyword : " + act.keyword);
+                //Debug.Log("Get Friends Data");
+                //Debug.Log("Keyword : " + act.keyword);
                 getFriends(action as GetCommunityAction);
             }
 
             if(act.type == GetCommunityAction.requestType.GROUP) {
                 getGroup(action as GetCommunityAction);
             }
+            community_req_type = act.type;
             break;
         case ActionTypes.DELETE_COMMUNITY_DATA:
             DeleteCommunityAction deleteAction = action as DeleteCommunityAction;
