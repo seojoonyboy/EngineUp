@@ -13,8 +13,9 @@ public enum ActionTypes {
     POST_FAIL,
     POST_SUCCESS,
     USER_CREATE,
-    GET_COMMUNITY_DATA,
-    DELETE_COMMUNITY_DATA
+    COMMUNITY_INITIALIZE,
+    COMMUNITY_SEARCH,
+    COMMUNITY_DELETE
 }
 
 public class Actions{
@@ -52,11 +53,14 @@ public static class ActionCreator{
         case ActionTypes.USER_CREATE:
             _return = new UserCreateAction();
             break;
-        case ActionTypes.GET_COMMUNITY_DATA:
-            _return = new GetCommunityAction();
+        case ActionTypes.COMMUNITY_INITIALIZE:
+            _return = new CommunityInitAction();
             break;
-        case ActionTypes.DELETE_COMMUNITY_DATA:
-            _return = new DeleteCommunityAction();
+        case ActionTypes.COMMUNITY_SEARCH:
+            _return = new CommunitySearchAction();
+            break;
+        case ActionTypes.COMMUNITY_DELETE:
+            _return = new CommunityDeleteAction();
             break;
         }
          _return.type = _type;
@@ -74,17 +78,6 @@ public class GameStartAction : NetworkAction{
     public string message;
 }
 
-public class GetCommunityAction : NetworkAction {
-    public enum requestType { ALL, FEEDS, FRIENDS, GROUP };
-    //type default : ALL
-    public requestType type = requestType.ALL;
-    public string keyword;
-}
-
-public class DeleteCommunityAction : NetworkAction {
-    public int key_id;
-}
-
 public class EditNickNameAction : Actions{
     public string nickname;
 }
@@ -93,13 +86,8 @@ public class GetGPSDataAction : Actions {
     public LocationInfo GPSInfo;
 }
 
-public class RidingStartAction : NetworkAction {
-
-}
-
-public class RidingEndAction : Actions {
-
-}
+public class RidingStartAction : NetworkAction {}
+public class RidingEndAction : Actions {}
 
 public class RidingResultAction : EditNickNameAction {
     public StringBuilder data = new StringBuilder();
@@ -108,4 +96,20 @@ public class RidingResultAction : EditNickNameAction {
 public class UserCreateAction : NetworkAction {
     public string deviceId;
     public string nickName;
+}
+
+public class CommunityInitAction : NetworkAction {
+
+}
+
+public class CommunitySearchAction : NetworkAction {
+    public enum searchType { GROUP, FRIEND };
+    public searchType type;
+    public string keyword;
+}
+
+public class CommunityDeleteAction : NetworkAction {
+    public enum deleteType { GROUP, FRIEND };
+    public deleteType type;
+    public string keyword;
 }

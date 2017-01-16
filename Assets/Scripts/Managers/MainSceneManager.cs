@@ -1,27 +1,26 @@
 public class MainSceneManager : fbl_SceneManager {
     public Result_VC resultViewCtrler;
     public Riding_VC ridingViewCtrler;
-    public Community_VC communityViewCtrler;
+    public FriendsViewController friendViewCtrler;
 
     private GameManager gm;
 
     void Start() {
         gm = GameManager.Instance;
         initialize();
-
-        GetCommunityAction act = ActionCreator.createAction(ActionTypes.GET_COMMUNITY_DATA) as GetCommunityAction;
-        act.type = GetCommunityAction.requestType.ALL;
-        GameManager.Instance.gameDispatcher.dispatch(act);
     }
 
     void initialize() {
         resultViewCtrler.ridingStore = gm.ridingStore;
         ridingViewCtrler.ridingStore = gm.ridingStore;
         ridingViewCtrler.userStore = gm.userStore;
-        communityViewCtrler.userStore = gm.userStore;
+        friendViewCtrler.friendsStore = gm.friendsStore;
 
-        gm.userStore.addListener(communityViewCtrler.onUserListener);
+        gm.friendsStore.addListener(friendViewCtrler.OnFriendsStoreListener);
         gm.ridingStore.addListener(resultViewCtrler.onRidingListener);
         gm.ridingStore.addListener(ridingViewCtrler.onRidingListener);
+
+        CommunityInitAction act = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE) as CommunityInitAction;
+        gm.gameDispatcher.dispatch(act);
     }
 }

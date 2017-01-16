@@ -14,15 +14,6 @@ public class User : Store<Actions> {
 
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
     public ActionTypes eventType;
-    public GetCommunityAction.requestType community_req_type;
-
-    public Friend[] 
-        myFriends,
-        allUsers;
-
-    public List<Friend> list = new List<Friend>();
-
-    Group[] myGroup;
 
     void getUserData(GameStartAction payload){
         switch(payload.status){
@@ -40,101 +31,6 @@ public class User : Store<Actions> {
             _emitChange();
             break;
         case NetworkAction.statusTypes.FAIL:    // 유저 정보 없음!!
-            break;
-        }
-    }
-
-    void getFeeds(GetCommunityAction act) {
-        switch (act.status) {
-            case NetworkAction.statusTypes.REQUEST:
-            var strBuilder = GameManager.Instance.sb;
-            strBuilder.Remove(0, strBuilder.Length);
-            //Feed Data 전체를 요청
-            //strBuilder.Append(networkManager.baseUrl)
-            //    .Append("users/")
-            //    .Append(GameManager.Instance.deviceId);
-            //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
-            break;
-            case NetworkAction.statusTypes.SUCCESS: // Community Data 가져오기 성공
-            //_emitChange();
-            break;
-            case NetworkAction.statusTypes.FAIL:    // Community Data 가져오기 실패
-            break;
-        }
-    }
-
-    void getFriends(GetCommunityAction act) {
-        switch (act.status) {
-            case NetworkAction.statusTypes.REQUEST:
-            var strBuilder = GameManager.Instance.sb;
-            strBuilder.Remove(0, strBuilder.Length);
-            if (string.IsNullOrEmpty(act.keyword)) {
-                //Friends Data 전체를 요청
-                //strBuilder.Append(networkManager.baseUrl)
-                //    .Append("users/")
-                //    .Append(GameManager.Instance.deviceId);
-                TextAsset friends = Resources.Load<TextAsset>("myFriends");
-                myFriends = JsonHelper.getJsonArray<Friend>(friends.text);
-                TextAsset allUsersData = Resources.Load<TextAsset>("user");
-                allUsers = JsonHelper.getJsonArray<Friend>(allUsersData.text);
-            }
-            else {
-                //Friends Data를 일부를 요청
-                //strBuilder.Append(networkManager.baseUrl)
-                //    .Append("users/")
-                //    .Append(GameManager.Instance.deviceId);
-                list.Clear();
-                isSearch = true;
-                for (int i=0; i<allUsers.Length; i++) {
-                    if(act.keyword.Length == 1) {
-                        if (string.Equals(act.keyword, allUsers[i].id[0].ToString(), System.StringComparison.OrdinalIgnoreCase)) {
-                            list.Add(allUsers[i]);
-                            Debug.Log(allUsers[i].id);
-                        }
-                    }
-                    else {
-                        if (allUsers[i].id.Contains(act.keyword)) {
-                            list.Add(allUsers[i]);
-                            Debug.Log(allUsers[i].id);
-                        }
-                    }
-                }
-            }
-            //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
-            break;
-            case NetworkAction.statusTypes.SUCCESS: // Friends Data 가져오기 성공
-            
-            //_emitChange();
-            break;
-            case NetworkAction.statusTypes.FAIL:    // Friends Data 가져오기 실패
-            break;
-        }
-    }
-
-    void getGroup(GetCommunityAction act) {
-        switch (act.status) {
-            case NetworkAction.statusTypes.REQUEST:
-            var strBuilder = GameManager.Instance.sb;
-            strBuilder.Remove(0, strBuilder.Length);
-            if (string.IsNullOrEmpty(act.keyword)) {
-                //Group Data 전체를 요청
-                //strBuilder.Append(networkManager.baseUrl)
-                //    .Append("users/")
-                //    .Append(GameManager.Instance.deviceId);
-            }
-            else {
-                //Group Data를 일부를 요청
-                //strBuilder.Append(networkManager.baseUrl)
-                //    .Append("users/")
-                //    .Append(GameManager.Instance.deviceId);
-            }
-            //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
-            break;
-            case NetworkAction.statusTypes.SUCCESS: // getGroup Data 가져오기 성공
-            //_emitChange();
-            
-            break;
-            case NetworkAction.statusTypes.FAIL:    // getGroup Data 가져오기 실패
             break;
         }
     }
@@ -168,39 +64,13 @@ public class User : Store<Actions> {
     protected override void _onDispatch(Actions action){
         switch(action.type){
         case ActionTypes.GAME_START:
-            var _act = action as GameStartAction;
-            getUserData(_act);
+            getUserData(action as GameStartAction);
             break;
         case ActionTypes.EDIT_NICKNAME:
             //nickName = (action as EditNickNameAction).nickname;
             break;
         case ActionTypes.USER_CREATE:
             userCreate(action as UserCreateAction);
-            break;
-        case ActionTypes.GET_COMMUNITY_DATA:
-            isSearch = false;
-            GetCommunityAction act = action as GetCommunityAction;
-            if(act.type == GetCommunityAction.requestType.ALL) {
-                //Debug.Log("LOAD ALL COMMUNITY DATA");
-                getFeeds(action as GetCommunityAction);
-                getFriends(action as GetCommunityAction);
-                getGroup(action as GetCommunityAction);
-            }
-
-            if(act.type == GetCommunityAction.requestType.FRIENDS) {
-                //Debug.Log("Get Friends Data");
-                //Debug.Log("Keyword : " + act.keyword);
-                getFriends(action as GetCommunityAction);
-            }
-
-            if(act.type == GetCommunityAction.requestType.GROUP) {
-                getGroup(action as GetCommunityAction);
-            }
-            community_req_type = act.type;
-            break;
-        case ActionTypes.DELETE_COMMUNITY_DATA:
-            DeleteCommunityAction deleteAction = action as DeleteCommunityAction;
-            Debug.Log(deleteAction.key_id);
             break;
         }
         eventType = action.type;
@@ -215,38 +85,5 @@ class UserData {
 
     public static UserData fromJSON(string json){
         return JsonUtility.FromJson<UserData>(json);
-    }
-}
-
-[System.Serializable]
-public class Feeds {
-    public string date;
-    public string header;
-    public string contents;
-
-    public static Feeds fromJSON(string json) {
-        return JsonUtility.FromJson<Feeds>(json);
-    }
-}
-
-[System.Serializable]
-public class Friend {
-    public string id;
-    public string Level;
-    public string[] Active;
-
-    public static Friend fromJSON(string json) {
-        return JsonUtility.FromJson<Friend>(json);
-    }
-}
-
-[System.Serializable]
-public class Group {
-    public string groupName;
-    public int memberNum;
-    public string location;
-
-    public static Group fromJSON(string json) {
-        return JsonUtility.FromJson<Group>(json);
     }
 }

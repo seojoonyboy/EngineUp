@@ -10,12 +10,16 @@ public class GameManager : Singleton<GameManager> {
     public string deviceId;
     public User userStore;
     public Riding ridingStore;
+    public Friends friendsStore;
+    public Groups groupStore;
 
     void Awake() {
         gameDispatcher = new Dispatcher<Actions>();
         sb = new StringBuilder();
         userStore = new User(gameDispatcher);
         ridingStore = new Riding(gameDispatcher);
+        friendsStore = new Friends(gameDispatcher);
+        groupStore = new Groups(gameDispatcher);
 
         deviceId = SystemInfo.deviceUniqueIdentifier;
     }
