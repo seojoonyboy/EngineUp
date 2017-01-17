@@ -47,12 +47,14 @@ public class ProfileController : MonoBehaviour {
     public void scrollDownDone() {
         isOver = true;
         isDown = true;
-        arrows[0].transform.localRotation = new Quaternion(0, 180, 0, 1);
-        arrows[1].transform.localRotation = new Quaternion(0, 180, 0, 1);
+        arrows[0].GetComponent<UISprite>().flip = UIBasicSprite.Flip.Vertically;
+        arrows[1].GetComponent<UISprite>().flip = UIBasicSprite.Flip.Vertically;
     }
 
     public void scrollUpDone() {
         isOver = true;
         isDown = false;
+        arrows[0].GetComponent<UISprite>().flip = UIBasicSprite.Flip.Nothing;
+        arrows[1].GetComponent<UISprite>().flip = UIBasicSprite.Flip.Nothing;
     }
 }
