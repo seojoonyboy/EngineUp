@@ -7,12 +7,15 @@ public class Groups : Store<Actions> {
     NetworkManager networkManager = NetworkManager.Instance;
 
     public Group[] myGroups;
+    public ActionTypes eventType;
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
-            case ActionTypes.GAME_START:
-                getMyGroups(action as GameStartAction);
-                
+            case ActionTypes.COMMUNITY_INITIALIZE:
+                getMyGroups(action as CommunityInitAction);
+                //임시 dummy file 이용
+                TextAsset myGroup = Resources.Load<TextAsset>("myGroup");
+                myGroups = JsonHelper.getJsonArray<Group>(myGroup.text);
                 break;
 
             case ActionTypes.COMMUNITY_SEARCH:
@@ -21,16 +24,11 @@ public class Groups : Store<Actions> {
                     search(searchAct);
                 }
                 break;
-            case ActionTypes.COMMUNITY_DELETE:
-                CommunityDeleteAction delAct = action as CommunityDeleteAction;
-                if (delAct.type == CommunityDeleteAction.deleteType.GROUP) {
-                    delete(delAct);
-                }
-                break;
         }
+        eventType = action.type;
     }
 
-    private void getMyGroups(GameStartAction act) {
+    private void getMyGroups(CommunityInitAction act) {
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
             var strBuilder = GameManager.Instance.sb;
@@ -38,10 +36,11 @@ public class Groups : Store<Actions> {
             strBuilder.Append(networkManager.baseUrl)
                 .Append("users/")
                 .Append(GameManager.Instance.deviceId);
+            _emitChange();
             //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
             break;
             case NetworkAction.statusTypes.SUCCESS:
-            _emitChange();
+            //_emitChange();
             break;
             case NetworkAction.statusTypes.FAIL:
             break;
@@ -87,9 +86,9 @@ public class Groups : Store<Actions> {
 
 [System.Serializable]
 public class Group {
-    public string groupName;
-    public int memberNum;
     public string location;
+    public int memberNum;
+    public string name;
 
     public static Group fromJSON(string json) {
         return JsonUtility.FromJson<Group>(json);
