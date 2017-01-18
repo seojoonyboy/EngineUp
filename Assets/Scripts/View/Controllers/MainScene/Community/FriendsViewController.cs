@@ -38,7 +38,7 @@ public class FriendsViewController : MonoBehaviour {
             itemArr[i].transform.localScale = Vector3.one;
             itemArr[i].transform.Find("Name").GetComponent<UILabel>().text = friendsStore.myFriends[i].id;
             itemArr[i].transform.Find("Portrait/LevelBg/Label").GetComponent<UILabel>().text = friendsStore.myFriends[i].Level;
-            GameObject tmp = itemArr[i].transform.Find("RemoveBtn").gameObject;
+            GameObject tmp = itemArr[i].transform.Find("RemoveButton").gameObject;
             tmp.GetComponent<ButtonIndex>().index = i;
 
             EventDelegate onClick = new EventDelegate(gameObject.GetComponent<FriendsViewController>(), "delete");
