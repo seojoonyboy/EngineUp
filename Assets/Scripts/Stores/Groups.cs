@@ -8,6 +8,7 @@ public class Groups : Store<Actions> {
 
     public Group[] myGroups;
     public ActionTypes eventType;
+    public string msg;
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
@@ -50,18 +51,22 @@ public class Groups : Store<Actions> {
     private void search(CommunitySearchAction act) {
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
-            var strBuilder = GameManager.Instance.sb;
-            strBuilder.Remove(0, strBuilder.Length);
-            strBuilder.Append(networkManager.baseUrl)
-                .Append("users/")
-                .Append(GameManager.Instance.deviceId);
-            //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
-            break;
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("users/")
+                    .Append(GameManager.Instance.deviceId);
+                //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                msg = "그룹 검색";
+                _emitChange();
+
+                break;
             case NetworkAction.statusTypes.SUCCESS:
-            _emitChange();
-            break;
+                //msg = act.response.data;
+                //_emitChange();
+                break;
             case NetworkAction.statusTypes.FAIL:
-            break;
+                break;
         }
     }
 

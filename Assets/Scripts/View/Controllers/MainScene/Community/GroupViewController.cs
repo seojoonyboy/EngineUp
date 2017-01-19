@@ -11,19 +11,26 @@ public class GroupViewController : MonoBehaviour {
     private GameManager gameManager;
 
     public Groups groupStore;
+    public GameObject modal;
 
     public void OnGroupStoreListener() {
         if (groupStore.eventType == ActionTypes.COMMUNITY_INITIALIZE) {
             makeList();
         }
         if (groupStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
-            removeAllList();
+            onSearchFeedbackMsg(groupStore.msg);
         }
     }
 
     void Start() {
-        //input = gameObject.transform.Find("InputBackground/Input").GetComponent<UIInput>();
+        input = gameObject.transform.Find("FindGroupPanel/Input").GetComponent<UIInput>();
+        input.activeTextColor = Color.black;
         gameManager = GameManager.Instance;
+    }
+
+    public void onSearchFeedbackMsg(string msg) {
+        modal.SetActive(true);
+        modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = msg;
     }
 
     public void makeList() {
@@ -55,14 +62,17 @@ public class GroupViewController : MonoBehaviour {
 
     void removeAllList() {
         //NGUI Extension Method
-        Debug.Log("remove");
+        //Debug.Log("remove");
         Array.Clear(itemArr, 0, itemArr.Length);
-        if (grid.transform.childCount != 0) {
-            grid.transform.DestroyChildren();
-        }
-        //foreach (Transform child in grid.transform) {
-        //    GameObject.Destroy(child.gameObject);
+        //if (grid.transform.childCount != 0) {
+        //    grid.transform.DestroyChildren();
         //}
+        foreach (Transform child in grid.transform) {
+            if(child.tag == "NoneRemoveList") {
+                continue;
+            }
+            GameObject.Destroy(child.gameObject);
+        }
     }
 
     public void search() {

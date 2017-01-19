@@ -1,10 +1,13 @@
+using UnityEngine;
+
 public class MainSceneManager : fbl_SceneManager {
     public Result_VC resultViewCtrler;
     public Riding_VC ridingViewCtrler;
     public FriendsViewController friendViewCtrler;
     public GroupViewController groupViewCtrler;
-
+    
     private GameManager gm;
+    public GameObject modal;
 
     void Start() {
         gm = GameManager.Instance;
@@ -25,5 +28,9 @@ public class MainSceneManager : fbl_SceneManager {
 
         CommunityInitAction act = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE) as CommunityInitAction;
         gm.gameDispatcher.dispatch(act);
+    }
+
+    public void offModal() {
+        modal.SetActive(false);
     }
 }

@@ -162,6 +162,22 @@ GameObject:
   - 4: {fileID: 4000010686753154}
   - 114: {fileID: 114000012256887868}
   m_Layer: 5
+  m_Name: AdditinalMsg
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!1 &1000013617919844
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 4000012576815654}
+  - 114: {fileID: 114000013494043910}
+  m_Layer: 5
   m_Name: Name
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -207,7 +223,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000012866546558}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 431, y: 1, z: 0}
+  m_LocalPosition: {x: 457, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -221,12 +237,12 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000013477043430}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalPosition: {x: 273, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 4000011390428432}
-  m_RootOrder: 1
+  m_RootOrder: 5
 --- !u!4 &4000011253462560
 Transform:
   m_ObjectHideFlags: 1
@@ -248,15 +264,16 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000012481259464}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 9, z: 0}
+  m_LocalPosition: {x: 4, y: 9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 4000011600784334}
-  - {fileID: 4000010686753154}
+  - {fileID: 4000012576815654}
   - {fileID: 4000010063914982}
   - {fileID: 4000012426768618}
   - {fileID: 4000011253462560}
+  - {fileID: 4000010686753154}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!4 &4000011474618384
@@ -280,7 +297,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000014013336784}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -421, y: 0, z: 0}
+  m_LocalPosition: {x: -447, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -327,6 +344,19 @@ Transform:
   - {fileID: 4000012174345322}
   m_Father: {fileID: 4000011390428432}
   m_RootOrder: 3
+--- !u!4 &4000012576815654
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013617919844}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -86, y: -2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 4000011390428432}
+  m_RootOrder: 1
 --- !u!4 &4000012605739832
 Transform:
   m_ObjectHideFlags: 1
@@ -810,36 +840,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftAnchor:
     target: {fileID: 4000011390428432}
-    relative: 0
-    absolute: 339
+    relative: 1
+    absolute: -378
   rightAnchor:
     target: {fileID: 4000011390428432}
     relative: 1
-    absolute: -339
+    absolute: -150
   bottomAnchor:
     target: {fileID: 4000011390428432}
     relative: 0
-    absolute: 38
+    absolute: 61
   topAnchor:
     target: {fileID: 4000011390428432}
     relative: 1
-    absolute: -40
+    absolute: -61
   updateAnchors: 1
   mColor: {r: 0, g: 0, b: 0, a: 1}
   mPivot: 4
-  mWidth: 344
-  mHeight: 102
+  mWidth: 228
+  mHeight: 58
   mDepth: 5
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 3.372549
+  aspectRatio: 3.9310346
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
-  mFont: {fileID: 114000010349412668, guid: d658f5a16b096b442855a076752c085f, type: 2}
-  mText: "\uCE5C\uAD6C A"
-  mFontSize: 60
+  mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
+  mText: "\uC694\uCCAD \uB300\uAE30\uC911"
+  mFontSize: 40
   mFontStyle: 0
   mAlignment: 2
   mEncoding: 1
@@ -1067,14 +1097,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 1022
+  mWidth: 1074
   mHeight: 180
   mDepth: 0
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 5.677778
+  aspectRatio: 5.9666667
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -1136,6 +1166,74 @@ MonoBehaviour:
   mFontSize: 60
   mFontStyle: 0
   mAlignment: 0
+  mEncoding: 1
+  mMaxLineCount: 0
+  mEffectStyle: 0
+  mEffectColor: {r: 0, g: 0, b: 0, a: 1}
+  mSymbols: 1
+  mEffectDistance: {x: 1, y: 1}
+  mOverflow: 0
+  mApplyGradient: 0
+  mGradientTop: {r: 1, g: 1, b: 1, a: 1}
+  mGradientBottom: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  mSpacingX: 0
+  mSpacingY: 0
+  mUseFloatSpacing: 0
+  mFloatSpacingX: 0
+  mFloatSpacingY: 0
+  mOverflowEllipsis: 0
+  mOverflowWidth: 0
+  mModifier: 0
+  mShrinkToFit: 0
+  mMaxLineWidth: 0
+  mMaxLineHeight: 0
+  mLineWidth: 0
+  mMultiline: 1
+--- !u!114 &114000013494043910
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013617919844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d0b5f3bbe925a408bd595c79d0bf63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftAnchor:
+    target: {fileID: 4000011390428432}
+    relative: 0
+    absolute: 219
+  rightAnchor:
+    target: {fileID: 4000011390428432}
+    relative: 0
+    absolute: 683
+  bottomAnchor:
+    target: {fileID: 4000011390428432}
+    relative: 0
+    absolute: 38
+  topAnchor:
+    target: {fileID: 4000011390428432}
+    relative: 1
+    absolute: -42
+  updateAnchors: 1
+  mColor: {r: 0, g: 0, b: 0, a: 1}
+  mPivot: 4
+  mWidth: 464
+  mHeight: 100
+  mDepth: 5
+  mMat: {fileID: 0}
+  autoResizeBoxCollider: 0
+  hideIfOffScreen: 0
+  keepAspectRatio: 0
+  aspectRatio: 4.64
+  keepCrispWhenShrunk: 1
+  mTrueTypeFont: {fileID: 0}
+  mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
+  mText: "\uCE5C\uAD6C A"
+  mFontSize: 60
+  mFontStyle: 0
+  mAlignment: 1
   mEncoding: 1
   mMaxLineCount: 0
   mEffectStyle: 0

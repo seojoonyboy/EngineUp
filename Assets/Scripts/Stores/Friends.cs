@@ -7,6 +7,9 @@ public class Friends : Store<Actions> {
     NetworkManager networkManager = NetworkManager.Instance;
 
     public Friend[] myFriends;
+    public string 
+        msg,
+        keyword;
     public ActionTypes eventType;
 
     protected override void _onDispatch(Actions action) {
@@ -36,10 +39,11 @@ public class Friends : Store<Actions> {
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("users/")
                     .Append(GameManager.Instance.deviceId);
-                    //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));                
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                //msg = act.response.data;
                 //_emitChange();
             break;
             case NetworkAction.statusTypes.FAIL:
@@ -48,7 +52,7 @@ public class Friends : Store<Actions> {
     }
 
     private void search(CommunitySearchAction act) {
-        string keyword = act.keyword;
+        keyword = act.keyword;
         switch (act.status) {            
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
@@ -57,10 +61,12 @@ public class Friends : Store<Actions> {
                     .Append("users/")
                     .Append(GameManager.Instance.deviceId);
                 //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                msg = keyword + " 로 검색 결과";
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                _emitChange();
+                //msg = keyword + " 로 검색 결과";
+                //_emitChange();
             break;
             case NetworkAction.statusTypes.FAIL:
             break;
