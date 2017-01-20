@@ -17,9 +17,17 @@ public class FriendsViewController : MonoBehaviour {
     public void OnFriendsStoreListener() {
         if(friendsStore.eventType == ActionTypes.COMMUNITY_INITIALIZE) {
             makeList();
+            addFriendReq();
         }
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
             onSearchFeedbackMsg(friendsStore.msg);
+            addFriend(friendsStore.keyword);
+        }
+        if(friendsStore.eventType == ActionTypes.COMMUNITY_DELETE) {
+            Debug.Log("친구 삭제");
+            if(friendsStore.targetItem != null) {
+                delete(friendsStore.targetItem);
+            }
         }
     }
 
@@ -31,28 +39,27 @@ public class FriendsViewController : MonoBehaviour {
 
     public void makeList() {
         grid = gameObject.transform.Find("ScrollView/Grid").GetComponent<UIGrid>();
+        
         itemArr = new GameObject[friendsStore.myFriends.Length];
         removeAllList();
+        
         for (int i = 0; i < itemArr.Length; i++) {
             itemArr[i] = Instantiate(container);
-            itemArr[i].transform.SetParent(grid.transform);
-            itemArr[i].transform.localPosition = Vector3.zero;
-            itemArr[i].transform.localScale = Vector3.one;
+            containerInit(itemArr[i]);
             itemArr[i].transform.Find("Name").GetComponent<UILabel>().text = friendsStore.myFriends[i].id;
             itemArr[i].transform.Find("Portrait/LevelBg/Label").GetComponent<UILabel>().text = friendsStore.myFriends[i].Level;
             GameObject tmp = itemArr[i].transform.Find("RemoveButton").gameObject;
             tmp.GetComponent<ButtonIndex>().index = i;
 
-            EventDelegate onClick = new EventDelegate(gameObject.GetComponent<FriendsViewController>(), "delete");
+            EventDelegate onClick = new EventDelegate(this, "delFriendReq");
 
             EventDelegate.Parameter param = new EventDelegate.Parameter();
-            param.obj = tmp;
+            param.obj = itemArr[i];
             param.field = "index";
             onClick.parameters[0] = param;
 
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, onClick);
         }
-        grid.Reposition();
     }
 
     void removeAllList() {
@@ -75,46 +82,75 @@ public class FriendsViewController : MonoBehaviour {
         gameManager.gameDispatcher.dispatch(action);
     }
 
-    public void onSerchResult() {
-        removeAllList();
-        //foreach(Friend friend in userStore.list) {
-        //    GameObject item = Instantiate(container);
-        //    item.transform.Find("Name").GetComponent<UILabel>().text = friend.id;
-        //    item.transform.SetParent(grid.transform);
-        //    item.transform.localPosition = Vector3.zero;
-        //    item.transform.localScale = Vector3.one;
-        //}
-        grid.Reposition();
-    }
-
     public void onSearchFeedbackMsg(string msg) {
         modal.SetActive(true);
         modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = msg;
     }
 
     //if press search btn and find the user, then exec
-    public void addFriend() {
+    public void addFriend(string keyword) {
         GameObject item = Instantiate(container);
+        containerInit(item);
+
         GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
+        item.transform.Find("Name").GetComponent<UILabel>().text = keyword;
         additionalMsg.SetActive(true);
+    }
+
+    //if someone request friend, then exec
+    public void addFriendReq() {        
+        GameObject item = Instantiate(container);
+
+        containerInit(item);
+
+        GameObject btn = item.transform.Find("AcceptButton").gameObject;
+        btn.SetActive(true);
+
+        EventDelegate acceptEvent = new EventDelegate(this, "acceptFriendReq");
+        EventDelegate.Parameter param = new EventDelegate.Parameter();
+        param.obj = item;
+        param.field = "index";
+        acceptEvent.parameters[0] = param;
+        EventDelegate.Add(btn.GetComponent<UIButton>().onClick, acceptEvent);
+
+        EventDelegate denyEvent = new EventDelegate(this, "delFriendReq");
+        denyEvent.parameters[0] = param;
+        btn = item.transform.Find("RejectButton").gameObject;
+        btn.SetActive(true);        
+        EventDelegate.Add(btn.GetComponent<UIButton>().onClick, denyEvent);
+        
+        btn = item.transform.Find("RemoveButton").gameObject;
+        btn.SetActive(false);
+    }
+
+    private void acceptFriendReq(GameObject obj) {
+        Debug.Log("Accept Friend Req");
+        Debug.Log(obj.name);
+    }
+
+    private void delFriendReq(GameObject obj) {
+        Debug.Log(obj.name);
+        CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
+        action.type = CommunityDeleteAction.deleteType.FRIEND;
+        action.targetGameObj = obj;
+        gameManager.gameDispatcher.dispatch(action);
     }
     
     public void delete(GameObject obj) {
-        int index = obj.GetComponent<ButtonIndex>().index;
-        Debug.Log("selected index : " + index);
-        Destroy(itemArr[index]);
+        Destroy(obj.gameObject);
         grid.repositionNow = true;
         grid.Reposition();
+        //grid.repositionNow = true;
         //DeleteCommunityAction action = ActionCreator.createAction(ActionTypes.DELETE_COMMUNITY_DATA) as DeleteCommunityAction;
         //action.key_id = index;
         //gameManager.gameDispatcher.dispatch(action);
     }
 
-    public void OnCloseButton() {
+    private void containerInit(GameObject obj) {
+        obj.transform.SetParent(grid.transform);
+        obj.transform.localPosition = Vector3.zero;
+        obj.transform.localScale = Vector3.one;
 
-    }
-
-    public void OffCloseButton() {
-
+        grid.Reposition();
     }
 }

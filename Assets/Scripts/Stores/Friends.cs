@@ -7,10 +7,11 @@ public class Friends : Store<Actions> {
     NetworkManager networkManager = NetworkManager.Instance;
 
     public Friend[] myFriends;
-    public string 
+    public string
         msg,
         keyword;
     public ActionTypes eventType;
+    public GameObject targetItem;
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
@@ -22,11 +23,18 @@ public class Friends : Store<Actions> {
                 break;
 
             case ActionTypes.COMMUNITY_SEARCH:
-            CommunitySearchAction act = action as CommunitySearchAction;
-            if (act.type == CommunitySearchAction.searchType.FRIEND) {
-                search(act);
-            }
-            break;
+                CommunitySearchAction searchAct = action as CommunitySearchAction;
+                if (searchAct.type == CommunitySearchAction.searchType.FRIEND) {
+                    search(searchAct);
+                }
+                break;
+
+            case ActionTypes.COMMUNITY_DELETE:
+                CommunityDeleteAction delAct = action as CommunityDeleteAction;
+                if (delAct.type == CommunityDeleteAction.deleteType.FRIEND) {
+                    delete(delAct);
+                }
+                break;
         }
         eventType = action.type;
     }
@@ -45,15 +53,15 @@ public class Friends : Store<Actions> {
             case NetworkAction.statusTypes.SUCCESS:
                 //msg = act.response.data;
                 //_emitChange();
-            break;
+                break;
             case NetworkAction.statusTypes.FAIL:
-            break;
+                break;
         }
     }
 
     private void search(CommunitySearchAction act) {
         keyword = act.keyword;
-        switch (act.status) {            
+        switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
@@ -67,9 +75,30 @@ public class Friends : Store<Actions> {
             case NetworkAction.statusTypes.SUCCESS:
                 //msg = keyword + " 로 검색 결과";
                 //_emitChange();
-            break;
+                break;
             case NetworkAction.statusTypes.FAIL:
-            break;
+                break;
+        }
+    }
+
+    private void delete(CommunityDeleteAction act) {
+        switch (act.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("users/")
+                    .Append(GameManager.Instance.deviceId);
+                targetItem = act.targetGameObj;
+                _emitChange();
+                //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                //msg = keyword + " 로 검색 결과";
+                //_emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                break;
         }
     }
 }
