@@ -12,7 +12,9 @@ public class FriendsViewController : MonoBehaviour {
     private GameManager gameManager;
 
     public Friends friendsStore;
-    public GameObject modal;
+    public GameObject 
+        modal,
+        friendProfilePanel;
 
     public void OnFriendsStoreListener() {
         if(friendsStore.eventType == ActionTypes.COMMUNITY_INITIALIZE) {
@@ -51,14 +53,18 @@ public class FriendsViewController : MonoBehaviour {
             GameObject tmp = itemArr[i].transform.Find("RemoveButton").gameObject;
             tmp.GetComponent<ButtonIndex>().index = i;
 
-            EventDelegate onClick = new EventDelegate(this, "delFriendReq");
+            EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
 
             EventDelegate.Parameter param = new EventDelegate.Parameter();
             param.obj = itemArr[i];
             param.field = "index";
-            onClick.parameters[0] = param;
+            delEvent.parameters[0] = param;
 
-            EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, onClick);
+            EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
+
+            tmp = itemArr[i];
+            EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendPanel");
+            EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, friendProfileEvent);
         }
     }
 
@@ -152,5 +158,9 @@ public class FriendsViewController : MonoBehaviour {
         obj.transform.localScale = Vector3.one;
 
         grid.Reposition();
+    }
+
+    private void onFriendPanel() {
+        friendProfilePanel.SetActive(true);
     }
 }
