@@ -1,6 +1,7 @@
 ﻿using Flux;
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class Friends : Store<Actions> {
     public Friends(Dispatcher<Actions> _dispatcher) : base(_dispatcher) { }
@@ -18,8 +19,6 @@ public class Friends : Store<Actions> {
             case ActionTypes.COMMUNITY_INITIALIZE:
                 getMyFriends(action as CommunityInitAction);
                 //임시 dummy file 이용
-                TextAsset friends = Resources.Load<TextAsset>("myFriends");
-                myFriends = JsonHelper.getJsonArray<Friend>(friends.text);
                 break;
 
             case ActionTypes.COMMUNITY_SEARCH:
@@ -42,6 +41,12 @@ public class Friends : Store<Actions> {
     private void getMyFriends(CommunityInitAction act) {
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
+                Debug.Log("Refresh My Friends Data");
+                TextAsset friends = Resources.Load<TextAsset>("myFriends");
+                if (!isNullOrEmpty(myFriends)) {
+                    Array.Clear(myFriends, 0, myFriends.Length);
+                }
+                myFriends = JsonHelper.getJsonArray<Friend>(friends.text);
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -100,6 +105,10 @@ public class Friends : Store<Actions> {
             case NetworkAction.statusTypes.FAIL:
                 break;
         }
+    }
+
+    public bool isNullOrEmpty<T>(this T[] array) {
+        return array == null || array.Length == 0;
     }
 }
 
