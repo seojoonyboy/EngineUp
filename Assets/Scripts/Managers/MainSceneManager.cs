@@ -26,8 +26,8 @@ public class MainSceneManager : fbl_SceneManager {
         gm.ridingStore.addListener(ridingViewCtrler.onRidingListener);
         gm.groupStore.addListener(groupViewCtrler.OnGroupStoreListener);
 
-        CommunityInitAction act = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE) as CommunityInitAction;
-        gm.gameDispatcher.dispatch(act);
+        //CommunityInitAction act = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE) as CommunityInitAction;
+        //gm.gameDispatcher.dispatch(act);
     }
 
     public void offModal() {

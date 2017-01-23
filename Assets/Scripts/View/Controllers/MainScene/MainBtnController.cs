@@ -14,15 +14,17 @@ public class MainBtnController : MonoBehaviour {
     public void onMainBtnEvent(MAIN_BUTTON type) {
         switch(type) {
             case MAIN_BUTTON.RIDING:
-            Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
-            GameManager.Instance.gameDispatcher.dispatch(act);
-            ridingPanel.SetActive(true);
-            offAvatar();
-            break;
+                Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
+                GameManager.Instance.gameDispatcher.dispatch(act);
+                ridingPanel.SetActive(true);
+                offAvatar();
+                break;
 
             case MAIN_BUTTON.COMMUNITY:
-            communityPanel.SetActive(true);
-            break;
+                communityPanel.SetActive(true);
+                Actions initAct = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE);
+                GameManager.Instance.gameDispatcher.dispatch(initAct);
+                break;
         }
     }
 

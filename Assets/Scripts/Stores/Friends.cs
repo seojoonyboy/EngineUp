@@ -107,7 +107,7 @@ public class Friends : Store<Actions> {
         }
     }
 
-    public bool isNullOrEmpty<T>(this T[] array) {
+    public bool isNullOrEmpty<T>(T[] array) {
         return array == null || array.Length == 0;
     }
 }
