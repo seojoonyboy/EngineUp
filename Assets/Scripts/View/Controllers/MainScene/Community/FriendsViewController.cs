@@ -19,7 +19,6 @@ public class FriendsViewController : MonoBehaviour {
     public void OnFriendsStoreListener() {
         if(friendsStore.eventType == ActionTypes.COMMUNITY_INITIALIZE) {
             makeList();
-            addFriendReq();
         }
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
             onSearchFeedbackMsg(friendsStore.msg);
@@ -40,7 +39,7 @@ public class FriendsViewController : MonoBehaviour {
     }
 
     public void makeList() {
-        grid = gameObject.transform.Find("ScrollView/Grid").GetComponent<UIGrid>();
+        grid = gameObject.transform.Find("MyFriendListPanel/ScrollView/Grid").GetComponent<UIGrid>();
         
         itemArr = new GameObject[friendsStore.myFriends.Length];
         removeAllList();
