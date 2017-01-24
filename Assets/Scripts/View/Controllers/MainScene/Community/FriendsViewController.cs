@@ -7,7 +7,12 @@ public class FriendsViewController : MonoBehaviour {
     public GameObject container;
 
     private GameObject[] itemArr;
-    private UIGrid grid;
+
+    private UIGrid 
+        myFriendGrid,
+        sendFriendReqGrid,
+        receiveFrienReqGrid;
+
     private UIInput input;
     private GameManager gameManager;
 
@@ -18,7 +23,7 @@ public class FriendsViewController : MonoBehaviour {
 
     public void OnFriendsStoreListener() {
         if(friendsStore.eventType == ActionTypes.COMMUNITY_INITIALIZE) {
-            makeList();
+            makeMyFriendList();
         }
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
             onSearchFeedbackMsg(friendsStore.msg);
@@ -36,21 +41,23 @@ public class FriendsViewController : MonoBehaviour {
         input = gameObject.transform.Find("FindFriendPanel/Input").GetComponent<UIInput>();
         input.activeTextColor = Color.black;
         gameManager = GameManager.Instance;
+        
+        sendFriendReqGrid = gameObject.transform.Find("SendReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();
     }
 
-    public void makeList() {
-        grid = gameObject.transform.Find("MyFriendListPanel/ScrollView/Grid").GetComponent<UIGrid>();
-        
+    //내 친구 목록 생성
+    public void makeMyFriendList() {
+        myFriendGrid = gameObject.transform.Find("MyFriendListPanel/ScrollView/Grid").GetComponent<UIGrid>();
         itemArr = new GameObject[friendsStore.myFriends.Length];
-        removeAllList();
+        removeAllList(myFriendGrid);
         
         for (int i = 0; i < itemArr.Length; i++) {
             itemArr[i] = Instantiate(container);
-            containerInit(itemArr[i]);
+            containerInit(itemArr[i], myFriendGrid);
             itemArr[i].transform.Find("Name").GetComponent<UILabel>().text = friendsStore.myFriends[i].id;
             itemArr[i].transform.Find("Portrait/LevelBg/Label").GetComponent<UILabel>().text = friendsStore.myFriends[i].Level;
             GameObject tmp = itemArr[i].transform.Find("RemoveButton").gameObject;
-            tmp.GetComponent<ButtonIndex>().index = i;
+            //tmp.GetComponent<ButtonIndex>().index = i;
 
             EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
 
@@ -67,7 +74,17 @@ public class FriendsViewController : MonoBehaviour {
         }
     }
 
-    void removeAllList() {
+    //수락 대기 목록 생성
+    public void makeStandByAcceptList() {
+        removeAllList(receiveFrienReqGrid);
+    }
+
+    //친구 신청 목록 생성
+    public void makeFriendReqList() {
+        removeAllList(sendFriendReqGrid);
+    }
+
+    void removeAllList(UIGrid grid) {
         //NGUI Extension Method
         Debug.Log("remove");
         Array.Clear(itemArr, 0, itemArr.Length);
@@ -95,7 +112,17 @@ public class FriendsViewController : MonoBehaviour {
     //if press search btn and find the user, then exec
     public void addFriend(string keyword) {
         GameObject item = Instantiate(container);
-        containerInit(item);
+        containerInit(item, sendFriendReqGrid);
+
+        GameObject tmp = item.transform.Find("RemoveButton").gameObject;
+        EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
+
+        EventDelegate.Parameter param = new EventDelegate.Parameter();
+        param.obj = item;
+        param.field = "index";
+        delEvent.parameters[0] = param;
+
+        EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
 
         GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
         item.transform.Find("Name").GetComponent<UILabel>().text = keyword;
@@ -106,7 +133,7 @@ public class FriendsViewController : MonoBehaviour {
     public void addFriendReq() {        
         GameObject item = Instantiate(container);
 
-        containerInit(item);
+        containerInit(item, receiveFrienReqGrid);
 
         GameObject btn = item.transform.Find("AcceptButton").gameObject;
         btn.SetActive(true);
@@ -133,6 +160,7 @@ public class FriendsViewController : MonoBehaviour {
         Debug.Log(obj.name);
     }
 
+    //친구 삭제 버튼 클릭시
     private void delFriendReq(GameObject obj) {
         Debug.Log(obj.name);
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
@@ -143,15 +171,17 @@ public class FriendsViewController : MonoBehaviour {
     
     public void delete(GameObject obj) {
         Destroy(obj.gameObject);
+        UIGrid grid = obj.transform.parent.GetComponent<UIGrid>();
         grid.repositionNow = true;
         grid.Reposition();
+
         //grid.repositionNow = true;
         //DeleteCommunityAction action = ActionCreator.createAction(ActionTypes.DELETE_COMMUNITY_DATA) as DeleteCommunityAction;
         //action.key_id = index;
         //gameManager.gameDispatcher.dispatch(action);
     }
 
-    private void containerInit(GameObject obj) {
+    private void containerInit(GameObject obj, UIGrid grid) {
         obj.transform.SetParent(grid.transform);
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localScale = Vector3.one;
