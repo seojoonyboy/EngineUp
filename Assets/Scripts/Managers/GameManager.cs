@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager> {
     protected GameManager(){}
-    public Dispatcher<Actions> gameDispatcher;
+    public QueueDispatcher<Actions> gameDispatcher;
     public StringBuilder sb;
     [System.NonSerialized]
     public string deviceId;
@@ -14,7 +14,7 @@ public class GameManager : Singleton<GameManager> {
     public Groups groupStore;
 
     void Awake() {
-        gameDispatcher = new Dispatcher<Actions>();
+        gameDispatcher = new QueueDispatcher<Actions>();
         sb = new StringBuilder();
         userStore = new User(gameDispatcher);
         ridingStore = new Riding(gameDispatcher);

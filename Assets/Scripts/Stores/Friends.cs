@@ -122,7 +122,7 @@ public class Friends : Store<Actions> {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 UserData user = UserData.fromJSON(act.response.data);
-                msg = act.keyword + "님을 추가하시겠습니까?";
+                msg = "친구추가 신청이 발송되었습니다.";
                 searchResult = true;
                 toUserId = user.id;
                 _emitChange();

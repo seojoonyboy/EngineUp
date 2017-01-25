@@ -19,8 +19,6 @@ public class FriendsViewController : MonoBehaviour {
     public Friends friendsStore;
     public GameObject 
         modal,
-        modalAddFriendBtn,
-        modalCancelAddFriendBtn,
         friendProfilePanel;
 
     public void OnFriendsStoreListener() {
@@ -30,6 +28,9 @@ public class FriendsViewController : MonoBehaviour {
             makeFriendReqList();
         }
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
+            if(friendsStore.searchResult == true) {
+                search();
+            }
             onSearchFeedbackMsg(friendsStore.msg);
         }
         if(friendsStore.eventType == ActionTypes.COMMUNITY_DELETE) {
@@ -40,10 +41,6 @@ public class FriendsViewController : MonoBehaviour {
         }
 
         if(friendsStore.eventType == ActionTypes.ADD_FRIEND) {
-            modal.SetActive(false);
-            modalAddFriendBtn.SetActive(false);
-            modalCancelAddFriendBtn.SetActive(false);
-
             addFriendPref(friendsStore.keyword);
         }
     }
@@ -96,6 +93,7 @@ public class FriendsViewController : MonoBehaviour {
         removeAllList(sendFriendReqGrid);
         for(int i=0; i<friendsStore.friendReqLists.Count; i++) {
             Debug.Log("make Friend Req List");
+            //addFriendPref()
         }
     }
 
@@ -104,28 +102,15 @@ public class FriendsViewController : MonoBehaviour {
     }
 
     public void search() {
-        string parm = input.value;
         CommunitySearchAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_SEARCH) as CommunitySearchAction;
         action.type = CommunitySearchAction.searchType.FRIEND;
-        action.keyword = parm;
+        action.keyword = input.value;
         gameManager.gameDispatcher.dispatch(action);
     }
 
     public void onSearchFeedbackMsg(string msg) {
         modal.SetActive(true);
         modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = msg;
-        if(friendsStore.searchResult == true) {
-            modalAddFriendBtn = modal.transform.Find("ResponseModal/OkBtn").gameObject;
-            modalCancelAddFriendBtn = modal.transform.Find("ResponseModal/CloseBtn").gameObject;
-
-            modalAddFriendBtn.SetActive(true);
-            modalCancelAddFriendBtn.SetActive(true);
-
-            EventDelegate addFriendEvent = new EventDelegate(this, "addFriend");
-            EventDelegate.Parameter param = new EventDelegate.Parameter();
-
-            EventDelegate.Add(modalAddFriendBtn.GetComponent<UIButton>().onClick, addFriendEvent);
-        }
     }
 
     //Server에 친구 추가 요청
