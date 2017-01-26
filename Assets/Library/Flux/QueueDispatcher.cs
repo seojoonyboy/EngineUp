@@ -16,7 +16,7 @@ namespace Flux{
             }
         }
         public new bool isDispatching{
-            get{ return base.isDispatching && dispatchQueue.Count>0; }
+            get{ return base.isDispatching || dispatchQueue.Count>0; }
         }
     }
 }
