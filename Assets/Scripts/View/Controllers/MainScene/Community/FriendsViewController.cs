@@ -30,6 +30,7 @@ public class FriendsViewController : MonoBehaviour {
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
             if(friendsStore.searchResult == true) {
                 addFriend();
+                friendsStore.searchResult = false;
             }
             onSearchFeedbackMsg(friendsStore.msg);
         }
