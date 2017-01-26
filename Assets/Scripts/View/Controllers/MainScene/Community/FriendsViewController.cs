@@ -50,6 +50,7 @@ public class FriendsViewController : MonoBehaviour {
         gameManager = GameManager.Instance;
         
         sendFriendReqGrid = gameObject.transform.Find("SendReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();
+        receiveFrienReqGrid = gameObject.transform.Find("ReceiveReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();
     }
 
     //내 친구 목록 생성
@@ -86,11 +87,14 @@ public class FriendsViewController : MonoBehaviour {
     //수락 대기 목록 생성
     public void makeStandByAcceptList() {
         removeAllList(receiveFrienReqGrid);
-
-        for (int i = 0; i < friendsStore.friendReqLists.Length; i++) {
+        if (friendsStore.waitingAcceptLists == null) {
+            Debug.Log("수락 대기 없음");
+            return;
+        }
+        for (int i = 0; i < friendsStore.waitingAcceptLists.Length; i++) {
             GameObject item = Instantiate(container);
-            item.transform.Find("Name").GetComponent<UILabel>().text = friendsStore.friendReqLists[i].toUser.nickName;
-            containerInit(item, myFriendGrid);
+            item.transform.Find("Name").GetComponent<UILabel>().text = friendsStore.waitingAcceptLists[i].fromUser.nickName;
+            containerInit(item, receiveFrienReqGrid);
             GameObject tmp = item.transform.Find("RemoveButton").gameObject;
             //tmp.GetComponent<ButtonIndex>().index = i;
 
