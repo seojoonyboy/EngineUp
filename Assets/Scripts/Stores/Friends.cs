@@ -66,7 +66,7 @@ public class Friends : AjwStore {
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("friends?deviceId=")
                     .Append(GameManager.Instance.deviceId);
-                //Debug.Log(GameManager.Instance.deviceId);
+                Debug.Log(GameManager.Instance.deviceId);
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -74,7 +74,7 @@ public class Friends : AjwStore {
                 
                 ArrayList tmpListWaiting = new ArrayList();
                 ArrayList tmpListFriend = new ArrayList();
-                Debug.Log(data);
+                Debug.Log(payload.response.data);
                 foreach(Friend friend in data) {
                     if (friend.friendState == "WAITING") {
                         tmpListWaiting.Add(friend);
@@ -83,8 +83,8 @@ public class Friends : AjwStore {
                         tmpListFriend.Add(friend);
                     }
                 }
-                waitingAcceptLists = (Friend[])tmpListWaiting.ToArray(typeof(Friend));
-                friendReqLists = (Friend[])tmpListFriend.ToArray(typeof(Friend));
+                friendReqLists = (Friend[])tmpListWaiting.ToArray(typeof(Friend));
+                myFriends = (Friend[])tmpListFriend.ToArray(typeof(Friend));
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:

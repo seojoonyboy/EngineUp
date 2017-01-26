@@ -6,8 +6,6 @@ public class FriendsViewController : MonoBehaviour {
     public int childNum = 5;
     public GameObject container;
 
-    private GameObject[] itemArr;
-
     private UIGrid 
         myFriendGrid,
         sendFriendReqGrid,
@@ -64,21 +62,22 @@ public class FriendsViewController : MonoBehaviour {
         removeAllList(myFriendGrid);
 
         for (int i = 0; i < friendsStore.myFriends.Length; i++) {
-            itemArr[i] = Instantiate(container);
-            containerInit(itemArr[i], myFriendGrid);
-            GameObject tmp = itemArr[i].transform.Find("RemoveButton").gameObject;
+            GameObject item = Instantiate(container);
+            item.transform.Find("Name").GetComponent<UILabel>().text = friendsStore.myFriends[i].toUser.nickName;
+            containerInit(item, myFriendGrid);
+            GameObject tmp = item.transform.Find("RemoveButton").gameObject;
             //tmp.GetComponent<ButtonIndex>().index = i;
 
             EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
 
             EventDelegate.Parameter param = new EventDelegate.Parameter();
-            param.obj = itemArr[i];
+            param.obj = item;
             param.field = "index";
             delEvent.parameters[0] = param;
 
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
 
-            tmp = itemArr[i];
+            tmp = item;
             EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendPanel");
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, friendProfileEvent);
         }
@@ -87,19 +86,40 @@ public class FriendsViewController : MonoBehaviour {
     //수락 대기 목록 생성
     public void makeStandByAcceptList() {
         removeAllList(receiveFrienReqGrid);
+
+        for (int i = 0; i < friendsStore.friendReqLists.Length; i++) {
+            GameObject item = Instantiate(container);
+            item.transform.Find("Name").GetComponent<UILabel>().text = friendsStore.friendReqLists[i].toUser.nickName;
+            containerInit(item, myFriendGrid);
+            GameObject tmp = item.transform.Find("RemoveButton").gameObject;
+            //tmp.GetComponent<ButtonIndex>().index = i;
+
+            EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
+
+            EventDelegate.Parameter param = new EventDelegate.Parameter();
+            param.obj = item;
+            param.field = "index";
+            delEvent.parameters[0] = param;
+
+            EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
+
+            tmp = item;
+            EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendPanel");
+            EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, friendProfileEvent);
+        }
     }
 
     //친구 신청 목록 생성
     public void makeFriendReqList() {
         removeAllList(sendFriendReqGrid);
-        Friend[] friends = friendsStore.waitingAcceptLists;
+        Friend[] friends = friendsStore.friendReqLists;
         for(int i=0; i< friends.Length; i++) {
             addFriendPref(friends[i]);
         }
     }
 
     void removeAllList(UIGrid grid) {
-        
+        grid.transform.DestroyChildren();
     }
 
     public void search() {
