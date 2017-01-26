@@ -3,14 +3,14 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class User : Store<Actions> {
+public class User : AjwStore {
     // prop
     public string nickName = null;
     public bool isSearch = false;
     
     NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
-    public User(Dispatcher<Actions> _dispatcher) : base(_dispatcher){}
+    public User(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher){}
 
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
     public ActionTypes eventType;

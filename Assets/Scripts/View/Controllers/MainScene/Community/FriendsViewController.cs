@@ -29,7 +29,7 @@ public class FriendsViewController : MonoBehaviour {
         }
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
             if(friendsStore.searchResult == true) {
-                search();
+                addFriend();
             }
             onSearchFeedbackMsg(friendsStore.msg);
         }
@@ -41,7 +41,7 @@ public class FriendsViewController : MonoBehaviour {
         }
 
         if(friendsStore.eventType == ActionTypes.ADD_FRIEND) {
-            addFriendPref(friendsStore.keyword);
+            addFriendPref(friendsStore.newFriend);
         }
     }
 
@@ -62,7 +62,7 @@ public class FriendsViewController : MonoBehaviour {
         }
         removeAllList(myFriendGrid);
 
-        for (int i = 0; i < friendsStore.myFriends.Count; i++) {
+        for (int i = 0; i < friendsStore.myFriends.Length; i++) {
             itemArr[i] = Instantiate(container);
             containerInit(itemArr[i], myFriendGrid);
             GameObject tmp = itemArr[i].transform.Find("RemoveButton").gameObject;
@@ -91,9 +91,9 @@ public class FriendsViewController : MonoBehaviour {
     //친구 신청 목록 생성
     public void makeFriendReqList() {
         removeAllList(sendFriendReqGrid);
-        for(int i=0; i<friendsStore.friendReqLists.Count; i++) {
-            Debug.Log("make Friend Req List");
-            //addFriendPref()
+        Friend[] friends = friendsStore.waitingAcceptLists;
+        for(int i=0; i< friends.Length; i++) {
+            addFriendPref(friends[i]);
         }
     }
 
@@ -117,17 +117,18 @@ public class FriendsViewController : MonoBehaviour {
     private void addFriend() {
         Debug.Log("친구 추가 요청");
         AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
-        addFriendAct.toUserId = friendsStore.toUserId;
         gameManager.gameDispatcher.dispatch(addFriendAct);
     }
 
     //친구 추가 요청시 UI Prefab 생성
-    public void addFriendPref(string keyword) {
+    public void addFriendPref(SearchedFriend data) {
         GameObject item = Instantiate(container);
         containerInit(item, sendFriendReqGrid);
-
+        
         GameObject tmp = item.transform.Find("RemoveButton").gameObject;
         EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
+        Debug.Log(data.nickName);
+        item.transform.Find("Name").GetComponent<UILabel>().text = data.nickName;
 
         EventDelegate.Parameter param = new EventDelegate.Parameter();
         param.obj = item;
@@ -137,12 +138,30 @@ public class FriendsViewController : MonoBehaviour {
         EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
 
         GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
-        item.transform.Find("Name").GetComponent<UILabel>().text = keyword;
+        additionalMsg.SetActive(true);
+    }
+
+    public void addFriendPref(Friend friend) {
+        GameObject item = Instantiate(container);
+        containerInit(item, sendFriendReqGrid);
+
+        GameObject tmp = item.transform.Find("RemoveButton").gameObject;
+        EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
+        item.transform.Find("Name").GetComponent<UILabel>().text = friend.toUser.nickName;
+
+        EventDelegate.Parameter param = new EventDelegate.Parameter();
+        param.obj = item;
+        param.field = "index";
+        delEvent.parameters[0] = param;
+
+        EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
+
+        GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
         additionalMsg.SetActive(true);
     }
 
     //if someone request friend, then exec
-    public void addFriendReq() {        
+    public void addFriendReq() {
         GameObject item = Instantiate(container);
 
         containerInit(item, receiveFrienReqGrid);

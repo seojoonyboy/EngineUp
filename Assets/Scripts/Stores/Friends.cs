@@ -1,21 +1,27 @@
 ﻿using Flux;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
-public class Friends : Store<Actions> {
-    public Friends(Dispatcher<Actions> _dispatcher) : base(_dispatcher) { }
+public class Friends : AjwStore {
+    public Friends(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher) { }
     NetworkManager networkManager = NetworkManager.Instance;
+    
+    public Friend[]
+        waitingAcceptLists,
+        myFriends,
+        friendReqLists;
 
-    public ArrayList friendReqLists = new ArrayList();
-    public ArrayList myFriends = new ArrayList();
-    public ArrayList waitingAcceptLists = new ArrayList();
+    public SearchedFriend newFriend;
 
     public string
         msg,
         keyword;
 
-    public bool searchResult = false;
+    public bool 
+        searchResult = false,
+        addResult = false;
     public ActionTypes eventType;
     public GameObject targetItem;
     public int toUserId;
@@ -43,6 +49,7 @@ public class Friends : Store<Actions> {
                 }
                 break;
             case ActionTypes.ADD_FRIEND:
+                Debug.Log("Add Friend 액션");
                 AddFriendAction addAct = action as AddFriendAction;
                 addFriend(addAct);
                 break;
@@ -59,20 +66,25 @@ public class Friends : Store<Actions> {
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("friends?deviceId=")
                     .Append(GameManager.Instance.deviceId);
-                Debug.Log(GameManager.Instance.deviceId);
+                //Debug.Log(GameManager.Instance.deviceId);
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                friendReqLists.Clear();
                 Friend[] data = JsonHelper.getJsonArray<Friend>(payload.response.data);
+                
+                ArrayList tmpListWaiting = new ArrayList();
+                ArrayList tmpListFriend = new ArrayList();
+                Debug.Log(data);
                 foreach(Friend friend in data) {
-                    if(friend.friendState == "WAITING") {
-                        friendReqLists.Add(friend);
+                    if (friend.friendState == "WAITING") {
+                        tmpListWaiting.Add(friend);
                     }
-                    else if(friend.friendState == "FRIEND") {
-                        myFriends.Add(friend);
+                    else if (friend.friendState == "FRIEND") {
+                        tmpListFriend.Add(friend);
                     }
                 }
+                waitingAcceptLists = (Friend[])tmpListWaiting.ToArray(typeof(Friend));
+                friendReqLists = (Friend[])tmpListFriend.ToArray(typeof(Friend));
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -94,11 +106,13 @@ public class Friends : Store<Actions> {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                waitingAcceptLists.Clear();
+                ArrayList list = new ArrayList();
                 Friend[] data = JsonHelper.getJsonArray<Friend>(payload.response.data);
+                Debug.Log(payload.response.data);
                 foreach(Friend friend in data) {
-                    waitingAcceptLists.Add(friend);
+                    list.Add(friend);
                 }
+                waitingAcceptLists = (Friend[])list.ToArray(typeof(Friend));
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -121,10 +135,11 @@ public class Friends : Store<Actions> {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                UserData user = UserData.fromJSON(act.response.data);
+                Debug.Log(act.response.data);
+                newFriend = SearchedFriend.fromJSON(act.response.data);
                 msg = "친구추가 신청이 발송되었습니다.";
                 searchResult = true;
-                toUserId = user.id;
+                toUserId = newFriend.id;
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -148,7 +163,7 @@ public class Friends : Store<Actions> {
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                Debug.Log("친구 추가 완료");
+                addResult = true;
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -184,12 +199,27 @@ public class Friends : Store<Actions> {
 
 [System.Serializable]
 public class Friend {
-    public string id;
-    public int toUser_id;
-    public int fromUser_id;
+    public int id;
+    public userInfo toUser;
+    public userInfo fromUser;
     public string friendState;
 
     public static Friend fromJSON(string json) {
         return JsonUtility.FromJson<Friend>(json);
+    }
+}
+
+[System.Serializable]
+public class userInfo {
+    public string id;
+    public string nickName;
+}
+
+public class SearchedFriend {
+    public int id;
+    public string nickName;
+
+    public static SearchedFriend fromJSON(string json) {
+        return JsonUtility.FromJson<SearchedFriend>(json);
     }
 }

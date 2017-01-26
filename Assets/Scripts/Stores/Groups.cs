@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections;
 
 public class Groups : Store<Actions> {
-    public Groups(Dispatcher<Actions> _dispatcher) : base(_dispatcher) { }
+    public Groups(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher) { }
     NetworkManager networkManager = NetworkManager.Instance;
 
     public Group[] myGroups;

@@ -2,7 +2,7 @@ using UnityEngine;
 using Flux;
 
 public class NetworkCallbackExtention{
-    public NetworkManager.Callback networkCallback(Dispatcher<Actions> dispatcher, NetworkAction act){
+    public NetworkManager.Callback networkCallback(QueueDispatcher<Actions> dispatcher, NetworkAction act){
         return (HttpResponse response) => {
             if(response.isError){
                 Debug.Log(response.errorMessage);

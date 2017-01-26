@@ -118,6 +118,4 @@ public class CommunityDeleteAction : NetworkAction {
     public string keyword;
 }
 
-public class AddFriendAction : NetworkAction {
-    public int toUserId;
-}
+public class AddFriendAction : NetworkAction { }

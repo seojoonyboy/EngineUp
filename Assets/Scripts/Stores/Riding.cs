@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Collections;
 
-public class Riding : Store<Actions>{
+public class Riding : AjwStore{
     public ActionTypes eventType;
     LocationInfo? _preLocation = null;
     LocationInfo[] postBuffer;
@@ -22,7 +22,7 @@ public class Riding : Store<Actions>{
 
     public ArrayList coordList;
 
-    public Riding(Dispatcher<Actions> _dispatcher):base(_dispatcher){
+    public Riding(QueueDispatcher<Actions> _dispatcher):base(_dispatcher){
         postBuffer = new LocationInfo[10];
         postBufferCounter = 0;
         coordList = new ArrayList();
