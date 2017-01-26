@@ -15,7 +15,8 @@ public enum ActionTypes {
     USER_CREATE,
     COMMUNITY_INITIALIZE,
     COMMUNITY_SEARCH,
-    COMMUNITY_DELETE
+    COMMUNITY_DELETE,
+    ADD_FRIEND
 }
 
 public class Actions{
@@ -62,6 +63,9 @@ public static class ActionCreator{
         case ActionTypes.COMMUNITY_DELETE:
             _return = new CommunityDeleteAction();
             break;
+        case ActionTypes.ADD_FRIEND:
+            _return = new AddFriendAction();
+            break;
         }
          _return.type = _type;
         return _return;
@@ -99,7 +103,6 @@ public class UserCreateAction : NetworkAction {
 }
 
 public class CommunityInitAction : NetworkAction {
-
 }
 
 public class CommunitySearchAction : NetworkAction {
@@ -113,4 +116,8 @@ public class CommunityDeleteAction : NetworkAction {
     public deleteType type;
     public GameObject targetGameObj;
     public string keyword;
+}
+
+public class AddFriendAction : NetworkAction {
+    public int toUserId;
 }

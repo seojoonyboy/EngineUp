@@ -7,18 +7,26 @@ public class Friends : Store<Actions> {
     public Friends(Dispatcher<Actions> _dispatcher) : base(_dispatcher) { }
     NetworkManager networkManager = NetworkManager.Instance;
 
-    public Friend[] myFriends;
+    public ArrayList friendReqLists = new ArrayList();
+    public ArrayList myFriends = new ArrayList();
+    public ArrayList waitingAcceptLists = new ArrayList();
+
     public string
         msg,
         keyword;
+
+    public bool searchResult = false;
     public ActionTypes eventType;
     public GameObject targetItem;
+    public int toUserId;
+
+    NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.COMMUNITY_INITIALIZE:
-                getMyFriends(action as CommunityInitAction);
-                //임시 dummy file 이용
+                getMyFriendLists(action as CommunityInitAction);
+                //getWaitingAcceptLists(action as CommunityInitAction);
                 break;
 
             case ActionTypes.COMMUNITY_SEARCH:
@@ -34,36 +42,73 @@ public class Friends : Store<Actions> {
                     delete(delAct);
                 }
                 break;
+            case ActionTypes.ADD_FRIEND:
+                AddFriendAction addAct = action as AddFriendAction;
+                addFriend(addAct);
+                break;
         }
         eventType = action.type;
     }
 
-    private void getMyFriends(CommunityInitAction act) {
-        switch (act.status) {
+    //친구 요청 목록과 친구 목록을 불러온다.
+    private void getMyFriendLists(CommunityInitAction payload) {
+        switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
-                Debug.Log("Refresh My Friends Data");
-                TextAsset friends = Resources.Load<TextAsset>("myFriends");
-                if (!isNullOrEmpty(myFriends)) {
-                    Array.Clear(myFriends, 0, myFriends.Length);
-                }
-                myFriends = JsonHelper.getJsonArray<Friend>(friends.text);
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("users/")
+                    .Append("friends?deviceId=")
                     .Append(GameManager.Instance.deviceId);
-                //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));                
-                _emitChange();
+                Debug.Log(GameManager.Instance.deviceId);
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                //msg = act.response.data;
-                //_emitChange();
+                friendReqLists.Clear();
+                Friend[] data = JsonHelper.getJsonArray<Friend>(payload.response.data);
+                foreach(Friend friend in data) {
+                    if(friend.friendState == "WAITING") {
+                        friendReqLists.Add(friend);
+                    }
+                    else if(friend.friendState == "FRIEND") {
+                        myFriends.Add(friend);
+                    }
+                }
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                _emitChange();
                 break;
         }
     }
 
+    //수락 대기 중인 목록을 가져온다.
+    private void getWaitingAcceptLists(CommunityInitAction payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("friends/requested?deviceId=")
+                    .Append(GameManager.Instance.deviceId);
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                waitingAcceptLists.Clear();
+                Friend[] data = JsonHelper.getJsonArray<Friend>(payload.response.data);
+                foreach(Friend friend in data) {
+                    waitingAcceptLists.Add(friend);
+                }
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
+        }
+    }
+
+    //친구 검색
     private void search(CommunitySearchAction act) {
         keyword = act.keyword;
         switch (act.status) {
@@ -71,17 +116,44 @@ public class Friends : Store<Actions> {
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("users/")
-                    .Append(GameManager.Instance.deviceId);
-                //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
-                msg = keyword + " 로 검색 결과";
-                _emitChange();
+                    .Append("users/search?nickName=")
+                    .Append(act.keyword);
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                //msg = keyword + " 로 검색 결과";
-                //_emitChange();
+                UserData user = UserData.fromJSON(act.response.data);
+                msg = "친구추가 신청이 발송되었습니다.";
+                searchResult = true;
+                toUserId = user.id;
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                msg = "일치하는 사용자가 없어 친구추가에 실패했습니다.";
+                _emitChange();
+                break;
+        }
+    }
+
+    //친구 추가
+    private void addFriend(AddFriendAction act) {
+        switch (act.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("friends?deviceId=")
+                    .Append(GameManager.Instance.deviceId);
+                WWWForm form = new WWWForm();
+                form.AddField("toUser", toUserId);
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log("친구 추가 완료");
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(act.response.data);
+                _emitChange();
                 break;
         }
     }
@@ -95,12 +167,10 @@ public class Friends : Store<Actions> {
                     .Append("users/")
                     .Append(GameManager.Instance.deviceId);
                 targetItem = act.targetGameObj;
-                _emitChange();
                 //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 //msg = keyword + " 로 검색 결과";
-                //_emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 break;
@@ -115,8 +185,9 @@ public class Friends : Store<Actions> {
 [System.Serializable]
 public class Friend {
     public string id;
-    public string Level;
-    public string[] Active;
+    public int toUser_id;
+    public int fromUser_id;
+    public string friendState;
 
     public static Friend fromJSON(string json) {
         return JsonUtility.FromJson<Friend>(json);
