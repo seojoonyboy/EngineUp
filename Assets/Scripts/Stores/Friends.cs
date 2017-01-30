@@ -30,9 +30,12 @@ public class Friends : AjwStore {
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
-            case ActionTypes.COMMUNITY_INITIALIZE:
-                getMyFriendLists(action as CommunityInitAction);
-                //getWaitingAcceptLists(action as CommunityInitAction);
+            case ActionTypes.GET_MY_FRIEND_LIST:
+                getMyFriendLists(action as GetMyFriendListAction);
+                break;
+
+            case ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST:
+                getWaitingAcceptLists(action as GetAcceptWaitingListAction);
                 break;
 
             case ActionTypes.COMMUNITY_SEARCH:
@@ -58,7 +61,7 @@ public class Friends : AjwStore {
     }
 
     //친구 요청 목록과 친구 목록을 불러온다.
-    private void getMyFriendLists(CommunityInitAction payload) {
+    private void getMyFriendLists(GetMyFriendListAction payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
@@ -95,7 +98,7 @@ public class Friends : AjwStore {
     }
 
     //수락 대기 중인 목록을 가져온다.
-    private void getWaitingAcceptLists(CommunityInitAction payload) {
+    private void getWaitingAcceptLists(GetAcceptWaitingListAction payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;

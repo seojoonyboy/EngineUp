@@ -12,11 +12,11 @@ public class Groups : Store<Actions> {
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
-            case ActionTypes.COMMUNITY_INITIALIZE:
-                getMyGroups(action as CommunityInitAction);
-                //임시 dummy file 이용
-                TextAsset myGroup = Resources.Load<TextAsset>("myGroup");
-                myGroups = JsonHelper.getJsonArray<Group>(myGroup.text);
+            case ActionTypes.GET_MY_FRIEND_LIST:
+                //getMyGroups(action as CommunityInitAction);
+                ////임시 dummy file 이용
+                //TextAsset myGroup = Resources.Load<TextAsset>("myGroup");
+                //myGroups = JsonHelper.getJsonArray<Group>(myGroup.text);
                 break;
 
             case ActionTypes.COMMUNITY_SEARCH:

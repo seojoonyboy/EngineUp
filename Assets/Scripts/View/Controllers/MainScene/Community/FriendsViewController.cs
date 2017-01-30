@@ -21,10 +21,22 @@ public class FriendsViewController : MonoBehaviour {
 
     public void OnFriendsStoreListener() {
         Debug.Log(friendsStore.eventType);
-        if(friendsStore.eventType == ActionTypes.COMMUNITY_INITIALIZE) {
+        //if(friendsStore.eventType == ActionTypes.COMMUNITY_INITIALIZE) {
+        //    makeMyFriendList();
+        //    makeFriendReqList();
+        //    makeStandByAcceptList();
+        //}
+        if(friendsStore.eventType == ActionTypes.GET_MY_FRIEND_LIST) {
             makeMyFriendList();
-            makeFriendReqList();
+
+            GetAcceptWaitingListAction action = ActionCreator.createAction(ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST) as GetAcceptWaitingListAction;
+            GameManager.Instance.gameDispatcher.dispatch(action);
         }
+
+        if(friendsStore.eventType == ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST) {
+            makeStandByAcceptList();
+        }
+
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
             if(friendsStore.searchResult == true) {
                 addFriend();
@@ -49,8 +61,7 @@ public class FriendsViewController : MonoBehaviour {
         input.activeTextColor = Color.black;
         gameManager = GameManager.Instance;
         
-        sendFriendReqGrid = gameObject.transform.Find("SendReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();
-        receiveFrienReqGrid = gameObject.transform.Find("ReceiveReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();
+        sendFriendReqGrid = gameObject.transform.Find("SendReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();        
     }
 
     //내 친구 목록 생성
@@ -64,10 +75,12 @@ public class FriendsViewController : MonoBehaviour {
 
         for (int i = 0; i < friendsStore.myFriends.Length; i++) {
             GameObject item = Instantiate(container);
+
+            item.GetComponent<ButtonIndex>().index = friendsStore.myFriends[i].id;
+
             item.transform.Find("Name").GetComponent<UILabel>().text = friendsStore.myFriends[i].toUser.nickName;
             containerInit(item, myFriendGrid);
             GameObject tmp = item.transform.Find("RemoveButton").gameObject;
-            //tmp.GetComponent<ButtonIndex>().index = i;
 
             EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
 
@@ -86,6 +99,7 @@ public class FriendsViewController : MonoBehaviour {
 
     //수락 대기 목록 생성
     public void makeStandByAcceptList() {
+        receiveFrienReqGrid = gameObject.transform.Find("ReceiveReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();
         removeAllList(receiveFrienReqGrid);
         if (friendsStore.waitingAcceptLists == null) {
             Debug.Log("수락 대기 없음");
@@ -219,6 +233,7 @@ public class FriendsViewController : MonoBehaviour {
     //친구 삭제 버튼 클릭시
     private void delFriendReq(GameObject obj) {
         Debug.Log(obj.name);
+        Destroy(obj);
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
         action.type = CommunityDeleteAction.deleteType.FRIEND;
         action.targetGameObj = obj;

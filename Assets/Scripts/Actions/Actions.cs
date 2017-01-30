@@ -13,10 +13,12 @@ public enum ActionTypes {
     POST_FAIL,
     POST_SUCCESS,
     USER_CREATE,
-    COMMUNITY_INITIALIZE,
+    //COMMUNITY_INITIALIZE,
     COMMUNITY_SEARCH,
     COMMUNITY_DELETE,
-    ADD_FRIEND
+    ADD_FRIEND,
+    GET_MY_FRIEND_LIST,
+    GET_WAITING_FRIEND_ACCEPT_LIST
 }
 
 public class Actions{
@@ -54,9 +56,9 @@ public static class ActionCreator{
         case ActionTypes.USER_CREATE:
             _return = new UserCreateAction();
             break;
-        case ActionTypes.COMMUNITY_INITIALIZE:
-            _return = new CommunityInitAction();
-            break;
+        //case ActionTypes.COMMUNITY_INITIALIZE:
+        //    _return = new CommunityInitAction();
+        //    break;
         case ActionTypes.COMMUNITY_SEARCH:
             _return = new CommunitySearchAction();
             break;
@@ -65,6 +67,12 @@ public static class ActionCreator{
             break;
         case ActionTypes.ADD_FRIEND:
             _return = new AddFriendAction();
+            break;
+        case ActionTypes.GET_MY_FRIEND_LIST:
+            _return = new GetMyFriendListAction();
+            break;
+        case ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST:
+            _return = new GetAcceptWaitingListAction();
             break;
         }
          _return.type = _type;
@@ -119,3 +127,8 @@ public class CommunityDeleteAction : NetworkAction {
 }
 
 public class AddFriendAction : NetworkAction { }
+
+//수락 대기 목록 불러오는 액션
+public class GetAcceptWaitingListAction : NetworkAction { }
+//내 친구 목록 불러오는 액션
+public class GetMyFriendListAction : NetworkAction { }

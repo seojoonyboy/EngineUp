@@ -22,7 +22,7 @@ public class MainBtnController : MonoBehaviour {
 
             case MAIN_BUTTON.COMMUNITY:
                 communityPanel.SetActive(true);
-                CommunityInitAction initAct = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE) as CommunityInitAction;
+                GetMyFriendListAction initAct = ActionCreator.createAction(ActionTypes.GET_MY_FRIEND_LIST) as GetMyFriendListAction;
                 GameManager.Instance.gameDispatcher.dispatch(initAct);
                 break;
         }

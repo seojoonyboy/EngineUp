@@ -14,9 +14,9 @@ public class GroupViewController : MonoBehaviour {
     public GameObject modal;
 
     public void OnGroupStoreListener() {
-        if (groupStore.eventType == ActionTypes.COMMUNITY_INITIALIZE) {
-            makeList();
-        }
+        //if (groupStore.eventType == ActionTypes.COMMUNITY_INITIALIZE) {
+        //    makeList();
+        //}
         if (groupStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
             onSearchFeedbackMsg(groupStore.msg);
         }
