@@ -50,6 +50,7 @@ public class FriendsViewController : MonoBehaviour {
                 if (friendsStore.targetObj) {
                     deletePref(friendsStore.targetObj);
                     friendsStore.targetObj = null;
+                    friendsStore.deleteResult = false;
                 }
             }
         }
@@ -58,7 +59,9 @@ public class FriendsViewController : MonoBehaviour {
             if (friendsStore.addResult) {
                 if (friendsStore.needNewPref) {
                     addFriendPref(friendsStore.newFriend);
+                    friendsStore.needNewPref = false;
                 }
+                friendsStore.addResult = false;
             }
         }
     }
