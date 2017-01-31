@@ -20,12 +20,6 @@ public class FriendsViewController : MonoBehaviour {
         friendProfilePanel;
 
     public void OnFriendsStoreListener() {
-        Debug.Log(friendsStore.eventType);
-        //if(friendsStore.eventType == ActionTypes.COMMUNITY_INITIALIZE) {
-        //    makeMyFriendList();
-        //    makeFriendReqList();
-        //    makeStandByAcceptList();
-        //}
         if(friendsStore.eventType == ActionTypes.GET_MY_FRIEND_LIST) {
             makeMyFriendList();
 
@@ -38,6 +32,7 @@ public class FriendsViewController : MonoBehaviour {
         }
 
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
+            //검색 성공시 제어
             if(friendsStore.searchResult) {
                 addFriend(friendsStore.newFriend.id);
                 friendsStore.searchResult = false;
@@ -46,6 +41,7 @@ public class FriendsViewController : MonoBehaviour {
         }
         if(friendsStore.eventType == ActionTypes.COMMUNITY_DELETE) {
             Debug.Log("Delete Success");
+            //친구 삭제 성공시 제어
             if(friendsStore.deleteResult) {
                 if (friendsStore.targetObj) {
                     deletePref(friendsStore.targetObj);
@@ -56,6 +52,7 @@ public class FriendsViewController : MonoBehaviour {
         }
 
         if(friendsStore.eventType == ActionTypes.ADD_FRIEND) {
+            //친구 추가 성공시 제어
             if (friendsStore.addResult) {
                 if (friendsStore.needNewPref) {
                     addFriendPref(friendsStore.newFriend);
