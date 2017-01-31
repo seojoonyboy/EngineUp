@@ -22,7 +22,8 @@ public class Friends : AjwStore {
     public bool 
         searchResult = false,
         deleteResult = false,
-        addResult = false;
+        addResult = false,
+        needNewPref;
     public ActionTypes eventType;
     public GameObject targetObj;
     public int toUserId;
@@ -143,7 +144,7 @@ public class Friends : AjwStore {
                 newFriend = SearchedFriend.fromJSON(act.response.data);
                 msg = "친구추가 신청이 발송되었습니다.";
                 searchResult = true;
-                toUserId = newFriend.id;
+                //toUserId = newFriend.id;
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -158,13 +159,16 @@ public class Friends : AjwStore {
     private void addFriend(AddFriendAction act) {
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
+                needNewPref = act.needPref;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("friends?deviceId=")
                     .Append(GameManager.Instance.deviceId);
                 WWWForm form = new WWWForm();
-                form.AddField("toUser", toUserId);
+                Debug.Log("ID : " + act.id);
+                form.AddField("toUser", act.id);
+                Debug.Log(strBuilder);
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -225,7 +229,7 @@ public class Friend {
 
 [System.Serializable]
 public class userInfo {
-    public string id;
+    public int id;
     public string nickName;
 }
 

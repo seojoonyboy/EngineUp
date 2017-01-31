@@ -126,7 +126,10 @@ public class CommunityDeleteAction : NetworkAction {
     public int id;
 }
 
-public class AddFriendAction : NetworkAction { }
+public class AddFriendAction : NetworkAction {
+    public int id;
+    public bool needPref = false;
+}
 
 //수락 대기 목록 불러오는 액션
 public class GetAcceptWaitingListAction : NetworkAction { }

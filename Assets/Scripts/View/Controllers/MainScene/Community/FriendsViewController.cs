@@ -39,7 +39,7 @@ public class FriendsViewController : MonoBehaviour {
 
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
             if(friendsStore.searchResult) {
-                addFriend();
+                addFriend(friendsStore.newFriend.id);
                 friendsStore.searchResult = false;
             }
             onSearchFeedbackMsg(friendsStore.msg);
@@ -55,7 +55,11 @@ public class FriendsViewController : MonoBehaviour {
         }
 
         if(friendsStore.eventType == ActionTypes.ADD_FRIEND) {
-            addFriendPref(friendsStore.newFriend);
+            if (friendsStore.addResult) {
+                if (friendsStore.needNewPref) {
+                    addFriendPref(friendsStore.newFriend);
+                }
+            }
         }
     }
 
@@ -110,7 +114,11 @@ public class FriendsViewController : MonoBehaviour {
         }
         for (int i = 0; i < friendsStore.waitingAcceptLists.Length; i++) {
             GameObject item = Instantiate(container);
-            item.GetComponent<ButtonIndex>().index = friendsStore.waitingAcceptLists[i].id;
+            item.GetComponent<ButtonIndex>().index = friendsStore.waitingAcceptLists[i].fromUser.id;
+
+            EventDelegate.Parameter param = new EventDelegate.Parameter();
+            param.obj = item;
+            param.field = "index";
 
             item.transform.Find("Name").GetComponent<UILabel>().text = friendsStore.waitingAcceptLists[i].fromUser.nickName;
             containerInit(item, receiveFrienReqGrid);
@@ -119,19 +127,19 @@ public class FriendsViewController : MonoBehaviour {
             GameObject tmp = item.transform.Find("AcceptButton").gameObject;
             tmp.SetActive(true);
 
+            EventDelegate acceptEvent = new EventDelegate(this, "acceptFriendReq");
+            acceptEvent.parameters[0] = param;
+            EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, acceptEvent);
+
             tmp = item.transform.Find("RejectButton").gameObject;
             tmp.SetActive(true);
 
             EventDelegate delEvent = new EventDelegate(this, "delFriend");
-
-            EventDelegate.Parameter param = new EventDelegate.Parameter();
-            param.obj = item;
-            param.field = "index";
             delEvent.parameters[0] = param;
-
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
 
             tmp = item;
+
             EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendPanel");
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, friendProfileEvent);
         }
@@ -163,9 +171,10 @@ public class FriendsViewController : MonoBehaviour {
     }
 
     //Server에 친구 추가 요청
-    private void addFriend() {
+    private void addFriend(int id) {
         Debug.Log("친구 추가 요청");
         AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
+        addFriendAct.id = id;
         gameManager.gameDispatcher.dispatch(addFriendAct);
     }
 
@@ -212,7 +221,9 @@ public class FriendsViewController : MonoBehaviour {
 
     private void acceptFriendReq(GameObject obj) {
         Debug.Log("Accept Friend Req");
-        Debug.Log(obj.name);
+        int index = obj.GetComponent<ButtonIndex>().index;
+        addFriend(index);
+        Destroy(obj);
     }
 
     //친구 삭제 버튼 클릭시
