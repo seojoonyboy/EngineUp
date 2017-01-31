@@ -27,6 +27,7 @@ public class NetworkManager : Singleton<NetworkManager> {
                 break;
             case "DELETE":
                 www = UnityWebRequest.Delete(url);
+                www.downloadHandler = new DownloadHandlerBuffer();
                 break;
             case "GET":
             default:

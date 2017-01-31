@@ -21,9 +21,10 @@ public class Friends : AjwStore {
 
     public bool 
         searchResult = false,
+        deleteResult = false,
         addResult = false;
     public ActionTypes eventType;
-    public GameObject targetItem;
+    public GameObject targetObj;
     public int toUserId;
 
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
@@ -147,6 +148,7 @@ public class Friends : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 msg = "일치하는 사용자가 없어 친구추가에 실패했습니다.";
+                searchResult = false;
                 _emitChange();
                 break;
         }
@@ -171,26 +173,35 @@ public class Friends : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(act.response.data);
+                addResult = false;
                 _emitChange();
                 break;
         }
     }
 
     private void delete(CommunityDeleteAction act) {
+        //Debug.Log(act.response.data);
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("users/")
+                    .Append("friends/")
+                    .Append(act.id)
+                    .Append("?deviceId=")
                     .Append(GameManager.Instance.deviceId);
-                targetItem = act.targetGameObj;
-                //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log("delete success");
+                deleteResult = true;
+                targetObj = act.targetGameObj;
+                _emitChange();
                 //msg = keyword + " 로 검색 결과";
                 break;
             case NetworkAction.statusTypes.FAIL:
+                deleteResult = false;
+                _emitChange();
                 break;
         }
     }

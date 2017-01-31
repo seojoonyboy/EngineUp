@@ -38,16 +38,19 @@ public class FriendsViewController : MonoBehaviour {
         }
 
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
-            if(friendsStore.searchResult == true) {
+            if(friendsStore.searchResult) {
                 addFriend();
                 friendsStore.searchResult = false;
             }
             onSearchFeedbackMsg(friendsStore.msg);
         }
         if(friendsStore.eventType == ActionTypes.COMMUNITY_DELETE) {
-            Debug.Log("친구 삭제");
-            if(friendsStore.targetItem != null) {
-                delete(friendsStore.targetItem);
+            Debug.Log("Delete Success");
+            if(friendsStore.deleteResult) {
+                if (friendsStore.targetObj) {
+                    deletePref(friendsStore.targetObj);
+                    friendsStore.targetObj = null;
+                }
             }
         }
 
@@ -82,7 +85,7 @@ public class FriendsViewController : MonoBehaviour {
             containerInit(item, myFriendGrid);
             GameObject tmp = item.transform.Find("RemoveButton").gameObject;
 
-            EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
+            EventDelegate delEvent = new EventDelegate(this, "delFriend");
 
             EventDelegate.Parameter param = new EventDelegate.Parameter();
             param.obj = item;
@@ -107,12 +110,19 @@ public class FriendsViewController : MonoBehaviour {
         }
         for (int i = 0; i < friendsStore.waitingAcceptLists.Length; i++) {
             GameObject item = Instantiate(container);
+            item.GetComponent<ButtonIndex>().index = friendsStore.waitingAcceptLists[i].id;
+
             item.transform.Find("Name").GetComponent<UILabel>().text = friendsStore.waitingAcceptLists[i].fromUser.nickName;
             containerInit(item, receiveFrienReqGrid);
-            GameObject tmp = item.transform.Find("RemoveButton").gameObject;
-            //tmp.GetComponent<ButtonIndex>().index = i;
+            item.transform.Find("RemoveButton").gameObject.SetActive(false);
 
-            EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
+            GameObject tmp = item.transform.Find("AcceptButton").gameObject;
+            tmp.SetActive(true);
+
+            tmp = item.transform.Find("RejectButton").gameObject;
+            tmp.SetActive(true);
+
+            EventDelegate delEvent = new EventDelegate(this, "delFriend");
 
             EventDelegate.Parameter param = new EventDelegate.Parameter();
             param.obj = item;
@@ -165,8 +175,8 @@ public class FriendsViewController : MonoBehaviour {
         containerInit(item, sendFriendReqGrid);
         
         GameObject tmp = item.transform.Find("RemoveButton").gameObject;
-        EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
-        Debug.Log(data.nickName);
+        //요청 거절 시 이벤트 동적 할당
+        EventDelegate delEvent = new EventDelegate(this, "rejectReq");
         item.transform.Find("Name").GetComponent<UILabel>().text = data.nickName;
 
         EventDelegate.Parameter param = new EventDelegate.Parameter();
@@ -180,12 +190,13 @@ public class FriendsViewController : MonoBehaviour {
         additionalMsg.SetActive(true);
     }
 
+    //overloading
     public void addFriendPref(Friend friend) {
         GameObject item = Instantiate(container);
         containerInit(item, sendFriendReqGrid);
 
         GameObject tmp = item.transform.Find("RemoveButton").gameObject;
-        EventDelegate delEvent = new EventDelegate(this, "delFriendReq");
+        EventDelegate delEvent = new EventDelegate(this, "delFriend");
         item.transform.Find("Name").GetComponent<UILabel>().text = friend.toUser.nickName;
 
         EventDelegate.Parameter param = new EventDelegate.Parameter();
@@ -199,57 +210,29 @@ public class FriendsViewController : MonoBehaviour {
         additionalMsg.SetActive(true);
     }
 
-    //if someone request friend, then exec
-    public void addFriendReq() {
-        GameObject item = Instantiate(container);
-
-        containerInit(item, receiveFrienReqGrid);
-
-        GameObject btn = item.transform.Find("AcceptButton").gameObject;
-        btn.SetActive(true);
-
-        EventDelegate acceptEvent = new EventDelegate(this, "acceptFriendReq");
-        EventDelegate.Parameter param = new EventDelegate.Parameter();
-        param.obj = item;
-        param.field = "index";
-        acceptEvent.parameters[0] = param;
-        EventDelegate.Add(btn.GetComponent<UIButton>().onClick, acceptEvent);
-
-        EventDelegate denyEvent = new EventDelegate(this, "delFriendReq");
-        denyEvent.parameters[0] = param;
-        btn = item.transform.Find("RejectButton").gameObject;
-        btn.SetActive(true);        
-        EventDelegate.Add(btn.GetComponent<UIButton>().onClick, denyEvent);
-        
-        btn = item.transform.Find("RemoveButton").gameObject;
-        btn.SetActive(false);
-    }
-
     private void acceptFriendReq(GameObject obj) {
         Debug.Log("Accept Friend Req");
         Debug.Log(obj.name);
     }
 
     //친구 삭제 버튼 클릭시
-    private void delFriendReq(GameObject obj) {
-        Debug.Log(obj.name);
-        Destroy(obj);
+    private void delFriend(GameObject obj) {
+        //Debug.Log(obj.name);
+        //Destroy(obj);
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
         action.type = CommunityDeleteAction.deleteType.FRIEND;
         action.targetGameObj = obj;
+        action.id = obj.GetComponent<ButtonIndex>().index;
         gameManager.gameDispatcher.dispatch(action);
     }
-    
-    public void delete(GameObject obj) {
-        Destroy(obj.gameObject);
-        UIGrid grid = obj.transform.parent.GetComponent<UIGrid>();
-        grid.repositionNow = true;
-        grid.Reposition();
 
-        //grid.repositionNow = true;
-        //DeleteCommunityAction action = ActionCreator.createAction(ActionTypes.DELETE_COMMUNITY_DATA) as DeleteCommunityAction;
-        //action.key_id = index;
-        //gameManager.gameDispatcher.dispatch(action);
+    //친구 요청 거절시
+    private void rejectReq(GameObject obj) {
+
+    }
+
+    public void deletePref(GameObject obj) {
+        Destroy(obj);
     }
 
     private void containerInit(GameObject obj, UIGrid grid) {

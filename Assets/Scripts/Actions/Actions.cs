@@ -123,7 +123,7 @@ public class CommunityDeleteAction : NetworkAction {
     public enum deleteType { GROUP, FRIEND };
     public deleteType type;
     public GameObject targetGameObj;
-    public string keyword;
+    public int id;
 }
 
 public class AddFriendAction : NetworkAction { }
