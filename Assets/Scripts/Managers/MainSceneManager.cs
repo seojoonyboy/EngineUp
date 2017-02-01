@@ -5,6 +5,7 @@ public class MainSceneManager : fbl_SceneManager {
     public Riding_VC ridingViewCtrler;
     public FriendsViewController friendViewCtrler;
     public GroupViewController groupViewCtrler;
+    public StatViewController statViewCtrler;
     
     private GameManager gm;
     public GameObject modal;
@@ -20,12 +21,13 @@ public class MainSceneManager : fbl_SceneManager {
         ridingViewCtrler.userStore = gm.userStore;
         friendViewCtrler.friendsStore = gm.friendsStore;
         groupViewCtrler.groupStore = gm.groupStore;
+        statViewCtrler.userStore = gm.userStore;
 
         gm.friendsStore.addListener(friendViewCtrler.OnFriendsStoreListener);
         gm.ridingStore.addListener(resultViewCtrler.onRidingListener);
         gm.ridingStore.addListener(ridingViewCtrler.onRidingListener);
         gm.groupStore.addListener(groupViewCtrler.OnGroupStoreListener);
-
+        gm.userStore.addListener(statViewCtrler.onUserListener);
         //CommunityInitAction act = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE) as CommunityInitAction;
         //gm.gameDispatcher.dispatch(act);
     }

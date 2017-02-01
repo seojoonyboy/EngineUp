@@ -10656,6 +10656,7 @@ MonoBehaviour:
   ridingViewCtrler: {fileID: 645750110}
   friendViewCtrler: {fileID: 378383262}
   groupViewCtrler: {fileID: 416240837}
+  statViewCtrler: {fileID: 978275570}
   modal: {fileID: 1425861299}
 --- !u!1 &737606679
 GameObject:
@@ -13476,6 +13477,7 @@ GameObject:
   - 114: {fileID: 978275567}
   - 114: {fileID: 978275568}
   - 114: {fileID: 978275569}
+  - 114: {fileID: 978275570}
   m_Layer: 5
   m_Name: MainPanel
   m_TagString: Untagged
@@ -13596,6 +13598,18 @@ MonoBehaviour:
   mainBtns:
   - {fileID: 1193835566}
   - {fileID: 842123672}
+--- !u!114 &978275570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 978275564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a99d764e4c1e04d4790d61b1656c68a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nickNameLabel: {fileID: 1783753967}
 --- !u!1 &982762913
 GameObject:
   m_ObjectHideFlags: 0
@@ -14206,7 +14220,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3020
+  startingRenderQueue: 3022
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -20667,6 +20681,7 @@ Transform:
   - {fileID: 1847329446}
   - {fileID: 839253555}
   - {fileID: 1986838129}
+  - {fileID: 1783753966}
   m_Father: {fileID: 978275565}
   m_RootOrder: 2
 --- !u!114 &1450950707
@@ -24911,6 +24926,103 @@ MonoBehaviour:
   mAtlas: {fileID: 114000011360382360, guid: 077e6b8a3d167b94b922ae3511fcb410, type: 2}
   mSpriteName: main_profile_stat_back_line
   mFillCenter: 1
+--- !u!1 &1783753965
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1783753966}
+  - 114: {fileID: 1783753967}
+  m_Layer: 5
+  m_Name: NickName
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1783753966
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1783753965}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 213, y: 701, z: 0}
+  m_LocalScale: {x: 0.9983999, y: 0.9983999, z: 0.9983999}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 1450950706}
+  m_RootOrder: 4
+--- !u!114 &1783753967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1783753965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d0b5f3bbe925a408bd595c79d0bf63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftAnchor:
+    target: {fileID: 481420203}
+    relative: 1
+    absolute: -492
+  rightAnchor:
+    target: {fileID: 481420203}
+    relative: 1
+    absolute: -54
+  bottomAnchor:
+    target: {fileID: 481420203}
+    relative: 0.5
+    absolute: 18
+  topAnchor:
+    target: {fileID: 481420203}
+    relative: 1
+    absolute: -43
+  updateAnchors: 1
+  mColor: {r: 1, g: 1, b: 1, a: 1}
+  mPivot: 4
+  mWidth: 438
+  mHeight: 64
+  mDepth: 2
+  mMat: {fileID: 0}
+  autoResizeBoxCollider: 0
+  hideIfOffScreen: 0
+  keepAspectRatio: 0
+  aspectRatio: 6.84375
+  keepCrispWhenShrunk: 1
+  mTrueTypeFont: {fileID: 0}
+  mFont: {fileID: 114000011092689454, guid: 389e6b28ca6e817498e03b80cf62c54e, type: 2}
+  mText: "\uB2C9\uB124\uC784"
+  mFontSize: 40
+  mFontStyle: 0
+  mAlignment: 3
+  mEncoding: 1
+  mMaxLineCount: 0
+  mEffectStyle: 0
+  mEffectColor: {r: 0, g: 0, b: 0, a: 1}
+  mSymbols: 1
+  mEffectDistance: {x: 1, y: 1}
+  mOverflow: 0
+  mApplyGradient: 1
+  mGradientTop: {r: 1, g: 1, b: 1, a: 1}
+  mGradientBottom: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  mSpacingX: 0
+  mSpacingY: 0
+  mUseFloatSpacing: 0
+  mFloatSpacingX: 0
+  mFloatSpacingY: 0
+  mOverflowEllipsis: 0
+  mOverflowWidth: 0
+  mModifier: 0
+  mShrinkToFit: 0
+  mMaxLineWidth: 0
+  mMaxLineHeight: 0
+  mLineWidth: 0
+  mMultiline: 1
 --- !u!4 &1814063817
 Transform:
   m_ObjectHideFlags: 0
