@@ -83,6 +83,7 @@ public class Friends : AjwStore {
                 foreach(Friend friend in data) {
                     if (friend.friendState == "WAITING") {
                         tmpListWaiting.Add(friend);
+                        Debug.Log("수락대기중");
                     }
                     else if (friend.friendState == "FRIEND") {
                         tmpListFriend.Add(friend);

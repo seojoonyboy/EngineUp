@@ -29,12 +29,13 @@ public class FriendsViewController : MonoBehaviour {
 
         if(friendsStore.eventType == ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST) {
             makeStandByAcceptList();
+            makeFriendReqList();
         }
 
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
             //검색 성공시 제어
             if(friendsStore.searchResult) {
-                addFriend(friendsStore.newFriend.id);
+                addFriend(friendsStore.newFriend.id, true);
                 friendsStore.searchResult = false;
             }
             onSearchFeedbackMsg(friendsStore.msg);
@@ -67,8 +68,6 @@ public class FriendsViewController : MonoBehaviour {
         input = gameObject.transform.Find("FindFriendPanel/Input").GetComponent<UIInput>();
         input.activeTextColor = Color.black;
         gameManager = GameManager.Instance;
-        
-        sendFriendReqGrid = gameObject.transform.Find("SendReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();        
     }
 
     //내 친구 목록 생성
@@ -113,6 +112,7 @@ public class FriendsViewController : MonoBehaviour {
             return;
         }
         for (int i = 0; i < friendsStore.waitingAcceptLists.Length; i++) {
+            Debug.Log("수락대기 목록");
             GameObject item = Instantiate(container);
             item.GetComponent<ButtonIndex>().index = friendsStore.waitingAcceptLists[i].fromUser.id;
 
@@ -147,6 +147,7 @@ public class FriendsViewController : MonoBehaviour {
 
     //친구 신청 목록 생성
     public void makeFriendReqList() {
+        sendFriendReqGrid = gameObject.transform.Find("SendReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();
         removeAllList(sendFriendReqGrid);
         Friend[] friends = friendsStore.friendReqLists;
         for(int i=0; i< friends.Length; i++) {
@@ -171,15 +172,17 @@ public class FriendsViewController : MonoBehaviour {
     }
 
     //Server에 친구 추가 요청
-    private void addFriend(int id) {
+    private void addFriend(int id , bool needPref = false) {
         Debug.Log("친구 추가 요청");
         AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
         addFriendAct.id = id;
+        addFriendAct.needPref = needPref;
         gameManager.gameDispatcher.dispatch(addFriendAct);
     }
 
     //친구 추가 요청시 UI Prefab 생성
     public void addFriendPref(SearchedFriend data) {
+        Debug.Log("친구 신청 성공 후 프리팹 생성");
         GameObject item = Instantiate(container);
         containerInit(item, sendFriendReqGrid);
         
