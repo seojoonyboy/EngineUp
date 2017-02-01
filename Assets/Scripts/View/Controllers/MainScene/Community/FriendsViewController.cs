@@ -99,7 +99,7 @@ public class FriendsViewController : MonoBehaviour {
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
 
             tmp = item;
-            EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendPanel");
+            EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendDetailPanel");
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, friendProfileEvent);
         }
     }
@@ -255,6 +255,7 @@ public class FriendsViewController : MonoBehaviour {
     }
 
     private void onFriendDetailPanel() {
+        Debug.Log("On Friend Detail");
         friendProfilePanel.SetActive(true);
     }
 }
