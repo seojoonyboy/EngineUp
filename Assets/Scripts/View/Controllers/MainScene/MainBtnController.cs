@@ -5,8 +5,7 @@ public class MainBtnController : MonoBehaviour {
     public GameObject
         ridingPanel,
         communityPanel,
-        avatar,
-        topPanel;
+        avatar;
 
     void Start() {
     }
