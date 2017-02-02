@@ -20,19 +20,13 @@ public class FriendsViewController : MonoBehaviour {
         friendProfilePanel;
 
     public void OnFriendsStoreListener() {
-        if(friendsStore.eventType == ActionTypes.GET_MY_FRIEND_LIST) {
+        if (friendsStore.eventType == ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST) {
             makeMyFriendList();
-
-            GetAcceptWaitingListAction action = ActionCreator.createAction(ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST) as GetAcceptWaitingListAction;
-            GameManager.Instance.gameDispatcher.dispatch(action);
-        }
-
-        if(friendsStore.eventType == ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST) {
             makeStandByAcceptList();
             makeFriendReqList();
         }
 
-        if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
+        if (friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
             //검색 성공시 제어
             if(friendsStore.searchResult) {
                 addFriend(friendsStore.newFriend.id, true);

@@ -91,11 +91,13 @@ public class Friends : AjwStore {
                 }
                 friendReqLists = (Friend[])tmpListWaiting.ToArray(typeof(Friend));
                 myFriends = (Friend[])tmpListFriend.ToArray(typeof(Friend));
-                _emitChange();
+                GetAcceptWaitingListAction getWaitingListAction = ActionCreator.createAction(ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST) as GetAcceptWaitingListAction;
+                dispatcher.dispatch(getWaitingListAction);
+                //_emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(payload.response.data);
-                _emitChange();
+                //_emitChange();
                 break;
         }
     }
@@ -123,7 +125,7 @@ public class Friends : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(payload.response.data);
-                _emitChange();
+                //_emitChange();
                 break;
         }
     }
