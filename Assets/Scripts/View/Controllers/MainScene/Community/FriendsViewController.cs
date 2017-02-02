@@ -206,7 +206,7 @@ public class FriendsViewController : MonoBehaviour {
     public void addFriendPref(Friend friend) {
         GameObject item = Instantiate(container);
         containerInit(item, sendFriendReqGrid);
-
+        item.GetComponent<ButtonIndex>().index = friend.id;
         GameObject tmp = item.transform.Find("RemoveButton").gameObject;
         EventDelegate delEvent = new EventDelegate(this, "delFriend");
         item.transform.Find("Name").GetComponent<UILabel>().text = friend.toUser.nickName;
