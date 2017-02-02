@@ -196,6 +196,7 @@ public class Friends : AjwStore {
                     .Append("?deviceId=")
                     .Append(GameManager.Instance.deviceId);
                 networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
+                Debug.Log("DELETE REQUEST URL : " + strBuilder.ToString());
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log("delete success");

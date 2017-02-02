@@ -114,8 +114,8 @@ public class FriendsViewController : MonoBehaviour {
         for (int i = 0; i < friendsStore.waitingAcceptLists.Length; i++) {
             Debug.Log("수락대기 목록");
             GameObject item = Instantiate(container);
-            item.GetComponent<ButtonIndex>().index = friendsStore.waitingAcceptLists[i].fromUser.id;
-
+            item.GetComponent<ButtonIndex>().index = friendsStore.waitingAcceptLists[i].id;
+            item.GetComponent<ButtonIndex>().fromUserId = friendsStore.waitingAcceptLists[i].fromUser.id;
             EventDelegate.Parameter param = new EventDelegate.Parameter();
             param.obj = item;
             param.field = "index";
@@ -134,7 +134,7 @@ public class FriendsViewController : MonoBehaviour {
             tmp = item.transform.Find("RejectButton").gameObject;
             tmp.SetActive(true);
 
-            EventDelegate delEvent = new EventDelegate(this, "delFriend");
+            EventDelegate delEvent = new EventDelegate(this, "rejectReq");
             delEvent.parameters[0] = param;
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
 
@@ -222,9 +222,10 @@ public class FriendsViewController : MonoBehaviour {
         additionalMsg.SetActive(true);
     }
 
+    //친구 수락
     private void acceptFriendReq(GameObject obj) {
         Debug.Log("Accept Friend Req");
-        int index = obj.GetComponent<ButtonIndex>().index;
+        int index = obj.GetComponent<ButtonIndex>().fromUserId;
         addFriend(index);
         Destroy(obj);
     }
@@ -242,7 +243,13 @@ public class FriendsViewController : MonoBehaviour {
 
     //친구 요청 거절시
     private void rejectReq(GameObject obj) {
-
+        Debug.Log("요청 거절");
+        CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
+        action.type = CommunityDeleteAction.deleteType.FRIEND;
+        action.targetGameObj = obj;
+        int index = obj.GetComponent<ButtonIndex>().index;
+        action.id = index;
+        gameManager.gameDispatcher.dispatch(action);
     }
 
     public void deletePref(GameObject obj) {
