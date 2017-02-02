@@ -139,6 +139,7 @@ public class Friends : AjwStore {
                     .Append("users/search?nickName=")
                     .Append(act.keyword);
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
+                Debug.Log("Search URL : " + strBuilder.ToString());
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log(act.response.data);
