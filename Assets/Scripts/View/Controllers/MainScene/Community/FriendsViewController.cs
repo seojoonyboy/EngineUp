@@ -46,6 +46,7 @@ public class FriendsViewController : MonoBehaviour {
                 if(friendsStore.newFriend == null) {
                     addFriendPref(friendsStore.addedFriend, friendsStore.addFriendType);
                 }
+                //수락을 통한 친구 추가인 경우
                 else {
                     addFriendPref(friendsStore.newFriend, friendsStore.addFriendType);
                 }
@@ -196,13 +197,16 @@ public class FriendsViewController : MonoBehaviour {
         Debug.Log("수락에 따른 친구 프리팹 생성");
         UIGrid targetGrid = null;
         GameObject item = Instantiate(container);
+        GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
         if (type == AddFriendPrefab.type.REQUEST) {
             Debug.Log("요청 대기 프리팹 생성");
             targetGrid = sendFriendReqGrid;
+            additionalMsg.SetActive(true);
         }
         if (type == AddFriendPrefab.type.MYFRIEND) {
             Debug.Log("내 친구 프리팹 생성");
             targetGrid = myFriendGrid;
+            additionalMsg.SetActive(false);
         }
         containerInit(item, targetGrid);
 
@@ -217,9 +221,6 @@ public class FriendsViewController : MonoBehaviour {
         delEvent.parameters[0] = param;
 
         EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
-
-        GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
-        additionalMsg.SetActive(true);
     }
 
     //overloading
