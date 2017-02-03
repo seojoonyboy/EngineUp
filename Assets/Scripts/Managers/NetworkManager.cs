@@ -17,26 +17,28 @@ public class NetworkManager : Singleton<NetworkManager> {
     }
 
     IEnumerator _request(string method, string url, WWWForm data, Callback callback){
-        UnityWebRequest www;
+        UnityWebRequest _www;
         switch(method){
             case "POST":
-                www = UnityWebRequest.Post(url, data);
+                _www = UnityWebRequest.Post(url, data);
                 break;
             case "PUT":
-                www = UnityWebRequest.Put(url,data.data);
-                www.SetRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                _www = UnityWebRequest.Put(url,data.data);
+                _www.SetRequestHeader("Content-Type","application/x-www-form-urlencoded");
                 break;
             case "DELETE":
-                www = UnityWebRequest.Delete(url);
-                www.downloadHandler = new DownloadHandlerBuffer();
+                _www = UnityWebRequest.Delete(url);
+                _www.downloadHandler = new DownloadHandlerBuffer();
                 break;
             case "GET":
             default:
-                www = UnityWebRequest.Get(url);
+                _www = UnityWebRequest.Get(url);
                 break;
         }
-        yield return www.Send();
-        callback(new HttpResponse(www));
+        using(UnityWebRequest www = _www){
+            yield return www.Send();
+            callback(new HttpResponse(www));
+        }
     }
 }
 
