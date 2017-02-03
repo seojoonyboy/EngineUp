@@ -7,7 +7,7 @@ using System;
 public class Friends : AjwStore {
     public Friends(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher) { }
     NetworkManager networkManager = NetworkManager.Instance;
-    
+
     public Friend[]
         waitingAcceptLists,
         myFriends,
@@ -15,7 +15,7 @@ public class Friends : AjwStore {
 
     //검색된 친구
     public SearchedFriend newFriend;
-    
+
     public Friend addedFriend;
     public string
         msg,
@@ -27,7 +27,7 @@ public class Friends : AjwStore {
 
     public AddFriendPrefab.type addFriendType;
 
-    public bool 
+    public bool
         addResult = false,
         searchResult = false;
 
@@ -89,7 +89,7 @@ public class Friends : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 Friend[] data = JsonHelper.getJsonArray<Friend>(payload.response.data);
-                
+
                 ArrayList tmpListWaiting = new ArrayList();
                 ArrayList tmpListFriend = new ArrayList();
                 Debug.Log(payload.response.data);
@@ -159,7 +159,7 @@ public class Friends : AjwStore {
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("users/search?nickName=")
-                    .Append(act.keyword);
+                    .Append(WWW.EscapeURL(act.keyword));
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 Debug.Log("Search URL : " + strBuilder.ToString());
                 break;
