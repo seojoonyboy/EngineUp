@@ -19,14 +19,15 @@ public class Friends : AjwStore {
         msg,
         keyword;
 
-    public bool 
-        searchResult = false,
-        deleteResult = false,
-        addResult = false,
-        needNewPref;
     public ActionTypes eventType;
     public GameObject targetObj;
     public int toUserId;
+
+    public AddFriendPrefab.type addFriendType;
+
+    public bool 
+        addResult = false,
+        searchResult = false;
 
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
@@ -57,6 +58,11 @@ public class Friends : AjwStore {
                 Debug.Log("Add Friend 액션");
                 AddFriendAction addAct = action as AddFriendAction;
                 addFriend(addAct);
+                break;
+
+            case ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB:
+                AddFriendPrefab addPrefabAct = action as AddFriendPrefab;
+                addFriendPrefab(addPrefabAct);
                 break;
         }
         eventType = action.type;
@@ -133,6 +139,11 @@ public class Friends : AjwStore {
     //친구 검색
     private void search(CommunitySearchAction act) {
         keyword = act.keyword;
+
+        msg = null;
+        searchResult = false;
+        addResult = false;
+
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
@@ -146,14 +157,16 @@ public class Friends : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log(act.response.data);
                 newFriend = SearchedFriend.fromJSON(act.response.data);
-                msg = "친구추가 신청이 발송되었습니다.";
+                AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
+                addFriendAct.id = newFriend.id;
+                addFriendAct.needPref = true;
+                dispatcher.dispatch(addFriendAct);
                 searchResult = true;
-                //toUserId = newFriend.id;
-                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
-                msg = "일치하는 사용자가 없어 친구추가에 실패했습니다.";
+                msg = "존재하지 않는 아이디입니다.";
                 searchResult = false;
+                Debug.Log("존재하지 않는 아이디");
                 _emitChange();
                 break;
         }
@@ -163,7 +176,6 @@ public class Friends : AjwStore {
     private void addFriend(AddFriendAction act) {
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
-                needNewPref = act.needPref;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -176,15 +188,36 @@ public class Friends : AjwStore {
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                //친구 프리팹 생성 액션
+                Debug.Log("친구 추가에 대한 response data : " + act.response.data);
+                AddFriendPrefab addPrefAct = ActionCreator.createAction(ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB) as AddFriendPrefab;
+                addPrefAct.mType = AddFriendPrefab.type.REQUEST;
+                msg = "친구 신청을 완료하였습니다.";
+                dispatcher.dispatch(addPrefAct);
                 addResult = true;
-                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(act.response.data);
+                errorMessage message = errorMessage.fromJSON(act.response.data);
+                if(message.non_field_errors != null) {
+                    msg = "이미 친구 신청이 완료된 상태입니다.";
+                }
+                if(message.self_friend_error != null) {
+                    msg = "자신에게는 친구 신청을 할 수 없습니다.";
+                }
                 addResult = false;
                 _emitChange();
                 break;
         }
+    }
+
+    private void addFriendPrefab(AddFriendPrefab act) {
+        addFriendType = act.mType;
+        _emitChange();
+        //초기화
+        //msg = null;
+        //searchResult = false;
+        //addResult = false;
     }
 
     private void delete(CommunityDeleteAction act) {
@@ -203,13 +236,11 @@ public class Friends : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log("delete success");
-                deleteResult = true;
                 targetObj = act.targetGameObj;
                 _emitChange();
                 //msg = keyword + " 로 검색 결과";
                 break;
             case NetworkAction.statusTypes.FAIL:
-                deleteResult = false;
                 _emitChange();
                 break;
         }
@@ -244,5 +275,13 @@ public class SearchedFriend {
 
     public static SearchedFriend fromJSON(string json) {
         return JsonUtility.FromJson<SearchedFriend>(json);
+    }
+}
+
+class errorMessage {
+    public string[] non_field_errors;
+    public string[] self_friend_error;
+    public static errorMessage fromJSON(string json) {
+        return JsonUtility.FromJson<errorMessage>(json);
     }
 }

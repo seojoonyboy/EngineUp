@@ -18,7 +18,8 @@ public enum ActionTypes {
     COMMUNITY_DELETE,
     ADD_FRIEND,
     GET_MY_FRIEND_LIST,
-    GET_WAITING_FRIEND_ACCEPT_LIST
+    GET_WAITING_FRIEND_ACCEPT_LIST,
+    ADD_COMMUNITY_FRIEND_PREFAB
 }
 
 public class Actions{
@@ -56,9 +57,6 @@ public static class ActionCreator{
         case ActionTypes.USER_CREATE:
             _return = new UserCreateAction();
             break;
-        //case ActionTypes.COMMUNITY_INITIALIZE:
-        //    _return = new CommunityInitAction();
-        //    break;
         case ActionTypes.COMMUNITY_SEARCH:
             _return = new CommunitySearchAction();
             break;
@@ -73,6 +71,9 @@ public static class ActionCreator{
             break;
         case ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST:
             _return = new GetAcceptWaitingListAction();
+            break;
+        case ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB:
+            _return = new AddFriendPrefab();
             break;
         }
          _return.type = _type;
@@ -135,3 +136,9 @@ public class AddFriendAction : NetworkAction {
 public class GetAcceptWaitingListAction : NetworkAction { }
 //내 친구 목록 불러오는 액션
 public class GetMyFriendListAction : NetworkAction { }
+
+public class AddFriendPrefab : Actions {
+    //내 친구, 수락대기, 요청상태 순
+    public enum type { MYFRIEND, WAITING, REQUEST};
+    public type mType;
+}

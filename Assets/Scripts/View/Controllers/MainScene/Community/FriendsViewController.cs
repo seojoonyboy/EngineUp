@@ -6,7 +6,7 @@ public class FriendsViewController : MonoBehaviour {
     public int childNum = 5;
     public GameObject container;
 
-    private UIGrid 
+    public UIGrid 
         myFriendGrid,
         sendFriendReqGrid,
         receiveFrienReqGrid;
@@ -26,34 +26,23 @@ public class FriendsViewController : MonoBehaviour {
             makeFriendReqList();
         }
 
-        if (friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
-            //검색 성공시 제어
-            if(friendsStore.searchResult) {
-                addFriend(friendsStore.newFriend.id, true);
-                friendsStore.searchResult = false;
-            }
-            onSearchFeedbackMsg(friendsStore.msg);
-        }
-        if(friendsStore.eventType == ActionTypes.COMMUNITY_DELETE) {
-            Debug.Log("Delete Success");
-            //친구 삭제 성공시 제어
-            if(friendsStore.deleteResult) {
-                if (friendsStore.targetObj) {
-                    deletePref(friendsStore.targetObj);
-                    friendsStore.targetObj = null;
-                    friendsStore.deleteResult = false;
-                }
+        if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
+            if (!friendsStore.searchResult) {
+                onSearchFeedbackMsg(friendsStore.msg);
             }
         }
 
         if(friendsStore.eventType == ActionTypes.ADD_FRIEND) {
-            //친구 추가 성공시 제어
+            if (!friendsStore.addResult) {
+                onSearchFeedbackMsg(friendsStore.msg);
+            }
+        }
+
+        if(friendsStore.eventType == ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB) {
+            Debug.Log("프리팹 생성");
             if (friendsStore.addResult) {
-                if (friendsStore.needNewPref) {
-                    addFriendPref(friendsStore.newFriend);
-                    friendsStore.needNewPref = false;
-                }
-                friendsStore.addResult = false;
+                onSearchFeedbackMsg(friendsStore.msg);
+                addFriendPref(friendsStore.newFriend, friendsStore.addFriendType);
             }
         }
     }
@@ -66,7 +55,6 @@ public class FriendsViewController : MonoBehaviour {
 
     //내 친구 목록 생성
     public void makeMyFriendList() {
-        myFriendGrid = gameObject.transform.Find("MyFriendListPanel/ScrollView/Grid").GetComponent<UIGrid>();
         if (friendsStore.myFriends == null) {
             Debug.Log("no friend");
             return;
@@ -99,7 +87,6 @@ public class FriendsViewController : MonoBehaviour {
 
     //수락 대기 목록 생성
     public void makeStandByAcceptList() {
-        receiveFrienReqGrid = gameObject.transform.Find("ReceiveReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();
         removeAllList(receiveFrienReqGrid);
         if (friendsStore.waitingAcceptLists == null) {
             Debug.Log("수락 대기 없음");
@@ -141,7 +128,6 @@ public class FriendsViewController : MonoBehaviour {
 
     //친구 신청 목록 생성
     public void makeFriendReqList() {
-        sendFriendReqGrid = gameObject.transform.Find("SendReqListPanel/ScrollView/Grid").GetComponent<UIGrid>();
         removeAllList(sendFriendReqGrid);
         Friend[] friends = friendsStore.friendReqLists;
         for(int i=0; i< friends.Length; i++) {
@@ -175,9 +161,16 @@ public class FriendsViewController : MonoBehaviour {
     }
 
     //친구 추가 요청시 UI Prefab 생성
-    public void addFriendPref(SearchedFriend data) {
-        Debug.Log("친구 신청 성공 후 프리팹 생성");
+    public void addFriendPref(SearchedFriend data, AddFriendPrefab.type type) {
         GameObject item = Instantiate(container);
+        if(type == AddFriendPrefab.type.REQUEST) {
+            Debug.Log("요청 대기 프리팹 생성");
+            item.transform.SetParent(sendFriendReqGrid.transform);
+        }
+        if(type == AddFriendPrefab.type.MYFRIEND) {
+            Debug.Log("내 친구 프리팹 생성");
+            item.transform.SetParent(myFriendGrid.transform);
+        }
         containerInit(item, sendFriendReqGrid);
         
         GameObject tmp = item.transform.Find("RemoveButton").gameObject;
