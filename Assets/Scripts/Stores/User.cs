@@ -6,8 +6,11 @@ using System.Collections.Generic;
 public class User : AjwStore {
     // prop
     public string nickName = null;
-    public bool isSearch = false;
-    
+    public bool 
+        isSearch = false,
+        isCreated = false;
+    public string UImsg;
+
     NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
     public User(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher){}
@@ -51,14 +54,24 @@ public class User : AjwStore {
             UserData data = UserData.fromJSON(act.response.data);
             nickName = data.nickName;
             Debug.Log("user 생성 성공");
+            isCreated = true;
             _emitChange();
             break;
         case NetworkAction.statusTypes.FAIL:
+            UserCreateError errorAct = ActionCreator.createAction(ActionTypes.USER_CREATE_ERROR) as UserCreateError;
+            UserErrorMessage msg = UserErrorMessage.fromJSON(act.response.data);
+            if (msg.nickName != null) {
+                UImsg = "이미 존재하는 아이디입니다.";
+            }
+            dispatcher.dispatch(errorAct);
             Debug.Log("user 생성 실패");
-            Debug.Log("Error Msg : " + act.response.errorMessage);
             // create 실패
             break;
         }
+    }
+
+    private void onError(UserCreateError act) {
+        _emitChange();
     }
 
     protected override void _onDispatch(Actions action){
@@ -71,6 +84,9 @@ public class User : AjwStore {
             break;
         case ActionTypes.USER_CREATE:
             userCreate(action as UserCreateAction);
+            break;
+        case ActionTypes.USER_CREATE_ERROR:
+            onError(action as UserCreateError);
             break;
         }
         eventType = action.type;
@@ -85,5 +101,13 @@ class UserData {
 
     public static UserData fromJSON(string json){
         return JsonUtility.FromJson<UserData>(json);
+    }
+}
+
+class UserErrorMessage {
+    public string[] nickName;
+
+    public static UserErrorMessage fromJSON(string json) {
+        return JsonUtility.FromJson<UserErrorMessage>(json);
     }
 }
