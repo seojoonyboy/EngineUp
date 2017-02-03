@@ -42,7 +42,13 @@ public class FriendsViewController : MonoBehaviour {
             Debug.Log("프리팹 생성");
             if (friendsStore.addResult) {
                 onSearchFeedbackMsg(friendsStore.msg);
-                addFriendPref(friendsStore.newFriend, friendsStore.addFriendType);
+                //친구 검색을 통한 친구 추가인경우
+                if(friendsStore.newFriend == null) {
+                    addFriendPref(friendsStore.addedFriend, friendsStore.addFriendType);
+                }
+                else {
+                    addFriendPref(friendsStore.newFriend, friendsStore.addFriendType);
+                }
             }
         }
     }
@@ -190,6 +196,36 @@ public class FriendsViewController : MonoBehaviour {
     }
 
     //overloading
+    public void addFriendPref(Friend data, AddFriendPrefab.type type) {
+        Debug.Log("수락에 따른 친구 프리팹 생성");
+        GameObject item = Instantiate(container);
+        if (type == AddFriendPrefab.type.REQUEST) {
+            Debug.Log("요청 대기 프리팹 생성");
+            item.transform.SetParent(sendFriendReqGrid.transform);
+        }
+        if (type == AddFriendPrefab.type.MYFRIEND) {
+            Debug.Log("내 친구 프리팹 생성");
+            item.transform.SetParent(myFriendGrid.transform);
+        }
+        containerInit(item, sendFriendReqGrid);
+
+        GameObject tmp = item.transform.Find("RemoveButton").gameObject;
+        //요청 거절 시 이벤트 동적 할당
+        EventDelegate delEvent = new EventDelegate(this, "rejectReq");
+        item.transform.Find("Name").GetComponent<UILabel>().text = data.toUser.nickName;
+
+        EventDelegate.Parameter param = new EventDelegate.Parameter();
+        param.obj = item;
+        param.field = "index";
+        delEvent.parameters[0] = param;
+
+        EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
+
+        GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
+        additionalMsg.SetActive(true);
+    }
+
+    //overloading
     public void addFriendPref(Friend friend) {
         GameObject item = Instantiate(container);
         containerInit(item, sendFriendReqGrid);
@@ -212,6 +248,7 @@ public class FriendsViewController : MonoBehaviour {
     //친구 수락
     private void acceptFriendReq(GameObject obj) {
         Debug.Log("Accept Friend Req");
+        friendsStore.newFriend = null;
         int index = obj.GetComponent<ButtonIndex>().fromUserId;
         addFriend(index);
         Destroy(obj);

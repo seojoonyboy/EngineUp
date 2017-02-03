@@ -13,8 +13,10 @@ public class Friends : AjwStore {
         myFriends,
         friendReqLists;
 
+    //검색된 친구
     public SearchedFriend newFriend;
-
+    
+    public Friend addedFriend;
     public string
         msg,
         keyword;
@@ -143,6 +145,8 @@ public class Friends : AjwStore {
         msg = null;
         searchResult = false;
         addResult = false;
+        addedFriend = null;
+        newFriend = null;
 
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -182,14 +186,14 @@ public class Friends : AjwStore {
                     .Append("friends?deviceId=")
                     .Append(GameManager.Instance.deviceId);
                 WWWForm form = new WWWForm();
-                Debug.Log("ID : " + act.id);
                 form.AddField("toUser", act.id);
-                Debug.Log(strBuilder);
+                Debug.Log("친구 요청 URL : " + strBuilder);
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 //친구 프리팹 생성 액션
                 Debug.Log("친구 추가에 대한 response data : " + act.response.data);
+                addedFriend = Friend.fromJSON(act.response.data);
                 AddFriendPrefab addPrefAct = ActionCreator.createAction(ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB) as AddFriendPrefab;
                 addPrefAct.mType = AddFriendPrefab.type.REQUEST;
                 msg = "친구 신청을 완료하였습니다.";
@@ -278,6 +282,7 @@ public class SearchedFriend {
     }
 }
 
+[System.Serializable]
 class errorMessage {
     public string[] non_field_errors;
     public string[] self_friend_error;
