@@ -19,7 +19,8 @@ public enum ActionTypes {
     ADD_FRIEND,
     GET_MY_FRIEND_LIST,
     GET_WAITING_FRIEND_ACCEPT_LIST,
-    ADD_COMMUNITY_FRIEND_PREFAB
+    ADD_COMMUNITY_FRIEND_PREFAB,
+    DELETE_COMMUNITY_FRIEND_PREFAB
 }
 
 public class Actions{
@@ -75,6 +76,9 @@ public static class ActionCreator{
         case ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB:
             _return = new AddFriendPrefab();
             break;
+        case ActionTypes.DELETE_COMMUNITY_FRIEND_PREFAB:
+            _return = new DelFriendPrefab();
+            break;
         }
          _return.type = _type;
         return _return;
@@ -129,16 +133,17 @@ public class CommunityDeleteAction : NetworkAction {
 
 public class AddFriendAction : NetworkAction {
     public int id;
-    public bool needPref = false;
+    public enum type { MYFRIEND, WAITING, REQUEST };
+    public type mType;
 }
+
+public class AddFriendPrefab : AddFriendAction { }
 
 //수락 대기 목록 불러오는 액션
 public class GetAcceptWaitingListAction : NetworkAction { }
 //내 친구 목록 불러오는 액션
 public class GetMyFriendListAction : NetworkAction { }
 
-public class AddFriendPrefab : Actions {
-    //내 친구, 수락대기, 요청상태 순
-    public enum type { MYFRIEND, WAITING, REQUEST};
-    public type mType;
+public class DelFriendPrefab : Actions {
+    public GameObject targetObj;
 }

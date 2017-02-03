@@ -66,6 +66,11 @@ public class Friends : AjwStore {
                 AddFriendPrefab addPrefabAct = action as AddFriendPrefab;
                 addFriendPrefab(addPrefabAct);
                 break;
+
+            case ActionTypes.DELETE_COMMUNITY_FRIEND_PREFAB:
+                DelFriendPrefab delPrefabAct = action as DelFriendPrefab;
+                delFriendPrefab(delPrefabAct);
+                break;
         }
         eventType = action.type;
     }
@@ -163,7 +168,7 @@ public class Friends : AjwStore {
                 newFriend = SearchedFriend.fromJSON(act.response.data);
                 AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
                 addFriendAct.id = newFriend.id;
-                addFriendAct.needPref = true;
+                addFriendAct.mType = AddFriendAction.type.MYFRIEND;
                 dispatcher.dispatch(addFriendAct);
                 searchResult = true;
                 break;
@@ -188,6 +193,7 @@ public class Friends : AjwStore {
                 WWWForm form = new WWWForm();
                 form.AddField("toUser", act.id);
                 Debug.Log("친구 요청 URL : " + strBuilder);
+                Debug.Log("친구 요청 ID : " + act.id);
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -195,7 +201,7 @@ public class Friends : AjwStore {
                 Debug.Log("친구 추가에 대한 response data : " + act.response.data);
                 addedFriend = Friend.fromJSON(act.response.data);
                 AddFriendPrefab addPrefAct = ActionCreator.createAction(ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB) as AddFriendPrefab;
-                addPrefAct.mType = AddFriendPrefab.type.REQUEST;
+                addPrefAct.mType = act.mType;
                 msg = "친구 신청을 완료하였습니다.";
                 dispatcher.dispatch(addPrefAct);
                 addResult = true;
@@ -224,6 +230,10 @@ public class Friends : AjwStore {
         //addResult = false;
     }
 
+    private void delFriendPrefab(DelFriendPrefab act) {
+        _emitChange();
+    }
+
     private void delete(CommunityDeleteAction act) {
         //Debug.Log(act.response.data);
         switch (act.status) {
@@ -241,7 +251,8 @@ public class Friends : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log("delete success");
                 targetObj = act.targetGameObj;
-                _emitChange();
+                DelFriendPrefab delPrefabAct = ActionCreator.createAction(ActionTypes.DELETE_COMMUNITY_FRIEND_PREFAB) as DelFriendPrefab;
+                dispatcher.dispatch(delPrefabAct);
                 //msg = keyword + " 로 검색 결과";
                 break;
             case NetworkAction.statusTypes.FAIL:

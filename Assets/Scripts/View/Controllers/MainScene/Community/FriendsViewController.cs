@@ -51,6 +51,11 @@ public class FriendsViewController : MonoBehaviour {
                 }
             }
         }
+
+        if(friendsStore.eventType == ActionTypes.DELETE_COMMUNITY_FRIEND_PREFAB) {
+            deletePref(friendsStore.targetObj);
+            friendsStore.targetObj = null;
+        }
     }
 
     void Start() {
@@ -157,15 +162,6 @@ public class FriendsViewController : MonoBehaviour {
         modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = msg;
     }
 
-    //Server에 친구 추가 요청
-    private void addFriend(int id , bool needPref = false) {
-        Debug.Log("친구 추가 요청");
-        AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
-        addFriendAct.id = id;
-        addFriendAct.needPref = needPref;
-        gameManager.gameDispatcher.dispatch(addFriendAct);
-    }
-
     //친구 추가 요청시 UI Prefab 생성
     public void addFriendPref(SearchedFriend data, AddFriendPrefab.type type) {
         GameObject item = Instantiate(container);
@@ -198,16 +194,17 @@ public class FriendsViewController : MonoBehaviour {
     //overloading
     public void addFriendPref(Friend data, AddFriendPrefab.type type) {
         Debug.Log("수락에 따른 친구 프리팹 생성");
+        UIGrid targetGrid = null;
         GameObject item = Instantiate(container);
         if (type == AddFriendPrefab.type.REQUEST) {
             Debug.Log("요청 대기 프리팹 생성");
-            item.transform.SetParent(sendFriendReqGrid.transform);
+            targetGrid = sendFriendReqGrid;
         }
         if (type == AddFriendPrefab.type.MYFRIEND) {
             Debug.Log("내 친구 프리팹 생성");
-            item.transform.SetParent(myFriendGrid.transform);
+            targetGrid = myFriendGrid;
         }
-        containerInit(item, sendFriendReqGrid);
+        containerInit(item, targetGrid);
 
         GameObject tmp = item.transform.Find("RemoveButton").gameObject;
         //요청 거절 시 이벤트 동적 할당
@@ -250,8 +247,14 @@ public class FriendsViewController : MonoBehaviour {
         Debug.Log("Accept Friend Req");
         friendsStore.newFriend = null;
         int index = obj.GetComponent<ButtonIndex>().fromUserId;
-        addFriend(index);
+
+        AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
+        addFriendAct.id = index;
+        addFriendAct.mType = AddFriendAction.type.MYFRIEND;
+        gameManager.gameDispatcher.dispatch(addFriendAct);
+
         Destroy(obj);
+        containerInit(obj, receiveFrienReqGrid);
     }
 
     //친구 삭제 버튼 클릭시
