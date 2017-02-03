@@ -20,7 +20,8 @@ public enum ActionTypes {
     GET_MY_FRIEND_LIST,
     GET_WAITING_FRIEND_ACCEPT_LIST,
     ADD_COMMUNITY_FRIEND_PREFAB,
-    DELETE_COMMUNITY_FRIEND_PREFAB
+    DELETE_COMMUNITY_FRIEND_PREFAB,
+    USER_CREATE_ERROR
 }
 
 public class Actions{
@@ -78,6 +79,9 @@ public static class ActionCreator{
             break;
         case ActionTypes.DELETE_COMMUNITY_FRIEND_PREFAB:
             _return = new DelFriendPrefab();
+            break;
+        case ActionTypes.USER_CREATE_ERROR:
+            _return = new UserCreateError();
             break;
         }
          _return.type = _type;
@@ -146,4 +150,8 @@ public class GetMyFriendListAction : NetworkAction { }
 
 public class DelFriendPrefab : Actions {
     public GameObject targetObj;
+}
+
+public class UserCreateError : Actions {
+    public string msg;
 }

@@ -4,6 +4,8 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     GameManager gm;
     User userStore;
     bool isUserExist = false;
+    public GameObject modal;
+
     void Awake() {
         gm = GameManager.Instance;
     }
@@ -25,9 +27,30 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     }
 
     void userListener() {
-        if(!string.IsNullOrEmpty(userStore.nickName)) {
-            Debug.Log("Go to Main Scene");
-            loadMainScene();
+        Debug.Log(userStore.eventType);
+        if(userStore.eventType  == ActionTypes.GAME_START) {
+            if (userStore.nickName != null) {
+                Debug.Log("!!");
+                loadMainScene();
+            }
         }
+
+        if (userStore.eventType == ActionTypes.USER_CREATE) {
+            if (userStore.isCreated) {
+                loadMainScene();
+                userStore.isCreated = false;
+            }
+        }
+
+        if (userStore.eventType == ActionTypes.USER_CREATE_ERROR) {
+            modal.SetActive(true);
+            modal.transform.Find("MessagePanel/Label").GetComponent<UILabel>().text = userStore.UImsg;
+        }
+
+        
+    }
+
+    public void offModal() {
+        modal.SetActive(false);
     }
 }
