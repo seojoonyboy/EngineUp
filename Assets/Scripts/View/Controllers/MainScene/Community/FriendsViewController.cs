@@ -43,12 +43,13 @@ public class FriendsViewController : MonoBehaviour {
             if (friendsStore.addResult) {
                 onSearchFeedbackMsg(friendsStore.msg);
                 //친구 검색을 통한 친구 추가인경우
-                if(friendsStore.newFriend == null) {
+                if(friendsStore.addedFriend != null) {
+                    Debug.Log("친구 검색을 통한 프리팹 생성");
                     addFriendPref(friendsStore.addedFriend, friendsStore.addFriendType);
                 }
                 //수락을 통한 친구 추가인 경우
                 else {
-                    addFriendPref(friendsStore.newFriend, friendsStore.addFriendType);
+                    addFriendPref(friendsStore.searchedFriend, friendsStore.addFriendType);
                 }
             }
         }
@@ -163,7 +164,7 @@ public class FriendsViewController : MonoBehaviour {
         modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = msg;
     }
 
-    //친구 추가 요청시 UI Prefab 생성
+    //친구 수락에 따른 프리팹 생성
     public void addFriendPref(SearchedFriend data, AddFriendPrefab.type type) {
         GameObject item = Instantiate(container);
         if(type == AddFriendPrefab.type.REQUEST) {
@@ -175,7 +176,9 @@ public class FriendsViewController : MonoBehaviour {
             item.transform.SetParent(myFriendGrid.transform);
         }
         containerInit(item, sendFriendReqGrid);
-        
+        Debug.Log(data.id);
+        item.GetComponent<ButtonIndex>().index = data.id;
+
         GameObject tmp = item.transform.Find("RemoveButton").gameObject;
         //요청 거절 시 이벤트 동적 할당
         EventDelegate delEvent = new EventDelegate(this, "rejectReq");
@@ -189,12 +192,11 @@ public class FriendsViewController : MonoBehaviour {
         EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
 
         GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
-        additionalMsg.SetActive(true);
+        additionalMsg.SetActive(false);
     }
 
-    //overloading
+    //친구 검색을 통한 프리팹 생성
     public void addFriendPref(Friend data, AddFriendPrefab.type type) {
-        Debug.Log("수락에 따른 친구 프리팹 생성");
         UIGrid targetGrid = null;
         GameObject item = Instantiate(container);
         GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
@@ -212,8 +214,9 @@ public class FriendsViewController : MonoBehaviour {
 
         GameObject tmp = item.transform.Find("RemoveButton").gameObject;
         //요청 거절 시 이벤트 동적 할당
-        EventDelegate delEvent = new EventDelegate(this, "rejectReq");
+        EventDelegate delEvent = new EventDelegate(this, "cancelReq");
         item.transform.Find("Name").GetComponent<UILabel>().text = data.toUser.nickName;
+        item.GetComponent<ButtonIndex>().index = data.id;
 
         EventDelegate.Parameter param = new EventDelegate.Parameter();
         param.obj = item;
@@ -246,12 +249,14 @@ public class FriendsViewController : MonoBehaviour {
     //친구 수락
     private void acceptFriendReq(GameObject obj) {
         Debug.Log("Accept Friend Req");
-        friendsStore.newFriend = null;
+        friendsStore.searchedFriend = null;
         int index = obj.GetComponent<ButtonIndex>().fromUserId;
 
         AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
         addFriendAct.id = index;
+
         addFriendAct.mType = AddFriendAction.type.MYFRIEND;
+
         gameManager.gameDispatcher.dispatch(addFriendAct);
 
         Destroy(obj);
@@ -272,6 +277,17 @@ public class FriendsViewController : MonoBehaviour {
     //친구 요청 거절시
     private void rejectReq(GameObject obj) {
         Debug.Log("요청 거절");
+        CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
+        action.type = CommunityDeleteAction.deleteType.FRIEND;
+        action.targetGameObj = obj;
+        int index = obj.GetComponent<ButtonIndex>().index;
+        action.id = index;
+        gameManager.gameDispatcher.dispatch(action);
+    }
+
+    //친구 요청 취소
+    private void cancelReq(GameObject obj) {
+        Debug.Log("신청 취소");
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
         action.type = CommunityDeleteAction.deleteType.FRIEND;
         action.targetGameObj = obj;

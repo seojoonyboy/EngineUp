@@ -14,7 +14,7 @@ public class Friends : AjwStore {
         friendReqLists;
 
     //검색된 친구
-    public SearchedFriend newFriend;
+    public SearchedFriend searchedFriend;
     
     public Friend addedFriend;
     public string
@@ -151,7 +151,7 @@ public class Friends : AjwStore {
         searchResult = false;
         addResult = false;
         addedFriend = null;
-        newFriend = null;
+        searchedFriend = null;
 
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -165,10 +165,10 @@ public class Friends : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log(act.response.data);
-                newFriend = SearchedFriend.fromJSON(act.response.data);
+                searchedFriend = SearchedFriend.fromJSON(act.response.data);
                 AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
-                addFriendAct.id = newFriend.id;
-                addFriendAct.mType = AddFriendAction.type.MYFRIEND;
+                addFriendAct.id = searchedFriend.id;
+                addFriendAct.mType = AddFriendAction.type.REQUEST;
                 dispatcher.dispatch(addFriendAct);
                 searchResult = true;
                 break;
@@ -201,7 +201,9 @@ public class Friends : AjwStore {
                 Debug.Log("친구 추가에 대한 response data : " + act.response.data);
                 addedFriend = Friend.fromJSON(act.response.data);
                 AddFriendPrefab addPrefAct = ActionCreator.createAction(ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB) as AddFriendPrefab;
+
                 addPrefAct.mType = act.mType;
+
                 msg = "친구 신청을 완료하였습니다.";
                 dispatcher.dispatch(addPrefAct);
                 addResult = true;
