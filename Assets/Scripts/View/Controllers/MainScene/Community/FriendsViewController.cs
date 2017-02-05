@@ -73,7 +73,6 @@ public class FriendsViewController : MonoBehaviour {
 
     //내 친구 목록 생성
     public void makeMyFriendList() {
-        Debug.Log("!!");
         if (friendsStore.myFriends.Length == 0) {
             Debug.Log("no friend");
             myFriendEmptyLabel.SetActive(true);
@@ -315,8 +314,10 @@ public class FriendsViewController : MonoBehaviour {
 
     private void checkEmpty(GameObject obj) {
         Transform parent = obj.transform.parent;
-        if (parent.childCount <= 0) {
-            parent.parent.Find("Background/Message").gameObject.SetActive(true);
+        //Debug.Log("child count : " + parent.childCount);
+        if (parent.childCount <= 1) {
+            Debug.Log("Count zero");
+            parent.parent.parent.Find("Background/Message").gameObject.SetActive(true);
         }
     }
 
