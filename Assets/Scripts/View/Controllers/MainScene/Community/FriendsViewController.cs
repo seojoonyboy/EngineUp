@@ -24,6 +24,8 @@ public class FriendsViewController : MonoBehaviour {
 
     public void Start() {
         myFriendGrid.repositionNow = true;
+        sendFriendReqGrid.repositionNow = true;
+        receiveFrienReqGrid.repositionNow = true;
 
         input = gameObject.transform.Find("FindFriendPanel/Input").GetComponent<UIInput>();
         input.activeTextColor = Color.black;
@@ -271,6 +273,10 @@ public class FriendsViewController : MonoBehaviour {
 
         Destroy(obj);
         containerInit(obj, receiveFrienReqGrid);
+
+        if(receiveFrienReqGrid.transform.childCount <= 1) {
+            receiveFriendEmptyLabel.SetActive(true);
+        }
     }
 
     //친구 삭제 버튼 클릭시
@@ -293,6 +299,12 @@ public class FriendsViewController : MonoBehaviour {
         int index = obj.GetComponent<ButtonIndex>().index;
         action.id = index;
         gameManager.gameDispatcher.dispatch(action);
+
+        containerInit(obj, receiveFrienReqGrid);
+
+        if (receiveFrienReqGrid.transform.childCount <= 1) {
+            receiveFriendEmptyLabel.SetActive(true);
+        }
     }
 
     //친구 요청 취소
