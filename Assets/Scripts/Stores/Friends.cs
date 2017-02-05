@@ -157,7 +157,7 @@ public class Friends : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("users/search?nickName=")
+                    .Append("users?nickName=")
                     .Append(WWW.EscapeURL(act.keyword));
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 Debug.Log("Search URL : " + strBuilder.ToString());
