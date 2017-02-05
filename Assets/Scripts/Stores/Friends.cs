@@ -158,7 +158,7 @@ public class Friends : AjwStore {
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("users/search?nickName=")
-                    .Append(WWW.EscapeURL(act.keyword));
+                    .Append(act.keyword);
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 Debug.Log("Search URL : " + strBuilder.ToString());
                 break;

@@ -17,7 +17,18 @@ public class FriendsViewController : MonoBehaviour {
     public Friends friendsStore;
     public GameObject 
         modal,
-        friendProfilePanel;
+        friendProfilePanel,
+        myFriendEmptyLabel,
+        sendFriendEmptyLabel,
+        receiveFriendEmptyLabel;
+
+    public void Start() {
+        myFriendGrid.repositionNow = true;
+
+        input = gameObject.transform.Find("FindFriendPanel/Input").GetComponent<UIInput>();
+        input.activeTextColor = Color.black;
+        gameManager = GameManager.Instance;
+    }
 
     public void OnFriendsStoreListener() {
         if (friendsStore.eventType == ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST) {
@@ -60,16 +71,12 @@ public class FriendsViewController : MonoBehaviour {
         }
     }
 
-    void Start() {
-        input = gameObject.transform.Find("FindFriendPanel/Input").GetComponent<UIInput>();
-        input.activeTextColor = Color.black;
-        gameManager = GameManager.Instance;
-    }
-
     //내 친구 목록 생성
     public void makeMyFriendList() {
-        if (friendsStore.myFriends == null) {
+        Debug.Log("!!");
+        if (friendsStore.myFriends.Length == 0) {
             Debug.Log("no friend");
+            myFriendEmptyLabel.SetActive(true);
             return;
         }
         removeAllList(myFriendGrid);
@@ -101,8 +108,9 @@ public class FriendsViewController : MonoBehaviour {
     //수락 대기 목록 생성
     public void makeStandByAcceptList() {
         removeAllList(receiveFrienReqGrid);
-        if (friendsStore.waitingAcceptLists == null) {
+        if (friendsStore.waitingAcceptLists.Length == 0) {
             Debug.Log("수락 대기 없음");
+            receiveFriendEmptyLabel.SetActive(true);
             return;
         }
         for (int i = 0; i < friendsStore.waitingAcceptLists.Length; i++) {
@@ -143,6 +151,9 @@ public class FriendsViewController : MonoBehaviour {
     public void makeFriendReqList() {
         removeAllList(sendFriendReqGrid);
         Friend[] friends = friendsStore.friendReqLists;
+        if(friends.Length == 0) {
+            sendFriendEmptyLabel.SetActive(true);
+        }
         for(int i=0; i< friends.Length; i++) {
             addFriendPref(friends[i]);
         }
@@ -298,6 +309,15 @@ public class FriendsViewController : MonoBehaviour {
 
     public void deletePref(GameObject obj) {
         Destroy(obj);
+
+        checkEmpty(obj);
+    }
+
+    private void checkEmpty(GameObject obj) {
+        Transform parent = obj.transform.parent;
+        if (parent.childCount <= 0) {
+            parent.parent.Find("Background/Message").gameObject.SetActive(true);
+        }
     }
 
     private void containerInit(GameObject obj, UIGrid grid) {
@@ -306,6 +326,7 @@ public class FriendsViewController : MonoBehaviour {
         obj.transform.localScale = Vector3.one;
 
         grid.Reposition();
+        grid.transform.parent.parent.Find("Background/Message").gameObject.SetActive(false);
     }
 
     private void onFriendDetailPanel() {
