@@ -76,12 +76,12 @@ public class FriendsViewController : MonoBehaviour {
 
     //내 친구 목록 생성
     public void makeMyFriendList() {
+        removeAllList(myFriendGrid);
         if (friendsStore.myFriends.Length == 0) {
             Debug.Log("no friend");
             myFriendEmptyLabel.SetActive(true);
             return;
         }
-        removeAllList(myFriendGrid);
 
         for (int i = 0; i < friendsStore.myFriends.Length; i++) {
             GameObject item = Instantiate(container);
@@ -255,7 +255,7 @@ public class FriendsViewController : MonoBehaviour {
 
         GameObject tmp = item.transform.Find("RemoveButton").gameObject;
         //요청 거절 시 이벤트 동적 할당
-        EventDelegate delEvent = new EventDelegate(this, "cancelReq");
+        EventDelegate delEvent = new EventDelegate(this, "delFriend");
         item.transform.Find("Name").GetComponent<UILabel>().text = data.toUser.nickName;
         item.GetComponent<ButtonIndex>().index = data.id;
 
@@ -331,6 +331,7 @@ public class FriendsViewController : MonoBehaviour {
     private void delFriend(GameObject obj) {
         //Debug.Log(obj.name);
         //Destroy(obj);
+        Debug.Log("친구 삭제");
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
         action.type = CommunityDeleteAction.deleteType.FRIEND;
         action.targetGameObj = obj;
