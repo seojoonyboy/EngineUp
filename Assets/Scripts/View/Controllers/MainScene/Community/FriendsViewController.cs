@@ -102,7 +102,12 @@ public class FriendsViewController : MonoBehaviour {
 
             tmp = item;
             EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendDetailPanel");
+            friendProfileEvent.parameters[0] = param;
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, friendProfileEvent);
+
+            //내친구 상세 정보 할당
+            tmp.GetComponent<FriendIndex>().id = friendsStore.myFriends[i].toUser.id;
+            tmp.GetComponent<FriendIndex>().nickName = friendsStore.myFriends[i].toUser.nickName;
         }
     }
 
@@ -142,9 +147,13 @@ public class FriendsViewController : MonoBehaviour {
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
 
             tmp = item;
-
             EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendDetailPanel");
+            friendProfileEvent.parameters[0] = param;
             EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, friendProfileEvent);
+
+            //내친구 상세 정보 할당
+            tmp.GetComponent<FriendIndex>().id = friendsStore.waitingAcceptLists[i].fromUser.id;
+            tmp.GetComponent<FriendIndex>().nickName = friendsStore.waitingAcceptLists[i].fromUser.nickName;
         }
     }
 
@@ -179,6 +188,10 @@ public class FriendsViewController : MonoBehaviour {
     //친구 수락에 따른 프리팹 생성
     public void addFriendPref(SearchedFriend data, AddFriendPrefab.type type) {
         GameObject item = Instantiate(container);
+
+        item.GetComponent<FriendIndex>().id = data.id;
+        item.GetComponent<FriendIndex>().nickName = data.nickName;
+
         if(type == AddFriendPrefab.type.REQUEST) {
             Debug.Log("요청 대기 프리팹 생성");
             item.transform.SetParent(sendFriendReqGrid.transform);
@@ -205,12 +218,25 @@ public class FriendsViewController : MonoBehaviour {
 
         GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
         additionalMsg.SetActive(false);
+
+        tmp = item;
+        EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendDetailPanel");
+        friendProfileEvent.parameters[0] = param;
+        EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, friendProfileEvent);
+
+        //내친구 상세 정보 할당
+        tmp.GetComponent<FriendIndex>().id = data.id;
+        tmp.GetComponent<FriendIndex>().nickName = data.nickName;
     }
 
     //친구 검색을 통한 프리팹 생성
     public void addFriendPref(Friend data, AddFriendPrefab.type type) {
         UIGrid targetGrid = null;
         GameObject item = Instantiate(container);
+
+        item.GetComponent<FriendIndex>().id = data.toUser.id;
+        item.GetComponent<FriendIndex>().nickName = data.toUser.nickName;
+
         GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
         if (type == AddFriendPrefab.type.REQUEST) {
             Debug.Log("요청 대기 프리팹 생성");
@@ -236,6 +262,15 @@ public class FriendsViewController : MonoBehaviour {
         delEvent.parameters[0] = param;
 
         EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
+
+        tmp = item;
+        EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendDetailPanel");
+        friendProfileEvent.parameters[0] = param;
+        EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, friendProfileEvent);
+
+        //내친구 상세 정보 할당
+        tmp.GetComponent<FriendIndex>().id = data.toUser.id;
+        tmp.GetComponent<FriendIndex>().nickName = data.toUser.nickName;
     }
 
     //overloading
@@ -256,6 +291,16 @@ public class FriendsViewController : MonoBehaviour {
 
         GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
         additionalMsg.SetActive(true);
+
+        tmp = item;
+
+        EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendDetailPanel");
+        friendProfileEvent.parameters[0] = param;
+        EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, friendProfileEvent);
+
+        //내친구 상세 정보 할당
+        tmp.GetComponent<FriendIndex>().id = friend.toUser.id;
+        tmp.GetComponent<FriendIndex>().nickName = friend.toUser.nickName;
     }
 
     //친구 수락
@@ -342,8 +387,9 @@ public class FriendsViewController : MonoBehaviour {
         grid.transform.parent.parent.Find("Background/Message").gameObject.SetActive(false);
     }
 
-    private void onFriendDetailPanel() {
-        Debug.Log("On Friend Detail");
+    private void onFriendDetailPanel(GameObject obj) {
         friendProfilePanel.SetActive(true);
+        friendProfilePanel.GetComponent<FriendsProfileViewController>().setInfo(obj);
+        //Debug.Log(obj.GetComponent<FriendIndex>().nickName);
     }
 }
