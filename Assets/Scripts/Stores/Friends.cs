@@ -209,13 +209,19 @@ public class Friends : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(act.response.data);
-                errorMessage message = errorMessage.fromJSON(act.response.data);
-                if(message.non_field_errors != null) {
+                if (act.response.data.Contains("non_field_errors")) {
                     msg = "이미 친구 신청이 완료된 상태입니다.";
                 }
-                if(message.self_friend_error != null) {
+                if (act.response.data.Contains("self_friend_error")) {
                     msg = "자신에게는 친구 신청을 할 수 없습니다.";
                 }
+                //errorMessage message = errorMessage.fromJSON(act.response.data);
+                //if(message.non_field_errors != null) {
+                //    msg = "이미 친구 신청이 완료된 상태입니다.";
+                //}
+                //if(message.self_friend_error != null) {
+                //    msg = "자신에게는 친구 신청을 할 수 없습니다.";
+                //}
                 addResult = false;
                 _emitChange();
                 break;
