@@ -52,18 +52,19 @@ public class FriendsViewController : MonoBehaviour {
         }
 
         if(friendsStore.eventType == ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB) {
-            Debug.Log("프리팹 생성");
             if (friendsStore.addResult) {
                 onSearchFeedbackMsg(friendsStore.msg);
-                //친구 검색을 통한 친구 추가인경우
-                if(friendsStore.addedFriend != null) {
+                if (friendsStore.searchedFriend != null) {
                     Debug.Log("친구 검색을 통한 프리팹 생성");
-                    addFriendPref(friendsStore.addedFriend, friendsStore.addFriendType);
+                    addFriendPref(friendsStore.searchedFriend, friendsStore.addFriendType);
                 }
                 //수락을 통한 친구 추가인 경우
                 else {
-                    addFriendPref(friendsStore.searchedFriend, friendsStore.addFriendType);
+                    Debug.Log("수락을 통한 프리팹 생성");
+                    addFriendPref(friendsStore.addedFriend, friendsStore.addFriendType);
+                    friendsStore.addedFriend = null;
                 }
+                friendsStore.addResult = false;
             }
         }
 
@@ -185,13 +186,14 @@ public class FriendsViewController : MonoBehaviour {
         modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = msg;
     }
 
-    //친구 수락에 따른 프리팹 생성
+    //친구 검색에 따른 프리팹 생성
     public void addFriendPref(SearchedFriend data, AddFriendPrefab.type type) {
+        Debug.Log("친구 검색에 따른 프리팹 생성");
         GameObject item = Instantiate(container);
 
         item.GetComponent<FriendIndex>().id = data.id;
         item.GetComponent<FriendIndex>().nickName = data.nickName;
-
+        
         if(type == AddFriendPrefab.type.REQUEST) {
             Debug.Log("요청 대기 프리팹 생성");
             item.transform.SetParent(sendFriendReqGrid.transform);
@@ -206,7 +208,7 @@ public class FriendsViewController : MonoBehaviour {
 
         GameObject tmp = item.transform.Find("RemoveButton").gameObject;
         //요청 거절 시 이벤트 동적 할당
-        EventDelegate delEvent = new EventDelegate(this, "rejectReq");
+        EventDelegate delEvent = new EventDelegate(this, "cancelReq");
         item.transform.Find("Name").GetComponent<UILabel>().text = data.nickName;
 
         EventDelegate.Parameter param = new EventDelegate.Parameter();
@@ -227,9 +229,10 @@ public class FriendsViewController : MonoBehaviour {
         //내친구 상세 정보 할당
         tmp.GetComponent<FriendIndex>().id = data.id;
         tmp.GetComponent<FriendIndex>().nickName = data.nickName;
+        tmp.GetComponent<FriendIndex>().queryId = friendsStore.queryId;
     }
 
-    //친구 검색을 통한 프리팹 생성
+    //친구 수락을 통한 프리팹 생성
     public void addFriendPref(Friend data, AddFriendPrefab.type type) {
         UIGrid targetGrid = null;
         GameObject item = Instantiate(container);
@@ -303,9 +306,9 @@ public class FriendsViewController : MonoBehaviour {
         tmp.GetComponent<FriendIndex>().nickName = friend.toUser.nickName;
     }
 
-    //친구 수락
+    //친구 수락 버튼 클릭시
     private void acceptFriendReq(GameObject obj) {
-        Debug.Log("Accept Friend Req");
+        Debug.Log("수락 버튼 클릭");
         friendsStore.searchedFriend = null;
         int index = obj.GetComponent<ButtonIndex>().fromUserId;
 
@@ -341,7 +344,7 @@ public class FriendsViewController : MonoBehaviour {
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
         action.type = CommunityDeleteAction.deleteType.FRIEND;
         action.targetGameObj = obj;
-        int index = obj.GetComponent<ButtonIndex>().index;
+        int index = obj.GetComponent<FriendIndex>().queryId;
         action.id = index;
         gameManager.gameDispatcher.dispatch(action);
 
@@ -358,7 +361,7 @@ public class FriendsViewController : MonoBehaviour {
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
         action.type = CommunityDeleteAction.deleteType.FRIEND;
         action.targetGameObj = obj;
-        int index = obj.GetComponent<ButtonIndex>().index;
+        int index = obj.GetComponent<FriendIndex>().queryId;
         action.id = index;
         gameManager.gameDispatcher.dispatch(action);
     }

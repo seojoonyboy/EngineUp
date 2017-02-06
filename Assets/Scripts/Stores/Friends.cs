@@ -23,6 +23,8 @@ public class Friends : AjwStore {
     public ActionTypes eventType;
     public GameObject targetObj;
     public int toUserId;
+    //요청 식별번호(삭제 시 필요)
+    public int queryId;
 
     public AddFriendPrefab.type addFriendType;
 
@@ -149,7 +151,6 @@ public class Friends : AjwStore {
         msg = null;
         searchResult = false;
         addResult = false;
-        addedFriend = null;
         searchedFriend = null;
 
         switch (act.status) {
@@ -200,7 +201,7 @@ public class Friends : AjwStore {
                 Debug.Log("친구 추가에 대한 response data : " + act.response.data);
                 addedFriend = Friend.fromJSON(act.response.data);
                 AddFriendPrefab addPrefAct = ActionCreator.createAction(ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB) as AddFriendPrefab;
-
+                queryId = addedFriend.id;
                 addPrefAct.mType = act.mType;
 
                 msg = "친구 신청을 완료하였습니다.";
@@ -223,6 +224,7 @@ public class Friends : AjwStore {
                 //    msg = "자신에게는 친구 신청을 할 수 없습니다.";
                 //}
                 addResult = false;
+                addedFriend = null;
                 _emitChange();
                 break;
         }
