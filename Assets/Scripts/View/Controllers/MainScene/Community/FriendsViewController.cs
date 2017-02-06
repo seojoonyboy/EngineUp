@@ -345,7 +345,7 @@ public class FriendsViewController : MonoBehaviour {
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
         action.type = CommunityDeleteAction.deleteType.FRIEND;
         action.targetGameObj = obj;
-        int index = obj.GetComponent<FriendIndex>().queryId;
+        int index = obj.GetComponent<ButtonIndex>().index;
         action.id = index;
         gameManager.gameDispatcher.dispatch(action);
 
