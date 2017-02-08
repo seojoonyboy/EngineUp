@@ -11,11 +11,11 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     }
 
     void Start() {
-        userStore = gm.userStore;
-        addListener();
+        //userStore = gm.userStore;
+        //addListener();
 
-        GameStartAction act = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
-        gm.gameDispatcher.dispatch(act);
+        //GameStartAction act = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
+        //gm.gameDispatcher.dispatch(act);
     }
 
     public void loadMainScene() {
