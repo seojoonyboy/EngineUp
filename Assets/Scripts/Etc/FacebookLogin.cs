@@ -21,16 +21,22 @@ public class FacebookLogin : MonoBehaviour {
     }
 
     private void InitCallback() {
-        if (FB.IsInitialized) {
-            // Signal an app activation App Event
-            FB.ActivateApp();
-            // Continue with Facebook SDK
-            // ...
-            FBlogin();
-            Debug.Log("Initialize the Facebook SDK");
+        if (FB.IsLoggedIn) {
+            Debug.Log("Facebook logged in during init");
+            startLoadingSceneManager.loadMainScene();
         }
         else {
-            Debug.Log("Failed to Initialize the Facebook SDK");
+            if (FB.IsInitialized) {
+                // Signal an app activation App Event
+                FB.ActivateApp();
+                // Continue with Facebook SDK
+                // ...
+                FBlogin();
+                Debug.Log("Initialize the Facebook SDK");
+            }
+            else {
+                Debug.Log("Failed to Initialize the Facebook SDK");
+            }
         }
     }
 
