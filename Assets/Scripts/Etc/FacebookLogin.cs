@@ -24,14 +24,17 @@ public class FacebookLogin : MonoBehaviour {
         if (FB.IsLoggedIn) {
             Debug.Log("Facebook logged in during init");
             startLoadingSceneManager.loadMainScene();
+            var aToken = Facebook.Unity.AccessToken.CurrentAccessToken;
+            Debug.Log("User Token : " + aToken.TokenString);
+            Debug.Log("User Id : " + aToken.UserId);
         }
         else {
+            //로그인을 한 상태가 아니라면...
             if (FB.IsInitialized) {
                 // Signal an app activation App Event
                 FB.ActivateApp();
                 // Continue with Facebook SDK
                 // ...
-                FBlogin();
                 Debug.Log("Initialize the Facebook SDK");
             }
             else {

@@ -5,6 +5,7 @@ public class MainBtnController : MonoBehaviour {
     public GameObject
         ridingPanel,
         communityPanel,
+        optionPanel,
         avatar;
 
     void Start() {
@@ -23,6 +24,10 @@ public class MainBtnController : MonoBehaviour {
                 communityPanel.SetActive(true);
                 GetMyFriendListAction initAct = ActionCreator.createAction(ActionTypes.GET_MY_FRIEND_LIST) as GetMyFriendListAction;
                 GameManager.Instance.gameDispatcher.dispatch(initAct);
+                break;
+
+            case MAIN_BUTTON.OPTION:
+                optionPanel.SetActive(true);
                 break;
         }
     }
