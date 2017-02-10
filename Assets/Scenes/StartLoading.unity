@@ -628,6 +628,7 @@ GameObject:
   - 114: {fileID: 515645539}
   - 114: {fileID: 515645538}
   - 65: {fileID: 515645537}
+  - 114: {fileID: 515645536}
   m_Layer: 5
   m_Name: NormalLoginButton
   m_TagString: Untagged
@@ -649,6 +650,17 @@ Transform:
   - {fileID: 1282410968}
   m_Father: {fileID: 1635502023}
   m_RootOrder: 1
+--- !u!114 &515645536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 515645534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d96cd2627bd2254a9a9bbe8c06689d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!65 &515645537
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -687,7 +699,11 @@ MonoBehaviour:
   pressedSprite2D: {fileID: 0}
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
-  onClick: []
+  onClick:
+  - mTarget: {fileID: 515645536}
+    mMethodName: onLoginButton
+    mParameters: []
+    oneShot: 0
 --- !u!114 &515645539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -726,7 +742,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 12.308333
+  aspectRatio: 5
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -1218,6 +1234,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modal: {fileID: 1970313386}
+  buttonGroup: {fileID: 912978909}
+  facebooklogin: {fileID: 588429777}
+  normalLogin: {fileID: 515645536}
   modalInput: {fileID: 453745257}
 --- !u!114 &818535256
 MonoBehaviour:
@@ -1276,7 +1295,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &912978910
 Transform:
   m_ObjectHideFlags: 0
@@ -2376,7 +2395,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3002
+  startingRenderQueue: 3000
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0

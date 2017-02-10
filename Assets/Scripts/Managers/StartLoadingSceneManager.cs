@@ -4,7 +4,13 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     GameManager gm;
     User userStore;
     bool isUserExist = false;
-    public GameObject modal;
+    public GameObject 
+        modal,
+        buttonGroup;
+
+    public FacebookLogin facebooklogin;
+    public NormalLogin normalLogin;
+
     public UIInput modalInput;
 
     void Awake() {
@@ -12,6 +18,23 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         gm = GameManager.Instance;
         userStore = gm.userStore;
         userStore.addListener(userListener);
+    }
+
+    void Start() {
+        string str = PlayerPrefs.GetString("socialType");
+        if (string.IsNullOrEmpty(str)) {
+            Debug.Log("이전 로그인 기록 없음");
+            buttonGroup.SetActive(true);
+        }
+        if(str == "FB") {
+            Debug.Log("이전 Facebook 로그인했음");
+            facebooklogin.FBlogin();
+        }
+        if(str == "NO") {
+            Debug.Log("이전 Normal 로그인했음");
+            normalLogin.onLoginButton();
+        }
+        Debug.Log(str);
     }
 
     public void loadMainScene() {
@@ -44,6 +67,12 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
         if(userStore.eventType  == ActionTypes.GAME_START) {
             loadMainScene();
+            if(userStore.loginType == SignupAction.loginType.FB) {
+                PlayerPrefs.SetString("socialType", "FB");
+            }
+            if (userStore.loginType == SignupAction.loginType.NO) {
+                PlayerPrefs.SetString("socialType", "NO");
+            }
         }
 
         if (userStore.eventType == ActionTypes.USER_CREATE) {

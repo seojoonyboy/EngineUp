@@ -9,16 +9,16 @@ public class FacebookLogin : MonoBehaviour {
     public GameObject image;
     public StartLoadingSceneManager startLoadingSceneManager;
 
-    void Start() {
-        if (!FB.IsInitialized) {
-            // Initialize the Facebook SDK
-            FB.Init(InitCallback, OnHideUnity);
-        }
-        else {
-            // Already initialized, signal an app activation App Event
-            FB.ActivateApp();
-        }
-    }
+    //void Start() {
+    //    if (!FB.IsInitialized) {
+    //        // Initialize the Facebook SDK
+    //        FB.Init(InitCallback, OnHideUnity);
+    //    }
+    //    else {
+    //        // Already initialized, signal an app activation App Event
+    //        FB.ActivateApp();
+    //    }
+    //}
 
     private void InitCallback() {
         if (FB.IsLoggedIn) {
@@ -42,6 +42,8 @@ public class FacebookLogin : MonoBehaviour {
                 // Continue with Facebook SDK
                 // ...
                 Debug.Log("Initialize the Facebook SDK");
+                List<string> permissions = new List<string>();
+                FB.LogInWithReadPermissions(permissions, AuthCallback);
             }
             else {
                 Debug.Log("Failed to Initialize the Facebook SDK");
@@ -62,8 +64,16 @@ public class FacebookLogin : MonoBehaviour {
 
     //if Facebook login button clicked
     public void FBlogin() {
-        List<string> permissions = new List<string>();
-        FB.LogInWithReadPermissions(permissions, AuthCallback);
+        if (!FB.IsInitialized) {
+            // Initialize the Facebook SDK
+            FB.Init(InitCallback, OnHideUnity);
+        }
+        else {
+            // Already initialized, signal an app activation App Event
+            FB.ActivateApp();
+            List<string> permissions = new List<string>();
+            FB.LogInWithReadPermissions(permissions, AuthCallback);
+        }
     }
 
     private void AuthCallback(IResult result) {

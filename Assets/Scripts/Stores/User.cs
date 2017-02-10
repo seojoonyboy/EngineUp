@@ -77,6 +77,7 @@ public class User : AjwStore {
                 }
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("signin");
+                loginType = act.type;
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -85,12 +86,12 @@ public class User : AjwStore {
                 userTokenId = callbackData.key;
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
                 dispatcher.dispatch(startAct);
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log("User 정보 없음. 회원가입 창을 띄웁니다.");
                 //해당 user정보가 없음
                 //회원가입 진행. 닉네임 입력 Modal창 띄우기
-                loginType = act.type;
                 SignupModalAction signupModalAct = ActionCreator.createAction(ActionTypes.SIGNUPMODAL) as SignupModalAction;
                 dispatcher.dispatch(signupModalAct);
                 _emitChange();
