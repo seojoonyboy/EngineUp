@@ -84,6 +84,8 @@ public class User : AjwStore {
                 LoginCallbackData callbackData = LoginCallbackData.fromJSON(act.response.data);
                 Debug.Log("sign in에 대한 callback : " + act.response.data);
                 userTokenId = callbackData.key;
+                nickName = callbackData.user.nickName;
+                Debug.Log("Nickname : " + nickName);
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
                 dispatcher.dispatch(startAct);
                 _emitChange();
@@ -183,7 +185,7 @@ public class User : AjwStore {
 
 class UserData {
     public int id;
-    public string deviceId;
+    //public string deviceId;
     public string nickName;
 
     public static UserData fromJSON(string json){
@@ -202,8 +204,14 @@ class UserErrorMessage {
 class LoginCallbackData {
     public string key;
     public string createDate;
-
+    public SubLoginCallBack user;
     public static LoginCallbackData fromJSON(string json) {
         return JsonUtility.FromJson<LoginCallbackData>(json);
     }
+}
+
+[System.Serializable]
+class SubLoginCallBack {
+    public int id;
+    public string nickName;
 }
