@@ -5,11 +5,16 @@ using System.Collections.Generic;
 
 public class User : AjwStore {
     // prop
+    public string userTokenId = null;
     public string nickName = null;
+
     public bool 
         isSearch = false,
         isCreated = false;
+
     public string UImsg;
+    //facebook token
+    public string facebookToken;
 
     NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
@@ -17,6 +22,81 @@ public class User : AjwStore {
 
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
     public ActionTypes eventType;
+    public SignupAction.loginType loginType;
+
+    void signup(SignupAction act) {
+        switch (act.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                WWWForm form = new WWWForm();
+                strBuilder.Remove(0, strBuilder.Length);
+                switch (act.type) {
+                    case SignupAction.loginType.FB:
+                        form.AddField("type", "FB");
+                        form.AddField("accessToken", facebookToken);
+                        break;
+                    case SignupAction.loginType.NO:
+                        form.AddField("type", "NO");
+                        form.AddField("deviceId", GameManager.Instance.deviceId);
+                        break;
+                }
+                form.AddField("nickName", act.nickName);
+
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("signup");
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log("회원가입 완료");
+                GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
+                dispatcher.dispatch(startAct);
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log("Sign up Error Message : " + act.response.data);
+                break;
+        }
+    }
+
+    void signin(SigninAction act) {
+        switch (act.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                WWWForm form = new WWWForm();
+                strBuilder.Remove(0, strBuilder.Length);
+                switch (act.type) {
+                    case SignupAction.loginType.FB:
+                        facebookToken = act.token;
+                        //Debug.Log("signIn Switch case FB");
+                        form.AddField("type", "FB");
+                        form.AddField("accessToken", facebookToken);
+                        break;
+                    case SignupAction.loginType.NO:
+                        form.AddField("type", "NO");
+                        form.AddField("deviceId", GameManager.Instance.deviceId);
+                        break;
+                }
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("signin");
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                LoginCallbackData callbackData = LoginCallbackData.fromJSON(act.response.data);
+                Debug.Log("sign in에 대한 callback : " + act.response.data);
+                userTokenId = callbackData.key;
+                GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
+                dispatcher.dispatch(startAct);
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log("User 정보 없음. 회원가입 창을 띄웁니다.");
+                //해당 user정보가 없음
+                //회원가입 진행. 닉네임 입력 Modal창 띄우기
+                loginType = act.type;
+                SignupModalAction signupModalAct = ActionCreator.createAction(ActionTypes.SIGNUPMODAL) as SignupModalAction;
+                dispatcher.dispatch(signupModalAct);
+                _emitChange();
+                break;
+        }
+    }
 
     void getUserData(GameStartAction payload){
         switch(payload.status){
@@ -76,6 +156,12 @@ public class User : AjwStore {
 
     protected override void _onDispatch(Actions action){
         switch(action.type){
+        case ActionTypes.SIGNUP:
+            signup(action as SignupAction);
+            break;
+        case ActionTypes.SIGNIN:
+            signin(action as SigninAction);
+            break;
         case ActionTypes.GAME_START:
             getUserData(action as GameStartAction);
             break;
@@ -109,5 +195,14 @@ class UserErrorMessage {
 
     public static UserErrorMessage fromJSON(string json) {
         return JsonUtility.FromJson<UserErrorMessage>(json);
+    }
+}
+
+class LoginCallbackData {
+    public string key;
+    public string createDate;
+
+    public static LoginCallbackData fromJSON(string json) {
+        return JsonUtility.FromJson<LoginCallbackData>(json);
     }
 }

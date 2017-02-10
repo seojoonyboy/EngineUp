@@ -9,7 +9,7 @@ public class FacebookLogin : MonoBehaviour {
     public GameObject image;
     public StartLoadingSceneManager startLoadingSceneManager;
 
-    void Awake() {
+    void Start() {
         if (!FB.IsInitialized) {
             // Initialize the Facebook SDK
             FB.Init(InitCallback, OnHideUnity);
@@ -23,8 +23,14 @@ public class FacebookLogin : MonoBehaviour {
     private void InitCallback() {
         if (FB.IsLoggedIn) {
             Debug.Log("Facebook logged in during init");
-            startLoadingSceneManager.loadMainScene();
             var aToken = Facebook.Unity.AccessToken.CurrentAccessToken;
+            //로그인 상태인 경우 바로 Login Action 생성
+            SigninAction signInAct = ActionCreator.createAction(ActionTypes.SIGNIN) as SigninAction;
+            signInAct.type = SignupAction.loginType.FB;
+            signInAct.token = aToken.TokenString;
+            GameManager.Instance.gameDispatcher.dispatch(signInAct);
+            //startLoadingSceneManager.loadMainScene();
+           
             Debug.Log("User Token : " + aToken.TokenString);
             Debug.Log("User Id : " + aToken.UserId);
         }
@@ -77,7 +83,12 @@ public class FacebookLogin : MonoBehaviour {
                 foreach (string perm in aToken.Permissions) {
                     Debug.Log(perm);
                 }
-                startLoadingSceneManager.loadMainScene();
+                //로그인 액션
+                SigninAction signInAct = ActionCreator.createAction(ActionTypes.SIGNIN) as SigninAction;
+                signInAct.type = SignupAction.loginType.FB;
+                signInAct.token = aToken.TokenString;
+                GameManager.Instance.gameDispatcher.dispatch(signInAct);
+                //startLoadingSceneManager.loadMainScene();
                 //profileModal.SetActive(true);
                 //gameObject.transform.parent.gameObject.SetActive(false);
 

@@ -5,34 +5,45 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     User userStore;
     bool isUserExist = false;
     public GameObject modal;
+    public UIInput modalInput;
 
     void Awake() {
+        Debug.Log("StartLoadingScene Awake");
         gm = GameManager.Instance;
-    }
-
-    void Start() {
-        //userStore = gm.userStore;
-        //addListener();
-
-        //GameStartAction act = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
-        //gm.gameDispatcher.dispatch(act);
+        userStore = gm.userStore;
+        userStore.addListener(userListener);
     }
 
     public void loadMainScene() {
         SceneManager.LoadScene("Main");
     }
 
-    void addListener() {
-        userStore.addListener(userListener);
+    void onSignUpModal() {
+        Debug.Log("Modal창을 띄웁니다!!");
+        modal.SetActive(true);
+    }
+
+    public void okInSignUpModal() {
+        SignupAction signupAct = ActionCreator.createAction(ActionTypes.SIGNUP) as SignupAction;
+        signupAct.type = userStore.loginType;
+        signupAct.nickName = modalInput.value;
+        GameManager.Instance.gameDispatcher.dispatch(signupAct);
+
+        modal.SetActive(false);
+    }
+
+    public void cancelInSignUpModal() {
+        modal.SetActive(false);
     }
 
     void userListener() {
         Debug.Log(userStore.eventType);
+        if(userStore.eventType == ActionTypes.SIGNUPMODAL) {
+            onSignUpModal();
+        }
+
         if(userStore.eventType  == ActionTypes.GAME_START) {
-            if (userStore.nickName != null) {
-                Debug.Log("!!");
-                loadMainScene();
-            }
+            loadMainScene();
         }
 
         if (userStore.eventType == ActionTypes.USER_CREATE) {

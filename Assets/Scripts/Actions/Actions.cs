@@ -3,6 +3,9 @@ using System;
 using System.Text;
 
 public enum ActionTypes {
+    SIGNUP,
+    SIGNUPMODAL,
+    SIGNIN,
     GAME_START,
     GAME_END,
     EDIT_NICKNAME,
@@ -32,6 +35,15 @@ public static class ActionCreator{
     public static Actions createAction(ActionTypes _type){
         Actions _return = null;
         switch(_type){
+        case ActionTypes.SIGNUP:
+            _return = new SignupAction();
+            break;
+        case ActionTypes.SIGNIN:
+            _return = new SigninAction();
+            break;
+        case ActionTypes.SIGNUPMODAL:
+            _return = new SignupModalAction();
+            break;
         case ActionTypes.GAME_START:
             _return = new GameStartAction();
             break;
@@ -89,6 +101,17 @@ public static class ActionCreator{
     }
 }
 
+public class SignupAction : NetworkAction {
+    //facebook, normal
+    public enum loginType { FB, NO }
+    public loginType type;
+    public string token = null;
+    public string nickName;
+}
+
+public class SigninAction : SignupAction { }
+
+public class SignupModalAction : SignupAction { }
 
 public class NetworkAction : Actions {
     public enum statusTypes {REQUEST, SUCCESS, FAIL};

@@ -22,5 +22,7 @@ public class GameManager : Singleton<GameManager> {
         groupStore = new Groups(gameDispatcher);
 
         deviceId = SystemInfo.deviceUniqueIdentifier;
+        Debug.Log("deviceId : " + deviceId);
+        Debug.Log("GameManager Awake");
     }
 }
