@@ -50,6 +50,7 @@ public class User : AjwStore {
                 Debug.Log("회원가입 Callback");
                 LoginCallbackData callbackData = LoginCallbackData.fromJSON(act.response.data);
                 nickName = callbackData.user.nickName;
+                userTokenId = callbackData.key;
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
                 dispatcher.dispatch(startAct);
                 break;
