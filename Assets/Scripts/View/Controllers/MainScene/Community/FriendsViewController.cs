@@ -219,7 +219,7 @@ public class FriendsViewController : MonoBehaviour {
         EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
 
         GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
-        additionalMsg.SetActive(false);
+        additionalMsg.SetActive(true);
 
         tmp = item;
         EventDelegate friendProfileEvent = new EventDelegate(this, "onFriendDetailPanel");
