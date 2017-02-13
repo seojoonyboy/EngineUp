@@ -369,7 +369,9 @@ public class FriendsViewController : MonoBehaviour {
 
     public void deletePref(GameObject obj) {
         Destroy(obj);
-
+        UIGrid grid = obj.transform.parent.GetComponent<UIGrid>();
+        grid.repositionNow = true;
+        grid.Reposition();
         checkEmpty(obj);
     }
 
@@ -387,6 +389,7 @@ public class FriendsViewController : MonoBehaviour {
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localScale = Vector3.one;
 
+        grid.repositionNow = true;
         grid.Reposition();
         grid.transform.parent.parent.Find("Background/Message").gameObject.SetActive(false);
     }
