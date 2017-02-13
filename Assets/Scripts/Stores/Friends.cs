@@ -14,7 +14,7 @@ public class Friends : AjwStore {
         friendReqLists;
 
     //검색된 친구
-    public SearchedFriend searchedFriend;
+    public SearchedFriend[] searchedFriend;
     public Friend addedFriend;
     public string
         msg,
@@ -83,9 +83,7 @@ public class Friends : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("friends?deviceId=")
-                    .Append(GameManager.Instance.deviceId);
-                Debug.Log(GameManager.Instance.deviceId);
+                    .Append("friends");
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -123,8 +121,7 @@ public class Friends : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("friends/requested?deviceId=")
-                    .Append(GameManager.Instance.deviceId);
+                    .Append("friends/requested?");
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -165,18 +162,22 @@ public class Friends : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log(act.response.data);
-                searchedFriend = SearchedFriend.fromJSON(act.response.data);
+                searchedFriend = JsonHelper.getJsonArray<SearchedFriend>(act.response.data);
+                if(searchedFriend.Length == 0) {
+                    msg = "존재하지 않는 아이디입니다.";
+                    searchResult = false;
+                    Debug.Log("존재하지 않는 아이디");
+                    _emitChange();
+                    return;
+                }
                 AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
-                addFriendAct.id = searchedFriend.id;
+                addFriendAct.id = searchedFriend[0].id;
                 addFriendAct.mType = AddFriendAction.type.REQUEST;
                 dispatcher.dispatch(addFriendAct);
                 searchResult = true;
                 break;
             case NetworkAction.statusTypes.FAIL:
-                msg = "존재하지 않는 아이디입니다.";
-                searchResult = false;
-                Debug.Log("존재하지 않는 아이디");
-                _emitChange();
+                Debug.Log(act.response.data);
                 break;
         }
     }
@@ -188,13 +189,13 @@ public class Friends : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("friends?deviceId=")
-                    .Append(GameManager.Instance.deviceId);
+                    .Append("friends?");
                 WWWForm form = new WWWForm();
+                //form.headers.Add("Authorization", "Token " + GameManager.Instance.userStore.userTokenId);
                 form.AddField("toUser", act.id);
                 Debug.Log("친구 요청 URL : " + strBuilder);
                 Debug.Log("친구 요청 ID : " + act.id);
-                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act), true);
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 //친구 프리팹 생성 액션
@@ -251,9 +252,7 @@ public class Friends : AjwStore {
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("friends/")
-                    .Append(act.id)
-                    .Append("?deviceId=")
-                    .Append(GameManager.Instance.deviceId);
+                    .Append(act.id);
                 networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 Debug.Log("DELETE REQUEST URL : " + strBuilder.ToString());
                 break;
@@ -293,6 +292,7 @@ public class userInfo {
     public string nickName;
 }
 
+[System.Serializable]
 public class SearchedFriend {
     public int id;
     public string nickName;

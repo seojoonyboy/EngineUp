@@ -56,7 +56,7 @@ public class FriendsViewController : MonoBehaviour {
                 onSearchFeedbackMsg(friendsStore.msg);
                 if (friendsStore.searchedFriend != null) {
                     Debug.Log("친구 검색을 통한 프리팹 생성");
-                    addFriendPref(friendsStore.searchedFriend, friendsStore.addFriendType);
+                    addFriendPref(friendsStore.searchedFriend[0], friendsStore.addFriendType);
                 }
                 //수락을 통한 친구 추가인 경우
                 else {

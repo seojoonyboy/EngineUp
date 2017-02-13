@@ -107,8 +107,7 @@ public class User : AjwStore {
             var strBuilder = GameManager.Instance.sb;
             strBuilder.Remove(0,strBuilder.Length);
             strBuilder.Append(networkManager.baseUrl)
-                .Append("users/")
-                .Append(GameManager.Instance.deviceId);
+                .Append("users");
             networkManager.request("GET",strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
             break;
         case NetworkAction.statusTypes.SUCCESS: // 유저 정보 있음!!!
@@ -166,7 +165,7 @@ public class User : AjwStore {
             signin(action as SigninAction);
             break;
         case ActionTypes.GAME_START:
-            getUserData(action as GameStartAction);
+            //getUserData(action as GameStartAction);
             break;
         case ActionTypes.EDIT_NICKNAME:
             //nickName = (action as EditNickNameAction).nickname;
