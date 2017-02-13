@@ -195,7 +195,7 @@ public class Friends : AjwStore {
                 form.AddField("toUser", act.id);
                 Debug.Log("친구 요청 URL : " + strBuilder);
                 Debug.Log("친구 요청 ID : " + act.id);
-                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act), true);
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 //친구 프리팹 생성 액션

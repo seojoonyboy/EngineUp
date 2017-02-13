@@ -44,7 +44,7 @@ public class User : AjwStore {
 
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("signup");
-                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act), false);
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log("회원가입 완료");
@@ -78,7 +78,7 @@ public class User : AjwStore {
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("signin");
                 loginType = act.type;
-                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act), false);
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 LoginCallbackData callbackData = LoginCallbackData.fromJSON(act.response.data);

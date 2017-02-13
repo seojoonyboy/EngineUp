@@ -9,22 +9,18 @@ public class NetworkManager : Singleton<NetworkManager> {
     public string baseUrl = "http://52.78.149.126:8000/";
     //public string baseUrl = "http://ec2-52-78-149-126.ap-northeast-2.compute.amazonaws.com:8000/";
 
-    public void request(string method, string url, WWWForm data, Callback callback, bool neeAuthor = false){
+    public void request(string method, string url, WWWForm data, Callback callback, bool neeAuthor = true) {
         StartCoroutine(_request(method, url, data, callback, neeAuthor));
     }
-    public void request(string method, string url, Callback callback, bool neeAuthor = false) {
-        request(method, url, null, callback);
+    public void request(string method, string url, Callback callback, bool neeAuthor = true) {
+        request(method, url, null, callback, neeAuthor);
     }
 
-    IEnumerator _request(string method, string url, WWWForm data, Callback callback, bool needAuthor = false){
+    IEnumerator _request(string method, string url, WWWForm data, Callback callback, bool needAuthor = true){
         UnityWebRequest _www;
         switch(method){
             case "POST":
                 _www = UnityWebRequest.Post(url, data);
-                if (needAuthor) {
-                    Debug.Log("Author POST");
-                    _www.SetRequestHeader("Authorization", "Token " + GameManager.Instance.userStore.userTokenId);
-                }
                 break;
             case "PUT":
                 _www = UnityWebRequest.Put(url,data.data);
@@ -32,16 +28,18 @@ public class NetworkManager : Singleton<NetworkManager> {
                 break;
             case "DELETE":
                 _www = UnityWebRequest.Delete(url);
-                _www.SetRequestHeader("Authorization", "Token " + GameManager.Instance.userStore.userTokenId);
-                _www.downloadHandler = new DownloadHandlerBuffer();
                 break;
             case "GET":
             default:
                 _www = UnityWebRequest.Get(url);
-                _www.SetRequestHeader("Authorization","Token " + GameManager.Instance.userStore.userTokenId);
-                _www.downloadHandler = new DownloadHandlerBuffer();
                 break;
         }
+
+        if (needAuthor) {
+            _www.SetRequestHeader("Authorization", "Token " + GameManager.Instance.userStore.userTokenId);
+            _www.downloadHandler = new DownloadHandlerBuffer();
+        }
+
         using(UnityWebRequest www = _www){
             yield return www.Send();
             callback(new HttpResponse(www));
