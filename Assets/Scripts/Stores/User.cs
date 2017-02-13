@@ -47,7 +47,9 @@ public class User : AjwStore {
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act), false);
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                Debug.Log("회원가입 완료");
+                Debug.Log("회원가입 Callback");
+                LoginCallbackData callbackData = LoginCallbackData.fromJSON(act.response.data);
+                nickName = callbackData.user.nickName;
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
                 dispatcher.dispatch(startAct);
                 break;

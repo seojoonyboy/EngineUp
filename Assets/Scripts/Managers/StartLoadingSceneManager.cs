@@ -57,6 +57,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
     public void cancelInSignUpModal() {
         modal.SetActive(false);
+        buttonGroup.SetActive(true);
     }
 
     void userListener() {
