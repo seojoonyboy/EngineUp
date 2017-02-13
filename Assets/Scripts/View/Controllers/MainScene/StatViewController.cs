@@ -7,6 +7,7 @@ public class StatViewController : MonoBehaviour {
 
     void Start() {
         nickNameLabel.text = userStore.nickName;
+        GameManager.Instance.userStore.addListener(onUserListener);
     }
 
     public void onUserListener() {
