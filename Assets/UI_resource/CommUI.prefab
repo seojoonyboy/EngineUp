@@ -9,30 +9,30 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1000010726586736}
+  m_RootGameObject: {fileID: 1000011210496144}
   m_IsPrefabParent: 1
---- !u!1 &1000010726586736
+--- !u!1 &1000011210496144
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 4000013774860812}
-  - 114: {fileID: 114000011360382360}
+  - 4: {fileID: 4000012451883122}
+  - 114: {fileID: 114000012805230286}
   m_Layer: 0
-  m_Name: UI_ver2
+  m_Name: CommUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4000013774860812
+--- !u!4 &4000012451883122
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010726586736}
+  m_GameObject: {fileID: 1000011210496144}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -40,35 +40,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!114 &114000011360382360
+--- !u!114 &114000012805230286
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010726586736}
+  m_GameObject: {fileID: 1000011210496144}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d0c51bb0b6e93049af5e88f93826e3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 4a40d3bf0370de54a9d747fb4473b9ab, type: 2}
+  material: {fileID: 2100000, guid: ddd42e718417781418d2b47a853f2c86, type: 2}
   mSprites:
-  - name: BackgroundDefault
-    x: 1082
-    y: 1006
-    width: 512
-    height: 512
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
   - name: community_bottom_menu_feed
-    x: 1720
-    y: 955
+    x: 1952
+    y: 1849
     width: 90
     height: 90
     borderLeft: 0
@@ -80,8 +67,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_bottom_menu_feed_press
-    x: 2162
-    y: 1047
+    x: 0
+    y: 474
     width: 90
     height: 90
     borderLeft: 0
@@ -93,8 +80,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_bottom_menu_friend
-    x: 3826
-    y: 1544
+    x: 218
+    y: 688
     width: 128
     height: 78
     borderLeft: 0
@@ -106,8 +93,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_bottom_menu_friend_prescommunity_s
-    x: 3956
-    y: 1544
+    x: 311
+    y: 787
     width: 128
     height: 78
     borderLeft: 0
@@ -119,8 +106,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_bottom_menu_group
-    x: 3924
-    y: 1700
+    x: 1928
+    y: 1952
     width: 110
     height: 96
     borderLeft: 0
@@ -132,8 +119,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_bottom_menu_group_press
-    x: 3812
-    y: 1700
+    x: 1916
+    y: 1744
     width: 110
     height: 96
     borderLeft: 0
@@ -145,8 +132,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_feed_icon_calendar
-    x: 2026
-    y: 985
+    x: 1673
+    y: 1578
     width: 56
     height: 60
     borderLeft: 0
@@ -158,8 +145,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_feed_lv_circle_back
-    x: 1552
-    y: 46
+    x: 237
+    y: 494
     width: 70
     height: 70
     borderLeft: 0
@@ -171,8 +158,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_feed_profile_picture_back
-    x: 1082
-    y: 24
+    x: 0
+    y: 866
     width: 180
     height: 180
     borderLeft: 0
@@ -184,8 +171,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_feed_title_back
-    x: 2622
-    y: 1536
+    x: 541
+    y: 1227
     width: 1080
     height: 86
     borderLeft: 0
@@ -197,8 +184,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_feed_underline
-    x: 0
-    y: 16
+    x: 541
+    y: 1153
     width: 790
     height: 2
     borderLeft: 0
@@ -210,8 +197,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_friend_button_green_normal
-    x: 1852
-    y: 1067
+    x: 327
+    y: 585
     width: 124
     height: 70
     borderLeft: 0
@@ -223,21 +210,21 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_friend_button_red_normal
-    x: 1726
-    y: 1067
+    x: 202
+    y: 585
     width: 124
     height: 70
-    borderLeft: 16
-    borderRight: 16
-    borderTop: 18
-    borderBottom: 18
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
     paddingLeft: 0
     paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
   - name: community_friend_button_red_x
-    x: 1892
-    y: 973
+    x: 91
+    y: 492
     width: 72
     height: 72
     borderLeft: 0
@@ -249,21 +236,21 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_friend_search_bar_back
-    x: 3190
-    y: 1406
+    x: 1081
+    y: 1841
     width: 870
     height: 98
-    borderLeft: 15
-    borderRight: 15
-    borderTop: 15
-    borderBottom: 15
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
     paddingLeft: 0
     paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
   - name: community_friend_tap_normal
-    x: 3692
-    y: 1948
+    x: 1555
+    y: 1740
     width: 360
     height: 100
     borderLeft: 0
@@ -275,21 +262,21 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_friend_tap_press
-    x: 3692
-    y: 1852
+    x: 1555
+    y: 1639
     width: 360
-    height: 94
+    height: 100
     borderLeft: 0
     borderRight: 0
     borderTop: 0
-    borderBottom: 2
+    borderBottom: 0
     paddingLeft: 0
     paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_button_green_arrow
-    x: 2266
-    y: 1273
+    x: 164
+    y: 492
     width: 72
     height: 72
     borderLeft: 0
@@ -301,8 +288,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_button_grey_long
-    x: 1340
-    y: 406
+    x: 1081
+    y: 1591
     width: 168
     height: 70
     borderLeft: 15
@@ -314,8 +301,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_button_grey2_normal
-    x: 3924
-    y: 1628
+    x: 347
+    y: 696
     width: 140
     height: 70
     borderLeft: 0
@@ -327,8 +314,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_button_red_long
-    x: 1384
-    y: 46
+    x: 1362
+    y: 1577
     width: 166
     height: 70
     borderLeft: 0
@@ -340,8 +327,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_button_red_square_long
-    x: 2342
-    y: 1396
+    x: 1081
+    y: 1940
     width: 846
     height: 108
     borderLeft: 0
@@ -353,8 +340,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_button_visit
-    x: 1276
-    y: 6
+    x: 111
+    y: 656
     width: 106
     height: 110
     borderLeft: 0
@@ -366,8 +353,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_dotted_line_square
-    x: 1082
-    y: 206
+    x: 1362
+    y: 1648
     width: 192
     height: 192
     borderLeft: 0
@@ -379,8 +366,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_group_create
-    x: 1484
-    y: 876
+    x: 1916
+    y: 1611
     width: 128
     height: 128
     borderLeft: 0
@@ -392,8 +379,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_icon_document
-    x: 1570
-    y: 338
+    x: 1730
+    y: 1578
     width: 46
     height: 60
     borderLeft: 0
@@ -405,8 +392,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_icon_image
-    x: 1966
-    y: 987
+    x: 1555
+    y: 1580
     width: 58
     height: 58
     borderLeft: 0
@@ -418,8 +405,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_icon_man
-    x: 2084
-    y: 989
+    x: 1777
+    y: 1582
     width: 46
     height: 56
     borderLeft: 0
@@ -431,8 +418,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_icon_mandate
-    x: 1812
-    y: 969
+    x: 452
+    y: 579
     width: 78
     height: 76
     borderLeft: 0
@@ -444,8 +431,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_icon_pencil
-    x: 4036
-    y: 1738
+    x: 1614
+    y: 1580
     width: 58
     height: 58
     borderLeft: 0
@@ -457,8 +444,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_icon_region
-    x: 1596
-    y: 1484
+    x: 1529
+    y: 1613
     width: 24
     height: 34
     borderLeft: 0
@@ -470,8 +457,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_icon_world
-    x: 3704
-    y: 1624
+    x: 308
+    y: 500
     width: 64
     height: 64
     borderLeft: 0
@@ -483,8 +470,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_loading_image
-    x: 1458
-    y: 288
+    x: 0
+    y: 656
     width: 110
     height: 110
     borderLeft: 0
@@ -496,8 +483,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_master_set
-    x: 1484
-    y: 748
+    x: 362
+    y: 920
     width: 130
     height: 126
     borderLeft: 0
@@ -509,8 +496,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_modal_white
-    x: 1082
-    y: 1520
+    x: 0
+    y: 1047
     width: 540
     height: 528
     borderLeft: 0
@@ -522,8 +509,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_picture_back
-    x: 1276
-    y: 218
+    x: 181
+    y: 866
     width: 180
     height: 180
     borderLeft: 0
@@ -536,7 +523,7 @@ MonoBehaviour:
     paddingBottom: 0
   - name: community_group_picture_back2
     x: 0
-    y: 20
+    y: 1576
     width: 1080
     height: 472
     borderLeft: 0
@@ -548,12 +535,12 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_search_2
-    x: 1276
-    y: 118
+    x: 0
+    y: 767
     width: 310
     height: 98
-    borderLeft: 14
-    borderRight: 108
+    borderLeft: 0
+    borderRight: 0
     borderTop: 0
     borderBottom: 0
     paddingLeft: 0
@@ -561,21 +548,21 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_search_bottom_back
-    x: 1340
-    y: 478
+    x: 1081
+    y: 1662
     width: 280
     height: 178
     borderLeft: 0
     borderRight: 0
     borderTop: 0
-    borderBottom: 92
+    borderBottom: 0
     paddingLeft: 0
     paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_story_bottom_back
-    x: 2706
-    y: 1652
+    x: 541
+    y: 1431
     width: 996
     height: 144
     borderLeft: 0
@@ -587,8 +574,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_story_gray_back
-    x: 1624
-    y: 1506
+    x: 541
+    y: 1314
     width: 996
     height: 116
     borderLeft: 0
@@ -600,8 +587,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_group_story_top_back
-    x: 2342
-    y: 1324
+    x: 541
+    y: 1156
     width: 996
     height: 70
     borderLeft: 0
@@ -613,8 +600,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: community_top_arrow
-    x: 1510
-    y: 402
+    x: 1250
+    y: 1587
     width: 88
     height: 74
     borderLeft: 0
@@ -625,22 +612,9 @@ MonoBehaviour:
     paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
-  - name: fb_loginv2
-    x: 1624
-    y: 1347
-    width: 716
-    height: 157
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
   - name: group_ranking_1
-    x: 1624
-    y: 1047
+    x: 440
+    y: 775
     width: 100
     height: 90
     borderLeft: 0
@@ -652,8 +626,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: group_ranking_2
-    x: 2052
-    y: 1139
+    x: 0
+    y: 565
     width: 100
     height: 90
     borderLeft: 0
@@ -665,387 +639,10 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: group_ranking_3
-    x: 2154
-    y: 1139
+    x: 101
+    y: 565
     width: 100
     height: 90
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_bottom_menu_avatar
-    x: 2256
-    y: 1145
-    width: 72
-    height: 84
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_bottom_menu_avatar_press
-    x: 2254
-    y: 1053
-    width: 72
-    height: 84
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_bottom_menu_back
-    x: 2610
-    y: 1854
-    width: 1080
-    height: 194
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_bottom_menu_challenge
-    x: 1484
-    y: 658
-    width: 120
-    height: 88
-    borderLeft: 1
-    borderRight: 1
-    borderTop: 1
-    borderBottom: 1
-    paddingLeft: 1
-    paddingRight: 1
-    paddingTop: 1
-    paddingBottom: 1
-  - name: main_bottom_menu_challenge_press
-    x: 3704
-    y: 1534
-    width: 120
-    height: 88
-    borderLeft: 1
-    borderRight: 1
-    borderTop: 1
-    borderBottom: 1
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_bottom_menu_community
-    x: 1978
-    y: 1047
-    width: 90
-    height: 90
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_bottom_menu_community_press
-    x: 2070
-    y: 1047
-    width: 90
-    height: 90
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_bottom_menu_riding
-    x: 1730
-    y: 1139
-    width: 104
-    height: 90
-    borderLeft: 1
-    borderRight: 1
-    borderTop: 1
-    borderBottom: 1
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_bottom_menu_riding_press
-    x: 1624
-    y: 1139
-    width: 104
-    height: 90
-    borderLeft: 1
-    borderRight: 1
-    borderTop: 1
-    borderBottom: 1
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_bottom_menu_shop
-    x: 1944
-    y: 1141
-    width: 106
-    height: 88
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_bottom_menu_shop_press
-    x: 1836
-    y: 1141
-    width: 106
-    height: 88
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_back
-    x: 1624
-    y: 1798
-    width: 984
-    height: 250
-    borderLeft: 20
-    borderRight: 20
-    borderTop: 20
-    borderBottom: 20
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_character_shadow
-    x: 1624
-    y: 1263
-    width: 640
-    height: 82
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_lv_back
-    x: 1624
-    y: 1231
-    width: 646
-    height: 30
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_lv_front
-    x: 2610
-    y: 1822
-    width: 646
-    height: 30
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_lv_header_back
-    x: 1458
-    y: 226
-    width: 156
-    height: 60
-    borderLeft: 15
-    borderRight: 15
-    borderTop: 15
-    borderBottom: 15
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_main_back
-    x: 0
-    y: 494
-    width: 1080
-    height: 1554
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_picture
-    x: 1082
-    y: 400
-    width: 256
-    height: 256
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_stat_back
-    x: 1082
-    y: 658
-    width: 400
-    height: 346
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_stat_back_line
-    x: 0
-    y: 12
-    width: 356
-    height: 2
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_stat_bar_left_back
-    x: 3692
-    y: 1804
-    width: 104
-    height: 46
-    borderLeft: 17
-    borderRight: 0
-    borderTop: 14
-    borderBottom: 14
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: main_profile_stat_bar_right_back
-    x: 3258
-    y: 1806
-    width: 226
-    height: 46
-    borderLeft: 0
-    borderRight: 15
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: top_arrow_icon2
-    x: 3812
-    y: 1624
-    width: 88
-    height: 74
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: top_back
-    x: 1624
-    y: 1624
-    width: 1080
-    height: 172
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: top_home_icon
-    x: 1624
-    y: 951
-    width: 94
-    height: 94
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: top_jew_icon
-    x: 1384
-    y: 10
-    width: 40
-    height: 34
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: top_money_icon
-    x: 1570
-    y: 298
-    width: 38
-    height: 38
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: top_resources_back
-    x: 3486
-    y: 1806
-    width: 198
-    height: 46
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: top_set_icon
-    x: 3704
-    y: 1690
-    width: 106
-    height: 106
     borderLeft: 0
     borderRight: 0
     borderTop: 0
