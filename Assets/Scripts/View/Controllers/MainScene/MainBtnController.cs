@@ -9,6 +9,7 @@ public class MainBtnController : MonoBehaviour {
         avatar;
 
     void Start() {
+
     }
 
     public void onMainBtnEvent(MAIN_BUTTON type) {
@@ -30,10 +31,6 @@ public class MainBtnController : MonoBehaviour {
                 optionPanel.SetActive(true);
                 break;
         }
-    }
-
-    public void offRidingPanel() {
-        ridingPanel.SetActive(false);
     }
 
     public void offCommunityPanel() {
