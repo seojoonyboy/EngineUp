@@ -56,7 +56,7 @@ public class Riding_VC : MonoBehaviour {
 
     public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time){
         //Debug.Log("RIDING LISTENER");
-        currSpeedLabel.text = (Math.Round(currSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
+        //currSpeedLabel.text = (Math.Round(currSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
         avgSpeedLabel.text = (Math.Round(avgSpeed,2,MidpointRounding.AwayFromZero)).ToString() + " KM/H";
         distLabel.text = (Math.Round(dist,2,MidpointRounding.AwayFromZero)).ToString() + " KM";
         timeLabel.text = time;
