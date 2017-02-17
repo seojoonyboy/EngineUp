@@ -2,9 +2,11 @@
 using UnityEngine;
 using System.Collections;
 
-public class Groups : Store<Actions> {
+public class Groups : AjwStore {
     public Groups(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher) { }
+
     NetworkManager networkManager = NetworkManager.Instance;
+    NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
     public Group[] myGroups;
     public ActionTypes eventType;
@@ -12,79 +14,29 @@ public class Groups : Store<Actions> {
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
-            case ActionTypes.GET_MY_FRIEND_LIST:
-                //getMyGroups(action as CommunityInitAction);
-                ////임시 dummy file 이용
-                //TextAsset myGroup = Resources.Load<TextAsset>("myGroup");
-                //myGroups = JsonHelper.getJsonArray<Group>(myGroup.text);
-                break;
-
-            case ActionTypes.COMMUNITY_SEARCH:
-                CommunitySearchAction searchAct = action as CommunitySearchAction;
-                if(searchAct.type == CommunitySearchAction.searchType.GROUP) {
-                    search(searchAct);
-                }
+            case ActionTypes.GROUP_GET_MEMBERS:
+                Group_getMemberAction getMemberAct = action as Group_getMemberAction;
+                getMembers(getMemberAct);
                 break;
         }
         eventType = action.type;
     }
 
-    private void getMyGroups(CommunityInitAction act) {
-        switch (act.status) {
-            case NetworkAction.statusTypes.REQUEST:
-            var strBuilder = GameManager.Instance.sb;
-            strBuilder.Remove(0, strBuilder.Length);
-            strBuilder.Append(networkManager.baseUrl)
-                .Append("users/")
-                .Append(GameManager.Instance.deviceId);
-            _emitChange();
-            //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
-            break;
-            case NetworkAction.statusTypes.SUCCESS:
-            //_emitChange();
-            break;
-            case NetworkAction.statusTypes.FAIL:
-            break;
-        }
-    }
-
-    private void search(CommunitySearchAction act) {
-        switch (act.status) {
+    private void getMembers(Group_getMemberAction payload) {
+        switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("users/")
-                    .Append(GameManager.Instance.deviceId);
-                //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
-                msg = "그룹 검색";
-                _emitChange();
-
+                    .Append("friends/requested?");
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                //msg = act.response.data;
-                //_emitChange();
-                break;
-            case NetworkAction.statusTypes.FAIL:
-                break;
-        }
-    }
 
-    private void delete(CommunityDeleteAction act) {
-        switch (act.status) {
-            case NetworkAction.statusTypes.REQUEST:
-            var strBuilder = GameManager.Instance.sb;
-            strBuilder.Remove(0, strBuilder.Length);
-            strBuilder.Append(networkManager.baseUrl)
-                .Append("users/")
-                .Append(GameManager.Instance.deviceId);
-            //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
-            break;
-            case NetworkAction.statusTypes.SUCCESS:
-            _emitChange();
-            break;
+                break;
             case NetworkAction.statusTypes.FAIL:
-            break;
+
+                break;
         }
     }
 }
