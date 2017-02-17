@@ -7,6 +7,8 @@ public class GroupViewController : MonoBehaviour {
     public Groups groupStore;
     private GameManager gm;
 
+    public UIInput searchInput;
+
     void Start() {
         gm = GameManager.Instance;
     }
@@ -27,10 +29,22 @@ public class GroupViewController : MonoBehaviour {
                 gm.gameDispatcher.dispatch(getGroupMemberAct);
                 //Server에게 index를 이용한 리스트 요청 액션을 작성한다.
                 break;
+            //그룹찾기
+            case 1:
+                Group_search searchAct = ActionCreator.createAction(ActionTypes.GROUP_SEARCH) as Group_search;
+                searchAct.keyword = searchInput.value;
+                gm.gameDispatcher.dispatch(searchAct);
+                break;
         }
     }
 
     public void onGroupStoreListener() {
-
+        if (groupStore.eventType == ActionTypes.GROUP_ON_PANEL) {
+            Debug.Log("On Group Panel");
+            int index = groupStore.sceneIndex;
+            if(index != -1) {
+                subPanels[index].SetActive(true);
+            }
+        }
     }
 }

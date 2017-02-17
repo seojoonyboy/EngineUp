@@ -8,9 +8,11 @@ public class Groups : AjwStore {
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
-    public Group[] myGroups;
+    public Group[] 
+        myGroups,
+        searchedGroups;
     public ActionTypes eventType;
-    public string msg;
+    public int sceneIndex = -1;
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
@@ -18,8 +20,36 @@ public class Groups : AjwStore {
                 Group_getMemberAction getMemberAct = action as Group_getMemberAction;
                 getMembers(getMemberAct);
                 break;
+            case ActionTypes.GROUP_SEARCH:
+                Group_search searchAct = action as Group_search;
+                searchGroups(searchAct);
+                break;
+            case ActionTypes.GROUP_ON_PANEL:
+                _emitChange();
+                break;
         }
         eventType = action.type;
+    }
+
+    private void searchGroups(Group_search payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups?name=")
+                    .Append(payload.keyword);
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log(payload.response.data);
+                searchedGroups = JsonHelper.getJsonArray<Group>(payload.response.data);
+                onPanel(1);
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                break;
+        }
     }
 
     private void getMembers(Group_getMemberAction payload) {
@@ -28,26 +58,41 @@ public class Groups : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("friends/requested?");
+                    .Append("groups/?name=");
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-
+                onPanel(1);
                 break;
             case NetworkAction.statusTypes.FAIL:
 
                 break;
         }
     }
+
+    private void onPanel(int index) {
+        sceneIndex = index;
+
+        Group_OnPanel onMemberPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
+        dispatcher.dispatch(onMemberPanel);
+    }
 }
 
 [System.Serializable]
 public class Group {
-    public string location;
-    public int memberNum;
+    public int id;
     public string name;
+    public string groupIntro;
+    public string locationDistrict;
+    public string locationCity;
+    public int membersCount;
 
     public static Group fromJSON(string json) {
         return JsonUtility.FromJson<Group>(json);
     }
+}
+
+[System.Serializable]
+public class Member {
+
 }

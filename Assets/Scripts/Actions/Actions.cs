@@ -7,7 +7,7 @@ public enum ActionTypes {
     GET_GPS_DATA, RIDING_START, RIDING_END, RIDING_RESULT,
     POST_FAIL, POST_SUCCESS, USER_CREATE,
     COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB, USER_CREATE_ERROR,
-    GROUP_GET_MEMBERS
+    GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ON_PANEL
 }
 
 public class Actions{
@@ -80,6 +80,12 @@ public static class ActionCreator{
             break;
         case ActionTypes.GROUP_GET_MEMBERS:
             _return = new Group_getMemberAction();
+            break;
+        case ActionTypes.GROUP_ON_PANEL:
+            _return = new Group_OnPanel();
+            break;
+        case ActionTypes.GROUP_SEARCH:
+            _return = new Group_search();
             break;
         }
          _return.type = _type;
