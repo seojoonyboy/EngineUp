@@ -45,9 +45,7 @@ public class Riding : AjwStore{
         _sb.Remove(0,_sb.Length);
         _sb.Append(networkManager.baseUrl)
             .Append("ridings/")
-            .Append(ridingId)
-            .Append("?deviceId=")
-            .Append(GameManager.Instance.deviceId);
+            .Append(ridingId);
         WWWForm f = new WWWForm();
         f.AddField("coordData", coordData);
 
@@ -103,8 +101,7 @@ public class Riding : AjwStore{
             var sb = GameManager.Instance.sb;
             sb.Remove(0,sb.Length)
                 .Append(networkManager.baseUrl)
-                .Append("ridings?deviceId=")
-                .Append(GameManager.Instance.deviceId);
+                .Append("ridings");
             WWWForm form = new WWWForm();
             form.AddField("distance", 0);
             networkManager.request("POST", sb.ToString(),

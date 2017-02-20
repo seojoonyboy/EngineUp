@@ -13,8 +13,6 @@ public class Result_VC : MonoBehaviour {
     public GameObject map;
     public Riding ridingStore;
 
-    public GameObject ridingButton;
-
     void OnDisable() {
         map.GetComponent<OnlineMaps>().RemoveAllDrawingElements();
         gameObject.SetActive(false);
@@ -57,6 +55,5 @@ public class Result_VC : MonoBehaviour {
 
     public void offResultPanel() {
         OnDisable();
-        //ridingButton.GetComponent<UIToggle>().value = false;
     }
 }

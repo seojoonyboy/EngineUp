@@ -26,7 +26,7 @@ public class MainSceneManager : fbl_SceneManager {
         gm.friendsStore.addListener(friendViewCtrler.OnFriendsStoreListener);
         gm.ridingStore.addListener(resultViewCtrler.onRidingListener);
         gm.ridingStore.addListener(ridingViewCtrler.onRidingListener);
-        gm.groupStore.addListener(groupViewCtrler.OnGroupStoreListener);
+        gm.groupStore.addListener(groupViewCtrler.onGroupStoreListener);
         gm.userStore.addListener(statViewCtrler.onUserListener);
         //CommunityInitAction act = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE) as CommunityInitAction;
         //gm.gameDispatcher.dispatch(act);

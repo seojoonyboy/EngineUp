@@ -6,7 +6,7 @@ public class NetworkManager : Singleton<NetworkManager> {
     protected NetworkManager() { }
 
     public delegate void Callback(HttpResponse response);
-    public string baseUrl = "http://52.78.149.126:8000/";
+    public string baseUrl = "http://52.78.149.126/";
     //public string baseUrl = "http://ec2-52-78-149-126.ap-northeast-2.compute.amazonaws.com:8000/";
 
     public void request(string method, string url, WWWForm data, Callback callback, bool neeAuthor = true) {
