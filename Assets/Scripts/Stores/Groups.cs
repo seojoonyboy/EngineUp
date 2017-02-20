@@ -11,6 +11,8 @@ public class Groups : AjwStore {
     public Group[] 
         myGroups,
         searchedGroups;
+
+    public Group clickedGroup;
     public ActionTypes eventType;
     public int sceneIndex = -1;
 
@@ -18,7 +20,7 @@ public class Groups : AjwStore {
         switch (action.type) {
             case ActionTypes.GROUP_GET_MEMBERS:
                 Group_getMemberAction getMemberAct = action as Group_getMemberAction;
-                getMembers(getMemberAct);
+                getGroupDetail(getMemberAct);
                 break;
             case ActionTypes.GROUP_SEARCH:
                 Group_search searchAct = action as Group_search;
@@ -52,17 +54,19 @@ public class Groups : AjwStore {
         }
     }
 
-    private void getMembers(Group_getMemberAction payload) {
+    private void getGroupDetail(Group_getMemberAction payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("groups/?name=");
+                    .Append("groups/")
+                    .Append(payload.id);
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                onPanel(1);
+                clickedGroup = Group.fromJSON(payload.response.data);
+                onPanel(7);
                 break;
             case NetworkAction.statusTypes.FAIL:
 

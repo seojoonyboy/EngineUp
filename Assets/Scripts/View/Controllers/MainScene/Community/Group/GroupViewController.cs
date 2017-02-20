@@ -23,6 +23,7 @@ public class GroupViewController : MonoBehaviour {
         switch (sceneIndex) {
             //그룹 상세보기
             case 0:
+                Debug.Log("그룹 상세 보기");
                 int id = obj.transform.parent.GetComponent<GroupIndex>().id;
                 Group_getMemberAction getGroupMemberAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
                 getGroupMemberAct.id = id;
