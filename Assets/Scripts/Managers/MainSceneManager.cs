@@ -21,12 +21,14 @@ public class MainSceneManager : fbl_SceneManager {
         ridingViewCtrler.userStore = gm.userStore;
         friendViewCtrler.friendsStore = gm.friendsStore;
         groupViewCtrler.groupStore = gm.groupStore;
+        groupViewCtrler.locationStore = gm.locationStore;
         statViewCtrler.userStore = gm.userStore;
 
         gm.friendsStore.addListener(friendViewCtrler.OnFriendsStoreListener);
         gm.ridingStore.addListener(resultViewCtrler.onRidingListener);
         gm.ridingStore.addListener(ridingViewCtrler.onRidingListener);
         gm.groupStore.addListener(groupViewCtrler.onGroupStoreListener);
+        gm.locationStore.addListener(groupViewCtrler.onGroupStoreListener);
         gm.userStore.addListener(statViewCtrler.onUserListener);
         //CommunityInitAction act = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE) as CommunityInitAction;
         //gm.gameDispatcher.dispatch(act);

@@ -85,10 +85,10 @@ public class User : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 LoginCallbackData callbackData = LoginCallbackData.fromJSON(act.response.data);
-                Debug.Log("sign in에 대한 callback : " + act.response.data);
+                //Debug.Log("sign in에 대한 callback : " + act.response.data);
                 userTokenId = callbackData.key;
                 nickName = callbackData.user.nickName;
-                Debug.Log("Nickname : " + nickName);
+                //Debug.Log("Nickname : " + nickName);
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
                 dispatcher.dispatch(startAct);
                 _emitChange();

@@ -5,9 +5,12 @@ using System;
 public class GroupViewController : MonoBehaviour {
     public GameObject[] subPanels;
     public Groups groupStore;
+    public Locations locationStore;
     private GameManager gm;
 
     public UIInput searchInput;
+
+    public GroupAddViewController addViewCtrler;
 
     void Start() {
         gm = GameManager.Instance;
@@ -23,7 +26,7 @@ public class GroupViewController : MonoBehaviour {
         switch (sceneIndex) {
             //그룹 상세보기
             case 0:
-                Debug.Log("그룹 상세 보기");
+                //Debug.Log("그룹 상세 보기");
                 int id = obj.transform.parent.GetComponent<GroupIndex>().id;
                 Group_getMemberAction getGroupMemberAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
                 getGroupMemberAct.id = id;
@@ -41,11 +44,13 @@ public class GroupViewController : MonoBehaviour {
 
     public void onGroupStoreListener() {
         if (groupStore.eventType == ActionTypes.GROUP_ON_PANEL) {
-            Debug.Log("On Group Panel");
             int index = groupStore.sceneIndex;
             if(index != -1) {
                 subPanels[index].SetActive(true);
             }
+        }
+        if(locationStore.eventType == ActionTypes.GET_CITY_DATA) {
+            addViewCtrler.setCityList();
         }
     }
 }

@@ -27,7 +27,10 @@ public class Groups : AjwStore {
                 searchGroups(searchAct);
                 break;
             case ActionTypes.GROUP_ON_PANEL:
-                _emitChange();
+                Debug.Log("그룹 하위패널 활성화 액션 발생");
+                Group_OnPanel onGroupPanelAct = action as Group_OnPanel;
+                int index = onGroupPanelAct.index;
+                onPanel(index);
                 break;
         }
         eventType = action.type;
@@ -46,7 +49,9 @@ public class Groups : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log(payload.response.data);
                 searchedGroups = JsonHelper.getJsonArray<Group>(payload.response.data);
-                onPanel(1);
+                Group_OnPanel onGroupPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
+                onGroupPanel.index = 1;
+                dispatcher.dispatch(onGroupPanel);
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(payload.response.data);
@@ -66,7 +71,9 @@ public class Groups : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 clickedGroup = Group.fromJSON(payload.response.data);
-                onPanel(7);
+                Group_OnPanel onGroupPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
+                onGroupPanel.index = 7;
+                dispatcher.dispatch(onGroupPanel);
                 break;
             case NetworkAction.statusTypes.FAIL:
 
@@ -76,9 +83,7 @@ public class Groups : AjwStore {
 
     private void onPanel(int index) {
         sceneIndex = index;
-
-        Group_OnPanel onMemberPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
-        dispatcher.dispatch(onMemberPanel);
+        _emitChange();
     }
 }
 

@@ -7,7 +7,8 @@ public enum ActionTypes {
     GET_GPS_DATA, RIDING_START, RIDING_END, RIDING_RESULT,
     POST_FAIL, POST_SUCCESS, USER_CREATE,
     COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB, USER_CREATE_ERROR,
-    GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ON_PANEL
+    GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ON_PANEL,
+    GET_DISTRICT_DATA, GET_CITY_DATA
 }
 
 public class Actions{
@@ -86,6 +87,12 @@ public static class ActionCreator{
             break;
         case ActionTypes.GROUP_SEARCH:
             _return = new Group_search();
+            break;
+        case ActionTypes.GET_DISTRICT_DATA:
+            _return = new GetDistrictsData();
+            break;
+        case ActionTypes.GET_CITY_DATA:
+            _return = new GetCityData();
             break;
         }
          _return.type = _type;
@@ -169,4 +176,9 @@ public class DelFriendPrefab : Actions {
 
 public class UserCreateError : Actions {
     public string msg;
+}
+
+public class GetDistrictsData : NetworkAction { }
+public class GetCityData : NetworkAction {
+    public int id;
 }
