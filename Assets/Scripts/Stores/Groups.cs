@@ -20,7 +20,8 @@ public class Groups : AjwStore {
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.GROUP_MY_GROUPS:
-
+                Group_myGroups getMyGroupAct = action as Group_myGroups;
+                getMyGroups(getMyGroupAct);
                 break;
             case ActionTypes.GROUP_DETAIL:
                 Group_detail getMemberAct = action as Group_detail;
@@ -50,13 +51,13 @@ public class Groups : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("groups/")
-                    .Append(payload.id);
-                //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                    .Append("groups");
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log(payload.response.data);
                 myGroups = JsonHelper.getJsonArray<Group>(payload.response.data);
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(payload.response.data);

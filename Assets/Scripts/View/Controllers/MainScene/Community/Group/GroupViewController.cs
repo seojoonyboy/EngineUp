@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
 
 public class GroupViewController : MonoBehaviour {
     public GameObject[] subPanels;
@@ -12,7 +11,10 @@ public class GroupViewController : MonoBehaviour {
 
     public GroupAddViewController addViewCtrler;
 
-    void Start() {
+    public GameObject container;
+    public UIGrid grid;
+
+    void Awake() {
         gm = GameManager.Instance;
     }
 
@@ -54,6 +56,10 @@ public class GroupViewController : MonoBehaviour {
     }
 
     public void onGroupStoreListener() {
+        if(groupStore.eventType == ActionTypes.GROUP_MY_GROUPS) {
+            makeList(groupStore.myGroups);
+        }
+
         if (groupStore.eventType == ActionTypes.GROUP_ON_PANEL) {
             int index = groupStore.sceneIndex;
             if(index != -1) {
@@ -67,6 +73,9 @@ public class GroupViewController : MonoBehaviour {
         if(groupStore.eventType == ActionTypes.GROUP_ADD) {
             if (groupStore.addResult) {
                 addViewCtrler.offPanel();
+                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
+                getMyGroupAct.id = 0;
+                gm.gameDispatcher.dispatch(getMyGroupAct);
             }
             else {
 
@@ -77,5 +86,56 @@ public class GroupViewController : MonoBehaviour {
     public void checkCanAdd(GameObject obj) {
         //조건에 만족하면
         onPanel(obj);
+    }
+
+    private void makeList(Group[] myGroups) {
+        Debug.Log("내 그룹 목록 갱신");
+        removeAllList();
+        for (int i = 0; i < myGroups.Length; i++) {
+            GameObject item = Instantiate(container);
+
+            item.transform.SetParent(grid.transform);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localScale = Vector3.one;
+
+            item.GetComponent<GroupIndex>().id = myGroups[i].id;
+            item.transform.Find("GroupNameLabel").GetComponent<UILabel>().text = myGroups[i].name;
+            item.transform.Find("LocationLabel").GetComponent<UILabel>().text = myGroups[i].locationDistrict + " " + myGroups[i].locationCity;
+            item.transform.Find("MemberCountLabel").GetComponent<UILabel>().text = "멤버 " + myGroups[i].membersCount + "명";
+
+            EventDelegate addEvent = new EventDelegate(this, "showDetail");
+            GameObject detailBtn = item.transform.Find("GotoDetailBtn").gameObject;
+            addEvent.parameters[0] = MakeParameter(detailBtn, typeof(GameObject));
+            EventDelegate.Add(detailBtn.GetComponent<UIButton>().onClick, addEvent);
+        }
+        containerInit();
+    }
+
+    private void removeAllList() {
+        foreach(Transform child in grid.transform) {
+            if(child.tag == "AddBtn") {
+                continue;
+            }
+            else {
+                Destroy(child.gameObject);
+            }
+        }
+    }
+
+    private void containerInit() {
+        grid.repositionNow = true;
+        grid.Reposition();
+    }
+
+    private EventDelegate.Parameter MakeParameter(Object _value, System.Type _type) {
+        EventDelegate.Parameter param = new EventDelegate.Parameter();  // 이벤트 parameter 생성.
+        param.obj = _value;   // 이벤트 함수에 전달하고 싶은 값.
+        param.expectedType = _type;    // 값의 타입.
+
+        return param;
+    }
+
+    void showDetail(GameObject _obj) {
+        onPanel(_obj);
     }
 }
