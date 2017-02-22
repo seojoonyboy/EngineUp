@@ -17,7 +17,9 @@ public class GroupViewController : MonoBehaviour {
     }
 
     void OnEnable() {
-
+        Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
+        getMyGroupAct.id = 0;
+        gm.gameDispatcher.dispatch(getMyGroupAct);
     }
 
     public void onPanel(GameObject obj) {
@@ -32,7 +34,7 @@ public class GroupViewController : MonoBehaviour {
             case 0:
                 //Debug.Log("그룹 상세 보기");
                 int id = obj.transform.parent.GetComponent<GroupIndex>().id;
-                Group_detail getGroupMemberAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_detail;
+                Group_detail getGroupMemberAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL) as Group_detail;
                 getGroupMemberAct.id = id;
                 gm.gameDispatcher.dispatch(getGroupMemberAct);
                 //Server에게 index를 이용한 리스트 요청 액션을 작성한다.

@@ -20,6 +20,9 @@ public class Groups : AjwStore {
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.GROUP_MY_GROUPS:
+
+                break;
+            case ActionTypes.GROUP_DETAIL:
                 Group_detail getMemberAct = action as Group_detail;
                 getGroupDetail(getMemberAct);
                 break;
@@ -39,6 +42,26 @@ public class Groups : AjwStore {
                 break;
         }
         eventType = action.type;
+    }
+
+    private void getMyGroups(Group_myGroups payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id);
+                //networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log(payload.response.data);
+                myGroups = JsonHelper.getJsonArray<Group>(payload.response.data);
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                break;
+        }
     }
 
     private void searchGroups(Group_search payload) {
