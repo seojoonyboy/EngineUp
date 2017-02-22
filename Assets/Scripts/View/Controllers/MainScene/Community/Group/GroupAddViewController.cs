@@ -40,13 +40,6 @@ public class GroupAddViewController : MonoBehaviour {
         cityMenu.value = cityMenu.items[1];
     }
 
-    //그룹 생성 버튼 클릭시 그룹을 생성할 수 있는 조건인지 검사
-    public void checkCanAdd() {
-        //조건에 만족하면
-        GetDistrictsData getDistDataAct = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
-        gm.gameDispatcher.dispatch(getDistDataAct);
-    }
-
     //그룹 최종 생성 버튼 클릭시
     public void posting() {
         Group_AddAction addAct = ActionCreator.createAction(ActionTypes.GROUP_ADD) as Group_AddAction;
