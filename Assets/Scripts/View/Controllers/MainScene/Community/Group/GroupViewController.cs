@@ -52,5 +52,14 @@ public class GroupViewController : MonoBehaviour {
         if(locationStore.eventType == ActionTypes.GET_CITY_DATA) {
             addViewCtrler.setCityList();
         }
+
+        if(groupStore.eventType == ActionTypes.GROUP_ADD) {
+            if (groupStore.addResult) {
+                addViewCtrler.offPanel();
+            }
+            else {
+
+            }
+        }
     }
 }

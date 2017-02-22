@@ -15,6 +15,7 @@ public class Groups : AjwStore {
     public Group clickedGroup;
     public ActionTypes eventType;
     public int sceneIndex = -1;
+    public bool addResult = false;
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
@@ -25,6 +26,10 @@ public class Groups : AjwStore {
             case ActionTypes.GROUP_SEARCH:
                 Group_search searchAct = action as Group_search;
                 searchGroups(searchAct);
+                break;
+            case ActionTypes.GROUP_ADD:
+                Group_AddAction addAct = action as Group_AddAction;
+                addGroup(addAct);
                 break;
             case ActionTypes.GROUP_ON_PANEL:
                 Debug.Log("그룹 하위패널 활성화 액션 발생");
@@ -77,6 +82,39 @@ public class Groups : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
 
+                break;
+        }
+    }
+
+    private void addGroup(Group_AddAction payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups");
+                //허용 글자 수 초과시
+                if (payload.name.Length >= 25) {
+                    payload.status = NetworkAction.statusTypes.FAIL;
+                    return;
+                }
+                WWWForm form = new WWWForm();
+
+                form.AddField("name", payload.name);
+                form.AddField("locationDistrict", payload.district);
+                form.AddField("locationCity", payload.city);
+
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log(payload.response.data);
+                addResult = true;
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                addResult = false;
+                _emitChange();
                 break;
         }
     }

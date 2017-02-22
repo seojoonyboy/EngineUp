@@ -12,3 +12,9 @@ public class Group_search : NetworkAction {
 public class Group_OnPanel : Actions {
     public int index;
 }
+
+public class Group_AddAction : NetworkAction {
+    public string name;
+    public string district;
+    public string city;
+}

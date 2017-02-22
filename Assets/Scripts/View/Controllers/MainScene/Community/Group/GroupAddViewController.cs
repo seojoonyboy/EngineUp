@@ -6,6 +6,8 @@ public class GroupAddViewController : MonoBehaviour {
     public UIPopupList
         provinceMenu,
         cityMenu;
+    public UIInput nameInput;
+
     GameManager gm = GameManager.Instance;
 
     void OnEnable() {
@@ -35,6 +37,7 @@ public class GroupAddViewController : MonoBehaviour {
         for (int i = 0; i < cities.Length; i++) {
             cityMenu.items.Add(cities[i].name);
         }
+        cityMenu.value = cityMenu.items[1];
     }
 
     //그룹 생성 버튼 클릭시 그룹을 생성할 수 있는 조건인지 검사
@@ -42,5 +45,25 @@ public class GroupAddViewController : MonoBehaviour {
         //조건에 만족하면
         GetDistrictsData getDistDataAct = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
         gm.gameDispatcher.dispatch(getDistDataAct);
+    }
+
+    //그룹 최종 생성 버튼 클릭시
+    public void posting() {
+        Group_AddAction addAct = ActionCreator.createAction(ActionTypes.GROUP_ADD) as Group_AddAction;
+        addAct.name = nameInput.value;
+        addAct.district = provinceMenu.value;
+        addAct.city = cityMenu.value;
+        //Debug.Log("province val : " + provinceMenu.value);
+        gm.gameDispatcher.dispatch(addAct);
+    }
+
+    //그룹 생성 실패시 모달
+    public void onModal() {
+
+    }
+
+    public void offPanel() {
+        nameInput.value = provinceMenu.items[0];
+        gameObject.SetActive(false);
     }
 }

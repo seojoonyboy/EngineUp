@@ -17,4 +17,8 @@ public class GroupDetailView : MonoBehaviour {
         memberCount.text = group.membersCount + " 명";
         groupDesc.text = group.groupIntro;
     }
+
+    public void offPanel() {
+        gameObject.SetActive(false);
+    }
 }
