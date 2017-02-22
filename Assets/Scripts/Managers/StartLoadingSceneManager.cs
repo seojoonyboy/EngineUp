@@ -6,12 +6,17 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     bool isUserExist = false;
     public GameObject 
         modal,
+        nicknameModal,
+        charselectModal,
         buttonGroup;
 
     public FacebookLogin facebooklogin;
     public NormalLogin normalLogin;
 
     public UIInput modalInput;
+    public int charIndex;
+
+    private string newNickName;
 
     void Awake() {
         //Debug.Log("StartLoadingScene Awake");
@@ -41,29 +46,46 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         SceneManager.LoadScene("Main");
     }
 
-    void onSignUpModal() {
-        Debug.Log("Modal창을 띄웁니다!!");
+    void onNicknameModal() {
+        Debug.Log("닉네임 입력창을 띄웁니다!!");
         modal.SetActive(true);
+        nicknameModal.SetActive(true);
     }
 
-    public void okInSignUpModal() {
+    public void okInNicknameModal() {
+        //SignupAction signupAct = ActionCreator.createAction(ActionTypes.SIGNUP) as SignupAction;
+        //signupAct.type = userStore.loginType;
+        //signupAct.nickName = modalInput.value;
+        //GameManager.Instance.gameDispatcher.dispatch(signupAct);
+        newNickName = modalInput.value;
+        //modal.SetActive(false);
+        nicknameModal.SetActive(false);
+        charselectModal.SetActive(true);
+    }
+    
+    public void okInCharSelectModal() {
+        modal.SetActive(false);
+
         SignupAction signupAct = ActionCreator.createAction(ActionTypes.SIGNUP) as SignupAction;
         signupAct.type = userStore.loginType;
         signupAct.nickName = modalInput.value;
+        signupAct.charIndex = charIndex;
         GameManager.Instance.gameDispatcher.dispatch(signupAct);
-
-        modal.SetActive(false);
     }
 
     public void cancelInSignUpModal() {
         modal.SetActive(false);
+
+        nicknameModal.SetActive(false);
+        charselectModal.SetActive(false);
+
         buttonGroup.SetActive(true);
     }
 
     void userListener() {
         //Debug.Log(userStore.eventType);
         if(userStore.eventType == ActionTypes.SIGNUPMODAL) {
-            onSignUpModal();
+            onNicknameModal();
         }
 
         if(userStore.eventType  == ActionTypes.GAME_START) {
@@ -93,5 +115,9 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
     public void offModal() {
         modal.SetActive(false);
+    }
+
+    public void setCharIndex(GameObject obj) {
+        charIndex = obj.GetComponent<ButtonIndex>().index;
     }
 }

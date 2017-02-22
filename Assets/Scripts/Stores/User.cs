@@ -41,6 +41,7 @@ public class User : AjwStore {
                         break;
                 }
                 form.AddField("nickName", act.nickName);
+                form.AddField("representative", act.charIndex);
 
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("signup");

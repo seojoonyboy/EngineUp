@@ -115,6 +115,7 @@ public class SignupAction : NetworkAction {
     public loginType type;
     public string token = null;
     public string nickName;
+    public int charIndex;
 }
 
 public class SigninAction : SignupAction { }
