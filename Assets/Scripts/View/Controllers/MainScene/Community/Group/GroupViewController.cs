@@ -43,6 +43,11 @@ public class GroupViewController : MonoBehaviour {
                 searchAct.keyword = searchInput.value;
                 gm.gameDispatcher.dispatch(searchAct);
                 break;
+            //그룹추가
+            case 8:
+                GetDistrictsData getDistDataAct = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
+                gm.gameDispatcher.dispatch(getDistDataAct);
+                break;
         }
     }
 
@@ -65,5 +70,10 @@ public class GroupViewController : MonoBehaviour {
 
             }
         }
+    }
+
+    public void checkCanAdd(GameObject obj) {
+        //조건에 만족하면
+        onPanel(obj);
     }
 }
