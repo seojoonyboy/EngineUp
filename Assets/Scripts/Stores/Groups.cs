@@ -19,8 +19,8 @@ public class Groups : AjwStore {
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
-            case ActionTypes.GROUP_GET_MEMBERS:
-                Group_getMemberAction getMemberAct = action as Group_getMemberAction;
+            case ActionTypes.GROUP_MY_GROUPS:
+                Group_detail getMemberAct = action as Group_detail;
                 getGroupDetail(getMemberAct);
                 break;
             case ActionTypes.GROUP_SEARCH:
@@ -64,7 +64,7 @@ public class Groups : AjwStore {
         }
     }
 
-    private void getGroupDetail(Group_getMemberAction payload) {
+    private void getGroupDetail(Group_detail payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;

@@ -16,6 +16,10 @@ public class GroupViewController : MonoBehaviour {
         gm = GameManager.Instance;
     }
 
+    void OnEnable() {
+
+    }
+
     public void onPanel(GameObject obj) {
         int sceneIndex = obj.GetComponent<GroupSceneIndex>().index;
         sendReq(sceneIndex, obj);
@@ -28,7 +32,7 @@ public class GroupViewController : MonoBehaviour {
             case 0:
                 //Debug.Log("그룹 상세 보기");
                 int id = obj.transform.parent.GetComponent<GroupIndex>().id;
-                Group_getMemberAction getGroupMemberAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+                Group_detail getGroupMemberAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_detail;
                 getGroupMemberAct.id = id;
                 gm.gameDispatcher.dispatch(getGroupMemberAct);
                 //Server에게 index를 이용한 리스트 요청 액션을 작성한다.
