@@ -14,9 +14,12 @@ public class GroupDetailView : MonoBehaviour {
         signupButton,
         showMemberButton,
         quitMemberButton;
+
+    private GameManager gm;
     // 이벤트 parameter를 생성하여 리턴.
 
     void OnEnable() {
+        gm = GameManager.Instance;
         Group group = controller.groupStore.clickedGroup;
         groupName.text = group.name;
         groupLocation.text = group.locationDistrict + " " + group.locationCity;
@@ -29,7 +32,7 @@ public class GroupDetailView : MonoBehaviour {
         Group_checkMyStatus checkMyStatAct = ActionCreator.createAction(ActionTypes.GROUP_CHECK_MY_STATUS) as Group_checkMyStatus;
         checkMyStatAct.id = id;
         checkMyStatAct.userId = GameManager.Instance.userStore.userId;
-        GameManager.Instance.gameDispatcher.dispatch(checkMyStatAct);
+        gm.gameDispatcher.dispatch(checkMyStatAct);
     }
 
     public void offPanel() {
@@ -41,5 +44,11 @@ public class GroupDetailView : MonoBehaviour {
 
     public void onShowMemberButton(GameObject obj) {
         controller.onPanel(obj);
+    }
+
+    public void onJoinButton() {
+        Group_join groupJoinAct = ActionCreator.createAction(ActionTypes.GROUP_JOIN) as Group_join;
+        groupJoinAct.id = id;
+        gm.gameDispatcher.dispatch(groupJoinAct);
     }
 }

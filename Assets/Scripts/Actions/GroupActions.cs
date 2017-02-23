@@ -24,3 +24,4 @@ public class Group_detail : Group_myGroups { }
 public class Group_checkMyStatus : Group_myGroups {
     public int userId;
 }
+public class Group_join : Group_myGroups { }

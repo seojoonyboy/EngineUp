@@ -55,6 +55,10 @@ public class Groups : AjwStore {
                 int index = onGroupPanelAct.index;
                 onPanel(index);
                 break;
+            case ActionTypes.GROUP_JOIN:
+                Group_join groupJoinAct = action as Group_join;
+                joinGroup(groupJoinAct);
+                break;
         }
         eventType = action.type;
     }
@@ -208,6 +212,30 @@ public class Groups : AjwStore {
                 Debug.Log(payload.response.data);
                 addResult = false;
                 _emitChange();
+                break;
+        }
+    }
+
+    private void joinGroup(Group_join payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id)
+                    .Append("/join");
+                WWWForm form = new WWWForm();
+                form.AddField("tmp", 0);
+                Debug.Log("join group url : " + strBuilder.ToString());
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
                 break;
         }
     }

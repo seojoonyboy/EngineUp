@@ -15,11 +15,14 @@ public class GroupViewController : MonoBehaviour {
     public GameObject container;
     public UIGrid grid;
 
+    public GameObject modal;
+
     void Awake() {
         gm = GameManager.Instance;
     }
 
     void OnEnable() {
+        //내 그룹 목록을 불러온다.
         Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
         getMyGroupAct.id = 0;
         gm.gameDispatcher.dispatch(getMyGroupAct);
@@ -79,6 +82,7 @@ public class GroupViewController : MonoBehaviour {
         if(groupStore.eventType == ActionTypes.GROUP_ADD) {
             if (groupStore.addResult) {
                 addViewCtrler.offPanel();
+                //내 그룹 목록을 불러온다.
                 Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
                 getMyGroupAct.id = 0;
                 gm.gameDispatcher.dispatch(getMyGroupAct);
@@ -97,6 +101,20 @@ public class GroupViewController : MonoBehaviour {
                 detailView.signupButton.SetActive(true);
                 Debug.Log("그룹 멤버가 아님");
             }
+        }
+
+        if(groupStore.eventType == ActionTypes.GROUP_JOIN) {
+            detailView.showMemberButton.SetActive(true);
+            detailView.signupButton.SetActive(false);
+            detailView.quitMemberButton.SetActive(true);
+
+            modal.SetActive(true);
+
+            modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "회원가입 신청을 완료하였습니다.";
+            //내 그룹 목록 갱신
+            Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
+            getMyGroupAct.id = 0;
+            gm.gameDispatcher.dispatch(getMyGroupAct);
         }
     }
 
@@ -154,5 +172,9 @@ public class GroupViewController : MonoBehaviour {
 
     void showDetail(GameObject _obj) {
         onPanel(_obj);
+    }
+
+    public void offModal() {
+        modal.SetActive(false);
     }
 }
