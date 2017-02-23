@@ -94,19 +94,23 @@ public class GroupViewController : MonoBehaviour {
 
         if(groupStore.eventType == ActionTypes.GROUP_CHECK_MY_STATUS) {
             if (groupStore.isGroupMember) {
-                detailView.showMemberButton.SetActive(true);
                 Debug.Log("그룹 멤버임");
+                if(groupStore.myInfoInGroup[0].memberGrade == "GO") {
+                    Debug.Log("그룹장임");
+                    detailView.setViewMode("OWNER");
+                }
+                else if(groupStore.myInfoInGroup[0].memberGrade == "GM") {
+                    detailView.setViewMode("MEMBER");
+                }
             }
             else {
-                detailView.signupButton.SetActive(true);
+                detailView.setViewMode("VISITOR");
                 Debug.Log("그룹 멤버가 아님");
             }
         }
 
         if(groupStore.eventType == ActionTypes.GROUP_JOIN) {
-            detailView.showMemberButton.SetActive(true);
-            detailView.signupButton.SetActive(false);
-            detailView.quitMemberButton.SetActive(true);
+            detailView.setViewMode("MEMBER");
 
             modal.SetActive(true);
 

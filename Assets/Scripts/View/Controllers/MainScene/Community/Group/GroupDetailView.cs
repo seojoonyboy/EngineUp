@@ -13,7 +13,8 @@ public class GroupDetailView : MonoBehaviour {
     public GameObject
         signupButton,
         showMemberButton,
-        quitMemberButton;
+        quitMemberButton,
+        settingButton;
 
     private GameManager gm;
     // 이벤트 parameter를 생성하여 리턴.
@@ -40,6 +41,7 @@ public class GroupDetailView : MonoBehaviour {
         signupButton.SetActive(false);
         showMemberButton.SetActive(false);
         quitMemberButton.SetActive(false);
+        settingButton.SetActive(false);
     }
 
     public void onShowMemberButton(GameObject obj) {
@@ -50,5 +52,22 @@ public class GroupDetailView : MonoBehaviour {
         Group_join groupJoinAct = ActionCreator.createAction(ActionTypes.GROUP_JOIN) as Group_join;
         groupJoinAct.id = id;
         gm.gameDispatcher.dispatch(groupJoinAct);
+    }
+
+    public void setViewMode(string type) {
+        switch (type) {
+            case "OWNER":
+                showMemberButton.SetActive(true);
+                quitMemberButton.SetActive(true);
+                settingButton.SetActive(true);
+                break;
+            case "MEMBER":
+                showMemberButton.SetActive(true);
+                quitMemberButton.SetActive(true);
+                break;
+            case "VISITOR":
+                signupButton.SetActive(true);
+                break;
+        }
     }
 }
