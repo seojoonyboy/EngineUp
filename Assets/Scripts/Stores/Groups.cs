@@ -15,10 +15,24 @@ public class Groups : AjwStore {
     public Group clickedGroup;
     public ActionTypes eventType;
     public int sceneIndex = -1;
-    public bool addResult = false;
+    public bool 
+        addResult = false,
+        isGroupMember = false;
+
+    public Member[] 
+        myInfoInGroup,
+        groupMembers;
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
+            case ActionTypes.GROUP_CHECK_MY_STATUS:
+                Group_checkMyStatus getMyStatAct = action as Group_checkMyStatus;
+                checkMyStat(getMyStatAct);
+                break;
+            case ActionTypes.GROUP_GET_MEMBERS:
+                Group_getMemberAction getMembersAct = action as Group_getMemberAction;
+                getMembers(getMembersAct);
+                break;
             case ActionTypes.GROUP_MY_GROUPS:
                 Group_myGroups getMyGroupAct = action as Group_myGroups;
                 getMyGroups(getMyGroupAct);
@@ -45,13 +59,39 @@ public class Groups : AjwStore {
         eventType = action.type;
     }
 
+    private void getMembers(Group_getMemberAction payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id)
+                    .Append("/members");
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log(payload.response.data);
+                groupMembers = JsonHelper.getJsonArray<Member>(payload.response.data);
+
+                //그룹원 보기 패널 활성화
+                Group_OnPanel onGroupPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
+                onGroupPanel.index = 0;
+                dispatcher.dispatch(onGroupPanel);
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                break;
+        }
+    }
+
     private void getMyGroups(Group_myGroups payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("groups");
+                    .Append("/groups");
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -76,7 +116,6 @@ public class Groups : AjwStore {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                Debug.Log(payload.response.data);
                 searchedGroups = JsonHelper.getJsonArray<Group>(payload.response.data);
                 Group_OnPanel onGroupPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
                 onGroupPanel.index = 1;
@@ -99,13 +138,43 @@ public class Groups : AjwStore {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log(payload.response.data);
                 clickedGroup = Group.fromJSON(payload.response.data);
                 Group_OnPanel onGroupPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
                 onGroupPanel.index = 7;
                 dispatcher.dispatch(onGroupPanel);
                 break;
             case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                break;
+        }
+    }
 
+    private void checkMyStat(Group_checkMyStatus payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id)
+                    .Append("/members?userId=")
+                    .Append(payload.userId);
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log("그룹 멤버 확인에 대한 callback : " + payload.response.data);
+                myInfoInGroup = JsonHelper.getJsonArray<Member>(payload.response.data);
+                if (myInfoInGroup.Length == 0) {
+                    isGroupMember = false;
+                }
+                else {
+                    isGroupMember = true;
+                }
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
                 break;
         }
     }
@@ -165,5 +234,21 @@ public class Group {
 
 [System.Serializable]
 public class Member {
+    public int id;
+    public string joinDate;
+    public string memberState;
+    public string memberGrade;
+    public CallbackUser user;
 
+    public static Member fromJSON(string json) {
+        return JsonUtility.FromJson<Member>(json);
+    }
+}
+
+[System.Serializable]
+public class CallbackUser {
+    public int id;
+    public string nickName;
+    public int representative;
+    public string createDate;
 }

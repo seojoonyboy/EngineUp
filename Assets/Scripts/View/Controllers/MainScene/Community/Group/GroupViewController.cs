@@ -10,6 +10,7 @@ public class GroupViewController : MonoBehaviour {
     public UIInput searchInput;
 
     public GroupAddViewController addViewCtrler;
+    public GroupDetailView detailView;
 
     public GameObject container;
     public UIGrid grid;
@@ -32,20 +33,25 @@ public class GroupViewController : MonoBehaviour {
 
     private void sendReq(int sceneIndex, GameObject obj) {
         switch (sceneIndex) {
-            //그룹 상세보기
+            //그룹원 보기
             case 0:
-                //Debug.Log("그룹 상세 보기");
-                int id = obj.transform.parent.GetComponent<GroupIndex>().id;
-                Group_detail getGroupMemberAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL) as Group_detail;
-                getGroupMemberAct.id = id;
-                gm.gameDispatcher.dispatch(getGroupMemberAct);
-                //Server에게 index를 이용한 리스트 요청 액션을 작성한다.
+                Group_getMemberAction getMembersAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+                getMembersAct.id = detailView.id;
+                gm.gameDispatcher.dispatch(getMembersAct);
                 break;
             //그룹찾기
             case 1:
                 Group_search searchAct = ActionCreator.createAction(ActionTypes.GROUP_SEARCH) as Group_search;
                 searchAct.keyword = searchInput.value;
                 gm.gameDispatcher.dispatch(searchAct);
+                break;
+            //그룹 상세보기
+            case 7:
+                int id = obj.transform.parent.GetComponent<GroupIndex>().id;
+                Group_detail getGroupDetailAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL) as Group_detail;
+                getGroupDetailAct.id = id;
+                gm.gameDispatcher.dispatch(getGroupDetailAct);
+                //Server에게 index를 이용한 리스트 요청 액션을 작성한다.
                 break;
             //그룹추가
             case 8:
@@ -79,6 +85,17 @@ public class GroupViewController : MonoBehaviour {
             }
             else {
 
+            }
+        }
+
+        if(groupStore.eventType == ActionTypes.GROUP_CHECK_MY_STATUS) {
+            if (groupStore.isGroupMember) {
+                detailView.showMemberButton.SetActive(true);
+                Debug.Log("그룹 멤버임");
+            }
+            else {
+                detailView.signupButton.SetActive(true);
+                Debug.Log("그룹 멤버가 아님");
             }
         }
     }

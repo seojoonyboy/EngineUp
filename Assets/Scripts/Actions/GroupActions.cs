@@ -21,3 +21,6 @@ public class Group_myGroups : NetworkAction {
 
 public class Group_getMemberAction : Group_myGroups { }
 public class Group_detail : Group_myGroups { }
+public class Group_checkMyStatus : Group_myGroups {
+    public int userId;
+}

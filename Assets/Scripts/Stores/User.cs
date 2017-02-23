@@ -16,6 +16,8 @@ public class User : AjwStore {
     //facebook token
     public string facebookToken;
 
+    public int userId;
+
     NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
     public User(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher){}
@@ -89,6 +91,7 @@ public class User : AjwStore {
                 //Debug.Log("sign in에 대한 callback : " + act.response.data);
                 userTokenId = callbackData.key;
                 nickName = callbackData.user.nickName;
+                userId = callbackData.user.id;
                 //Debug.Log("Nickname : " + nickName);
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
                 dispatcher.dispatch(startAct);
