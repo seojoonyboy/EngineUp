@@ -64,6 +64,7 @@ public class GroupDetailView : MonoBehaviour {
             case "MEMBER":
                 showMemberButton.SetActive(true);
                 quitMemberButton.SetActive(true);
+                signupButton.SetActive(false);
                 break;
             case "VISITOR":
                 signupButton.SetActive(true);

@@ -52,6 +52,8 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000011968465008}
   - 114: {fileID: 114000011200318578}
+  - 114: {fileID: 114000010510719194}
+  - 65: {fileID: 65000010714011028}
   m_Layer: 5
   m_Name: AcceptButton
   m_TagString: Untagged
@@ -588,7 +590,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000012185039254}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -200, z: 0}
+  m_LocalPosition: {x: 0, y: 100, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -1001,6 +1003,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4000010879776532}
   m_RootOrder: 0
+--- !u!65 &65000010714011028
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010429829478}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 138, y: 74, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114000010094121026
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1267,7 +1281,7 @@ MonoBehaviour:
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
-  mText: "\uD1A0\uC624\uC0AC\uCE74 \uB9B0"
+  mText: "\uB098\uAC00\uD1A0 \uC2E0\uC9C0"
   mFontSize: 40
   mFontStyle: 0
   mAlignment: 1
@@ -1294,6 +1308,31 @@ MonoBehaviour:
   mMaxLineHeight: 0
   mLineWidth: 0
   mMultiline: 1
+--- !u!114 &114000010510719194
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010429829478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tweenTarget: {fileID: 1000010429829478}
+  hover: {r: 0.88235295, g: 0.78431374, b: 0.5882353, a: 1}
+  pressed: {r: 0.7176471, g: 0.6392157, b: 0.48235294, a: 1}
+  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  duration: 0.2
+  dragHighlight: 0
+  hoverSprite: 
+  pressedSprite: 
+  disabledSprite: 
+  hoverSprite2D: {fileID: 0}
+  pressedSprite2D: {fileID: 0}
+  disabledSprite2D: {fileID: 0}
+  pixelSnap: 0
+  onClick: []
 --- !u!114 &114000010636994218
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1645,7 +1684,7 @@ MonoBehaviour:
   mHeight: 74
   mDepth: 11
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 1.8648648
@@ -2870,4 +2909,4 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 7.2
+  aspectRatio: 5.4

@@ -23,6 +23,7 @@ public class Groups : AjwStore {
         myInfoInGroup,
         groupMembers;
 
+    private int tmp_groupIndex;
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.GROUP_CHECK_MY_STATUS:
@@ -87,6 +88,7 @@ public class Groups : AjwStore {
                 if (payload.forMemberManage) {
                     Debug.Log("그룹원 관리를 위한 그룹원 목록 가져오기");
                     onGroupPanel.index = 5;
+                    _emitChange();
                 }
                 else if (!payload.forMemberManage) {
                     onGroupPanel.index = 0;
@@ -268,14 +270,14 @@ public class Groups : AjwStore {
                     .Append("/members/")
                     .Append(payload.memberId)
                     .Append("/admission");
+                tmp_groupIndex = payload.id;
                 Debug.Log("accept group member url : " + strBuilder.ToString());
-                networkManager.request("PUT", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                WWWForm form = new WWWForm();
+                form.AddField("tmp", 0);
+                networkManager.request("PUT", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                Debug.Log(payload.response.data);
-                Group_detail getMemberAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_detail;
-                getMemberAct.id = payload.id;
-                dispatcher.dispatch(getMemberAct);
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(payload.response.data);

@@ -132,7 +132,16 @@ public class GroupViewController : MonoBehaviour {
         if(groupStore.eventType == ActionTypes.GROUP_MEMBER_ACCEPT) {
             modal.SetActive(true);
 
+            //해당 그룹 멤버 목록 갱신
+            Group_getMemberAction _getMembersAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+            _getMembersAct.id = detailView.id;
+            _getMembersAct.forMemberManage = true;
+            gm.gameDispatcher.dispatch(_getMembersAct);
+
             modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "멤버요청을 수락하였습니다.";
+        }
+
+        if(groupStore.eventType == ActionTypes.GROUP_GET_MEMBERS) {
             memberManageView.makeList();
         }
     }
