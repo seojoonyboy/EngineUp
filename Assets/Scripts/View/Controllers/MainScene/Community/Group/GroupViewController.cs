@@ -11,6 +11,7 @@ public class GroupViewController : MonoBehaviour {
 
     public GroupAddViewController addViewCtrler;
     public GroupDetailView detailView;
+    public GroupMemberManageView memberManageView;
 
     public GameObject container;
     public UIGrid grid;
@@ -47,6 +48,13 @@ public class GroupViewController : MonoBehaviour {
                 Group_search searchAct = ActionCreator.createAction(ActionTypes.GROUP_SEARCH) as Group_search;
                 searchAct.keyword = searchInput.value;
                 gm.gameDispatcher.dispatch(searchAct);
+                break;
+            //그룹원 관리
+            case 5:
+                Group_getMemberAction _getMembersAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+                _getMembersAct.id = detailView.id;
+                _getMembersAct.forMemberManage = true;
+                gm.gameDispatcher.dispatch(_getMembersAct);
                 break;
             //그룹 상세보기
             case 7:
@@ -119,6 +127,13 @@ public class GroupViewController : MonoBehaviour {
             Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
             getMyGroupAct.id = 0;
             gm.gameDispatcher.dispatch(getMyGroupAct);
+        }
+
+        if(groupStore.eventType == ActionTypes.GROUP_MEMBER_ACCEPT) {
+            modal.SetActive(true);
+
+            modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "멤버요청을 수락하였습니다.";
+            memberManageView.makeList();
         }
     }
 

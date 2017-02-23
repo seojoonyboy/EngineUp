@@ -19,9 +19,14 @@ public class Group_myGroups : NetworkAction {
     public int id;
 }
 
-public class Group_getMemberAction : Group_myGroups { }
+public class Group_getMemberAction : Group_myGroups {
+    public bool forMemberManage = false;
+}
 public class Group_detail : Group_myGroups { }
 public class Group_checkMyStatus : Group_myGroups {
     public int userId;
 }
 public class Group_join : Group_myGroups { }
+public class Group_accept : Group_myGroups {
+    public int memberId;
+}

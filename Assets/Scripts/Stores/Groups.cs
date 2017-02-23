@@ -59,10 +59,15 @@ public class Groups : AjwStore {
                 Group_join groupJoinAct = action as Group_join;
                 joinGroup(groupJoinAct);
                 break;
+            case ActionTypes.GROUP_MEMBER_ACCEPT:
+                Group_accept acceptMemberAct = action as Group_accept;
+                acceptMember(acceptMemberAct);
+                break;
         }
         eventType = action.type;
     }
 
+    //해당 그룹 멤버 목록 가져오기
     private void getMembers(Group_getMemberAction payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -77,10 +82,15 @@ public class Groups : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log(payload.response.data);
                 groupMembers = JsonHelper.getJsonArray<Member>(payload.response.data);
-
-                //그룹원 보기 패널 활성화
                 Group_OnPanel onGroupPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
-                onGroupPanel.index = 0;
+                //그룹원 보기 패널 활성화
+                if (payload.forMemberManage) {
+                    Debug.Log("그룹원 관리를 위한 그룹원 목록 가져오기");
+                    onGroupPanel.index = 5;
+                }
+                else if (!payload.forMemberManage) {
+                    onGroupPanel.index = 0;
+                }
                 dispatcher.dispatch(onGroupPanel);
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -89,6 +99,7 @@ public class Groups : AjwStore {
         }
     }
 
+    //내 그룹 목록 가져오기
     private void getMyGroups(Group_myGroups payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -109,6 +120,7 @@ public class Groups : AjwStore {
         }
     }
 
+    //그룹 검색 결과 목록 가져오기
     private void searchGroups(Group_search payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -131,6 +143,7 @@ public class Groups : AjwStore {
         }
     }
 
+    //그룹 상세보기 정보 목록 가져오기
     private void getGroupDetail(Group_detail payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -154,6 +167,7 @@ public class Groups : AjwStore {
         }
     }
 
+    //그룹 내 나의 상태 확인하기
     private void checkMyStat(Group_checkMyStatus payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -183,6 +197,7 @@ public class Groups : AjwStore {
         }
     }
 
+    //그룹 추가하기
     private void addGroup(Group_AddAction payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -216,6 +231,7 @@ public class Groups : AjwStore {
         }
     }
 
+    //그룹 가입하기
     private void joinGroup(Group_join payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -238,6 +254,38 @@ public class Groups : AjwStore {
                 Debug.Log(payload.response.data);
                 break;
         }
+    }
+
+    //그룹 가입 승인
+    private void acceptMember(Group_accept payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id)
+                    .Append("/members/")
+                    .Append(payload.memberId)
+                    .Append("/admission");
+                Debug.Log("accept group member url : " + strBuilder.ToString());
+                networkManager.request("PUT", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log(payload.response.data);
+                Group_detail getMemberAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_detail;
+                getMemberAct.id = payload.id;
+                dispatcher.dispatch(getMemberAct);
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                break;
+        }
+    }
+
+    //그룹 강퇴, 그룹 탈퇴
+    private void delMember() {
+
     }
 
     private void onPanel(int index) {

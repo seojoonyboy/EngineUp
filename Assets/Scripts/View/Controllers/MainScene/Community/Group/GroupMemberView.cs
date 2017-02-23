@@ -41,6 +41,7 @@ public class GroupMemberView : MonoBehaviour {
                 item.transform.Find("NormalType").gameObject.SetActive(true);
             }
         }
+        containerInit();
     }
 
     public void offPanel() {

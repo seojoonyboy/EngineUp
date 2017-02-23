@@ -8,7 +8,7 @@ public enum ActionTypes {
     POST_FAIL, POST_SUCCESS, USER_CREATE,
     COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB, USER_CREATE_ERROR,
     GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ON_PANEL, GROUP_ADD, GROUP_MY_GROUPS, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN,
-    GET_DISTRICT_DATA, GET_CITY_DATA
+    GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT
 }
 
 public class Actions{
@@ -108,6 +108,9 @@ public static class ActionCreator{
             break;
         case ActionTypes.GROUP_JOIN:
             _return = new Group_join();
+            break;
+        case ActionTypes.GROUP_MEMBER_ACCEPT:
+            _return = new Group_accept();
             break;
         }
          _return.type = _type;
