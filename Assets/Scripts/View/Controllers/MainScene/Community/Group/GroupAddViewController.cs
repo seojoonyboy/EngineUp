@@ -8,7 +8,11 @@ public class GroupAddViewController : MonoBehaviour {
         cityMenu;
     public UIInput nameInput;
 
-    GameManager gm = GameManager.Instance;
+    GameManager gm;
+
+    void Start() {
+        gm = GameManager.Instance;
+    }
 
     void OnEnable() {
         setProvinceList();
