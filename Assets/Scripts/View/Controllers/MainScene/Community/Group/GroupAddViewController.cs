@@ -10,7 +10,7 @@ public class GroupAddViewController : MonoBehaviour {
 
     GameManager gm;
 
-    void Start() {
+    void Awake() {
         gm = GameManager.Instance;
     }
 
@@ -41,7 +41,7 @@ public class GroupAddViewController : MonoBehaviour {
         for (int i = 0; i < cities.Length; i++) {
             cityMenu.items.Add(cities[i].name);
         }
-        cityMenu.value = cityMenu.items[1];
+        cityMenu.value = cityMenu.items[0];
     }
 
     //그룹 최종 생성 버튼 클릭시

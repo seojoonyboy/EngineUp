@@ -12,6 +12,7 @@ public class GroupViewController : MonoBehaviour {
     public GroupAddViewController addViewCtrler;
     public GroupDetailView detailView;
     public GroupMemberManageView memberManageView;
+    public GroupSettingChangeView settingChangeView;
 
     public GameObject container;
     public UIGrid grid;
@@ -27,6 +28,12 @@ public class GroupViewController : MonoBehaviour {
         Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
         getMyGroupAct.id = 0;
         gm.gameDispatcher.dispatch(getMyGroupAct);
+    }
+
+    void OnDisable() {
+        for(int i=0; i<subPanels.Length; i++) {
+            subPanels[i].SetActive(false);
+        }
     }
 
     public void onPanel(GameObject obj) {
@@ -49,6 +56,18 @@ public class GroupViewController : MonoBehaviour {
                 searchAct.keyword = searchInput.value;
                 gm.gameDispatcher.dispatch(searchAct);
                 break;
+            //그룹 설정 메인
+            case 2:
+                subPanels[sceneIndex].SetActive(true);
+                break;
+            //그룹 설정 변경
+            //그룹추가
+            case 4:
+            case 8:
+                GetDistrictsData getDistDataAct = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
+                getDistDataAct.id = sceneIndex;
+                gm.gameDispatcher.dispatch(getDistDataAct);
+                break;
             //그룹원 관리
             case 5:
                 Group_getMemberAction _getMembersAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
@@ -63,11 +82,6 @@ public class GroupViewController : MonoBehaviour {
                 getGroupDetailAct.id = id;
                 gm.gameDispatcher.dispatch(getGroupDetailAct);
                 //Server에게 index를 이용한 리스트 요청 액션을 작성한다.
-                break;
-            //그룹추가
-            case 8:
-                GetDistrictsData getDistDataAct = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
-                gm.gameDispatcher.dispatch(getDistDataAct);
                 break;
         }
     }
@@ -85,6 +99,7 @@ public class GroupViewController : MonoBehaviour {
         }
         if(locationStore.eventType == ActionTypes.GET_CITY_DATA) {
             addViewCtrler.setCityList();
+            settingChangeView.setCityList();
         }
 
         if(groupStore.eventType == ActionTypes.GROUP_ADD) {

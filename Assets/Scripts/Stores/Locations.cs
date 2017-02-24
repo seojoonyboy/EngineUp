@@ -42,9 +42,8 @@ public class Locations : AjwStore {
                 districts = JsonHelper.getJsonArray<District>(payload.response.data);
 
                 Group_OnPanel onGroupPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
-                onGroupPanel.index = 8;
+                onGroupPanel.index = payload.id;
                 dispatcher.dispatch(onGroupPanel);
-
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(payload.response.data);

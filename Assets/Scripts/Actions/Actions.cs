@@ -200,7 +200,9 @@ public class UserCreateError : Actions {
     public string msg;
 }
 
-public class GetDistrictsData : NetworkAction { }
+public class GetDistrictsData : NetworkAction {
+    public int id;
+}
 public class GetCityData : NetworkAction {
     public int id;
 }
