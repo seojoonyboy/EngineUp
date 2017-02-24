@@ -30,8 +30,12 @@ public class GroupMemberManageView : MonoBehaviour {
     }
 
     //탈퇴 버튼, 거부 버튼, 강퇴 버튼
-    void onQuitGroup() {
-
+    void onQuitGroup(GameObject obj) {
+        int index = obj.transform.parent.parent.GetComponent<GroupIndex>().id;
+        Group_ban banAct = ActionCreator.createAction(ActionTypes.GROUP_BAN) as Group_ban;
+        banAct.id = groupId;
+        banAct.memberId = index;
+        gm.gameDispatcher.dispatch(banAct);
     }
 
     //승인 버튼
@@ -69,12 +73,21 @@ public class GroupMemberManageView : MonoBehaviour {
         foreach (Member member in members) {
             GameObject item = Instantiate(container);
             item.transform.SetParent(grid.transform);
+            //그룹장은 멤버 리스트에 포함시키지 않는다.
+            if(member.memberGrade == "GO") {
+                continue;
+            }
             item.transform.Find("MemberManageType").gameObject.SetActive(true);
             item.transform.Find("Name_normal_type").GetComponent<UILabel>().text = member.user.nickName;
             item.GetComponent<GroupIndex>().id = member.id;
 
             item.transform.localPosition = Vector3.zero;
             item.transform.localScale = Vector3.one;
+
+            EventDelegate delEvent = new EventDelegate(this, "onQuitGroup");
+            GameObject onQuitBtn = item.transform.Find("MemberManageType/BanButton").gameObject;
+            delEvent.parameters[0] = MakeParameter(onQuitBtn, typeof(GameObject));
+            EventDelegate.Add(onQuitBtn.GetComponent<UIButton>().onClick, delEvent);
         }
 
         //가입 신청자 헤더 prefab 생성
@@ -96,6 +109,11 @@ public class GroupMemberManageView : MonoBehaviour {
             GameObject acceptBtn = item.transform.Find("MemberAdmissionType/AcceptButton").gameObject;
             acceptEvent.parameters[0] = MakeParameter(acceptBtn, typeof(GameObject));
             EventDelegate.Add(acceptBtn.GetComponent<UIButton>().onClick, acceptEvent);
+
+            EventDelegate rejectEvent = new EventDelegate(this, "onQuitGroup");
+            GameObject rejectBtn = item.transform.Find("MemberAdmissionType/RejectButton").gameObject;
+            rejectEvent.parameters[0] = MakeParameter(rejectBtn, typeof(GameObject));
+            EventDelegate.Add(rejectBtn.GetComponent<UIButton>().onClick, rejectEvent);
 
             item.transform.localPosition = Vector3.zero;
             item.transform.localScale = Vector3.one;

@@ -64,6 +64,10 @@ public class Groups : AjwStore {
                 Group_accept acceptMemberAct = action as Group_accept;
                 acceptMember(acceptMemberAct);
                 break;
+            case ActionTypes.GROUP_BAN:
+                Group_ban banAct = action as Group_ban;
+                delMember(banAct);
+                break;
         }
         eventType = action.type;
     }
@@ -213,6 +217,9 @@ public class Groups : AjwStore {
                     return;
                 }
                 WWWForm form = new WWWForm();
+                //Debug.Log("name : " + payload.name);
+                //Debug.Log("locationDistrict : " + payload.district);
+                //Debug.Log("locationCity : " + payload.city);
 
                 form.AddField("name", payload.name);
                 form.AddField("locationDistrict", payload.district);
@@ -286,8 +293,26 @@ public class Groups : AjwStore {
     }
 
     //그룹 강퇴, 그룹 탈퇴
-    private void delMember() {
-
+    private void delMember(Group_ban payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id)
+                    .Append("/members/")
+                    .Append(payload.memberId);
+                Debug.Log("delete group member url : " + strBuilder.ToString());
+                networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                break;
+        }
     }
 
     private void onPanel(int index) {

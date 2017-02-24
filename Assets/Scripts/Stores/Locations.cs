@@ -63,7 +63,7 @@ public class Locations : AjwStore {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                //Debug.Log(payload.response.data);
+                Debug.Log(payload.response.data);
                 cities = City.fromJSON(payload.response.data);
                 borough = cities.cities;
                 _emitChange();

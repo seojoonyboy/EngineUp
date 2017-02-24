@@ -30,3 +30,4 @@ public class Group_join : Group_myGroups { }
 public class Group_accept : Group_myGroups {
     public int memberId;
 }
+public class Group_ban : Group_accept { }
