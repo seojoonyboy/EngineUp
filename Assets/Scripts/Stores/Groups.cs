@@ -68,6 +68,14 @@ public class Groups : AjwStore {
                 Group_ban banAct = action as Group_ban;
                 delMember(banAct);
                 break;
+            case ActionTypes.GROUP_EDIT:
+                Group_AddAction editAct = action as Group_AddAction;
+                modifyGroupInfo(editAct);
+                break;
+            case ActionTypes.GROUP_DETAIL_REFRESH:
+                Group_detail_refresh refreshAct = action as Group_detail_refresh;
+                refreshGroupDetail(refreshAct);
+                break;
         }
         eventType = action.type;
     }
@@ -225,6 +233,10 @@ public class Groups : AjwStore {
                 form.AddField("locationDistrict", payload.district);
                 form.AddField("locationCity", payload.city);
 
+                if(payload.desc != null) {
+                    form.AddField("groupIntro", payload.desc);
+                }
+
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -236,6 +248,41 @@ public class Groups : AjwStore {
                 Debug.Log(payload.response.data);
                 addResult = false;
                 _emitChange();
+                break;
+        }
+    }
+
+    //그룹 정보 수정
+    private void modifyGroupInfo(Group_AddAction payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id);
+
+                WWWForm form = new WWWForm();
+                //Debug.Log("name : " + payload.name);
+                //Debug.Log("locationDistrict : " + payload.district);
+                //Debug.Log("locationCity : " + payload.city);
+                form.AddField("groupIntro", payload.desc);
+                form.AddField("locationDistrict", payload.district);
+                form.AddField("locationCity", payload.city);
+                form.AddField("name", payload.name);
+
+                networkManager.request("PUT", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                tmp_groupIndex = payload.id;
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log(payload.response.data);
+                _emitChange();
+                Group_detail_refresh refreshAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL_REFRESH) as Group_detail_refresh;
+                refreshAct.id = tmp_groupIndex;
+                dispatcher.dispatch(refreshAct);
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
                 break;
         }
     }
@@ -307,6 +354,28 @@ public class Groups : AjwStore {
                 networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                break;
+        }
+    }
+
+    //그룹 정보 갱신 (refresh)
+    private void refreshGroupDetail(Group_detail_refresh payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id);
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Debug.Log(payload.response.data);
+                clickedGroup = Group.fromJSON(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:

@@ -13,6 +13,8 @@ public class Group_AddAction : NetworkAction {
     public string name;
     public string district;
     public string city;
+    public string desc = null;
+    public int id;
 }
 
 public class Group_myGroups : NetworkAction {
@@ -31,3 +33,4 @@ public class Group_accept : Group_myGroups {
     public int memberId;
 }
 public class Group_ban : Group_accept { }
+public class Group_detail_refresh : Group_myGroups { }

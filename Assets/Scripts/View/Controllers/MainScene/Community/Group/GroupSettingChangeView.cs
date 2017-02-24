@@ -14,7 +14,8 @@ public class GroupSettingChangeView : MonoBehaviour {
 
     private bool 
         isEditDesc,
-        isFirstSetDistrict;
+        isFirstSetDistrict,
+        isEditDistrict;
 
     public GameObject
         deActivePanel,
@@ -28,6 +29,7 @@ public class GroupSettingChangeView : MonoBehaviour {
 
     void OnEnable() {
         isFirstSetDistrict = true;
+        isEditDistrict = false;
         groupStore = controller.groupStore;
         group = groupStore.clickedGroup;
         descInput.value = group.groupIntro;
@@ -64,6 +66,8 @@ public class GroupSettingChangeView : MonoBehaviour {
             //Debug.Log("Index : " + index);
             getCityDataAct.id = index;
             gm.gameDispatcher.dispatch(getCityDataAct);
+
+            isEditDistrict = true;
         }
     }
 
@@ -79,14 +83,14 @@ public class GroupSettingChangeView : MonoBehaviour {
 
     //그룹 최종 수정 버튼 클릭시
     public void posting() {
-        Group_AddAction addAct = ActionCreator.createAction(ActionTypes.GROUP_ADD) as Group_AddAction;
-        addAct.district = provinceMenu.value;
-        addAct.city = cityMenu.value;
-        if (isEditDesc) {
-            
-        }
-        //Debug.Log("province val : " + provinceMenu.value);
-        gm.gameDispatcher.dispatch(addAct);
+        Group_AddAction editAct = ActionCreator.createAction(ActionTypes.GROUP_EDIT) as Group_AddAction;
+        editAct.id = controller.detailView.id;
+        editAct.desc = descInput.value;
+        editAct.district = provinceMenu.value;
+        editAct.city = cityMenu.value;
+        editAct.name = controller.detailView.groupName.text;
+
+        gm.gameDispatcher.dispatch(editAct);
     }
 
     public void offPanel() {

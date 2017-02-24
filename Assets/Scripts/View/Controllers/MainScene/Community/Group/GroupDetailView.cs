@@ -19,7 +19,7 @@ public class GroupDetailView : MonoBehaviour {
     private GameManager gm;
     // 이벤트 parameter를 생성하여 리턴.
 
-    void OnEnable() {
+    public void OnEnable() {
         gm = GameManager.Instance;
         Group group = controller.groupStore.clickedGroup;
         groupName.text = group.name;
