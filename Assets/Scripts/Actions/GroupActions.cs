@@ -23,6 +23,7 @@ public class Group_myGroups : NetworkAction {
 
 public class Group_getMemberAction : Group_myGroups {
     public bool forMemberManage = false;
+    public bool forDestroyManage = false;
 }
 public class Group_detail : Group_myGroups { }
 public class Group_checkMyStatus : Group_myGroups {
@@ -34,3 +35,4 @@ public class Group_accept : Group_myGroups {
 }
 public class Group_ban : Group_accept { }
 public class Group_detail_refresh : Group_myGroups { }
+public class Group_del : Group_myGroups { }

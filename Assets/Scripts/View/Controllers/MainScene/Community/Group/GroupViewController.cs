@@ -13,6 +13,7 @@ public class GroupViewController : MonoBehaviour {
     public GroupDetailView detailView;
     public GroupMemberManageView memberManageView;
     public GroupSettingChangeView settingChangeView;
+    public GroupDelView groupDelView;
 
     public GameObject container;
     public UIGrid grid;
@@ -43,6 +44,7 @@ public class GroupViewController : MonoBehaviour {
     }
 
     private void sendReq(int sceneIndex, GameObject obj) {
+        Debug.Log("Scene Index : " + sceneIndex);
         switch (sceneIndex) {
             //그룹원 보기
             case 0:
@@ -76,6 +78,9 @@ public class GroupViewController : MonoBehaviour {
                 gm.gameDispatcher.dispatch(_getMembersAct);
                 break;
             //그룹 상세보기
+            case 6:
+                subPanels[sceneIndex].SetActive(true);
+                break;
             case 7:
                 int id = obj.transform.parent.GetComponent<GroupIndex>().id;
                 Group_detail getGroupDetailAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL) as Group_detail;
@@ -170,6 +175,7 @@ public class GroupViewController : MonoBehaviour {
 
         if(groupStore.eventType == ActionTypes.GROUP_GET_MEMBERS) {
             memberManageView.makeList();
+            groupDelView.getMemberCallback();
         }
 
         if(groupStore.eventType == ActionTypes.GROUP_EDIT) {
@@ -186,6 +192,19 @@ public class GroupViewController : MonoBehaviour {
 
         if(groupStore.eventType == ActionTypes.GROUP_DETAIL_REFRESH) {
             detailView.OnEnable();
+        }
+
+        if(groupStore.eventType == ActionTypes.GROUP_DESTROY) {
+            subPanels[2].SetActive(false);
+            subPanels[6].SetActive(false);
+            subPanels[7].SetActive(false);
+
+            if (groupStore.delResult) {
+                groupDelView.onModal("SUCCESS");
+            }
+            else {
+                groupDelView.onModal("FAIL");
+            }
         }
     }
 

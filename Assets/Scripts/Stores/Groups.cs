@@ -17,7 +17,8 @@ public class Groups : AjwStore {
     public int sceneIndex = -1;
     public bool 
         addResult = false,
-        isGroupMember = false;
+        isGroupMember = false,
+        delResult = false;
 
     public Member[] 
         myInfoInGroup,
@@ -76,6 +77,10 @@ public class Groups : AjwStore {
                 Group_detail_refresh refreshAct = action as Group_detail_refresh;
                 refreshGroupDetail(refreshAct);
                 break;
+            case ActionTypes.GROUP_DESTROY:
+                Group_del groupDelAct = action as Group_del;
+                delGroup(groupDelAct);
+                break;
         }
         eventType = action.type;
     }
@@ -100,12 +105,17 @@ public class Groups : AjwStore {
                 if (payload.forMemberManage) {
                     Debug.Log("그룹원 관리를 위한 그룹원 목록 가져오기");
                     onGroupPanel.index = 5;
-                    _emitChange();
+                    dispatcher.dispatch(onGroupPanel);
                 }
                 else if (!payload.forMemberManage) {
-                    onGroupPanel.index = 0;
+                    if (payload.forDestroyManage) {
+                        _emitChange();
+                    }
+                    else {
+                        onGroupPanel.index = 0;
+                        dispatcher.dispatch(onGroupPanel);
+                    }
                 }
-                dispatcher.dispatch(onGroupPanel);
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(payload.response.data);
@@ -357,6 +367,31 @@ public class Groups : AjwStore {
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                break;
+        }
+    }
+
+    //그룹 삭제
+    private void delGroup(Group_del payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id);
+                networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
+                dispatcher.dispatch(getMyGroupAct);
+                delResult = true;
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                delResult = false;
+                _emitChange();
                 Debug.Log(payload.response.data);
                 break;
         }
