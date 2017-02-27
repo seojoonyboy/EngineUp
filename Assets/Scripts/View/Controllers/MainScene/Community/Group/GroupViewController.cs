@@ -170,7 +170,7 @@ public class GroupViewController : MonoBehaviour {
             _getMembersAct.forMemberManage = true;
             gm.gameDispatcher.dispatch(_getMembersAct);
 
-            modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "멤버를 강퇴시켰습니다.";
+            modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "탈퇴 되었습니다.";
         }
 
         if(groupStore.eventType == ActionTypes.GROUP_GET_MEMBERS) {

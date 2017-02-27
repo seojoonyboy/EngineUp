@@ -15,7 +15,8 @@ public class GroupDetailView : MonoBehaviour {
         showMemberButton,
         showMemberOwnerButton,
         quitMemberButton,
-        settingButton;
+        settingButton,
+        modal;
 
     private GameManager gm;
     // 이벤트 parameter를 생성하여 리턴.
@@ -48,6 +49,31 @@ public class GroupDetailView : MonoBehaviour {
 
     public void onShowMemberButton(GameObject obj) {
         controller.onPanel(obj);
+    }
+
+    //탈퇴버튼 클릭
+    public void onModal() {
+        modal.SetActive(true);
+    }
+
+    //최종적으로 탈퇴 버튼 클릭
+    public void onQuitGroupButton() {
+        Debug.Log("그룹 탈퇴 버튼 클릭");
+        Group_ban groupBanAct = ActionCreator.createAction(ActionTypes.GROUP_BAN) as Group_ban;
+        groupBanAct.id = id;
+        groupBanAct.memberId = controller.groupStore.myInfoInGroup[0].id;
+        gm.gameDispatcher.dispatch(groupBanAct);
+
+        modal.SetActive(false);
+        gameObject.SetActive(false);
+
+        showMemberButton.SetActive(false);
+        quitMemberButton.SetActive(false);
+    }
+
+    //탈퇴 취소
+    public void cancelQuitGroup() {
+        modal.SetActive(false);
     }
 
     public void onJoinButton() {
