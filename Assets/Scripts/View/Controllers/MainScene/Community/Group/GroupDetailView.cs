@@ -13,6 +13,7 @@ public class GroupDetailView : MonoBehaviour {
     public GameObject
         signupButton,
         showMemberButton,
+        showMemberOwnerButton,
         quitMemberButton,
         settingButton;
 
@@ -42,6 +43,7 @@ public class GroupDetailView : MonoBehaviour {
         showMemberButton.SetActive(false);
         quitMemberButton.SetActive(false);
         settingButton.SetActive(false);
+        showMemberOwnerButton.SetActive(false);
     }
 
     public void onShowMemberButton(GameObject obj) {
@@ -57,8 +59,9 @@ public class GroupDetailView : MonoBehaviour {
     public void setViewMode(string type) {
         switch (type) {
             case "OWNER":
-                showMemberButton.SetActive(true);
-                quitMemberButton.SetActive(true);
+                //showMemberButton.SetActive(true);
+                showMemberOwnerButton.SetActive(true);
+                //quitMemberButton.SetActive(true);
                 settingButton.SetActive(true);
                 break;
             case "MEMBER":
