@@ -18,6 +18,8 @@ public class User : AjwStore {
 
     public int userId;
 
+    public UserData[] findNickNameResult;
+
     NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
     public User(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher){}
@@ -59,6 +61,15 @@ public class User : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log("Sign up Error Message : " + act.response.data);
+                UserCreateError errorAct = ActionCreator.createAction(ActionTypes.USER_CREATE_ERROR) as UserCreateError;
+                SignUpError msg = SignUpError.fromJSON(act.response.data);
+                Debug.Log("Detail 필드 : " + msg.detail);
+                UImsg = msg.detail;
+                if (UImsg.Contains("exsist")) {
+                    Debug.Log("닉네임 중복");
+                    errorAct.msg = "이미 존재하는 닉네임입니다.";
+                    dispatcher.dispatch(errorAct);
+                }
                 break;
         }
     }
@@ -100,7 +111,7 @@ public class User : AjwStore {
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log("User 정보 없음. 회원가입 창을 띄웁니다.");
                 //해당 user정보가 없음
-                //회원가입 진행. 닉네임 입력 Modal창 띄우기
+                //회원가입 진행. 약관 동의 화면
                 SignupModalAction signupModalAct = ActionCreator.createAction(ActionTypes.SIGNUPMODAL) as SignupModalAction;
                 dispatcher.dispatch(signupModalAct);
                 _emitChange();
@@ -127,39 +138,8 @@ public class User : AjwStore {
         }
     }
 
-    void userCreate(UserCreateAction act) {
-        switch(act.status){
-        case NetworkAction.statusTypes.REQUEST:
-            var strBuilder = GameManager.Instance.sb;
-            strBuilder.Remove(0,strBuilder.Length);
-            strBuilder.Append(networkManager.baseUrl)
-                .Append("users");
-            WWWForm form = new WWWForm();
-            form.AddField("nickName",act.nickName);
-            form.AddField("deviceId",act.deviceId);
-            networkManager.request("POST",strBuilder.ToString(),form, ncExt.networkCallback(dispatcher, act));
-            break;
-        case NetworkAction.statusTypes.SUCCESS:
-            UserData data = UserData.fromJSON(act.response.data);
-            nickName = data.nickName;
-            Debug.Log("user 생성 성공");
-            isCreated = true;
-            _emitChange();
-            break;
-        case NetworkAction.statusTypes.FAIL:
-            UserCreateError errorAct = ActionCreator.createAction(ActionTypes.USER_CREATE_ERROR) as UserCreateError;
-            UserErrorMessage msg = UserErrorMessage.fromJSON(act.response.data);
-            if (msg.nickName != null) {
-                UImsg = "이미 존재하는 아이디입니다.";
-            }
-            dispatcher.dispatch(errorAct);
-            Debug.Log("user 생성 실패");
-            // create 실패
-            break;
-        }
-    }
-
     private void onError(UserCreateError act) {
+        UImsg = act.msg;
         _emitChange();
     }
 
@@ -174,12 +154,6 @@ public class User : AjwStore {
         case ActionTypes.GAME_START:
             //getUserData(action as GameStartAction);
             break;
-        case ActionTypes.EDIT_NICKNAME:
-            //nickName = (action as EditNickNameAction).nickname;
-            break;
-        case ActionTypes.USER_CREATE:
-            userCreate(action as UserCreateAction);
-            break;
         case ActionTypes.USER_CREATE_ERROR:
             onError(action as UserCreateError);
             break;
@@ -189,7 +163,7 @@ public class User : AjwStore {
     }
 }
 
-class UserData {
+public class UserData {
     public int id;
     //public string deviceId;
     public string nickName;
@@ -199,11 +173,12 @@ class UserData {
     }
 }
 
-class UserErrorMessage {
-    public string[] nickName;
+[System.Serializable]
+public class SignUpError {
+    public string detail;
 
-    public static UserErrorMessage fromJSON(string json) {
-        return JsonUtility.FromJson<UserErrorMessage>(json);
+    public static SignUpError fromJSON(string json) {
+        return JsonUtility.FromJson<SignUpError>(json);
     }
 }
 

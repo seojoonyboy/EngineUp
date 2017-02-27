@@ -3,7 +3,7 @@ using System;
 using System.Text;
 
 public enum ActionTypes {
-    SIGNUP, SIGNUPMODAL, SIGNIN, GAME_START, GAME_END, EDIT_NICKNAME,
+    SIGNUP, SIGNUPMODAL, SIGNIN, GAME_START, GAME_END,
     GET_GPS_DATA, RIDING_START, RIDING_END, RIDING_RESULT,
     POST_FAIL, POST_SUCCESS, USER_CREATE,
     COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB, USER_CREATE_ERROR,
@@ -30,9 +30,6 @@ public static class ActionCreator{
             break;
         case ActionTypes.GAME_START:
             _return = new GameStartAction();
-            break;
-        case ActionTypes.EDIT_NICKNAME:
-            _return = new EditNickNameAction();
             break;
         case ActionTypes.GET_GPS_DATA:
             _return = new GetGPSDataAction();
@@ -140,8 +137,7 @@ public class SignupAction : NetworkAction {
 }
 
 public class SigninAction : SignupAction { }
-
-public class SignupModalAction : SignupAction { }
+public class SignupModalAction : Actions { }
 
 public class NetworkAction : Actions {
     public enum statusTypes {REQUEST, SUCCESS, FAIL};
@@ -152,10 +148,6 @@ public class GameStartAction : NetworkAction{
     public string message;
 }
 
-public class EditNickNameAction : Actions{
-    public string nickname;
-}
-
 public class GetGPSDataAction : Actions {
     public LocationInfo GPSInfo;
 }
@@ -163,7 +155,8 @@ public class GetGPSDataAction : Actions {
 public class RidingStartAction : NetworkAction {}
 public class RidingEndAction : Actions {}
 
-public class RidingResultAction : EditNickNameAction {
+public class RidingResultAction : Actions {
+    public string nickname;
     public StringBuilder data = new StringBuilder();
 }
 

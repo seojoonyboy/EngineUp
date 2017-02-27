@@ -8,6 +8,9 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         modal,
         nicknameModal,
         charselectModal,
+        policyModal,
+        policyErrorModal,
+        NickNameCheckResultModal,
         buttonGroup;
 
     public FacebookLogin facebooklogin;
@@ -17,6 +20,10 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     public int charIndex;
 
     private string newNickName;
+
+    public UIToggle
+        mobileServiceCheckBox,
+        privacyCollectCheckBox;
 
     void Awake() {
         //Debug.Log("StartLoadingScene Awake");
@@ -28,15 +35,15 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     void Start() {
         string str = PlayerPrefs.GetString("socialType");
         if (string.IsNullOrEmpty(str)) {
-            //Debug.Log("이전 로그인 기록 없음");
+            Debug.Log("이전 로그인 기록 없음");
             buttonGroup.SetActive(true);
         }
         if(str == "FB") {
-            //Debug.Log("이전 Facebook 로그인했음");
+            Debug.Log("이전 Facebook 로그인했음");
             facebooklogin.FBlogin();
         }
         if(str == "NO") {
-            //Debug.Log("이전 Normal 로그인했음");
+            Debug.Log("이전 Normal 로그인했음");
             normalLogin.onLoginButton();
         }
         //Debug.Log(str);
@@ -46,46 +53,77 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         SceneManager.LoadScene("Main");
     }
 
-    void onNicknameModal() {
-        Debug.Log("닉네임 입력창을 띄웁니다!!");
-        modal.SetActive(true);
-        nicknameModal.SetActive(true);
-    }
-
+    //생성하기 버튼 클릭시
     public void okInNicknameModal() {
-        //SignupAction signupAct = ActionCreator.createAction(ActionTypes.SIGNUP) as SignupAction;
-        //signupAct.type = userStore.loginType;
-        //signupAct.nickName = modalInput.value;
-        //GameManager.Instance.gameDispatcher.dispatch(signupAct);
+        Debug.Log("type : " + userStore.loginType);
+        Debug.Log("nickName : " + newNickName);
         newNickName = modalInput.value;
-        //modal.SetActive(false);
-        nicknameModal.SetActive(false);
-        charselectModal.SetActive(true);
-    }
-    
-    public void okInCharSelectModal() {
-        modal.SetActive(false);
 
-        SignupAction signupAct = ActionCreator.createAction(ActionTypes.SIGNUP) as SignupAction;
-        signupAct.type = userStore.loginType;
-        signupAct.nickName = modalInput.value;
-        signupAct.charIndex = charIndex;
-        GameManager.Instance.gameDispatcher.dispatch(signupAct);
+        SignupAction signUpAct = ActionCreator.createAction(ActionTypes.SIGNUP) as SignupAction;
+        signUpAct.charIndex = charIndex;
+        signUpAct.nickName = newNickName;
+        signUpAct.type = userStore.loginType;
+
+        gm.gameDispatcher.dispatch(signUpAct);
     }
 
     public void cancelInSignUpModal() {
         modal.SetActive(false);
 
         nicknameModal.SetActive(false);
-        charselectModal.SetActive(false);
+        //charselectModal.SetActive(false);
 
         buttonGroup.SetActive(true);
+    }
+
+    public void checkBoxListener() {
+        Debug.Log(mobileServiceCheckBox.value);
+    }
+
+    //이용 약관 동의 화면
+    private void onPolicyModal() {
+        modal.SetActive(true);
+        policyModal.SetActive(true);
+    }
+
+    //이용 약관 동의 버튼
+    public void onAgreePolicy() {
+        //캐릭터 선택 화면으로 넘어감
+        if(mobileServiceCheckBox.value && privacyCollectCheckBox.value) {
+            policyModal.SetActive(false);
+            charselectModal.SetActive(true);
+        }
+        else {
+            policyErrorModal.SetActive(true);
+        }
+    }
+
+    //이용약관 에러 모달 닫기 버튼
+    public void offpolicyErrorModal() {
+        policyErrorModal.SetActive(false);
+    }
+
+    //이용 약관 거절 버튼
+    public void onDisagreePolicy() {
+        //다시 로그인 버튼 화면으로 돌아감
+        modal.SetActive(false);
+        policyModal.SetActive(false);
+        buttonGroup.SetActive(true);
+    }
+
+    //캐릭터 선택시
+    public void onCharSelect() {
+        //닉네임 입력화면으로 넘어감
+        nicknameModal.SetActive(true);
+        charselectModal.SetActive(false);
     }
 
     void userListener() {
         //Debug.Log(userStore.eventType);
         if(userStore.eventType == ActionTypes.SIGNUPMODAL) {
-            onNicknameModal();
+            //onNicknameModal();
+            //약관 동의 화면
+            onPolicyModal();
         }
 
         if(userStore.eventType  == ActionTypes.GAME_START) {
@@ -106,11 +144,13 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         }
 
         if (userStore.eventType == ActionTypes.USER_CREATE_ERROR) {
-            modal.SetActive(true);
-            modal.transform.Find("MessagePanel/Label").GetComponent<UILabel>().text = userStore.UImsg;
+            NickNameCheckResultModal.SetActive(true);
+            NickNameCheckResultModal.transform.Find("Background/Label").GetComponent<UILabel>().text = userStore.UImsg;
         }
+    }
 
-        
+    public void offNickNameCheckResultModal() {
+        NickNameCheckResultModal.SetActive(false);
     }
 
     public void offModal() {

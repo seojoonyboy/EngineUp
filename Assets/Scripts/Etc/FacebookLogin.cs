@@ -4,9 +4,6 @@ using Facebook.Unity;
 using System.Collections.Generic;
 
 public class FacebookLogin : MonoBehaviour {
-    public GameObject profileModal;
-    public GameObject label;
-    public GameObject image;
     public StartLoadingSceneManager startLoadingSceneManager;
 
     //void Start() {
@@ -101,30 +98,12 @@ public class FacebookLogin : MonoBehaviour {
                 //startLoadingSceneManager.loadMainScene();
                 //profileModal.SetActive(true);
                 //gameObject.transform.parent.gameObject.SetActive(false);
-
-                FB.API("/me?fields=first_name", HttpMethod.GET, displayUserName);
-                FB.API("/me/picture?type=square&height=128&width=128", HttpMethod.GET, displayProfileImg);
             }
             else {
                 //user 토큰이 존재하지 않는 경우
                 //sign up url
                 Debug.Log("User cancelled login");
             }
-        }
-    }
-
-    private void displayUserName(IResult result) {
-        if (result.Error == null) {
-            label.GetComponent<UILabel>().text = "Hi, " + result.ResultDictionary["first_name"];
-        }
-        else {
-            Debug.Log(result.Error);
-        }
-    }
-
-    private void displayProfileImg(IGraphResult result) {
-        if (result.Texture != null) {
-            image.GetComponent<UITexture>().mainTexture = result.Texture;
         }
     }
 }
