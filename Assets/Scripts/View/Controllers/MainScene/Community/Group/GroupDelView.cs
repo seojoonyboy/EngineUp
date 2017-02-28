@@ -19,10 +19,14 @@ public class GroupDelView : MonoBehaviour {
         modal.SetActive(true);
         switch (result) {
             case "SUCCESS":
+                modal.SetActive(true);
                 modal.transform.Find("SuccessModal").gameObject.SetActive(true);
+                modal.transform.Find("FailModal").gameObject.SetActive(false);
                 break;
             case "FAIL":
+                modal.SetActive(true);
                 modal.transform.Find("FailModal").gameObject.SetActive(true);
+                modal.transform.Find("SuccessModal").gameObject.SetActive(false);
                 break;
         }
     }
@@ -32,6 +36,7 @@ public class GroupDelView : MonoBehaviour {
     }
 
     public void offModal() {
+        gameObject.SetActive(false);
         modal.SetActive(false);
         modal.transform.Find("SuccessModal").gameObject.SetActive(false);
         modal.transform.Find("FailModal").gameObject.SetActive(false);
