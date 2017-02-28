@@ -1,6 +1,7 @@
 ﻿using Flux;
 using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class Groups : AjwStore {
     public Groups(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher) { }
@@ -25,6 +26,9 @@ public class Groups : AjwStore {
         groupMembers;
 
     private int tmp_groupIndex;
+
+    UTF8Encoding utf8 = new UTF8Encoding();
+
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.GROUP_CHECK_MY_STATUS:
@@ -148,12 +152,14 @@ public class Groups : AjwStore {
     private void searchGroups(Group_search payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                byte[] contents = utf8.GetBytes(payload.keyword);
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("groups?name=")
-                    .Append(payload.keyword);
+                    .Append(utf8.GetString(contents));
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                Debug.Log("그룹 검색 url : " + strBuilder.ToString());
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 searchedGroups = JsonHelper.getJsonArray<Group>(payload.response.data);
