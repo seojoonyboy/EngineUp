@@ -19,7 +19,8 @@ public class GroupSettingChangeView : MonoBehaviour {
 
     public GameObject
         deActivePanel,
-        descModifyButton;
+        descModifyButton,
+        modal;
 
     private Groups groupStore;
     private Group group;
@@ -71,6 +72,10 @@ public class GroupSettingChangeView : MonoBehaviour {
         }
     }
 
+    public void descChange() {
+        descInput.gameObject.transform.Find("Label").GetComponent<UILabel>().overflowMethod = UILabel.Overflow.ResizeFreely;
+    }
+
     public void setCityList() {
         Borough[] cities = controller.locationStore.borough;
         cityMenu.fontSize = 40;
@@ -102,5 +107,15 @@ public class GroupSettingChangeView : MonoBehaviour {
         deActivePanel.SetActive(false);
         descModifyButton.SetActive(false);
         isEditDesc = true;
+    }
+
+    public void onModal(string msg) {
+        modal.SetActive(true);
+        modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = msg;
+    }
+
+    public void offModal() {
+        modal.SetActive(false);
+        modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "";
     }
 }

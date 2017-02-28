@@ -182,15 +182,22 @@ public class GroupViewController : MonoBehaviour {
         }
 
         if(groupStore.eventType == ActionTypes.GROUP_EDIT) {
-            settingChangeView.gameObject.SetActive(false);
+            if (groupStore.groupEditResult) {
+                settingChangeView.gameObject.SetActive(false);
 
-            modal.SetActive(true);
+                modal.SetActive(true);
 
-            modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "그룹 상세 정보를 수정하였습니다.";
+                modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "그룹 상세 정보를 수정하였습니다.";
 
-            //내 그룹 목록 갱신
-            Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
-            gm.gameDispatcher.dispatch(getMyGroupAct);
+                //내 그룹 목록 갱신
+                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
+                gm.gameDispatcher.dispatch(getMyGroupAct);
+            }
+
+            else {
+                settingChangeView.onModal(groupStore.groupEditCallbackMsg);
+            }
+            
         }
 
         if(groupStore.eventType == ActionTypes.GROUP_DETAIL_REFRESH) {

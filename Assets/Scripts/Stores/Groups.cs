@@ -17,8 +17,9 @@ public class Groups : AjwStore {
     public Group clickedGroup;
     public ActionTypes eventType;
     public int sceneIndex = -1;
-    public bool 
+    public bool
         addResult = false,
+        groupEditResult = false,
         isGroupMember = false,
         delResult = false;
 
@@ -28,6 +29,7 @@ public class Groups : AjwStore {
 
     private int tmp_groupIndex;
     public string groupAddCallbackMsg;
+    public string groupEditCallbackMsg;
 
     UTF8Encoding utf8 = new UTF8Encoding();
 
@@ -316,6 +318,15 @@ public class Groups : AjwStore {
                 dispatcher.dispatch(refreshAct);
                 break;
             case NetworkAction.statusTypes.FAIL:
+                GroupAddError addErrorCallback = GroupAddError.fromJSON(payload.response.data);
+                if(addErrorCallback.groupIntro != null) {
+                    if (addErrorCallback.groupIntro[0].Contains("200")) {
+                        Debug.Log("!!");
+                        groupEditCallbackMsg = "그룹 소개글은 최대 200자까지 지원됩니다.";
+                        groupEditResult = false;
+                        _emitChange();
+                    }
+                }
                 Debug.Log(payload.response.data);
                 break;
         }
@@ -491,6 +502,7 @@ public class GroupAddError {
     public string[] name;
     public string[] locationDistrict;
     public string[] locationCity;
+    public string[] groupIntro;
 
     public static GroupAddError fromJSON(string json) {
         return JsonUtility.FromJson<GroupAddError>(json);
