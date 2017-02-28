@@ -595,7 +595,7 @@ public class UIInput : MonoBehaviour
 
 		if (label != null && NGUITools.GetActive(this))
 		{
-			value = label.text;
+			//value = label.text;
             mValue = value;
 #if MOBILE
 			if (mKeyboard != null)
