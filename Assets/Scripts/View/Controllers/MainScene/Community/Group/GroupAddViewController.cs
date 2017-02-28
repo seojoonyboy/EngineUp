@@ -26,6 +26,7 @@ public class GroupAddViewController : MonoBehaviour {
         for (int i=0; i< districts.Length; i++) {
             provinceMenu.items.Add(districts[i].name);
         }
+        provinceMenu.value = provinceMenu.items[0];
     }
 
     public void provinceSelected() {
