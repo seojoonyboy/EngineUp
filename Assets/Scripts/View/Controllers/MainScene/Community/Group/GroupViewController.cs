@@ -115,8 +115,9 @@ public class GroupViewController : MonoBehaviour {
                 getMyGroupAct.id = 0;
                 gm.gameDispatcher.dispatch(getMyGroupAct);
             }
+            //그룹 생성 실패시, 그룹 수정 실패시
             else {
-
+                addViewCtrler.onModal(groupStore.groupAddCallbackMsg);
             }
         }
 

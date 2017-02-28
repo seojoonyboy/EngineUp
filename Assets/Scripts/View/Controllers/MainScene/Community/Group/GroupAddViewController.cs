@@ -10,6 +10,7 @@ public class GroupAddViewController : MonoBehaviour {
 
     GameManager gm;
 
+    public GameObject modal;
     void Awake() {
         gm = GameManager.Instance;
     }
@@ -55,8 +56,14 @@ public class GroupAddViewController : MonoBehaviour {
     }
 
     //그룹 생성 실패시 모달
-    public void onModal() {
+    public void onModal(string msg) {
+        modal.SetActive(true);
+        modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = msg;
+    }
 
+    public void offModal() {
+        modal.SetActive(false);
+        modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "";
     }
 
     public void offPanel() {

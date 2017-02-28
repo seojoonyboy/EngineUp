@@ -1,5 +1,6 @@
 ﻿using Flux;
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Text;
 
@@ -26,6 +27,7 @@ public class Groups : AjwStore {
         groupMembers;
 
     private int tmp_groupIndex;
+    public string groupAddCallbackMsg;
 
     UTF8Encoding utf8 = new UTF8Encoding();
 
@@ -235,15 +237,10 @@ public class Groups : AjwStore {
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("groups");
-                //허용 글자 수 초과시
-                if (payload.name.Length >= 25) {
-                    payload.status = NetworkAction.statusTypes.FAIL;
-                    return;
-                }
                 WWWForm form = new WWWForm();
-                //Debug.Log("name : " + payload.name);
-                //Debug.Log("locationDistrict : " + payload.district);
-                //Debug.Log("locationCity : " + payload.city);
+                Debug.Log("name : " + payload.name);
+                Debug.Log("locationDistrict : " + payload.district);
+                Debug.Log("locationCity : " + payload.city);
 
                 form.AddField("name", payload.name);
                 form.AddField("locationDistrict", payload.district);
@@ -262,6 +259,27 @@ public class Groups : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(payload.response.data);
+                GroupAddError addErrorCallback = GroupAddError.fromJSON(payload.response.data);
+                //그룹명 입력 오류
+                if (addErrorCallback.name != null) {
+                    if(addErrorCallback.locationDistrict != null) {
+                        groupAddCallbackMsg = "그룹명과 지역명을 입력해주세요.";
+                    }
+                    else {
+                        if (addErrorCallback.name[0].Contains("25")) {
+                            groupAddCallbackMsg = "그룹명은 최대 25까지 허용됩니다.";
+                        }
+                        else {
+                            groupAddCallbackMsg = "그룹명을 입력해주세요.";
+                        }
+                    }
+                }
+
+                else {
+                    if (addErrorCallback.locationDistrict != null) {
+                        groupAddCallbackMsg = "지역명을 입력해주세요.";
+                    }
+                }
                 addResult = false;
                 _emitChange();
                 break;
@@ -466,4 +484,15 @@ public class CallbackUser {
     public string nickName;
     public int representative;
     public string createDate;
+}
+
+[System.Serializable]
+public class GroupAddError {
+    public string[] name;
+    public string[] locationDistrict;
+    public string[] locationCity;
+
+    public static GroupAddError fromJSON(string json) {
+        return JsonUtility.FromJson<GroupAddError>(json);
+    }
 }
