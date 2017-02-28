@@ -364,6 +364,8 @@ public class Groups : AjwStore {
                 networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
+                dispatcher.dispatch(getMyGroupAct);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
