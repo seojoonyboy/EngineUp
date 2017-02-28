@@ -18,7 +18,6 @@ public class MainBtnController : MonoBehaviour {
                 Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
                 GameManager.Instance.gameDispatcher.dispatch(act);
                 ridingPanel.SetActive(true);
-                offAvatar();
                 break;
 
             case MAIN_BUTTON.COMMUNITY:
@@ -39,9 +38,5 @@ public class MainBtnController : MonoBehaviour {
 
     public void onAvatar() {
         avatar.SetActive(true);
-    }
-
-    public void offAvatar() {
-        avatar.SetActive(false);
     }
 }
