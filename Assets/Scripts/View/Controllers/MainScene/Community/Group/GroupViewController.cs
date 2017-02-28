@@ -156,6 +156,7 @@ public class GroupViewController : MonoBehaviour {
             Group_getMemberAction _getMembersAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
             _getMembersAct.id = detailView.id;
             _getMembersAct.forMemberManage = false;
+            _getMembersAct.forDestroyManage = true;
             gm.gameDispatcher.dispatch(_getMembersAct);
 
             modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "멤버요청을 수락하였습니다.";
