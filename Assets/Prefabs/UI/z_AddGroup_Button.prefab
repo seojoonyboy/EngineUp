@@ -54,9 +54,10 @@ GameObject:
   - 114: {fileID: 114000011621354690}
   - 65: {fileID: 65000011051059026}
   - 114: {fileID: 114000013602443648}
+  - 114: {fileID: 114000010745031800}
   m_Layer: 5
   m_Name: z_AddGroup_Button
-  m_TagString: NoneRemoveList
+  m_TagString: AddBtn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -84,7 +85,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000011882154646}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -68, z: 0}
+  m_LocalPosition: {x: 0, y: -92, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -126,7 +127,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000012954687488}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0046081543, y: 67, z: 0}
+  m_LocalPosition: {x: 0, y: 92, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -142,8 +143,20 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1070, y: 142, z: 0}
+  m_Size: {x: 1070, y: 191, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114000010745031800
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013531057386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66dce13ddf8cac54cb2c7c5ee3a90bc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 8
 --- !u!114 &114000011621354690
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -175,13 +188,13 @@ MonoBehaviour:
   mColor: {r: 0.123756506, g: 0.8014706, b: 0.26864704, a: 1}
   mPivot: 4
   mWidth: 1070
-  mHeight: 142
+  mHeight: 191
   mDepth: 6
   mMat: {fileID: 0}
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 7.535211
+  aspectRatio: 5.602094
   mType: 0
   mFillDirection: 4
   mFillAmount: 1
@@ -228,8 +241,8 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 94
-  mHeight: 94
+  mWidth: 127
+  mHeight: 127
   mDepth: 7
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
@@ -276,7 +289,13 @@ MonoBehaviour:
   pressedSprite2D: {fileID: 0}
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
-  onClick: []
+  onClick:
+  - mTarget: {fileID: 0}
+    mMethodName: checkCanAdd
+    mParameters:
+    - obj: {fileID: 1000013531057386}
+      field: 
+    oneShot: 0
 --- !u!114 &114000013956521114
 MonoBehaviour:
   m_ObjectHideFlags: 1
