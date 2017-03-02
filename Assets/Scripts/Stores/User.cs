@@ -10,7 +10,8 @@ public class User : AjwStore {
 
     public bool 
         isSearch = false,
-        isCreated = false;
+        isCreated = false,
+        isFirstTry = false;
 
     public string UImsg;
     //facebook token
@@ -31,6 +32,12 @@ public class User : AjwStore {
     void signup(SignupAction act) {
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
+                if(act.nickName.Length == 0) {
+                    UserCreateError noneNickNameError = ActionCreator.createAction(ActionTypes.USER_CREATE_ERROR) as UserCreateError;
+                    noneNickNameError.msg = "닉네임을 입력하세요.";
+                    dispatcher.dispatch(noneNickNameError);
+                    return;
+                }
                 var strBuilder = GameManager.Instance.sb;
                 WWWForm form = new WWWForm();
                 strBuilder.Remove(0, strBuilder.Length);
@@ -109,7 +116,7 @@ public class User : AjwStore {
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
-                Debug.Log("User 정보 없음. 회원가입 창을 띄웁니다.");
+                Debug.Log("User 정보 없음.");
                 //해당 user정보가 없음
                 //회원가입 진행. 약관 동의 화면
                 SignupModalAction signupModalAct = ActionCreator.createAction(ActionTypes.SIGNUPMODAL) as SignupModalAction;
