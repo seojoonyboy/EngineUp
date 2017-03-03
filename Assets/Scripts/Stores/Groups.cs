@@ -213,6 +213,7 @@ public class Groups : AjwStore {
                     .Append("/members?userId=")
                     .Append(payload.userId);
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                Debug.Log("그룹 내 나의상태 확인 url : " + strBuilder);
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 Debug.Log("그룹 멤버 확인에 대한 callback : " + payload.response.data);
