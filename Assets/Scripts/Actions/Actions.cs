@@ -3,10 +3,9 @@ using System;
 using System.Text;
 
 public enum ActionTypes {
-    SIGNUP, SIGNUPMODAL, SIGNIN, GAME_START, GAME_END,
+    SIGNUP, SIGNIN, GAME_START, GAME_END,
     GET_GPS_DATA, RIDING_START, RIDING_END, RIDING_RESULT,
-    POST_FAIL, POST_SUCCESS, USER_CREATE,
-    COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB, USER_CREATE_ERROR,
+    COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB,
     GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ON_PANEL, GROUP_ADD, GROUP_MY_GROUPS, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT,
     GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DETAIL_REFRESH, GROUP_DESTROY
 }
@@ -25,9 +24,6 @@ public static class ActionCreator{
         case ActionTypes.SIGNIN:
             _return = new SigninAction();
             break;
-        case ActionTypes.SIGNUPMODAL:
-            _return = new SignupModalAction();
-            break;
         case ActionTypes.GAME_START:
             _return = new GameStartAction();
             break;
@@ -42,15 +38,6 @@ public static class ActionCreator{
             break;
         case ActionTypes.RIDING_RESULT:
             _return = new RidingResultAction();
-            break;
-        case ActionTypes.POST_FAIL:
-            _return = new Actions();
-            break;
-        case ActionTypes.POST_SUCCESS:
-            _return = new Actions();
-            break;
-        case ActionTypes.USER_CREATE:
-            _return = new UserCreateAction();
             break;
         case ActionTypes.COMMUNITY_SEARCH:
             _return = new CommunitySearchAction();
@@ -72,9 +59,6 @@ public static class ActionCreator{
             break;
         case ActionTypes.DELETE_COMMUNITY_FRIEND_PREFAB:
             _return = new DelFriendPrefab();
-            break;
-        case ActionTypes.USER_CREATE_ERROR:
-            _return = new UserCreateError();
             break;
         case ActionTypes.GROUP_GET_MEMBERS:
             _return = new Group_getMemberAction();
@@ -137,7 +121,6 @@ public class SignupAction : NetworkAction {
 }
 
 public class SigninAction : SignupAction { }
-public class SignupModalAction : Actions { }
 
 public class NetworkAction : Actions {
     public enum statusTypes {REQUEST, SUCCESS, FAIL};
@@ -158,11 +141,6 @@ public class RidingEndAction : Actions {}
 public class RidingResultAction : Actions {
     public string nickname;
     public StringBuilder data = new StringBuilder();
-}
-
-public class UserCreateAction : NetworkAction {
-    public string deviceId;
-    public string nickName;
 }
 
 public class CommunityInitAction : NetworkAction {
@@ -196,10 +174,6 @@ public class GetMyFriendListAction : NetworkAction { }
 
 public class DelFriendPrefab : Actions {
     public GameObject targetObj;
-}
-
-public class UserCreateError : Actions {
-    public string msg;
 }
 
 public class GetDistrictsData : NetworkAction {

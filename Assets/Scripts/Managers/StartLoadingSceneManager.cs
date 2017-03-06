@@ -77,7 +77,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     }
 
     public void checkBoxListener() {
-        Debug.Log(mobileServiceCheckBox.value);
+        //Debug.Log(mobileServiceCheckBox.value);
     }
 
     //이용 약관 동의 화면
@@ -119,14 +119,19 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     }
 
     void userListener() {
-        //Debug.Log(userStore.eventType);
-        if(userStore.eventType == ActionTypes.SIGNUPMODAL) {
-            //onNicknameModal();
-            //약관 동의 화면
-            onPolicyModal();
+        if(userStore.eventType == ActionTypes.SIGNIN) {
+            if(userStore.storeStatus == storeStatus.ERROR) {
+                onPolicyModal();
+            }
         }
 
-        if(userStore.eventType  == ActionTypes.GAME_START) {
+        if(userStore.eventType == ActionTypes.SIGNUP) {
+            if(userStore.storeStatus == storeStatus.ERROR && userStore.message.Contains("이미")) {
+                Debug.Log("이미 존재하는 닉네임");
+            }
+        }
+
+        if (userStore.eventType  == ActionTypes.GAME_START) {
             loadMainScene();
             if(userStore.loginType == SignupAction.loginType.FB) {
                 PlayerPrefs.SetString("socialType", "FB");
@@ -134,18 +139,6 @@ public class StartLoadingSceneManager : fbl_SceneManager {
             if (userStore.loginType == SignupAction.loginType.NO) {
                 PlayerPrefs.SetString("socialType", "NO");
             }
-        }
-
-        if (userStore.eventType == ActionTypes.USER_CREATE) {
-            if (userStore.isCreated) {
-                loadMainScene();
-                userStore.isCreated = false;
-            }
-        }
-
-        if (userStore.eventType == ActionTypes.USER_CREATE_ERROR) {
-            NickNameCheckResultModal.SetActive(true);
-            NickNameCheckResultModal.transform.Find("Background/Label").GetComponent<UILabel>().text = userStore.UImsg;
         }
     }
 

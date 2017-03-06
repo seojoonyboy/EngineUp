@@ -6,3 +6,5 @@ public abstract class AjwStore : Store<Actions> {
         get { return (QueueDispatcher<Actions>) base.dispatcher; }
     }
 }
+
+public enum storeStatus { ERROR, NORMAL, WAITING_REQ };
