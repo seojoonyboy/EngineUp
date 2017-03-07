@@ -85,7 +85,7 @@ public class User : AjwStore {
 
                 SignUpError msg = SignUpError.fromJSON(act.response.data);
                 Debug.Log("Detail 필드 : " + msg.detail);
-                if (UImsg.Contains("exsist")) {
+                if (msg.detail.Contains("exsist")) {
                     //Debug.Log("닉네임 중복");
                     message = "이미 존재하는 닉네임입니다.";
                 }
