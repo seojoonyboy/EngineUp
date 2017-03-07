@@ -11,12 +11,9 @@ public class GroupAddViewController : MonoBehaviour {
     GameManager gm;
 
     public GameObject modal;
+
     void Awake() {
         gm = GameManager.Instance;
-    }
-
-    void OnEnable() {
-        setProvinceList();
     }
 
     public void setProvinceList() {
@@ -56,19 +53,34 @@ public class GroupAddViewController : MonoBehaviour {
         gm.gameDispatcher.dispatch(addAct);
     }
 
-    //그룹 생성 실패시 모달
-    public void onModal(string msg) {
-        modal.SetActive(true);
-        modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = msg;
-    }
-
-    public void offModal() {
-        modal.SetActive(false);
-        modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "";
-    }
-
     public void offPanel() {
         nameInput.value = provinceMenu.items[0];
         gameObject.SetActive(false);
+    }
+
+    public void onGroupStoreListener() {
+        Groups groupStore = controller.groupStore;
+        ActionTypes type = groupStore.eventType;
+        if (type == ActionTypes.GET_DISTRICT_DATA) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                gameObject.SetActive(true);
+                setProvinceList();
+            }
+        }
+
+        if(type == ActionTypes.GET_CITY_DATA) {
+            setCityList();
+        }
+
+        if (type == ActionTypes.GROUP_ADD) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                gameObject.SetActive(false);
+            }
+            else if(groupStore.storeStatus == storeStatus.ERROR) {
+
+            }
+            modal.SetActive(true);
+            modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = groupStore.message;
+        }
     }
 }

@@ -109,13 +109,18 @@ public class GroupSettingChangeView : MonoBehaviour {
         isEditDesc = true;
     }
 
-    public void onModal(string msg) {
-        modal.SetActive(true);
-        modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = msg;
-    }
+    //Group Detail View에게서 리스너 할당 받음.
+    public void onGroupStoreListener() {
+        Groups groupStore = controller.groupStore;
+        ActionTypes groupStoreEventType = groupStore.eventType;
 
-    public void offModal() {
-        modal.SetActive(false);
-        modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "";
+        //modal.SetActive(true);
+        //modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = groupStore.message;
+
+        if (groupStore.eventType == ActionTypes.GROUP_EDIT) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                gameObject.SetActive(false);
+            }
+        }
     }
 }

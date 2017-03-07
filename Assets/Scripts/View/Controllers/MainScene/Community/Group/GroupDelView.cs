@@ -6,6 +6,7 @@ public class GroupDelView : MonoBehaviour {
     GameManager gm;
 
     public GameObject modal;
+    public bool isDestroyReq = false;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -13,22 +14,6 @@ public class GroupDelView : MonoBehaviour {
 
     public void onDestroyButton() {
         getMembers();
-    }
-
-    public void onModal(string result) {
-        modal.SetActive(true);
-        switch (result) {
-            case "SUCCESS":
-                modal.SetActive(true);
-                modal.transform.Find("SuccessModal").gameObject.SetActive(true);
-                modal.transform.Find("FailModal").gameObject.SetActive(false);
-                break;
-            case "FAIL":
-                modal.SetActive(true);
-                modal.transform.Find("FailModal").gameObject.SetActive(true);
-                modal.transform.Find("SuccessModal").gameObject.SetActive(false);
-                break;
-        }
     }
 
     public void offPanel() {
@@ -44,33 +29,50 @@ public class GroupDelView : MonoBehaviour {
 
     private void getMembers() {
         //그룹장을 제외한 그룹원이 존재하는지 확인
-        Group_getMemberAction getMemberAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
-        getMemberAct.id = controller.detailView.id;
-        getMemberAct.forDestroyManage = true;
-        gm.gameDispatcher.dispatch(getMemberAct);
+        Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+        act.id = controller.detailView.id;
+        gm.gameDispatcher.dispatch(act);
+
+        isDestroyReq = true;
     }
 
-    public void getMemberCallback() {
+    private bool checkMemberExist() {
         Member[] members = controller.groupStore.groupMembers;
-        int memberCnt = 0;
         for (int i = 0; i < members.Length; i++) {
-            if (members[i].memberState == "MB") {
-                if (members[i].memberGrade != "GO") {
-                    memberCnt++;
-                }
+            if (members[i].memberState != "MB") {
+                modal.SetActive(true);
+                modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "가입된 그룹원이 있어 해체할 수 없습니다.";
+                return false;
             }
         }
-        if (memberCnt == 0) {
-            destoyReq();
-        }
-        else {
-            onModal("FAIL");
-        }
+        return true;
     }
 
     public void destoyReq() {
+        //Debug.Log("Destroy req");
         Group_del delAct = ActionCreator.createAction(ActionTypes.GROUP_DESTROY) as Group_del;
         delAct.id = controller.detailView.id;
         gm.gameDispatcher.dispatch(delAct);
+    }
+
+    public void onGroupStoreListener() {
+        Groups groupStore = controller.groupStore;
+        ActionTypes groupStoreEventType = groupStore.eventType;
+        if (groupStoreEventType == ActionTypes.GROUP_DESTROY) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                modal.SetActive(true);
+                modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = controller.groupStore.message;
+                //gameObject.SetActive(false);
+            }
+        }
+
+        if(groupStoreEventType == ActionTypes.GROUP_GET_MEMBERS) {
+            if (groupStore.storeStatus == storeStatus.NORMAL) {
+                if (isDestroyReq && checkMemberExist()) {
+                    destoyReq();
+                    isDestroyReq = false;
+                }
+            }
+        }
     }
 }

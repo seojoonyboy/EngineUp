@@ -57,7 +57,7 @@ public class GroupSearchView : MonoBehaviour {
     }
 
     void showDetail(GameObject _obj) {
-        controller.onPanel(_obj);
+        //controller.onPanel(_obj);
     }
 
     void OnDisable() {

@@ -6,7 +6,8 @@ public class GroupMemberManageView : MonoBehaviour {
     public GameObject 
         container,
         memberHeader,
-        waitingHeader;
+        waitingHeader,
+        groupModal;
 
     public GroupViewController controller;
     public UIGrid grid;
@@ -22,11 +23,6 @@ public class GroupMemberManageView : MonoBehaviour {
 
     void Start() {
         gm = GameManager.Instance;
-    }
-
-    void OnEnable() {
-        members = new List<Member>();
-        makeList();
     }
 
     //탈퇴 버튼, 거부 버튼, 강퇴 버튼
@@ -49,6 +45,7 @@ public class GroupMemberManageView : MonoBehaviour {
     }
 
     public void makeList() {
+        members = new List<Member>();
         removeAllList();
         allMembers = controller.groupStore.groupMembers;
         groupId = controller.detailView.id;
@@ -59,7 +56,6 @@ public class GroupMemberManageView : MonoBehaviour {
             }
             else if(allMembers[i].memberState == "WT") {
                 waitingMembers.Add(allMembers[i]);
-                Debug.Log("!!");
             }
         }
 
@@ -142,5 +138,22 @@ public class GroupMemberManageView : MonoBehaviour {
         param.expectedType = _type;    // 값의 타입.
 
         return param;
+    }
+
+    //Group Detail View에게서 리스너 할당 받음.
+    public void onGroupStoreListener() {
+        Groups groupStore = controller.groupStore;
+        ActionTypes groupStoreEventType = groupStore.eventType;
+
+        if(groupStoreEventType == ActionTypes.GROUP_GET_MEMBERS) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                makeList();
+            }
+        }
+
+        if(groupStoreEventType == ActionTypes.GROUP_MEMBER_ACCEPT || groupStoreEventType == ActionTypes.GROUP_BAN) {
+            groupModal.SetActive(true);
+            groupModal.transform.Find("Modal/Label").GetComponent<UILabel>().text = groupStore.message;
+        }
     }
 }

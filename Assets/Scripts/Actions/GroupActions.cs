@@ -5,10 +5,6 @@ public class Group_search : NetworkAction {
     public string keyword;
 }
 
-public class Group_OnPanel : Actions {
-    public int index;
-}
-
 public class Group_AddAction : NetworkAction {
     public string name;
     public string district;
@@ -34,5 +30,4 @@ public class Group_accept : Group_myGroups {
     public int memberId;
 }
 public class Group_ban : Group_accept { }
-public class Group_detail_refresh : Group_myGroups { }
 public class Group_del : Group_myGroups { }

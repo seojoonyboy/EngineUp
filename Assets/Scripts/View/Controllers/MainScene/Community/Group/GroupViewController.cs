@@ -10,9 +10,7 @@ public class GroupViewController : MonoBehaviour {
     public UIInput searchInput;
 
     public GroupAddViewController addViewCtrler;
-    public GroupDetailView detailView;
-    public GroupMemberManageView memberManageView;
-    public GroupSettingChangeView settingChangeView;
+    public GroupDetailViewController detailView;
     public GroupDelView groupDelView;
 
     public GameObject container;
@@ -26,8 +24,7 @@ public class GroupViewController : MonoBehaviour {
 
     void OnEnable() {
         //내 그룹 목록을 불러온다.
-        Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
-        getMyGroupAct.id = 0;
+        Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
         gm.gameDispatcher.dispatch(getMyGroupAct);
     }
 
@@ -38,20 +35,13 @@ public class GroupViewController : MonoBehaviour {
     }
 
     public void onPanel(GameObject obj) {
-        int sceneIndex = obj.GetComponent<GroupSceneIndex>().index;
-        sendReq(sceneIndex, obj);
-        //subPanels[index].SetActive(true);
+        int index = obj.GetComponent<GroupSceneIndex>().index;
+        sendReq(index, obj);
     }
 
-    private void sendReq(int sceneIndex, GameObject obj) {
+    public void sendReq(int sceneIndex, GameObject obj) {
         Debug.Log("Scene Index : " + sceneIndex);
         switch (sceneIndex) {
-            //그룹원 보기
-            case 0:
-                Group_getMemberAction getMembersAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
-                getMembersAct.id = detailView.id;
-                gm.gameDispatcher.dispatch(getMembersAct);
-                break;
             //그룹찾기
             case 1:
                 Group_search searchAct = ActionCreator.createAction(ActionTypes.GROUP_SEARCH) as Group_search;
@@ -63,164 +53,55 @@ public class GroupViewController : MonoBehaviour {
                 subPanels[sceneIndex].SetActive(true);
                 break;
             //그룹 설정 변경
-            //그룹추가
             case 4:
+            //그룹추가
             case 8:
-                GetDistrictsData getDistDataAct = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
-                getDistDataAct.id = sceneIndex;
-                gm.gameDispatcher.dispatch(getDistDataAct);
+                GetDistrictsData distAct = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
+                gm.gameDispatcher.dispatch(distAct);
                 break;
             //그룹원 관리
+            //그룹원 보기
+            case 0:
             case 5:
                 Group_getMemberAction _getMembersAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
                 _getMembersAct.id = detailView.id;
-                _getMembersAct.forMemberManage = true;
                 gm.gameDispatcher.dispatch(_getMembersAct);
+                subPanels[sceneIndex].SetActive(true);
                 break;
-            //그룹 상세보기
             case 6:
                 subPanels[sceneIndex].SetActive(true);
                 break;
             case 7:
+            //그룹 상세보기
                 int id = obj.transform.parent.GetComponent<GroupIndex>().id;
                 Group_detail getGroupDetailAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL) as Group_detail;
                 getGroupDetailAct.id = id;
                 gm.gameDispatcher.dispatch(getGroupDetailAct);
+                subPanels[sceneIndex].SetActive(true);
                 //Server에게 index를 이용한 리스트 요청 액션을 작성한다.
                 break;
         }
     }
 
     public void onGroupStoreListener() {
-        if(groupStore.eventType == ActionTypes.GROUP_MY_GROUPS) {
+        detailView.onGroupStoreListener();
+        addViewCtrler.onGroupStoreListener();
+
+        ActionTypes groupStoreEventType = groupStore.eventType;
+        if (groupStoreEventType == ActionTypes.MY_GROUP_PANEL || groupStoreEventType == ActionTypes.GROUP_ADD || groupStoreEventType == ActionTypes.GROUP_DESTROY) {
             makeList(groupStore.myGroups);
         }
 
-        if (groupStore.eventType == ActionTypes.GROUP_ON_PANEL) {
-            int index = groupStore.sceneIndex;
-            if(index != -1) {
-                subPanels[index].SetActive(true);
-            }
-        }
-        if(locationStore.eventType == ActionTypes.GET_CITY_DATA) {
-            addViewCtrler.setCityList();
-            settingChangeView.setCityList();
-        }
-
-        if(groupStore.eventType == ActionTypes.GROUP_ADD) {
-            if (groupStore.addResult) {
-                addViewCtrler.offPanel();
-                //내 그룹 목록을 불러온다.
-                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
-                getMyGroupAct.id = 0;
-                gm.gameDispatcher.dispatch(getMyGroupAct);
-            }
-            //그룹 생성 실패시, 그룹 수정 실패시
-            else {
-                addViewCtrler.onModal(groupStore.groupAddCallbackMsg);
-            }
-        }
-
-        if(groupStore.eventType == ActionTypes.GROUP_CHECK_MY_STATUS) {
-            if (groupStore.isGroupMember) {
-                Debug.Log("그룹 멤버임");
-                if(groupStore.myInfoInGroup[0].memberGrade == "GO") {
-                    Debug.Log("그룹장임");
-                    detailView.setViewMode("OWNER");
-                }
-                else if(groupStore.myInfoInGroup[0].memberGrade == "GM") {
-                    detailView.setViewMode("MEMBER");
-                }
-            }
-            else {
-                detailView.setViewMode("VISITOR");
-                Debug.Log("그룹 멤버가 아님");
-            }
-        }
-
-        if(groupStore.eventType == ActionTypes.GROUP_JOIN) {
-            detailView.setViewMode("MEMBER");
-
-            modal.SetActive(true);
-
-            modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "회원가입 신청을 완료하였습니다.";
-            //내 그룹 목록 갱신
-            Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
-            getMyGroupAct.id = 0;
-            gm.gameDispatcher.dispatch(getMyGroupAct);
-        }
-
-        if(groupStore.eventType == ActionTypes.GROUP_MEMBER_ACCEPT) {
-            modal.SetActive(true);
-
-            //해당 그룹 멤버 목록 갱신
-            Group_getMemberAction _getMembersAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
-            _getMembersAct.id = detailView.id;
-            _getMembersAct.forMemberManage = false;
-            _getMembersAct.forDestroyManage = true;
-            gm.gameDispatcher.dispatch(_getMembersAct);
-
-            modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "멤버요청을 수락하였습니다.";
-        }
-
-        if(groupStore.eventType == ActionTypes.GROUP_BAN) {
-            modal.SetActive(true);
-
-            //해당 그룹 멤버 목록 갱신
-            Group_getMemberAction _getMembersAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
-            _getMembersAct.id = detailView.id;
-            _getMembersAct.forMemberManage = false;
-            _getMembersAct.forDestroyManage = true;
-            gm.gameDispatcher.dispatch(_getMembersAct);
-
-            modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "탈퇴 되었습니다.";
-        }
-
-        if(groupStore.eventType == ActionTypes.GROUP_GET_MEMBERS) {
-            memberManageView.makeList();
-            groupDelView.getMemberCallback();
-        }
-
         if(groupStore.eventType == ActionTypes.GROUP_EDIT) {
-            if (groupStore.groupEditResult) {
-                settingChangeView.gameObject.SetActive(false);
+            //if (groupStore.groupEditResult) {
+            //    modal.SetActive(true);
+            //    modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "그룹 상세 정보를 수정하였습니다.";
+            //}
 
-                modal.SetActive(true);
-
-                modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "그룹 상세 정보를 수정하였습니다.";
-
-                //내 그룹 목록 갱신
-                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
-                gm.gameDispatcher.dispatch(getMyGroupAct);
-            }
-
-            else {
-                settingChangeView.onModal(groupStore.groupEditCallbackMsg);
-            }
+            //else {
+            //}
             
         }
-
-        if(groupStore.eventType == ActionTypes.GROUP_DETAIL_REFRESH) {
-            detailView.OnEnable();
-        }
-
-        if(groupStore.eventType == ActionTypes.GROUP_DESTROY) {
-            subPanels[2].SetActive(false);
-            //subPanels[6].SetActive(false);
-            subPanels[7].SetActive(false);
-
-            if (groupStore.delResult) {
-                groupDelView.onModal("SUCCESS");
-            }
-            else {
-                groupDelView.onModal("FAIL");
-            }
-        }
-    }
-
-    public void checkCanAdd(GameObject obj) {
-        //조건에 만족하면
-        onPanel(obj);
     }
 
     private void makeList(Group[] myGroups) {
@@ -246,6 +127,10 @@ public class GroupViewController : MonoBehaviour {
         containerInit();
     }
 
+    void showDetail(GameObject obj) {
+        sendReq(7, obj);
+    }
+
     private void removeAllList() {
         foreach(Transform child in grid.transform) {
             if(child.tag == "AddBtn") {
@@ -268,10 +153,6 @@ public class GroupViewController : MonoBehaviour {
         param.expectedType = _type;    // 값의 타입.
 
         return param;
-    }
-
-    void showDetail(GameObject _obj) {
-        onPanel(_obj);
     }
 
     public void offModal() {

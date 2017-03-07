@@ -5,6 +5,7 @@ public class GroupMemberView : MonoBehaviour {
     //View Controller로부터 그룹의 id를 할당받는다.
     public int index;
     public GroupViewController controller;
+    GameManager gm;
 
     public UIGrid 
         top_grid,
@@ -16,13 +17,16 @@ public class GroupMemberView : MonoBehaviour {
     public GameObject container;
 
     void OnEnable() {
-        removeAllList();
-        members = controller.groupStore.groupMembers;
-        makeList();
+        gm = GameManager.Instance;
+        Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+        act.id = controller.detailView.id;
+        gm.gameDispatcher.dispatch(act);
     }
 
     public void makeList() {
-        for(int i=0; i<members.Length; i++) {
+        members = controller.groupStore.groupMembers;
+        removeAllList();
+        for (int i=0; i<members.Length; i++) {
             if(members[i].memberState != "MB") {
                 continue;
             }
@@ -64,3 +68,5 @@ public class GroupMemberView : MonoBehaviour {
         top_grid.Reposition();
     }
 }
+
+

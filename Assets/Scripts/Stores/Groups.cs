@@ -5,6 +5,11 @@ using System.Collections;
 using System.Text;
 
 public class Groups : AjwStore {
+    //store status
+    public storeStatus storeStatus = storeStatus.NORMAL;
+    //store message
+    public string message;
+
     public Groups(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher) { }
 
     NetworkManager networkManager = NetworkManager.Instance;
@@ -17,11 +22,7 @@ public class Groups : AjwStore {
     public Group clickedGroup;
     public ActionTypes eventType;
     public int sceneIndex = -1;
-    public bool
-        addResult = false,
-        groupEditResult = false,
-        isGroupMember = false,
-        delResult = false;
+    public bool isGroupMember = false;
 
     public Member[] 
         myInfoInGroup,
@@ -35,6 +36,22 @@ public class Groups : AjwStore {
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
+            //내 그룹 패널 활성화 액션
+            case ActionTypes.MY_GROUP_PANEL:
+                Group_myGroups getMyGroupAct = action as Group_myGroups;
+                getMyGroups(getMyGroupAct);
+                break;
+
+            case ActionTypes.GROUP_ADD:
+                Group_AddAction addAct = action as Group_AddAction;
+                addGroup(addAct);
+                break;
+
+            case ActionTypes.GROUP_DETAIL:
+                Group_detail getMemberAct = action as Group_detail;
+                getGroupDetail(getMemberAct);
+                break;
+
             case ActionTypes.GROUP_CHECK_MY_STATUS:
                 Group_checkMyStatus getMyStatAct = action as Group_checkMyStatus;
                 checkMyStat(getMyStatAct);
@@ -43,28 +60,14 @@ public class Groups : AjwStore {
                 Group_getMemberAction getMembersAct = action as Group_getMemberAction;
                 getMembers(getMembersAct);
                 break;
-            case ActionTypes.GROUP_MY_GROUPS:
-                Group_myGroups getMyGroupAct = action as Group_myGroups;
-                getMyGroups(getMyGroupAct);
-                break;
-            case ActionTypes.GROUP_DETAIL:
-                Group_detail getMemberAct = action as Group_detail;
-                getGroupDetail(getMemberAct);
-                break;
-            case ActionTypes.GROUP_SEARCH:
-                Group_search searchAct = action as Group_search;
-                searchGroups(searchAct);
-                break;
-            case ActionTypes.GROUP_ADD:
-                Group_AddAction addAct = action as Group_AddAction;
-                addGroup(addAct);
-                break;
-            case ActionTypes.GROUP_ON_PANEL:
-                Debug.Log("그룹 하위패널 활성화 액션 발생");
-                Group_OnPanel onGroupPanelAct = action as Group_OnPanel;
-                int index = onGroupPanelAct.index;
-                onPanel(index);
-                break;
+            //case ActionTypes.GROUP_MY_GROUPS:
+            //    Group_myGroups getMyGroupAct = action as Group_myGroups;
+            //    getMyGroups(getMyGroupAct);
+            //    break;
+            //case ActionTypes.GROUP_SEARCH:
+            //    Group_search searchAct = action as Group_search;
+            //    searchGroups(searchAct);
+            //    break;
             case ActionTypes.GROUP_JOIN:
                 Group_join groupJoinAct = action as Group_join;
                 joinGroup(groupJoinAct);
@@ -80,10 +83,6 @@ public class Groups : AjwStore {
             case ActionTypes.GROUP_EDIT:
                 Group_AddAction editAct = action as Group_AddAction;
                 modifyGroupInfo(editAct);
-                break;
-            case ActionTypes.GROUP_DETAIL_REFRESH:
-                Group_detail_refresh refreshAct = action as Group_detail_refresh;
-                refreshGroupDetail(refreshAct);
                 break;
             case ActionTypes.GROUP_DESTROY:
                 Group_del groupDelAct = action as Group_del;
@@ -106,27 +105,17 @@ public class Groups : AjwStore {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+
                 Debug.Log(payload.response.data);
                 groupMembers = JsonHelper.getJsonArray<Member>(payload.response.data);
-                Group_OnPanel onGroupPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
-                //그룹원 보기 패널 활성화
-                if (payload.forMemberManage) {
-                    Debug.Log("그룹원 관리를 위한 그룹원 목록 가져오기");
-                    onGroupPanel.index = 5;
-                    dispatcher.dispatch(onGroupPanel);
-                }
-                else if (!payload.forMemberManage) {
-                    if (payload.forDestroyManage) {
-                        _emitChange();
-                    }
-                    else {
-                        onGroupPanel.index = 0;
-                        dispatcher.dispatch(onGroupPanel);
-                    }
-                }
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+
                 Debug.Log(payload.response.data);
+                _emitChange();
                 break;
         }
     }
@@ -135,6 +124,9 @@ public class Groups : AjwStore {
     private void getMyGroups(Group_myGroups payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+                setMessage(1);
+
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -142,12 +134,18 @@ public class Groups : AjwStore {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+
                 Debug.Log(payload.response.data);
                 myGroups = JsonHelper.getJsonArray<Group>(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                setMessage(3);
+
                 Debug.Log(payload.response.data);
+                _emitChange();
                 break;
         }
     }
@@ -156,6 +154,8 @@ public class Groups : AjwStore {
     private void searchGroups(Group_search payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+
                 byte[] contents = utf8.GetBytes(payload.keyword);
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
@@ -166,13 +166,16 @@ public class Groups : AjwStore {
                 Debug.Log("그룹 검색 url : " + strBuilder.ToString());
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+
                 searchedGroups = JsonHelper.getJsonArray<Group>(payload.response.data);
-                Group_OnPanel onGroupPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
-                onGroupPanel.index = 1;
-                dispatcher.dispatch(onGroupPanel);
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+
                 Debug.Log(payload.response.data);
+                _emitChange();
                 break;
         }
     }
@@ -189,14 +192,17 @@ public class Groups : AjwStore {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+
                 Debug.Log(payload.response.data);
                 clickedGroup = Group.fromJSON(payload.response.data);
-                Group_OnPanel onGroupPanel = ActionCreator.createAction(ActionTypes.GROUP_ON_PANEL) as Group_OnPanel;
-                onGroupPanel.index = 7;
-                dispatcher.dispatch(onGroupPanel);
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+
                 Debug.Log(payload.response.data);
+                _emitChange();
                 break;
         }
     }
@@ -236,6 +242,9 @@ public class Groups : AjwStore {
     private void addGroup(Group_AddAction payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+                setMessage(1);
+
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -256,34 +265,36 @@ public class Groups : AjwStore {
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                message = "그룹 추가에 성공하였습니다.";
                 Debug.Log(payload.response.data);
-                addResult = true;
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+
                 Debug.Log(payload.response.data);
                 GroupAddError addErrorCallback = GroupAddError.fromJSON(payload.response.data);
                 //그룹명 입력 오류
                 if (addErrorCallback.name != null) {
                     if(addErrorCallback.locationDistrict != null) {
-                        groupAddCallbackMsg = "그룹명과 지역명을 입력해주세요.";
+                        message = "그룹명과 지역명을 입력해주세요.";
                     }
                     else {
                         if (addErrorCallback.name[0].Contains("25")) {
-                            groupAddCallbackMsg = "그룹명은 최대 25까지 허용됩니다.";
+                            message = "그룹명은 최대 25까지 허용됩니다.";
                         }
                         else {
-                            groupAddCallbackMsg = "그룹명을 입력해주세요.";
+                            message = "그룹명을 입력해주세요.";
                         }
                     }
                 }
 
                 else {
                     if (addErrorCallback.locationDistrict != null) {
-                        groupAddCallbackMsg = "지역명을 입력해주세요.";
+                        message = "지역명을 입력해주세요.";
                     }
                 }
-                addResult = false;
                 _emitChange();
                 break;
         }
@@ -293,6 +304,8 @@ public class Groups : AjwStore {
     private void modifyGroupInfo(Group_AddAction payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -300,9 +313,7 @@ public class Groups : AjwStore {
                     .Append(payload.id);
 
                 WWWForm form = new WWWForm();
-                //Debug.Log("name : " + payload.name);
-                //Debug.Log("locationDistrict : " + payload.district);
-                //Debug.Log("locationCity : " + payload.city);
+
                 form.AddField("groupIntro", payload.desc);
                 form.AddField("locationDistrict", payload.district);
                 form.AddField("locationCity", payload.city);
@@ -312,21 +323,24 @@ public class Groups : AjwStore {
                 tmp_groupIndex = payload.id;
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                message = "그룹 정보 수정에 성공하였습니다.";
+
                 Debug.Log(payload.response.data);
                 _emitChange();
-                Group_detail_refresh refreshAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL_REFRESH) as Group_detail_refresh;
-                refreshAct.id = tmp_groupIndex;
-                dispatcher.dispatch(refreshAct);
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
                 GroupAddError addErrorCallback = GroupAddError.fromJSON(payload.response.data);
                 if(addErrorCallback.groupIntro != null) {
                     if (addErrorCallback.groupIntro[0].Contains("200")) {
                         Debug.Log("!!");
-                        groupEditCallbackMsg = "그룹 소개글은 최대 200자까지 지원됩니다.";
-                        groupEditResult = false;
+                        message = "그룹 소개글은 최대 200자까지 지원됩니다.";
                         _emitChange();
                     }
+                }
+                else {
+                    message = "알 수 없는 오류입니다.";
                 }
                 Debug.Log(payload.response.data);
                 break;
@@ -337,6 +351,8 @@ public class Groups : AjwStore {
     private void joinGroup(Group_join payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -349,11 +365,16 @@ public class Groups : AjwStore {
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                message = "그룹 가입 신청을 완료하였습니다.";
                 Debug.Log(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                message = "그룹 신청간에 문제가 발생하였습니다.";
                 Debug.Log(payload.response.data);
+                _emitChange();
                 break;
         }
     }
@@ -362,6 +383,8 @@ public class Groups : AjwStore {
     private void acceptMember(Group_accept payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -377,15 +400,23 @@ public class Groups : AjwStore {
                 networkManager.request("PUT", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                message = "그룹 요청을 수락하였습니다.";
+                Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+                act.id = tmp_groupIndex;
+                getMembers(act);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                message = "그룹 요청 수락에 실패하였습니다.";
                 Debug.Log(payload.response.data);
+                _emitChange();
                 break;
         }
     }
 
-    //그룹 강퇴, 그룹 탈퇴
+    //그룹 강퇴, 그룹 탈퇴, 요청 거부
     private void delMember(Group_ban payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -397,15 +428,22 @@ public class Groups : AjwStore {
                     .Append("/members/")
                     .Append(payload.memberId);
                 Debug.Log("delete group member url : " + strBuilder.ToString());
+                tmp_groupIndex = payload.id;
                 networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
-                dispatcher.dispatch(getMyGroupAct);
+                storeStatus = storeStatus.NORMAL;
+                message = "그룹원을 제거(거부)하였습니다.";
+                Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+                act.id = tmp_groupIndex;
+                getMembers(act);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                message = "제거(거부)간에 문제가 발생하였습니다.";
                 Debug.Log(payload.response.data);
+                _emitChange();
                 break;
         }
     }
@@ -414,6 +452,8 @@ public class Groups : AjwStore {
     private void delGroup(Group_del payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -422,36 +462,16 @@ public class Groups : AjwStore {
                 networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.GROUP_MY_GROUPS) as Group_myGroups;
-                dispatcher.dispatch(getMyGroupAct);
-                delResult = true;
-                _emitChange();
-                break;
-            case NetworkAction.statusTypes.FAIL:
-                delResult = false;
-                _emitChange();
-                Debug.Log(payload.response.data);
-                break;
-        }
-    }
+                storeStatus = storeStatus.NORMAL;
+                message = "그룹이 해체되었습니다.";
 
-    //그룹 정보 갱신 (refresh)
-    private void refreshGroupDetail(Group_detail_refresh payload) {
-        switch (payload.status) {
-            case NetworkAction.statusTypes.REQUEST:
-                var strBuilder = GameManager.Instance.sb;
-                strBuilder.Remove(0, strBuilder.Length);
-                strBuilder.Append(networkManager.baseUrl)
-                    .Append("groups/")
-                    .Append(payload.id);
-                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
-                break;
-            case NetworkAction.statusTypes.SUCCESS:
-                Debug.Log(payload.response.data);
-                clickedGroup = Group.fromJSON(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                setMessage(3);
+
+                _emitChange();
                 Debug.Log(payload.response.data);
                 break;
         }
@@ -460,6 +480,21 @@ public class Groups : AjwStore {
     private void onPanel(int index) {
         sceneIndex = index;
         _emitChange();
+    }
+
+    private void setMessage(int type) {
+        switch (type) {
+            //서버 요청중
+            case 1:
+                message = "서버 요청중입니다. 잠시만 기다려 주세요.";
+                break;
+            case 2:
+                message = "서버 요청에 성공하였습니다.";
+                break;
+            case 3:
+                message = "서버 요청간에 문제가 발생하였습니다.";
+                break;
+        }
     }
 }
 

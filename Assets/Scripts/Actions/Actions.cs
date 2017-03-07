@@ -6,8 +6,8 @@ public enum ActionTypes {
     SIGNUP, SIGNIN, GAME_START, GAME_END,
     GET_GPS_DATA, RIDING_START, RIDING_END, RIDING_RESULT,
     COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB,
-    GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ON_PANEL, GROUP_ADD, GROUP_MY_GROUPS, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT,
-    GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DETAIL_REFRESH, GROUP_DESTROY
+    GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ADD, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT,
+    GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DESTROY, MY_GROUP_PANEL
 }
 
 public class Actions{
@@ -63,14 +63,8 @@ public static class ActionCreator{
         case ActionTypes.GROUP_GET_MEMBERS:
             _return = new Group_getMemberAction();
             break;
-        case ActionTypes.GROUP_MY_GROUPS:
-            _return = new Group_myGroups();
-            break;
         case ActionTypes.GROUP_DETAIL:
             _return = new Group_detail();
-            break;
-        case ActionTypes.GROUP_ON_PANEL:
-            _return = new Group_OnPanel();
             break;
         case ActionTypes.GROUP_SEARCH:
             _return = new Group_search();
@@ -99,11 +93,11 @@ public static class ActionCreator{
         case ActionTypes.GROUP_EDIT:
             _return = new Group_AddAction();
             break;
-        case ActionTypes.GROUP_DETAIL_REFRESH:
-            _return = new Group_detail_refresh();
-            break;
         case ActionTypes.GROUP_DESTROY:
             _return = new Group_del();
+            break;
+        case ActionTypes.MY_GROUP_PANEL:
+            _return = new Group_myGroups();
             break;
         }
          _return.type = _type;
