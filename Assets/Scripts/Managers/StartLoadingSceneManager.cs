@@ -65,6 +65,8 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         signUpAct.type = userStore.loginType;
 
         gm.gameDispatcher.dispatch(signUpAct);
+
+        nicknameModal.SetActive(false);
     }
 
     public void cancelInSignUpModal() {
@@ -89,7 +91,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     //이용 약관 동의 버튼
     public void onAgreePolicy() {
         //캐릭터 선택 화면으로 넘어감
-        if(mobileServiceCheckBox.value && privacyCollectCheckBox.value) {
+        if (mobileServiceCheckBox.value && privacyCollectCheckBox.value) {
             policyModal.SetActive(false);
             charselectModal.SetActive(true);
         }
@@ -107,8 +109,12 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     public void onDisagreePolicy() {
         //다시 로그인 버튼 화면으로 돌아감
         modal.SetActive(false);
+
         policyModal.SetActive(false);
         buttonGroup.SetActive(true);
+
+        mobileServiceCheckBox.value = false;
+        privacyCollectCheckBox.value = false;
     }
 
     //캐릭터 선택시
