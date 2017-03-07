@@ -25,6 +25,13 @@ public class GroupMemberManageView : MonoBehaviour {
         gm = GameManager.Instance;
     }
 
+    void OnEnable() {
+        gm = GameManager.Instance;
+        Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+        act.id = controller.detailView.id;
+        gm.gameDispatcher.dispatch(act);
+    }
+
     //탈퇴 버튼, 거부 버튼, 강퇴 버튼
     void onQuitGroup(GameObject obj) {
         int index = obj.transform.parent.parent.GetComponent<GroupIndex>().id;

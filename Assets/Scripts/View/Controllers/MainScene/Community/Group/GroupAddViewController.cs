@@ -16,6 +16,11 @@ public class GroupAddViewController : MonoBehaviour {
         gm = GameManager.Instance;
     }
 
+    void OnEnable() {
+        GetDistrictsData distAct = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
+        gm.gameDispatcher.dispatch(distAct);
+    }
+
     public void setProvinceList() {
         District[] districts = controller.locationStore.districts;
         provinceMenu.fontSize = 40;
@@ -63,7 +68,6 @@ public class GroupAddViewController : MonoBehaviour {
         ActionTypes type = groupStore.eventType;
         if (type == ActionTypes.GET_DISTRICT_DATA) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
-                gameObject.SetActive(true);
                 setProvinceList();
             }
         }
@@ -75,6 +79,9 @@ public class GroupAddViewController : MonoBehaviour {
         if (type == ActionTypes.GROUP_ADD) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
                 gameObject.SetActive(false);
+
+                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
+                gm.gameDispatcher.dispatch(getMyGroupAct);
             }
             else if(groupStore.storeStatus == storeStatus.ERROR) {
 

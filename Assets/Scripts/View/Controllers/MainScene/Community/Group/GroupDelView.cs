@@ -62,7 +62,12 @@ public class GroupDelView : MonoBehaviour {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
                 modal.SetActive(true);
                 modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = controller.groupStore.message;
-                //gameObject.SetActive(false);
+                gameObject.SetActive(false);
+                controller.subPanels[2].SetActive(false);
+                controller.subPanels[7].SetActive(false);
+
+                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
+                gm.gameDispatcher.dispatch(getMyGroupAct);
             }
         }
 

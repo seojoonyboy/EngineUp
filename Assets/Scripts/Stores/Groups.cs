@@ -60,14 +60,10 @@ public class Groups : AjwStore {
                 Group_getMemberAction getMembersAct = action as Group_getMemberAction;
                 getMembers(getMembersAct);
                 break;
-            //case ActionTypes.GROUP_MY_GROUPS:
-            //    Group_myGroups getMyGroupAct = action as Group_myGroups;
-            //    getMyGroups(getMyGroupAct);
-            //    break;
-            //case ActionTypes.GROUP_SEARCH:
-            //    Group_search searchAct = action as Group_search;
-            //    searchGroups(searchAct);
-            //    break;
+            case ActionTypes.GROUP_SEARCH:
+                Group_search searchAct = action as Group_search;
+                searchGroups(searchAct);
+                break;
             case ActionTypes.GROUP_JOIN:
                 Group_join groupJoinAct = action as Group_join;
                 joinGroup(groupJoinAct);

@@ -11,6 +11,7 @@ public class GroupViewController : MonoBehaviour {
 
     public GroupAddViewController addViewCtrler;
     public GroupDetailViewController detailView;
+    public GroupSearchView searchView;
     public GroupDelView groupDelView;
 
     public GameObject container;
@@ -44,32 +45,21 @@ public class GroupViewController : MonoBehaviour {
         switch (sceneIndex) {
             //그룹찾기
             case 1:
-                Group_search searchAct = ActionCreator.createAction(ActionTypes.GROUP_SEARCH) as Group_search;
-                searchAct.keyword = searchInput.value;
-                gm.gameDispatcher.dispatch(searchAct);
                 break;
             //그룹 설정 메인
             case 2:
-                subPanels[sceneIndex].SetActive(true);
                 break;
             //그룹 설정 변경
             case 4:
             //그룹추가
             case 8:
-                GetDistrictsData distAct = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
-                gm.gameDispatcher.dispatch(distAct);
                 break;
             //그룹원 관리
             //그룹원 보기
             case 0:
             case 5:
-                Group_getMemberAction _getMembersAct = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
-                _getMembersAct.id = detailView.id;
-                gm.gameDispatcher.dispatch(_getMembersAct);
-                subPanels[sceneIndex].SetActive(true);
                 break;
             case 6:
-                subPanels[sceneIndex].SetActive(true);
                 break;
             case 7:
             //그룹 상세보기
@@ -81,26 +71,17 @@ public class GroupViewController : MonoBehaviour {
                 //Server에게 index를 이용한 리스트 요청 액션을 작성한다.
                 break;
         }
+        subPanels[sceneIndex].SetActive(true);
     }
 
     public void onGroupStoreListener() {
         detailView.onGroupStoreListener();
         addViewCtrler.onGroupStoreListener();
+        searchView.onGroupStoreListener();
 
         ActionTypes groupStoreEventType = groupStore.eventType;
         if (groupStoreEventType == ActionTypes.MY_GROUP_PANEL || groupStoreEventType == ActionTypes.GROUP_ADD || groupStoreEventType == ActionTypes.GROUP_DESTROY) {
             makeList(groupStore.myGroups);
-        }
-
-        if(groupStore.eventType == ActionTypes.GROUP_EDIT) {
-            //if (groupStore.groupEditResult) {
-            //    modal.SetActive(true);
-            //    modal.transform.Find("ResponseModal/MsgLabel").GetComponent<UILabel>().text = "그룹 상세 정보를 수정하였습니다.";
-            //}
-
-            //else {
-            //}
-            
         }
     }
 

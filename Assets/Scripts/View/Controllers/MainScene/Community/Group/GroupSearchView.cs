@@ -9,18 +9,27 @@ public class GroupSearchView : MonoBehaviour {
         emptyMessage;
 
     public UIGrid grid;
+
+    GameManager gm;
     // 이벤트 parameter를 생성하여 리턴.
 
     void OnEnable() {
+        gm = GameManager.Instance;
+        Group_search searchAct = ActionCreator.createAction(ActionTypes.GROUP_SEARCH) as Group_search;
+        searchAct.keyword = controller.searchInput.value;
+        gm.gameDispatcher.dispatch(searchAct);
+    }
+
+    void makeList() {
         removeAllList();
         Group[] searchedGroups = controller.groupStore.searchedGroups;
         int length = searchedGroups.Length;
-        if(length == 0) {
+        if (length == 0) {
             emptyMessage.SetActive(true);
             return;
         }
 
-        for(int i=0; i<length; i++) {
+        for (int i = 0; i < length; i++) {
             GameObject item = Instantiate(container);
 
             item.transform.SetParent(grid.transform);
@@ -57,7 +66,7 @@ public class GroupSearchView : MonoBehaviour {
     }
 
     void showDetail(GameObject _obj) {
-        //controller.onPanel(_obj);
+        controller.onPanel(_obj);
     }
 
     void OnDisable() {
@@ -75,5 +84,16 @@ public class GroupSearchView : MonoBehaviour {
 
     public void OffPanel() {
         gameObject.SetActive(false);
+    }
+
+    public void onGroupStoreListener() {
+        Groups groupStore = controller.groupStore;
+        ActionTypes groupStoreEventType = groupStore.eventType;
+
+        if(groupStoreEventType == ActionTypes.GROUP_SEARCH) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                makeList();
+            }
+        }
     }
 }
