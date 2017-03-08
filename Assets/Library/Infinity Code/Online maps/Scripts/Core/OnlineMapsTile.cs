@@ -1,4 +1,4 @@
-﻿/*     INFINITY CODE 2013-2016      */
+﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
 using System;
@@ -184,7 +184,6 @@ public class OnlineMapsTile
     private byte[] labelData;
     private Color32[] labelColors;
     private OnlineMapsTrafficProvider _trafficProvider;
-    //private OnlineMapsTileStatus prevStatus;
 
     /// <summary>
     /// Array of colors of the tile.
@@ -413,6 +412,8 @@ public class OnlineMapsTile
         }
 
         if (_dtiles.ContainsKey(key)) _dtiles.Remove(key);
+
+        if (OnDisposed != null) OnDisposed(this);
     }
 
     private void Destroy()
@@ -459,8 +460,6 @@ public class OnlineMapsTile
         childs = null;
         hasChilds = false;
         hasColors = false;
-
-        if (OnDisposed != null) OnDisposed(this);
 
         OnDisposed = null;
         OnSetColor = null;
@@ -623,15 +622,6 @@ public class OnlineMapsTile
         return false;
     }
 
-    /*public void Restore()
-    {
-        status = prevStatus;
-        lock (unusedTiles)
-        {
-            unusedTiles.Remove(this);
-        }
-    }*/
-
     private void SetChild(OnlineMapsTile tile)
     {
         if (childs == null) return;
@@ -654,11 +644,11 @@ public class OnlineMapsTile
 
     public static void UnloadUnusedTiles()
     {
-        if (unusedTiles == null) return; 
-        
+        if (unusedTiles == null) return;
+
         lock (unusedTiles)
         {
-            foreach (OnlineMapsTile tile in unusedTiles) tile.Destroy();
+            for (int i = 0; i < unusedTiles.Count; i++) unusedTiles[i].Destroy();
             unusedTiles.Clear();
         }
     }

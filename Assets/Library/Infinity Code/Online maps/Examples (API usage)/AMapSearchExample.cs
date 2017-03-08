@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿/*     INFINITY CODE 2013-2017      */
+/*   http://www.infinity-code.com   */
+
+using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {

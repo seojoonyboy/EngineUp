@@ -1,4 +1,4 @@
-/*     INFINITY CODE 2013-2016      */
+/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
 using System;
@@ -24,8 +24,15 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
     /// </summary>
     public bool allowDefaultMarkerEvents;
 
+    /// <summary>
+    /// Altitude (meters).
+    /// </summary>
     public float? altitude;
 
+    /// <summary>
+    /// Do I need to check the map boundaries? \n
+    /// It allows you to make 3D markers, which are active outside the map.
+    /// </summary>
     public bool checkMapBoundaries = true;
 
     /// <summary>
@@ -109,6 +116,9 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         }
     }
 
+    /// <summary>
+    /// Y rotation of 3D marker.
+    /// </summary>
     public float rotationY
     {
         get { return _rotationY; }
@@ -351,7 +361,95 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
 
         Vector3 newPosition = new Vector3((float)px, y, (float)pz);
 
-        instance.transform.localPosition = newPosition;
-        if (oldPosition != newPosition && OnPositionChanged != null) OnPositionChanged(this);
+        if (oldPosition != newPosition)
+        {
+            instance.transform.localPosition = newPosition;
+            if (OnPositionChanged != null) OnPositionChanged(this);
+        }
+    }
+
+    public void Update(OnlineMaps map, OnlineMapsControlBase3D control, Bounds bounds, double tlx, double tly, double brx, double bry, int zoom, double ttlx, double ttly, double tbrx, double tbry, float bestYScale)
+    {
+        if (!enabled) return;
+        if (instance == null) Init(map.transform);
+
+        if (!range.InRange(zoom)) visible = false;
+        else if (checkMapBoundaries)
+        {
+            if (latitude > tly || latitude < bry) visible = false;
+            else if (tlx < brx && (longitude < tlx || longitude > brx)) visible = false;
+            else if (tlx > brx && longitude < tlx && longitude > brx) visible = false;
+            else visible = true;
+        }
+        else visible = true;
+
+        if (!visible) return;
+
+        if (_prefab != prefab) Reinit(tlx, tly, brx, bry, zoom);
+
+        double mx, my;
+        map.projection.CoordinatesToTile(longitude, latitude, zoom, out mx, out my);
+
+        int maxX = 1 << zoom;
+
+        double sx = tbrx - ttlx;
+        double mpx = mx - ttlx;
+        if (sx < 0) sx += maxX;
+        if (checkMapBoundaries)
+        {
+            if (mpx < 0) mpx += maxX;
+        }
+        else
+        {
+            double dx1 = Math.Abs(mpx - ttlx);
+            double dx2 = Math.Abs(mpx - tbrx);
+            double dx3 = Math.Abs(mpx - tbrx + maxX);
+            if (dx1 > dx2 && dx1 > dx3) mpx += maxX;
+        }
+
+        double px = mpx / sx;
+        double pz = (ttly - my) / (ttly - tbry);
+
+        _relativePosition = new Vector3((float)px, 0, (float)pz);
+
+        OnlineMapsTileSetControl tsControl = control as OnlineMapsTileSetControl;
+
+        if (tsControl != null)
+        {
+            px = -map.tilesetSize.x / 2 - (px - 0.5) * map.tilesetSize.x;
+            pz = map.tilesetSize.y / 2 + (pz - 0.5) * map.tilesetSize.y;
+        }
+        else
+        {
+            Vector3 center = bounds.center;
+            Vector3 size = bounds.size;
+            px = center.x - (px - 0.5) * size.x - map.transform.position.x;
+            pz = center.z + (pz - 0.5) * size.z - map.transform.position.z;
+        }
+
+        Vector3 oldPosition = instance.transform.localPosition;
+        float y = 0;
+
+        if (altitude.HasValue)
+        {
+            y = altitude.Value * bestYScale;
+            if (tsControl != null)
+            {
+                if (tsControl.elevationBottomMode == OnlineMapsTileSetControl.ElevationBottomMode.minValue) y -= tsControl.elevationMinValue;
+                y *= tsControl.elevationScale;
+            }
+        }
+        else if (tsControl != null)
+        {
+            y = tsControl.GetElevationValue((float)px, (float)pz, bestYScale, tlx, tly, brx, bry);
+        }
+
+        Vector3 newPosition = new Vector3((float)px, y, (float)pz);
+
+        if (oldPosition != newPosition)
+        {
+            instance.transform.localPosition = newPosition;
+            if (OnPositionChanged != null) OnPositionChanged(this);
+        }
     }
 }

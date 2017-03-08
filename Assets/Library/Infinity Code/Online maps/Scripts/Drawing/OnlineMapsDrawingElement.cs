@@ -1,4 +1,4 @@
-﻿/*     INFINITY CODE 2013-2016      */
+﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
 using System;
@@ -23,31 +23,26 @@ public class OnlineMapsDrawingElement
     /// <summary>
     /// Events that occur when user click on the drawing element.
     /// </summary>
-    [NonSerialized]
     public Action<OnlineMapsDrawingElement> OnClick;
 
     /// <summary>
     /// Events that occur when user double click on the drawing element.
     /// </summary>
-    [NonSerialized]
     public Action<OnlineMapsDrawingElement> OnDoubleClick;
 
     /// <summary>
     /// Event caused to draw tooltip.
     /// </summary>
-    [NonSerialized]
     public Action<OnlineMapsDrawingElement> OnDrawTooltip;
 
     /// <summary>
     /// Events that occur when user press on the drawing element.
     /// </summary>
-    [NonSerialized]
     public Action<OnlineMapsDrawingElement> OnPress;
 
     /// <summary>
     /// Events that occur when user release on the drawing element.
     /// </summary>
-    [NonSerialized]
     public Action<OnlineMapsDrawingElement> OnRelease;
 
     /// <summary>
@@ -70,6 +65,8 @@ public class OnlineMapsDrawingElement
     protected double brx;
     protected double bry;
     protected Material[] materials;
+
+    private int _renderQueueOffset;
 
     protected static OnlineMaps api 
     {
@@ -94,6 +91,23 @@ public class OnlineMapsDrawingElement
     public virtual Vector2 center
     {
         get { return Vector2.zero; }
+    }
+
+    public int renderQueueOffset
+    {
+        get { return _renderQueueOffset; }
+        set
+        {
+            _renderQueueOffset = value;
+            if (materials != null)
+            {
+                for (int i = 0; i < materials.Length; i++)
+                {
+                    Material m = materials[i];
+                    if (m != null) m.renderQueue = OnlineMapsTileSetControl.instance.drawingShader.renderQueue + value;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -336,67 +350,70 @@ public class OnlineMapsDrawingElement
         object v4 = null;
         int i = 0;
 
-        foreach (object p in points)
+        lock (points)
         {
-            if (valueType == -1)
+            foreach (object p in points)
             {
-                firstValue = p;
-                if (p is Vector2) valueType = 0;
-                else if (p is float) valueType = 1;
-                else if (p is double) valueType = 2;
-            }
-
-            v4 = v3;
-            v3 = v2;
-            v2 = v1;
-            v1 = p;
-
-            if (i == 1) secondValue = p;
-
-            double p1tx = 0, p1ty = 0, p2tx = 0, p2ty = 0;
-            bool drawPart = false;
-
-            if (valueType == 0)
-            {
-                if (i > 0)
+                if (valueType == -1)
                 {
-                    Vector2 p1 = (Vector2)v2;
-                    Vector2 p2 = (Vector2)v1;
+                    firstValue = p;
+                    if (p is Vector2) valueType = 0;
+                    else if (p is float) valueType = 1;
+                    else if (p is double) valueType = 2;
+                }
 
-                    api.projection.CoordinatesToTile(p1.x, p1.y, zoom, out p1tx, out p1ty);
-                    api.projection.CoordinatesToTile(p2.x, p2.y, zoom, out p2tx, out p2ty);
+                v4 = v3;
+                v3 = v2;
+                v2 = v1;
+                v1 = p;
+
+                if (i == 1) secondValue = p;
+
+                double p1tx = 0, p1ty = 0, p2tx = 0, p2ty = 0;
+                bool drawPart = false;
+
+                if (valueType == 0)
+                {
+                    if (i > 0)
+                    {
+                        Vector2 p1 = (Vector2)v2;
+                        Vector2 p2 = (Vector2)v1;
+
+                        api.projection.CoordinatesToTile(p1.x, p1.y, zoom, out p1tx, out p1ty);
+                        api.projection.CoordinatesToTile(p2.x, p2.y, zoom, out p2tx, out p2ty);
+                        drawPart = true;
+                    }
+                }
+                else if (i > 2 && i % 2 == 1)
+                {
+                    if (valueType == 1)
+                    {
+                        api.projection.CoordinatesToTile((float)v4, (float)v3, zoom, out p1tx, out p1ty);
+                        api.projection.CoordinatesToTile((float)v2, (float)v1, zoom, out p2tx, out p2ty);
+                    }
+                    else if (valueType == 2)
+                    {
+                        api.projection.CoordinatesToTile((double)v4, (double)v3, zoom, out p1tx, out p1ty);
+                        api.projection.CoordinatesToTile((double)v2, (double)v1, zoom, out p2tx, out p2ty);
+                    }
                     drawPart = true;
                 }
+
+                if (drawPart)
+                {
+                    if ((p1tx < bx1 && p2tx < bx1) || (p1tx > bx2 && p2tx > bx2))
+                    {
+
+                    }
+                    else if ((p1ty < by1 && p2ty < by1) || (p1ty > by2 && p2ty > by2))
+                    {
+
+                    }
+                    else DrawLinePartToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, color, sx, sy, p1tx, p1ty, p2tx, p2ty, i, maxX, ref ppx1, w, invertY);
+                }
+
+                i++;
             }
-            else if (i > 2 && i % 2 == 1)
-            {
-                if (valueType == 1)
-                {
-                    api.projection.CoordinatesToTile((float)v4, (float)v3, zoom, out p1tx, out p1ty);
-                    api.projection.CoordinatesToTile((float)v2, (float)v1, zoom, out p2tx, out p2ty);
-                }
-                else if (valueType == 2)
-                {
-                    api.projection.CoordinatesToTile((double)v4, (double)v3, zoom, out p1tx, out p1ty);
-                    api.projection.CoordinatesToTile((double)v2, (double)v1, zoom, out p2tx, out p2ty);
-                }
-                drawPart = true;
-            }
-
-            if (drawPart)
-            {
-                if ((p1tx < bx1 && p2tx < bx1) || (p1tx > bx2 && p2tx > bx2))
-                {
-
-                }
-                else if ((p1ty < by1 && p2ty < by1) || (p1ty > by2 && p2ty > by2))
-                {
-
-                }
-                else DrawLinePartToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, color, sx, sy, p1tx, p1ty, p2tx, p2ty, i, maxX, ref ppx1, w, invertY);
-            }
-
-            i++;
         }
 
         if (closed && i > 0)
@@ -762,11 +779,7 @@ public class OnlineMapsDrawingElement
         OnlineMapsProjection projection = api.projection;
         projection.CoordinatesToTile(tlx, tly, apiZoom, out sx, out sy);
 
-        int maxX = 1 << api.zoom;
-
-        //int off = closed ? 1 : 0;
-        //int pointsCount = points.Count;
-        //int maxI = pointsCount + off;
+        int maxX = 1 << apiZoom;
 
         List<Vector2> localPoints = new List<Vector2>(1024);
 
@@ -882,49 +895,6 @@ public class OnlineMapsDrawingElement
 
         if (closed) localPoints.Add(localPoints[0]);
 
-        /*for (int i = 0; i < maxI; i++)
-        {
-            int ci = i;
-            if (ci >= pointsCount) ci -= pointsCount;
-            double px, py;
-
-            Vector2 point = points[ci];
-            projection.CoordinatesToTile(point.x, point.y, apiZoom, out px, out py);
-
-            if (optimize && i > 0 && i < maxI - 1)
-            {
-                if ((prx - px) * (prx - px) + (pry - py) * (pry - py) < 0.001) continue;
-            }
-
-            prx = px;
-            pry = py;
-
-            px -= sx;
-            py -= sy;
-
-            if (i == 0)
-            {
-                if (px < maxX * -0.25) px += maxX;
-                else if (px > maxX * 0.75) px -= maxX;
-            }
-            else
-            {
-                double gpx = px + maxX;
-                double lpx = px - maxX;
-
-                if (Math.Abs(ppx - gpx) < Math.Abs(ppx - px)) px = gpx;
-                else if (Math.Abs(ppx - lpx) < Math.Abs(ppx - px)) px = lpx;
-            }
-
-            ppx = px;
-
-            double rx1 = px * scaleX;
-            double ry1 = py * scaleY;
-
-            Vector2 np = new Vector2((float)rx1, (float)ry1);
-            localPoints.Add(np);
-            if (localPoints.Count == localPoints.Capacity) localPoints.Capacity += 1024;
-        }*/
         return localPoints;
     }
 
@@ -947,7 +917,7 @@ public class OnlineMapsDrawingElement
 
     protected void InitLineMesh(IEnumerable points, OnlineMapsTileSetControl control, out List<Vector3> verticles, out List<Vector3> normals, out List<int> triangles, out List<Vector2> uv, float weight, bool closed = false)
     {
-        api.GetCorners(out tlx, out tly, out brx, out bry);
+        api.buffer.GetCorners(out tlx, out tly, out brx, out bry);
         if (brx < tlx) brx += 360;
 
         List<Vector2> localPoints = GetLocalPoints(points, closed);
@@ -1055,6 +1025,7 @@ public class OnlineMapsDrawingElement
         }
 
         renderer.materials = materials;
+        for (int i = 0; i < materials.Length; i++) materials[i].renderQueue = shader.renderQueue + renderQueueOffset;
 
         return true;
     }
@@ -1084,7 +1055,7 @@ public class OnlineMapsDrawingElement
 
     protected void UpdateMaterialsQuote(OnlineMapsTileSetControl control, int index)
     {
-        foreach (Material material in materials) material.renderQueue = control.drawingShader.renderQueue + index;
+        foreach (Material material in materials) material.renderQueue = control.drawingShader.renderQueue + renderQueueOffset + index;
     }
 
     public virtual bool Validate()

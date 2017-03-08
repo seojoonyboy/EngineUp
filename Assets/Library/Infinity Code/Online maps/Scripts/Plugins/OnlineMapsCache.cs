@@ -1,4 +1,4 @@
-﻿/*     INFINITY CODE 2013-2016      */
+﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
 #if !UNITY_WEBPLAYER && (!UNITY_WEBGL || UNITY_EDITOR)
@@ -384,12 +384,14 @@ public class OnlineMapsCache:MonoBehaviour
     {
         lock (OnlineMapsTile.tiles)
         {
+            long start = DateTime.Now.Ticks;
             for (int i = 0; i < OnlineMapsTile.tiles.Count; i++)
             {
                 OnlineMapsTile tile = OnlineMapsTile.tiles[i];
                 if (tile.status != OnlineMapsTileStatus.none || tile.cacheChecked) continue;
                 if (!TryLoadFromCache(tile)) tile.cacheChecked = true;
                 else if (OnLoadedFromCache != null) OnLoadedFromCache(tile);
+                if (DateTime.Now.Ticks - start > 200000) return;
             }
         }
     }

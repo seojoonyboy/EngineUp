@@ -565,12 +565,9 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         }
         else marker = map.GetMarkerFromScreen(inputPosition);
 
-        bool allowMapLongPress = true;
-
         if (marker != null)
         {
             if (marker.OnPress != null) marker.OnPress(marker);
-            if (marker.OnLongPress != null) allowMapLongPress = false;
             if (map.showMarkerTooltip == OnlineMapsShowMarkerTooltip.onPress)
             {
                 map.tooltipMarker = marker;
@@ -596,11 +593,8 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         {
             isMapDrag = true;
 
-            if (allowMapLongPress)
-            {
-                longPressEnumenator = WaitLongPress();
-                StartCoroutine("WaitLongPress");
-            }
+            longPressEnumenator = WaitLongPress();
+            StartCoroutine(longPressEnumenator);
         }
         else lastClickTimes[0] = 0;
 
@@ -623,7 +617,7 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
 
         if (longPressEnumenator != null)
         {
-            StopCoroutine("WaitLongPress");
+            StopCoroutine(longPressEnumenator);
             longPressEnumenator = null;
         }
 
@@ -832,7 +826,7 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
 
                 if (longPressEnumenator != null)
                 {
-                    StopCoroutine("WaitLongPress");
+                    StopCoroutine(longPressEnumenator);
                     longPressEnumenator = null;
                 }
 
@@ -903,8 +897,7 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         else marker = map.GetMarkerFromScreen(inputPosition);
 
         if (marker != null && marker.OnLongPress != null) marker.OnLongPress(marker);
-
-        if (OnMapLongPress != null)
+        else if (OnMapLongPress != null)
         {
             OnMapLongPress();
             isMapDrag = false;

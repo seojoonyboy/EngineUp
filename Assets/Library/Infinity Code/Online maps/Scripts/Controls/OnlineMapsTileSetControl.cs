@@ -1,4 +1,4 @@
-﻿/*     INFINITY CODE 2013-2016      */
+﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
 using System;
@@ -41,6 +41,9 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
     /// </summary>
     public Func<OnlineMapsMarker, float> OnGetFlatMarkerOffsetY;
 
+    /// <summary>
+    /// Event that occurs after the map mesh has been updated.
+    /// </summary>
     public Action OnMeshUpdated;
 
     /// <summary>
@@ -103,9 +106,24 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
     /// </summary>
     public float elevationScale = 1;
 
+    /// <summary>
+    /// Type calculation of the bottom point of the map mesh.
+    /// </summary>
     public ElevationBottomMode elevationBottomMode = ElevationBottomMode.zero;
+
+    /// <summary>
+    /// Resolution of the elevation map.
+    /// </summary>
     public int elevationResolution = 32;
+
+    /// <summary>
+    /// The minimum elevation value.
+    /// </summary>
     public short elevationMinValue;
+
+    /// <summary>
+    /// The maximum elevation value.
+    /// </summary>
     public short elevationMaxValue;
 
     /// <summary>
@@ -148,9 +166,6 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
     /// Indicates smooth zoom in process.
     /// </summary>
     public bool smoothZoomStarted = false;
-
-    public Vector3 originalPosition;
-    public Vector3 originalScale;
 
     /// <summary>
     /// Material that will be used for tile.
@@ -211,6 +226,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
     private int elevationDataHeight;
     private bool waitSetElevationData;
     private int waitMapZoom;
+    private bool needRestoreGestureZoom;
 
     /// <summary>
     /// Singleton instance of OnlineMapsTileSetControl control.
@@ -224,6 +240,8 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
     {
         get
         {
+            if (map.buffer.bufferPosition != null) return map.buffer.bufferPosition;
+
             if (_bufferPosition == null)
             {
                 const int s = OnlineMapsUtils.tileSize;
@@ -1111,7 +1129,12 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
 
     private void RestoreGestureZoom()
     {
-        if (map.buffer.apiZoom != waitMapZoom) return;
+        RestoreGestureZoom(false);
+    }
+
+    private void RestoreGestureZoom(bool forceRestore)
+    {
+        if (!forceRestore && map.buffer.apiZoom != waitMapZoom) return;
 
         map.OnMapUpdated -= RestoreGestureZoom;
 
@@ -1122,6 +1145,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
         UpdateControl();
 
         if (OnSmoothZoomFinish != null) OnSmoothZoomFinish();
+        needRestoreGestureZoom = false;
     }
 
     public override OnlineMapsXML SaveSettings(OnlineMapsXML parent)
@@ -1233,6 +1257,8 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
 
             if (!smoothZoomStarted)
             {
+                if (needRestoreGestureZoom) RestoreGestureZoom(true);
+
                 if (OnSmoothZoomInit != null) OnSmoothZoomInit();
 
                 smoothZoomPoint = center;
@@ -1307,6 +1333,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
                     if (map.renderInThread)
                     {
                         waitZeroTouches = true;
+                        needRestoreGestureZoom = true;
                         map.OnMapUpdated += RestoreGestureZoom;
                         map.Redraw();
                     }
@@ -1346,7 +1373,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
         double subMeshSizeY = (double)map.tilesetSize.y / h1;
 
         double tlx, tly, brx, bry;
-        map.GetCorners(out tlx, out tly, out brx, out bry);
+        map.buffer.GetCorners(out tlx, out tly, out brx, out bry);
 
         double tlpx, tlpy;
 
@@ -1356,6 +1383,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
 
         int maxX = 1 << zoom;
         if (posX >= maxX) posX -= maxX;
+        else if (posX < 0) posX += maxX;
         
         double startPosX = subMeshSizeX * posX;
         double startPosZ = -subMeshSizeY * posY;
@@ -1482,7 +1510,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
             }
         }
 
-        bool needGetElevation = useElevation && elevationData != null && elevationZoomRange.InRange(map.zoom);
+        bool needGetElevation = useElevation && elevationData != null && elevationZoomRange.InRange(zoom);
 
         float fy = 0;
         double spx = startPosX - x * subMeshSizeX;
@@ -1614,6 +1642,14 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
         }
         else
         {
+            if (OnlineMapsTile.emptyColorTexture == null)
+            {
+                OnlineMapsTile.emptyColorTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+                OnlineMapsTile.emptyColorTexture.name = "Empty Texture";
+                OnlineMapsTile.emptyColorTexture.SetPixel(0, 0, map.emptyColor);
+                OnlineMapsTile.emptyColorTexture.Apply(false);
+            }
+
             material.mainTexture = OnlineMapsTile.emptyColorTexture;
             if (hasTraffic) material.SetTexture("_TrafficTex", null);
             if (hasOverlayBack) material.SetTexture("_OverlayBackTex", null);

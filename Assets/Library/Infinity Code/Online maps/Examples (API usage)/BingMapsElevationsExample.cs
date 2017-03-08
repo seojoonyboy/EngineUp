@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*     INFINITY CODE 2013-2017      */
+/*   http://www.infinity-code.com   */
+
+using System;
 using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples

@@ -1,4 +1,4 @@
-﻿/*     INFINITY CODE 2013-2016      */
+﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
 using System;
@@ -319,6 +319,22 @@ public class OnlineMapsBuffer
         int iy = (int) (py / countY * height);
 
         return new OnlineMapsVector2i(ix, iy);
+    }
+
+    public void GetCorners(out double tlx, out double tly, out double brx, out double bry)
+    {
+        int countX = api.width / OnlineMapsUtils.tileSize;
+        int countY = api.height / OnlineMapsUtils.tileSize;
+
+        api.projection.CoordinatesToTile(apiLongitude, apiLatitude, apiZoom, out tlx, out tly);
+
+        brx = tlx + countX / 2f;
+        bry = tly + countY / 2f;
+        tlx -= countX / 2f;
+        tly -= countY / 2f;
+
+        api.projection.TileToCoordinates(tlx, tly, apiZoom, out tlx, out tly);
+        api.projection.TileToCoordinates(brx, bry, apiZoom, out brx, out bry);
     }
 
     private void GetFrontBufferPosition(double px, double py, OnlineMapsVector2i _bufferPosition, int zoom, int apiWidth, int apiHeight)

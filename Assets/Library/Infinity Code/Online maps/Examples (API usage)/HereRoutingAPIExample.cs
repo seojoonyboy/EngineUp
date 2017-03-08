@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿/*     INFINITY CODE 2013-2017      */
+/*   http://www.infinity-code.com   */
+
+using System.Linq;
 using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples

@@ -1,4 +1,4 @@
-﻿/*     INFINITY CODE 2013-2016      */
+﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
 using System;
@@ -23,9 +23,11 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// <summary>
     /// The event, which occurs when controls the camera.
     /// </summary>
-    [NonSerialized]
     public Action OnCameraControl;
 
+    /// <summary>
+    /// Event occurs after the addition of 3D marker.
+    /// </summary>
     public Action<OnlineMapsMarker3D> OnMarker3DAdded;
 
     /// <summary>
@@ -111,7 +113,13 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// </summary>
     public float marker3DScale = 1;
 
+    /// <summary>
+    /// Maximum camera rotation by X axis.
+    /// </summary>
     public float maxCameraRotationX = 80;
+
+    public Vector3 originalPosition;
+    public Vector3 originalScale;
 
     protected GameObject markersGameObject;
     protected Mesh markersMesh;
@@ -125,6 +133,9 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
     private Collider _cl;
     private Renderer _renderer;
 
+    /// <summary>
+    /// Reference to the collider.
+    /// </summary>
     public Collider cl
     {
         get
@@ -141,6 +152,9 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
         }
     }
 
+    /// <summary>
+    /// Reference to the renderer.
+    /// </summary>
     public Renderer rendererInstance
     {
         get
@@ -514,7 +528,12 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// </summary>
     public void RemoveAllMarker3D()
     {
-        foreach (OnlineMapsMarker3D marker in markers3D) if (marker.instance != null) OnlineMapsUtils.DestroyImmediate(marker.instance);
+        foreach (OnlineMapsMarker3D marker in markers3D)
+        {
+            if (OnRemoveMarker3D != null && OnRemoveMarker3D(marker)) continue;
+            if (marker.instance != null) OnlineMapsUtils.DestroyImmediate(marker.instance);
+            marker.Dispose();
+        }
         markers3D = new OnlineMapsMarker3D[0];
     }
 
@@ -607,7 +626,7 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
             Vector3 offset = new Vector3(map.tilesetSize.x / -2, 0, map.tilesetSize.y / 2);
             OnlineMapsTileSetControl control = OnlineMapsTileSetControl.instance;
 
-            if (control.smoothZoom && control.smoothZoomStarted) targetPosition = control.originalPosition;
+            if (control.smoothZoom && control.smoothZoomStarted) targetPosition = originalPosition;
             
             if (control.useElevation && control.elevationZoomRange.InRange(map.zoom))
             {
@@ -642,12 +661,23 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
 
     protected void UpdateMarkers3D()
     {
+        int zoom = map.zoom;
+
         double tlx, tly, brx, bry;
         map.GetCorners(out tlx, out tly, out brx, out bry);
 
-        int zoom = map.zoom;
+        double ttlx, ttly, tbrx, tbry;
+        map.projection.CoordinatesToTile(tlx, tly, zoom, out ttlx, out ttly);
+        map.projection.CoordinatesToTile(brx, bry, zoom, out tbrx, out tbry);
 
-        foreach (OnlineMapsMarker3D marker in markers3D) marker.Update(tlx, tly, brx, bry, zoom);
+        Bounds bounds = GetComponent<Collider>().bounds;
+        float bestYScale = GetBestElevationYScale(tlx, tly, brx, bry);
+
+        for (int i = 0; i < markers3D.Length; i++)
+        {
+            OnlineMapsMarker3D marker = markers3D[i];
+            marker.Update(map, this, bounds, tlx, tly, brx, bry, zoom, ttlx, ttly, tbrx, tbry, bestYScale);
+        }
     }
 
     /// <summary>

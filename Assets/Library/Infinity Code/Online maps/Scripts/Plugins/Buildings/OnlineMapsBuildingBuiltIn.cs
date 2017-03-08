@@ -1,4 +1,4 @@
-/*     INFINITY CODE 2013-2016      */
+/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
 using System;
@@ -385,9 +385,9 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
     private static void CreateHouseWallTriangles(List<Vector3> vertices, bool reversed, ref List<int> triangles)
     {
         int countVertices = vertices.Count;
-        for (int i = 0; i < countVertices / 2 - 1; i++)
+        for (int i = 0; i < countVertices / 4; i++)
         {
-            int p1 = i * 2;
+            int p1 = i * 4;
             int p2 = p1 + 2;
             int p3 = p2 + 1;
             int p4 = p1 + 1;
@@ -421,6 +421,9 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
         float topPoint = baseHeight * OnlineMapsBuildings.instance.heightScale;
 
         int baseVerticesCount = baseVerticles.Count;
+        Vector3 pp = Vector3.zero;
+        Vector3 ptv = Vector3.zero;
+
         for (int i = 0; i <= baseVerticesCount; i++)
         {
             int j = i;
@@ -429,47 +432,52 @@ public class OnlineMapsBuildingBuiltIn : OnlineMapsBuildingBase
             Vector3 p = baseVerticles[j];
             Vector3 tv = new Vector3(p.x, topPoint, p.z);
 
-            vertices.Add(p);
-            vertices.Add(tv);
+            if (i > 0)
+            {
+                vertices.Add(pp);
+                vertices.Add(ptv);
+
+                vertices.Add(p);
+                vertices.Add(tv);
+            }
+
+            pp = p;
+            ptv = tv;
         }
 
         float currentDistance = 0;
         int countVertices = vertices.Count;
-        int halfVerticesCount = countVertices / 2;
+        int fourthVerticesCount = countVertices / 4;
         perimeter = 0;
 
-        for (int i = 0; i <= halfVerticesCount; i++)
+        for (int i = 0; i < fourthVerticesCount; i++)
         {
-            int i1 = i * 2;
-            int i2 = i * 2 + 2;
-
-            while (i1 >= countVertices) i1 -= countVertices;
-            while (i2 >= countVertices) i2 -= countVertices;
-
-            float sqrMagnitude = (vertices[i1] - vertices[i2]).sqrMagnitude;
-            perimeter += sqrMagnitude;
-        }
-
-        perimeter = Mathf.Sqrt(perimeter);
-
-        for (int i = 0; i <= halfVerticesCount; i++)
-        {
-            int i1 = i * 2;
-            int i2 = i * 2 + 2;
-            
-            while (i1 >= countVertices) i1 -= countVertices;
-            while (i2 >= countVertices) i2 -= countVertices;
+            int i1 = i * 4;
+            int i2 = i * 4 + 2;
 
             float magnitude = (vertices[i1] - vertices[i2]).magnitude;
+            perimeter += magnitude;
+        }
 
-            if (i < halfVerticesCount)
-            {
-                float curU = currentDistance / perimeter;
-                uvs.Add(new Vector2(curU, 0));
-                uvs.Add(new Vector2(curU, 1));
-            }
+        float prevDistance = 0;
+
+        for (int i = 0; i < fourthVerticesCount; i++)
+        {
+            int i1 = i * 4;
+            int i2 = i * 4 + 2;
+            
+            float magnitude = (vertices[i1] - vertices[i2]).magnitude;
+
+            float prevU = prevDistance / perimeter;
 
             currentDistance += magnitude;
+            prevDistance = currentDistance;
+
+            float curU = currentDistance / perimeter;
+            uvs.Add(new Vector2(prevU, 0));
+            uvs.Add(new Vector2(prevU, 1));
+            uvs.Add(new Vector2(curU, 0));
+            uvs.Add(new Vector2(curU, 1));
         }
 
         int southIndex = -1;
