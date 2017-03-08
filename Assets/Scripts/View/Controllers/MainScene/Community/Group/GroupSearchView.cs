@@ -94,6 +94,9 @@ public class GroupSearchView : MonoBehaviour {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
                 makeList();
             }
+            else {
+                emptyMessage.SetActive(true);
+            }
         }
     }
 }
