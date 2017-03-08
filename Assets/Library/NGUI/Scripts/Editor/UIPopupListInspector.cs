@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 #if !UNITY_3_5 && !UNITY_FLASH
 #define DYNAMIC_FONT
@@ -15,7 +15,7 @@ using System.Collections.Generic;
 /// Inspector class used to edit UIPopupLists.
 /// </summary>
 
-[CustomEditor(typeof(UIPopupList))]
+[CustomEditor(typeof(UIPopupList), true)]
 public class UIPopupListInspector : UIWidgetContainerEditor
 {
 	enum FontType
@@ -272,6 +272,8 @@ public class UIPopupListInspector : UIWidgetContainerEditor
 			NGUIEditorTools.DrawPadding();
 			NGUIEditorTools.SetLabelWidth(80f);
 			GUILayout.EndHorizontal();
+
+			NGUIEditorTools.DrawProperty("Modifier", serializedObject, "textModifier");
 
 			NGUIEditorTools.EndContents();
 		}

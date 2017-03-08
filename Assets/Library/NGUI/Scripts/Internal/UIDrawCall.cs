@@ -1,13 +1,12 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 //#define SHOW_HIDDEN_OBJECTS
 
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// This is an internally-created script used by the UI system. You shouldn't be attaching it manually.
@@ -267,7 +266,7 @@ public class UIDrawCall : MonoBehaviour
 		{
 			mTexture = value;
 			if (mBlock == null) mBlock = new MaterialPropertyBlock();
-			mBlock.SetTexture("_MainTex", value);
+			mBlock.SetTexture("_MainTex", value ?? Texture2D.whiteTexture);
 		}
 	}
 
@@ -687,13 +686,13 @@ public class UIDrawCall : MonoBehaviour
 
 		for (int i = 0; i < vertexCount; i += 4)
 		{
-			rv[index++] = i + 2;
+			rv[index++] = i;
 			rv[index++] = i + 1;
-			rv[index++] = i;
-
-			rv[index++] = i;
-			rv[index++] = i + 3;
 			rv[index++] = i + 2;
+
+			rv[index++] = i + 2;
+			rv[index++] = i + 3;
+			rv[index++] = i;
 		}
 
 		if (mCache.Count > maxIndexBufferCache) mCache.RemoveAt(0);
@@ -1075,8 +1074,8 @@ public class UIDrawCall : MonoBehaviour
 
 	static public void MoveToScene (UnityEngine.SceneManagement.Scene scene)
 	{
-		foreach (var dc in activeList) SceneManager.MoveGameObjectToScene(dc.gameObject, scene);
-		foreach (var dc in inactiveList) SceneManager.MoveGameObjectToScene(dc.gameObject, scene);
+		foreach (var dc in activeList) UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(dc.gameObject, scene);
+		foreach (var dc in inactiveList) UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(dc.gameObject, scene);
 	}
 #endif
 }
