@@ -38,12 +38,12 @@ public class Result_VC : MonoBehaviour {
     }
 
     public void setMapLine(ref ArrayList coordList) {
-        string[] lat = new string[coordList.Count];
-        string[] lon = new string[coordList.Count];
+        float[] lat = new float[coordList.Count];
+        float[] lon = new float[coordList.Count];
 
         for(int i=0; i<coordList.Count;i++) {
-            lat[i] = ((coordData)coordList[i]).latitude.ToString();
-            lon[i] = ((coordData)coordList[i]).longitude.ToString();
+            lat[i] = ((coordData)coordList[i]).latitude;
+            lon[i] = ((coordData)coordList[i]).longitude;
             Debug.Log("Lat : " + lat[i] + ", Lon" + lon[i]);
         }
         map.GetComponent<MapLine>().drawLine(lat,lon);
