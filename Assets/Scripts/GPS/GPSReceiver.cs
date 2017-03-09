@@ -23,7 +23,7 @@ public class GPSReceiver : MonoBehaviour {
         }
 
         //locationService를 시작한다.
-        Input.location.Start(10, 1);
+        Input.location.Start(5, 5);
 
         int maxWait = 20;
         //locationService가 켜지고 있는 상태이거나 최대 대기시간이 아직 되지 않은 경우 대기한다.
