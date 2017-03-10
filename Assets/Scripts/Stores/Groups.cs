@@ -157,7 +157,7 @@ public class Groups : AjwStore {
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("groups?name=")
-                    .Append(utf8.GetString(contents));
+                    .Append(WWW.EscapeURL(payload.keyword, Encoding.UTF8));
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 Debug.Log("그룹 검색 url : " + strBuilder.ToString());
                 break;

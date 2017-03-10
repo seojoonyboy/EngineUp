@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text;
 
 public class Friends : AjwStore {
     public Friends(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher) { }
@@ -156,7 +157,7 @@ public class Friends : AjwStore {
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("users?nickName=")
-                    .Append(WWW.EscapeURL(act.keyword));
+                    .Append(WWW.EscapeURL(act.keyword, Encoding.UTF8));
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 Debug.Log("Search URL : " + strBuilder.ToString());
                 break;
