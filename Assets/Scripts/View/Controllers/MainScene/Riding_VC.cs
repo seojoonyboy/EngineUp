@@ -4,9 +4,7 @@ using System;
 public class Riding_VC : MonoBehaviour {
     public GameObject 
         gpsPref,
-        pauseModal,
-        onPauseImg,
-        onPauseLabel;
+        pauseModal;
 
     private bool isPausePressed = false;
 
@@ -35,8 +33,6 @@ public class Riding_VC : MonoBehaviour {
     void OnDisable() {
         isPausePressed = false;
         pauseModal.SetActive(isPausePressed);
-        onPauseLabel.SetActive(isPausePressed);
-        onPauseImg.SetActive(isPausePressed);
     }
 
     public void onRidingListener() {
@@ -86,7 +82,5 @@ public class Riding_VC : MonoBehaviour {
             isPausePressed = true;
         }
         pauseModal.SetActive(isPausePressed);
-        onPauseImg.SetActive(isPausePressed);
-        onPauseLabel.SetActive(isPausePressed);
     }
 }
