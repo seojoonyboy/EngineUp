@@ -1,14 +1,18 @@
-﻿using UnityEngine;
+﻿#pragma warning disable 0168
+#pragma warning disable 0219
+#pragma warning disable 0414
+using UnityEngine;
 using System;
 
 public class Riding_VC : MonoBehaviour {
     public GameObject 
         gpsPref,
-        pauseModal;
+        pauseModal,
+        beforeStartModal_ButtonContainer;
 
     private bool isPausePressed = false;
 
-    private GameObject gpsManager;
+    //private GameObject gpsManager;
     private GameManager gameManager;
 
     public UILabel
@@ -27,7 +31,9 @@ public class Riding_VC : MonoBehaviour {
     }
 
     void OnEnable() {
-        gpsManager = Instantiate(gpsPref);
+        //Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
+        //GameManager.Instance.gameDispatcher.dispatch(act);
+        //gpsManager = Instantiate(gpsPref);
     }
 
     void OnDisable() {
@@ -50,6 +56,16 @@ public class Riding_VC : MonoBehaviour {
         }
     }
 
+    public void onRidingStartButton() {
+        Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
+        GameManager.Instance.gameDispatcher.dispatch(act);
+        offBeforeStartModal();
+    }
+
+    public void offBeforeStartModal() {
+        beforeStartModal_ButtonContainer.SetActive(false);
+    }
+
     public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time){
         //Debug.Log("RIDING LISTENER");
         //currSpeedLabel.text = (Math.Round(currSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
@@ -70,7 +86,7 @@ public class Riding_VC : MonoBehaviour {
     }
 
     public void stopGPSReceive() {
-        Destroy(gpsManager);
+
     }
 
     public void pauseButtonPressed() {

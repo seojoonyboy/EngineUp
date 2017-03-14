@@ -27,7 +27,7 @@ public class Friends : AjwStore {
     //요청 식별번호(삭제 시 필요)
     public int queryId;
 
-    public AddFriendPrefab.type addFriendType;
+    public AddFriendPrefab.friendType addFriendType;
 
     public bool
         addResult = false,
@@ -47,14 +47,14 @@ public class Friends : AjwStore {
 
             case ActionTypes.COMMUNITY_SEARCH:
                 CommunitySearchAction searchAct = action as CommunitySearchAction;
-                if (searchAct.type == CommunitySearchAction.searchType.FRIEND) {
+                if (searchAct._type == CommunitySearchAction.searchType.FRIEND) {
                     search(searchAct);
                 }
                 break;
 
             case ActionTypes.COMMUNITY_DELETE:
                 CommunityDeleteAction delAct = action as CommunityDeleteAction;
-                if (delAct.type == CommunityDeleteAction.deleteType.FRIEND) {
+                if (delAct._type == CommunityDeleteAction.deleteType.FRIEND) {
                     delete(delAct);
                 }
                 break;
@@ -173,7 +173,7 @@ public class Friends : AjwStore {
                 }
                 AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
                 addFriendAct.id = searchedFriend[0].id;
-                addFriendAct.mType = AddFriendAction.type.REQUEST;
+                addFriendAct.mType = AddFriendAction.friendType.REQUEST;
                 dispatcher.dispatch(addFriendAct);
                 searchResult = true;
                 break;
@@ -305,8 +305,8 @@ public class SearchedFriend {
 
 [System.Serializable]
 class errorMessage {
-    public string[] non_field_errors;
-    public string[] self_friend_error;
+    public string[] non_field_errors = null;
+    public string[] self_friend_error = null;
     public static errorMessage fromJSON(string json) {
         return JsonUtility.FromJson<errorMessage>(json);
     }

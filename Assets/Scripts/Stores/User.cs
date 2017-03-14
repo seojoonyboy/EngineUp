@@ -47,7 +47,7 @@ public class User : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 WWWForm form = new WWWForm();
                 strBuilder.Remove(0, strBuilder.Length);
-                switch (act.type) {
+                switch (act.login_type) {
                     case SignupAction.loginType.FB:
                         form.AddField("type", "FB");
                         form.AddField("accessToken", facebookToken);
@@ -104,7 +104,7 @@ public class User : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 WWWForm form = new WWWForm();
                 strBuilder.Remove(0, strBuilder.Length);
-                switch (act.type) {
+                switch (act.login_type) {
                     case SignupAction.loginType.FB:
                         facebookToken = act.token;
                         //Debug.Log("signIn Switch case FB");
@@ -118,7 +118,7 @@ public class User : AjwStore {
                 }
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("signin");
-                loginType = act.type;
+                loginType = act.login_type;
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act), false);
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -195,9 +195,9 @@ public class SignUpError {
 }
 
 class LoginCallbackData {
-    public string key;
-    public string createDate;
-    public SubLoginCallBack user;
+    public string key = null;
+    public string createDate = null;
+    public SubLoginCallBack user = null;
     public static LoginCallbackData fromJSON(string json) {
         return JsonUtility.FromJson<LoginCallbackData>(json);
     }
@@ -205,6 +205,6 @@ class LoginCallbackData {
 
 [System.Serializable]
 class SubLoginCallBack {
-    public int id;
-    public string nickName;
+    public int id = -1;
+    public string nickName = null;
 }

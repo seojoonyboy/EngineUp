@@ -1,5 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿#pragma warning disable 0168
+#pragma warning disable 0219
+#pragma warning disable 0414
+using UnityEngine;
 
 public class FeedViewController : MonoBehaviour {
     public int childNum = 5;

@@ -176,7 +176,7 @@ public class FriendsViewController : MonoBehaviour {
 
     public void search() {
         CommunitySearchAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_SEARCH) as CommunitySearchAction;
-        action.type = CommunitySearchAction.searchType.FRIEND;
+        action._type = CommunitySearchAction.searchType.FRIEND;
         action.keyword = input.value;
         gameManager.gameDispatcher.dispatch(action);
     }
@@ -187,18 +187,18 @@ public class FriendsViewController : MonoBehaviour {
     }
 
     //친구 검색에 따른 프리팹 생성
-    public void addFriendPref(SearchedFriend data, AddFriendPrefab.type type) {
+    public void addFriendPref(SearchedFriend data, AddFriendPrefab.friendType type) {
         Debug.Log("친구 검색에 따른 프리팹 생성");
         GameObject item = Instantiate(container);
 
         item.GetComponent<FriendIndex>().id = data.id;
         item.GetComponent<FriendIndex>().nickName = data.nickName;
         
-        if(type == AddFriendPrefab.type.REQUEST) {
+        if(type == AddFriendPrefab.friendType.REQUEST) {
             Debug.Log("요청 대기 프리팹 생성");
             item.transform.SetParent(sendFriendReqGrid.transform);
         }
-        if(type == AddFriendPrefab.type.MYFRIEND) {
+        if(type == AddFriendPrefab.friendType.MYFRIEND) {
             Debug.Log("내 친구 프리팹 생성");
             item.transform.SetParent(myFriendGrid.transform);
         }
@@ -233,7 +233,7 @@ public class FriendsViewController : MonoBehaviour {
     }
 
     //친구 수락을 통한 프리팹 생성
-    public void addFriendPref(Friend data, AddFriendPrefab.type type) {
+    public void addFriendPref(Friend data, AddFriendPrefab.friendType type) {
         UIGrid targetGrid = null;
         GameObject item = Instantiate(container);
 
@@ -241,12 +241,12 @@ public class FriendsViewController : MonoBehaviour {
         item.GetComponent<FriendIndex>().nickName = data.toUser.nickName;
 
         GameObject additionalMsg = item.transform.Find("AdditionalMsg").gameObject;
-        if (type == AddFriendPrefab.type.REQUEST) {
+        if (type == AddFriendPrefab.friendType.REQUEST) {
             Debug.Log("요청 대기 프리팹 생성");
             targetGrid = sendFriendReqGrid;
             additionalMsg.SetActive(true);
         }
-        if (type == AddFriendPrefab.type.MYFRIEND) {
+        if (type == AddFriendPrefab.friendType.MYFRIEND) {
             Debug.Log("내 친구 프리팹 생성");
             targetGrid = myFriendGrid;
             additionalMsg.SetActive(false);
@@ -315,7 +315,7 @@ public class FriendsViewController : MonoBehaviour {
         AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
         addFriendAct.id = index;
 
-        addFriendAct.mType = AddFriendAction.type.MYFRIEND;
+        addFriendAct.mType = AddFriendAction.friendType.MYFRIEND;
 
         gameManager.gameDispatcher.dispatch(addFriendAct);
 
@@ -333,7 +333,7 @@ public class FriendsViewController : MonoBehaviour {
         //Destroy(obj);
         Debug.Log("친구 삭제");
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
-        action.type = CommunityDeleteAction.deleteType.FRIEND;
+        action._type = CommunityDeleteAction.deleteType.FRIEND;
         action.targetGameObj = obj;
         action.id = obj.GetComponent<ButtonIndex>().index;
         gameManager.gameDispatcher.dispatch(action);
@@ -343,7 +343,7 @@ public class FriendsViewController : MonoBehaviour {
     private void rejectReq(GameObject obj) {
         Debug.Log("요청 거절");
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
-        action.type = CommunityDeleteAction.deleteType.FRIEND;
+        action._type = CommunityDeleteAction.deleteType.FRIEND;
         action.targetGameObj = obj;
         int index = obj.GetComponent<ButtonIndex>().index;
         action.id = index;
@@ -360,7 +360,7 @@ public class FriendsViewController : MonoBehaviour {
     private void cancelReq(GameObject obj) {
         Debug.Log("신청 취소");
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
-        action.type = CommunityDeleteAction.deleteType.FRIEND;
+        action._type = CommunityDeleteAction.deleteType.FRIEND;
         action.targetGameObj = obj;
         int index = obj.GetComponent<FriendIndex>().queryId;
         action.id = index;

@@ -6,6 +6,9 @@ using System.Text;
 using System.Collections;
 
 public class Riding : AjwStore{
+    public storeStatus storeStatus = storeStatus.NORMAL;
+    public string message;
+
     public ActionTypes eventType;
     LocationInfo? _preLocation = null;
     LocationInfo[] postBuffer;
@@ -95,6 +98,8 @@ public class Riding : AjwStore{
         coordList.Clear();
         switch(act.status){
         case NetworkAction.statusTypes.REQUEST:
+            storeStatus = storeStatus.WAITING_REQ;
+            
             _initRiding();
             var sb = GameManager.Instance.sb;
             sb.Remove(0,sb.Length)
@@ -106,11 +111,15 @@ public class Riding : AjwStore{
                 form, ncExt.networkCallback(dispatcher, act));
             break;
         case NetworkAction.statusTypes.SUCCESS:
+            storeStatus = storeStatus.NORMAL;
+
             Debug.Log("riding start success");
             RidingData ridingData = RidingData.fromJSON(act.response.data);
             ridingId = ridingData.id;
             break;
         case NetworkAction.statusTypes.FAIL:
+            storeStatus = storeStatus.ERROR;
+
             Debug.Log("riding start fail");
             Debug.Log(act.response.data);
             break;
@@ -147,11 +156,11 @@ public class Riding : AjwStore{
 }
 
 class RidingData {
-    public int id;
-    public float distance;
-    public string runningTime;
-    public float avgSpeed;
-    public float maxSpeed;
+    public int id = -1;
+    public float distance = 0;
+    public string runningTime = null;
+    public float avgSpeed = 0;
+    public float maxSpeed = 0;
 
     public static RidingData fromJSON(string json){
         return JsonUtility.FromJson<RidingData>(json);

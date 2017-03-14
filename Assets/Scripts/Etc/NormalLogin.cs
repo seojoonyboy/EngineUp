@@ -12,7 +12,7 @@ public class NormalLogin : MonoBehaviour {
 
     private void sendSignInAction() {
         SigninAction signInAct = ActionCreator.createAction(ActionTypes.SIGNIN) as SigninAction;
-        signInAct.type = SignupAction.loginType.NO;
+        signInAct.login_type = SignupAction.loginType.NO;
         GameManager.Instance.gameDispatcher.dispatch(signInAct);
     }
 }

@@ -32,7 +32,7 @@ public class Groups : AjwStore {
     public string groupAddCallbackMsg;
     public string groupEditCallbackMsg;
 
-    UTF8Encoding utf8 = new UTF8Encoding();
+    //UTF8Encoding utf8 = new UTF8Encoding();
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
@@ -152,7 +152,7 @@ public class Groups : AjwStore {
             case NetworkAction.statusTypes.REQUEST:
                 storeStatus = storeStatus.WAITING_REQ;
 
-                byte[] contents = utf8.GetBytes(payload.keyword);
+                //byte[] contents = utf8.GetBytes(payload.keyword);
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)

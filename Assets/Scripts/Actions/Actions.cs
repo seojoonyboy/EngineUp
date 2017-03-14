@@ -108,7 +108,7 @@ public static class ActionCreator{
 public class SignupAction : NetworkAction {
     //facebook, normal
     public enum loginType { FB, NO }
-    public loginType type;
+    public loginType login_type;
     public string token = null;
     public string nickName;
     public int charIndex;
@@ -142,21 +142,21 @@ public class CommunityInitAction : NetworkAction {
 
 public class CommunitySearchAction : NetworkAction {
     public enum searchType { GROUP, FRIEND };
-    public searchType type;
+    public searchType _type;
     public string keyword;
 }
 
 public class CommunityDeleteAction : NetworkAction {
     public enum deleteType { GROUP, FRIEND };
-    public deleteType type;
+    public deleteType _type;
     public GameObject targetGameObj;
     public int id;
 }
 
 public class AddFriendAction : NetworkAction {
     public int id;
-    public enum type { MYFRIEND, WAITING, REQUEST };
-    public type mType;
+    public enum friendType { MYFRIEND, WAITING, REQUEST };
+    public friendType mType;
 }
 
 public class AddFriendPrefab : AddFriendAction { }

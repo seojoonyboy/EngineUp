@@ -23,7 +23,7 @@ public class FacebookLogin : MonoBehaviour {
             var aToken = Facebook.Unity.AccessToken.CurrentAccessToken;
             //로그인 상태인 경우 바로 Login Action 생성
             SigninAction signInAct = ActionCreator.createAction(ActionTypes.SIGNIN) as SigninAction;
-            signInAct.type = SignupAction.loginType.FB;
+            signInAct.login_type = SignupAction.loginType.FB;
             signInAct.token = aToken.TokenString;
             GameManager.Instance.gameDispatcher.dispatch(signInAct);
             //startLoadingSceneManager.loadMainScene();
@@ -92,7 +92,7 @@ public class FacebookLogin : MonoBehaviour {
                 }
                 //로그인 액션
                 SigninAction signInAct = ActionCreator.createAction(ActionTypes.SIGNIN) as SigninAction;
-                signInAct.type = SignupAction.loginType.FB;
+                signInAct.login_type = SignupAction.loginType.FB;
                 signInAct.token = aToken.TokenString;
                 GameManager.Instance.gameDispatcher.dispatch(signInAct);
                 //startLoadingSceneManager.loadMainScene();

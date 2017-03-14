@@ -8,15 +8,9 @@ public class MainBtnController : MonoBehaviour {
         optionPanel,
         avatar;
 
-    void Start() {
-
-    }
-
     public void onMainBtnEvent(MAIN_BUTTON type) {
         switch(type) {
             case MAIN_BUTTON.RIDING:
-                Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
-                GameManager.Instance.gameDispatcher.dispatch(act);
                 ridingPanel.SetActive(true);
                 break;
 
