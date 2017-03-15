@@ -3,13 +3,14 @@ using System.Collections;
 using UnityEngine.Networking;
 
 public class NetworkManager : Singleton<NetworkManager> {
-    protected NetworkManager() { }
     public string baseUrl = "http://52.78.149.126/";
-    public delegate void Callback(HttpResponse response);
+    protected NetworkManager() {
 #if DEVELOPMENT_BUILD
-    baseUrl = "http://ajwapi-dev.fbl.kr";
-    Debug.Log("Development Build");
+        baseUrl = "http://ajwapi-dev.fbl.kr";
+        Debug.Log("Development Build");
 #endif
+    }
+    public delegate void Callback(HttpResponse response);
 
     //public string baseUrl = "http://ec2-52-78-149-126.ap-northeast-2.compute.amazonaws.com:8000/";
 
