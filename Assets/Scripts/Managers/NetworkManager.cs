@@ -3,7 +3,8 @@ using System.Collections;
 using UnityEngine.Networking;
 
 public class NetworkManager : Singleton<NetworkManager> {
-    public string baseUrl = "http://52.78.149.126/";
+    //public string baseUrl = "http://52.78.149.126/";
+    public string baseUrl = "http://ajwapi-dev.fbl.kr/";
     protected NetworkManager() {
 #if DEVELOPMENT_BUILD
         baseUrl = "http://ajwapi-dev.fbl.kr";
