@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 public class StartLoadingSceneManager : fbl_SceneManager {
     GameManager gm;
     User userStore;
-    bool isUserExist = false;
+
     public GameObject 
         modal,
         nicknameModal,
@@ -62,7 +62,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         SignupAction signUpAct = ActionCreator.createAction(ActionTypes.SIGNUP) as SignupAction;
         signUpAct.charIndex = charIndex;
         signUpAct.nickName = newNickName;
-        signUpAct.type = userStore.loginType;
+        signUpAct.login_type = userStore.loginType;
 
         gm.gameDispatcher.dispatch(signUpAct);
 

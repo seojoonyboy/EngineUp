@@ -65,10 +65,6 @@ public class Riding_VC : MonoBehaviour {
         RidingEndAction action = (RidingEndAction)ActionCreator.createAction(ActionTypes.RIDING_END);
         gameManager.gameDispatcher.dispatch(action);
 
-        RidingResultAction resultAction = (RidingResultAction)ActionCreator.createAction(ActionTypes.RIDING_RESULT);
-        resultAction.nickname = userStore.nickName;
-        gameManager.gameDispatcher.dispatch(resultAction);
-
         stopGPSReceive();
     }
 
@@ -76,11 +72,11 @@ public class Riding_VC : MonoBehaviour {
         Destroy(gpsReceiver);
     }
 
-    public void ridingStart() {
+    public IEnumerator ridingStart() {
+        ridingPanel.SetActive(true);
+        yield return new WaitForSeconds(1);
         StartPanel.SetActive(false);
         beforeStartModal_ButtonContainer.SetActive(true);
-        beforeStartModal_AnimContainer.SetActive(false);
-        ridingPanel.SetActive(true);
 
         Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
         GameManager.Instance.gameDispatcher.dispatch(act);

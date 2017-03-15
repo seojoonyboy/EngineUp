@@ -4,7 +4,7 @@ using System.Text;
 
 public enum ActionTypes {
     SIGNUP, SIGNIN, GAME_START, GAME_END,
-    GET_GPS_DATA, RIDING_START, RIDING_END, RIDING_RESULT,
+    GET_GPS_DATA, RIDING_START, RIDING_END,
     COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB,
     GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ADD, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT,
     GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DESTROY, MY_GROUP_PANEL
@@ -35,9 +35,6 @@ public static class ActionCreator{
             break;
         case ActionTypes.RIDING_END:
             _return = new RidingEndAction();
-            break;
-        case ActionTypes.RIDING_RESULT:
-            _return = new RidingResultAction();
             break;
         case ActionTypes.COMMUNITY_SEARCH:
             _return = new CommunitySearchAction();
