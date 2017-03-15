@@ -127,6 +127,7 @@ public class GameStartAction : NetworkAction{
 
 public class GetGPSDataAction : Actions {
     public LocationInfo GPSInfo;
+    public string timeText;
 }
 
 public class RidingStartAction : NetworkAction {}

@@ -3,12 +3,18 @@
 #pragma warning disable 0414
 using UnityEngine;
 using System;
+using System.Collections;
 
 public class Riding_VC : MonoBehaviour {
     public GameObject 
         gpsPref,
         pauseModal,
-        beforeStartModal_ButtonContainer;
+        StartPanel,
+        beforeStartModal_ButtonContainer,
+        beforeStartModal_AnimContainer,
+        ridingPanel;
+
+    private GameObject gpsReceiver;
 
     private bool isPausePressed = false;
 
@@ -28,12 +34,7 @@ public class Riding_VC : MonoBehaviour {
 
     void Start() {
         gameManager = GameManager.Instance;
-    }
-
-    void OnEnable() {
-        //Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
-        //GameManager.Instance.gameDispatcher.dispatch(act);
-        //gpsManager = Instantiate(gpsPref);
+        //gosReceiver = Instantiate(gpsPref);
     }
 
     void OnDisable() {
@@ -41,25 +42,9 @@ public class Riding_VC : MonoBehaviour {
         pauseModal.SetActive(isPausePressed);
     }
 
-    public void onRidingListener() {
-        float currSpeed = ridingStore.curSpeed;
-        float avgSpeed = ridingStore.avgSpeed;
-        double dist = Math.Round(ridingStore.totalDist, 2);
-
-        char delimeter = '.';
-        string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
-        refreshTxt(currSpeed, avgSpeed, dist, time);
-
-        if (ridingStore.eventType == ActionTypes.RIDING_END) {
-            stopGPSReceive();
-            Debug.Log("Stop GPS RECEIVE");
-        }
-    }
-
     public void onRidingStartButton() {
-        Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
-        GameManager.Instance.gameDispatcher.dispatch(act);
         offBeforeStartModal();
+        beforeStartModal_AnimContainer.SetActive(true);
     }
 
     public void offBeforeStartModal() {
@@ -83,20 +68,52 @@ public class Riding_VC : MonoBehaviour {
         RidingResultAction resultAction = (RidingResultAction)ActionCreator.createAction(ActionTypes.RIDING_RESULT);
         resultAction.nickname = userStore.nickName;
         gameManager.gameDispatcher.dispatch(resultAction);
+
+        stopGPSReceive();
     }
 
     public void stopGPSReceive() {
+        Destroy(gpsReceiver);
+    }
 
+    public void ridingStart() {
+        StartPanel.SetActive(false);
+        beforeStartModal_ButtonContainer.SetActive(true);
+        beforeStartModal_AnimContainer.SetActive(false);
+        ridingPanel.SetActive(true);
+
+        Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
+        GameManager.Instance.gameDispatcher.dispatch(act);
+
+        gpsReceiver = Instantiate(gpsPref);
     }
 
     public void pauseButtonPressed() {
         //이미 일시정지 버튼을 누른 상태인 경우
         if (isPausePressed) {
             isPausePressed = false;
+            Time.timeScale = 1;
         }
         else {
             isPausePressed = true;
+            Time.timeScale = 0;
         }
         pauseModal.SetActive(isPausePressed);
+    }
+
+    public void onRidingListener() {
+        float currSpeed = ridingStore.curSpeed;
+        float avgSpeed = ridingStore.avgSpeed;
+        double dist = Math.Round(ridingStore.totalDist, 2);
+
+        char delimeter = '.';
+        //string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
+        string time = ridingStore.totalTime;
+        refreshTxt(currSpeed, avgSpeed, dist, time);
+
+        //if (ridingStore.eventType == ActionTypes.RIDING_END) {
+        //    stopGPSReceive();
+        //    Debug.Log("Stop GPS RECEIVE");
+        //}
     }
 }

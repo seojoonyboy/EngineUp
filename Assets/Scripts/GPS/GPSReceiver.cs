@@ -13,9 +13,15 @@ public enum LocationState {
 }
 
 public class GPSReceiver : MonoBehaviour {
+    float time = 0;
     private const float gpsInterval = 1f;
     private LocationState state;
     LocationInfo currGPSInfo;
+
+    void Update() {
+        time += Time.deltaTime;
+        //Debug.Log(time);
+    }
 
     IEnumerator Start() {
         //GPS 허용이 켜져있지 않으면 종료한다.
@@ -58,10 +64,17 @@ public class GPSReceiver : MonoBehaviour {
         //Action 생성
         GetGPSDataAction action = (GetGPSDataAction)ActionCreator.createAction(ActionTypes.GET_GPS_DATA);
         GameManager gameManager = GameManager.Instance;
-
+        
         while (true) {
+            //Debug.Log("GET_GPS_DATA Action 발생시킴");
+            
+            TimeSpan timeSpane = TimeSpan.FromSeconds(time);
+            string timeText = string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpane.Hours, timeSpane.Minutes, timeSpane.Seconds);
+            Debug.Log(timeText);
+
             currGPSInfo = Input.location.lastData;
             action.GPSInfo = currGPSInfo;
+            action.timeText = timeText;
             gameManager.gameDispatcher.dispatch(action);
             yield return new WaitForSeconds(gpsInterval);
         }

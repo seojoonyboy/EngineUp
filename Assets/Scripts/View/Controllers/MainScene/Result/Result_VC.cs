@@ -27,7 +27,7 @@ public class Result_VC : MonoBehaviour {
         }
     }
 
-    public void setResult(float mDist, TimeSpan mTime, float mAvgSpeed, float mMaxSpeed) {        
+    public void setResult(float mDist, string mTime, float mAvgSpeed, float mMaxSpeed) {        
         totalDist.text = (Math.Round(mDist, 2, MidpointRounding.AwayFromZero)).ToString() + " KM";
 
         char delimeter = '.';

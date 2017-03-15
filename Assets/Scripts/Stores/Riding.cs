@@ -19,7 +19,7 @@ public class Riding : AjwStore{
     public float curSpeed;
     public float avgSpeed;
     public float maxSpeed = 0;
-    public TimeSpan totalTime;
+    public string totalTime;
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
@@ -140,9 +140,10 @@ public class Riding : AjwStore{
             _emitChange();
             break;
         case ActionTypes.GET_GPS_DATA:
-            totalTime = DateTime.Now - startTime;
+            //totalTime = DateTime.Now - startTime;
             GetGPSDataAction _act = action as GetGPSDataAction;
             _gpsOperation(_act.GPSInfo);
+            totalTime = _act.timeText;
             _emitChange();
             break;
         case ActionTypes.RIDING_END:
