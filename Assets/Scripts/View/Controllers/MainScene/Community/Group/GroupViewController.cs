@@ -88,6 +88,9 @@ public class GroupViewController : MonoBehaviour {
     private void makeList(Group[] myGroups) {
         Debug.Log("내 그룹 목록 갱신");
         removeAllList();
+        if(myGroups == null) {
+            return;
+        }
         for (int i = 0; i < myGroups.Length; i++) {
             GameObject item = Instantiate(container);
 

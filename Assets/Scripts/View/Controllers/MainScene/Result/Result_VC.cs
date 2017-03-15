@@ -30,8 +30,8 @@ public class Result_VC : MonoBehaviour {
     public void setResult(float mDist, string mTime, float mAvgSpeed, float mMaxSpeed) {        
         totalDist.text = (Math.Round(mDist, 2, MidpointRounding.AwayFromZero)).ToString() + " KM";
 
-        char delimeter = '.';
-        totalTime.text = mTime.ToString().Split(delimeter)[0];
+        //char delimeter = '.';
+        //totalTime.text = mTime.ToString().Split(delimeter)[0];
 
         avgSpeed.text = (Math.Round(mAvgSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
         maxSpeed.text = (Math.Round(mMaxSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";

@@ -14,7 +14,6 @@ public class Riding : AjwStore{
     LocationInfo[] postBuffer;
     int postBufferCounter;
     int ridingId;
-    DateTime startTime;
     public float totalDist;
     public float curSpeed;
     public float avgSpeed;
@@ -127,7 +126,6 @@ public class Riding : AjwStore{
     }
 
     void _initRiding(){
-        startTime = DateTime.Now;
         totalDist = 0;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         ridingId = 0;
@@ -140,7 +138,6 @@ public class Riding : AjwStore{
             _emitChange();
             break;
         case ActionTypes.GET_GPS_DATA:
-            //totalTime = DateTime.Now - startTime;
             GetGPSDataAction _act = action as GetGPSDataAction;
             _gpsOperation(_act.GPSInfo);
             totalTime = _act.timeText;

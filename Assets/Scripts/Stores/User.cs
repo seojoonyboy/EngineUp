@@ -79,14 +79,13 @@ public class User : AjwStore {
                 dispatcher.dispatch(startAct);
                 break;
             case NetworkAction.statusTypes.FAIL:
-
+                Debug.Log(act.response.data);
                 storeStatus = storeStatus.ERROR;
-                //setMessage(3);
-
                 SignUpError msg = SignUpError.fromJSON(act.response.data);
-                Debug.Log("Detail 필드 : " + msg.detail);
-                if (msg.detail.Contains("exsist")) {
-                    //Debug.Log("닉네임 중복");
+                if(msg.deviceId != null) {
+                    message = "이미 이전에 회원가입을 하셨네요.";
+                }
+                else if(msg.nickName != null) {
                     message = "이미 존재하는 닉네임입니다.";
                 }
                 _emitChange();
@@ -185,9 +184,9 @@ public class UserData {
     }
 }
 
-[System.Serializable]
 public class SignUpError {
-    public string detail;
+    public string[] nickName;
+    public string[] deviceId;
 
     public static SignUpError fromJSON(string json) {
         return JsonUtility.FromJson<SignUpError>(json);
