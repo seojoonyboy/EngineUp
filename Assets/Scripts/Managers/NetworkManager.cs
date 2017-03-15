@@ -4,9 +4,13 @@ using UnityEngine.Networking;
 
 public class NetworkManager : Singleton<NetworkManager> {
     protected NetworkManager() { }
-
-    public delegate void Callback(HttpResponse response);
     public string baseUrl = "http://52.78.149.126/";
+    public delegate void Callback(HttpResponse response);
+#if DEVELOPMENT_BUILD
+    baseUrl = "http://ajwapi-dev.fbl.kr";
+    Debug.Log("Development Build");
+#endif
+
     //public string baseUrl = "http://ec2-52-78-149-126.ap-northeast-2.compute.amazonaws.com:8000/";
 
     public void request(string method, string url, WWWForm data, Callback callback, bool neeAuthor = true) {
