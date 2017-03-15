@@ -10,9 +10,12 @@ public class Riding_VC : MonoBehaviour {
         gpsPref,
         pauseModal,
         StartPanel,
+        exitModal,
         beforeStartModal_ButtonContainer,
         beforeStartModal_AnimContainer,
-        ridingPanel;
+        ridingPanel,
+        pauseBtn,
+        exitBtn;
 
     private GameObject gpsReceiver;
 
@@ -40,11 +43,19 @@ public class Riding_VC : MonoBehaviour {
     void OnDisable() {
         isPausePressed = false;
         pauseModal.SetActive(isPausePressed);
+        beforeStartModal_AnimContainer.SetActive(false);
+        StartPanel.SetActive(true);
     }
 
     public void onRidingStartButton() {
         offBeforeStartModal();
         beforeStartModal_AnimContainer.SetActive(true);
+    }
+
+    //라이딩 종료 버튼 눌렀을 때
+    //모달 활성화
+    public void onRidingEndButton() {
+        exitModal.SetActive(true);
     }
 
     public void offBeforeStartModal() {
@@ -59,8 +70,10 @@ public class Riding_VC : MonoBehaviour {
         timeLabel.text = time;
     }
 
+    //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
     public void ridingEnd() {
         gameObject.SetActive(false);
+        exitModal.SetActive(false);
 
         RidingEndAction action = (RidingEndAction)ActionCreator.createAction(ActionTypes.RIDING_END);
         gameManager.gameDispatcher.dispatch(action);
@@ -89,6 +102,7 @@ public class Riding_VC : MonoBehaviour {
         if (isPausePressed) {
             isPausePressed = false;
             Time.timeScale = 1;
+
         }
         else {
             isPausePressed = true;
