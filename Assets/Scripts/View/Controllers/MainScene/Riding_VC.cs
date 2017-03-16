@@ -56,6 +56,8 @@ public class Riding_VC : MonoBehaviour {
     //모달 활성화
     public void onRidingEndButton() {
         exitModal.SetActive(true);
+        //라이딩 일시정지
+        Time.timeScale = 0;
     }
 
     public void offBeforeStartModal() {
@@ -72,6 +74,7 @@ public class Riding_VC : MonoBehaviour {
 
     //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
     public void ridingEnd() {
+        offToggleGroup();
         gameObject.SetActive(false);
         exitModal.SetActive(false);
 
@@ -79,6 +82,15 @@ public class Riding_VC : MonoBehaviour {
         gameManager.gameDispatcher.dispatch(action);
 
         stopGPSReceive();
+
+        Time.timeScale = 1;
+    }
+
+    //종료 모달에서 취소 버튼을 눌렀을 때
+    public void onCancelExitButton() {
+        offToggleGroup();
+        Time.timeScale = 1;
+        exitModal.SetActive(false);
     }
 
     public void stopGPSReceive() {
@@ -125,5 +137,10 @@ public class Riding_VC : MonoBehaviour {
         //    stopGPSReceive();
         //    Debug.Log("Stop GPS RECEIVE");
         //}
+    }
+
+    void offToggleGroup() {
+        UIToggle toggle = UIToggle.GetActiveToggle(5);
+        toggle.value = false;
     }
 }

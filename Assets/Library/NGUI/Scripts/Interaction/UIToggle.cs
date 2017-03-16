@@ -79,7 +79,7 @@ public class UIToggle : UIWidgetContainer
 	/// Can the radio button option be 'none'?
 	/// </summary>
 
-	public bool optionCanBeNone = false;
+	public bool optionCanBeNone = true;
 
 	/// <summary>
 	/// Callbacks triggered when the toggle's state changes.
