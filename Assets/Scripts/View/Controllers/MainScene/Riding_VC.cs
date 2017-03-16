@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 
 public class Riding_VC : MonoBehaviour {
+    public MainBtnController mainBtnCtrler;
     public GameObject 
         gpsPref,
         pauseModal,
@@ -45,6 +46,8 @@ public class Riding_VC : MonoBehaviour {
         pauseModal.SetActive(isPausePressed);
         beforeStartModal_AnimContainer.SetActive(false);
         StartPanel.SetActive(true);
+
+        mainBtnCtrler.offToggleGroup();
     }
 
     //라이딩 시작 취소 버튼 클릭시
