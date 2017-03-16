@@ -47,6 +47,12 @@ public class Riding_VC : MonoBehaviour {
         StartPanel.SetActive(true);
     }
 
+    //라이딩 시작 취소 버튼 클릭시
+    public void onRidingCancelButton() {
+        gameObject.SetActive(false);
+    }
+
+    //라이딩 시작 버튼 클릭시
     public void onRidingStartButton() {
         offBeforeStartModal();
         beforeStartModal_AnimContainer.SetActive(true);
