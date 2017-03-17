@@ -10,8 +10,8 @@ public class Riding : AjwStore{
     public string message;
 
     public ActionTypes eventType;
-    LocationInfo? _preLocation = null;
-    LocationInfo[] postBuffer;
+    coordData _preLocation = null;
+    coordData[] postBuffer;
     int postBufferCounter;
     int ridingId;
     public float totalDist;
@@ -23,58 +23,79 @@ public class Riding : AjwStore{
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
     public ArrayList coordList;
-
+    public filteredCoords[] filteredCoords;
     public Riding(QueueDispatcher<Actions> _dispatcher):base(_dispatcher){
-        postBuffer = new LocationInfo[10];
+        postBuffer = new coordData[10];
         postBufferCounter = 0;
         coordList = new ArrayList();
     }
 
-    void _gpsSend(){
-        System.Text.StringBuilder _sb = GameManager.Instance.sb;
-        _sb.Remove(0,_sb.Length);
-        for (var i=0; i<postBufferCounter; i++){
-            var loc = postBuffer[i];
-            _sb.Append(loc.altitude).Append("|")
-            .Append(loc.latitude).Append("|")
-            .Append(loc.longitude).Append("|")
-            .Append(loc.timestamp).Append("|")
-            .Append(loc.horizontalAccuracy).Append("|")
-            .Append(loc.verticalAccuracy).Append("@");
+    void _gpsSend(GPSSendAction payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+                Debug.Log("GPS 전송");
+                System.Text.StringBuilder _sb = GameManager.Instance.sb;
+                _sb.Remove(0, _sb.Length);
+                for (var i = 0; i < postBufferCounter; i++) {
+                    var loc = postBuffer[i];
+                    _sb.Append(loc.altitude).Append("|")
+                    .Append(loc.latitude).Append("|")
+                    .Append(loc.longitude).Append("|")
+                    .Append(loc.timeStamp).Append("|")
+                    .Append(loc.horizontalAcuracy).Append("|")
+                    .Append(loc.verticalAcuracy).Append("@");
+                }
+                var coordData = _sb.ToString();
+
+                _sb.Remove(0, _sb.Length);
+                _sb.Append(networkManager.baseUrl)
+                    .Append("ridings/")
+                    .Append(ridingId);
+                WWWForm f = new WWWForm();
+                f.AddField("coordData", coordData);
+
+                networkManager.request("PUT", _sb.ToString(), f, ncExt.networkCallback(dispatcher, payload));
+                postBufferCounter = 0;
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                Debug.Log(payload.response.data);
+                RidingData ridingData = RidingData.fromJSON(payload.response.data);
+
+                totalDist = ridingData.distance;
+                avgSpeed = ridingData.avgSpeed;
+                maxSpeed = ridingData.maxSpeed;
+                filteredCoords = ridingData.filteredCoords;
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
         }
-        var coordData = _sb.ToString();
-
-        _sb.Remove(0,_sb.Length);
-        _sb.Append(networkManager.baseUrl)
-            .Append("ridings/")
-            .Append(ridingId);
-        WWWForm f = new WWWForm();
-        f.AddField("coordData", coordData);
-
-        networkManager.request("PUT", _sb.ToString(), f, _gpsSendCallback);
-        postBufferCounter = 0;
     }
 
-    void _gpsSendCallback(HttpResponse response){
-        Debug.Log(response.responseCode);
-        Debug.Log(response.data);
-        RidingData ridingData = RidingData.fromJSON(response.data);
+    private void _gpsOperation(GetGPSDataAction act){
+        coordData loc = act.GPSInfo;
+        if (act.isStop) {
+            Debug.Log("라이딩 일시 정지. gps 좌표를 모두 전송합니다.");
+            GPSSendAction _act = ActionCreator.createAction(ActionTypes.GPS_SEND) as GPSSendAction;
+            dispatcher.dispatch(_act);
+            return;
+        }
 
-        totalDist = ridingData.distance;
-        avgSpeed = ridingData.avgSpeed;
-        maxSpeed = ridingData.maxSpeed;
-    }
-
-    private void _gpsOperation(LocationInfo loc){
-        if(!_filter(loc)){ return; } // 필터 적용
+        //if(!_filter(loc)){ return; } // 필터 적용
         postBuffer[postBufferCounter] = loc;
         postBufferCounter++;
 
-        coordData data = new coordData(loc.longitude,loc.latitude);
-        coordList.Add(data);
+        //coordData data = new coordData(loc.longitude,loc.latitude);
+        //coordList.Add(data);
 
         if(postBufferCounter >= postBuffer.Length){
-            _gpsSend();
+            GPSSendAction _act = ActionCreator.createAction(ActionTypes.GPS_SEND) as GPSSendAction;
+            dispatcher.dispatch(_act);
         }
 
         //첫 data
@@ -88,7 +109,7 @@ public class Riding : AjwStore{
     bool _filter(LocationInfo loc) {
         if( loc.timestamp == 0 ) { return false; }
         if( _preLocation == null ) { return true; }
-        if( loc.timestamp == _preLocation.Value.timestamp ) { return false; }
+        if( loc.timestamp <= _preLocation.timeStamp) { return false; }
 
         return true;
     }
@@ -105,7 +126,7 @@ public class Riding : AjwStore{
                 .Append(networkManager.baseUrl)
                 .Append("ridings");
             WWWForm form = new WWWForm();
-            form.AddField("distance", 0);
+            //form.AddField("distance", 0);
             networkManager.request("POST", sb.ToString(),
                 form, ncExt.networkCallback(dispatcher, act));
             break;
@@ -139,14 +160,21 @@ public class Riding : AjwStore{
             break;
         case ActionTypes.GET_GPS_DATA:
             GetGPSDataAction _act = action as GetGPSDataAction;
-            _gpsOperation(_act.GPSInfo);
+            _gpsOperation(_act);
             totalTime = _act.timeText;
             _emitChange();
             break;
         case ActionTypes.RIDING_END:
             Screen.sleepTimeout = SleepTimeout.SystemSetting;
-            _gpsSend();
+
+            //GPSSendAction sendAct = ActionCreator.createAction(ActionTypes.GPS_SEND) as GPSSendAction;
+            //dispatcher.dispatch(sendAct);
+
             _emitChange();
+            break;
+        case ActionTypes.GPS_SEND:
+            GPSSendAction _sendAct = action as GPSSendAction;
+            _gpsSend(_sendAct);
             break;
         }
         eventType = action.type;
@@ -159,18 +187,39 @@ class RidingData {
     public string runningTime = null;
     public float avgSpeed = 0;
     public float maxSpeed = 0;
+    public float uphillDistance = 0;
+    public filteredCoords[] filteredCoords;
 
     public static RidingData fromJSON(string json){
         return JsonUtility.FromJson<RidingData>(json);
     }
 }
 
-class coordData {
+public class coordData {
     public float longitude;
     public float latitude;
+    public float altitude;
+    public double timeStamp;
+    public float horizontalAcuracy;
+    public float verticalAcuracy;
 
-    public coordData(float longitude, float latitude) {
+    public coordData(float longitude, float latitude, float altitude, double timeStamp, float horAcc, float vertAcc) {
         this.longitude = longitude;
         this.latitude = latitude;
+        this.altitude = altitude;
+        this.timeStamp = timeStamp;
+        this.horizontalAcuracy = horAcc;
+        this.verticalAcuracy = vertAcc;
     }
+}
+
+[System.Serializable]
+public class filteredCoords {
+    public int id = -1;
+    public float altitude = 0;
+    public float latitude = 0;
+    public float longitude = 0;
+    public string timestamp = null;
+    public float horizontalAccuracy = 0;
+    public float verticalAccuracy = 0;
 }

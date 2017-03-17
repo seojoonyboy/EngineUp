@@ -7,7 +7,8 @@ public enum ActionTypes {
     GET_GPS_DATA, RIDING_START, RIDING_END,
     COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB,
     GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ADD, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT,
-    GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DESTROY, MY_GROUP_PANEL
+    GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DESTROY, MY_GROUP_PANEL,
+    GPS_SEND
 }
 
 public class Actions{
@@ -96,6 +97,9 @@ public static class ActionCreator{
         case ActionTypes.MY_GROUP_PANEL:
             _return = new Group_myGroups();
             break;
+        case ActionTypes.GPS_SEND:
+            _return = new GPSSendAction();
+            break;
         }
          _return.type = _type;
         return _return;
@@ -123,9 +127,23 @@ public class GameStartAction : NetworkAction{
 }
 
 public class GetGPSDataAction : Actions {
-    public LocationInfo GPSInfo;
+    public coordData GPSInfo;
     public string timeText;
+    public bool isStop = false;
 }
+
+//public class Action {
+//    // Type?
+//    Object payload;
+//}
+
+//class gpsPayload {
+//    public LocationInfo GPSInfo;
+//    public string timeText;
+//    public bool isStop = false;
+//}
+
+public class GPSSendAction : NetworkAction { }
 
 public class RidingStartAction : NetworkAction {}
 public class RidingEndAction : Actions {}

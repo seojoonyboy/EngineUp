@@ -4,6 +4,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 public enum LocationState {
     Disabled,
@@ -13,17 +14,25 @@ public enum LocationState {
 }
 
 public class GPSReceiver : MonoBehaviour {
+    public bool 
+        isFirstLoc,
+        firstLocSend;
+
     float time = 0;
     private const float gpsInterval = 1f;
     private LocationState state;
     LocationInfo currGPSInfo;
+    ArrayList firstLocArr = new ArrayList();
 
     void Update() {
-        time += Time.deltaTime;
-        //Debug.Log(time);
+        if(!isFirstLoc) {
+            time += Time.deltaTime;
+        }
     }
 
     IEnumerator Start() {
+        isFirstLoc = true;
+        firstLocSend = false;
         //GPS 허용이 켜져있지 않으면 종료한다.
         state = LocationState.Disabled;
         //StartCoroutine("getData");
@@ -67,16 +76,59 @@ public class GPSReceiver : MonoBehaviour {
         
         while (true) {
             //Debug.Log("GET_GPS_DATA Action 발생시킴");
-            
-            TimeSpan timeSpane = TimeSpan.FromSeconds(time);
-            string timeText = string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpane.Hours, timeSpane.Minutes, timeSpane.Seconds);
-            Debug.Log(timeText);
+            if(isFirstLoc) {
+                Debug.Log("First Loc");
+                currGPSInfo = Input.location.lastData;
+                coordData data = new coordData(currGPSInfo.latitude, currGPSInfo.longitude, currGPSInfo.altitude, currGPSInfo.timestamp, currGPSInfo.horizontalAccuracy, currGPSInfo.verticalAccuracy);
+                firstLocArr.Add(data);
+            }
+            else {
+                coordData data;
+                if (!firstLocSend) {
+                    Debug.Log("좌표 평균 구한 후 초기 좌표 보내기");
+                    data = setFirstLoc();
+                    firstLocSend = true;
+                }
+                else {
+                    Debug.Log("일반 좌표 보내기");
+                    currGPSInfo = Input.location.lastData;
+                    coordData currCoord = new coordData(currGPSInfo.latitude, currGPSInfo.longitude, currGPSInfo.altitude, currGPSInfo.timestamp, currGPSInfo.horizontalAccuracy, currGPSInfo.verticalAccuracy);
+                    data = currCoord;
+                }
+                
+                TimeSpan timeSpane = TimeSpan.FromSeconds(time);
+                string timeText = string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpane.Hours, timeSpane.Minutes, timeSpane.Seconds);
+                Debug.Log(timeText);
+                action.GPSInfo = data;
+                action.timeText = timeText;
+                gameManager.gameDispatcher.dispatch(action);
+            }
+            //Debug.Log(timeText);
 
-            currGPSInfo = Input.location.lastData;
-            action.GPSInfo = currGPSInfo;
-            action.timeText = timeText;
-            gameManager.gameDispatcher.dispatch(action);
             yield return new WaitForSeconds(gpsInterval);
         }
+    }
+
+    coordData setFirstLoc() {
+        float sumLat = 0;
+        float sumLon = 0;
+        float altitude = 0;
+        double timeStamp = 0;
+        float horizontalAcuracy = 0;
+        float verticalAcuracy = 0;
+
+        foreach (coordData data in firstLocArr) {
+            sumLat += data.latitude;
+            sumLon += data.longitude;
+            altitude = data.altitude;
+            timeStamp = data.timeStamp;
+            horizontalAcuracy = data.horizontalAcuracy;
+            verticalAcuracy = data.verticalAcuracy;
+        }
+
+        coordData result = new coordData(sumLon / firstLocArr.Count, sumLat / firstLocArr.Count, altitude, timeStamp, horizontalAcuracy, verticalAcuracy);
+
+        firstLocArr.Clear();
+        return result;
     }
 }

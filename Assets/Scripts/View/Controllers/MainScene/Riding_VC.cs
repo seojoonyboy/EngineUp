@@ -34,8 +34,6 @@ public class Riding_VC : MonoBehaviour {
     public Riding ridingStore;
     public User userStore;
 
-    LocationInfo currentGPSPosition;
-
     void Start() {
         gameManager = GameManager.Instance;
         //gosReceiver = Instantiate(gpsPref);
@@ -59,6 +57,8 @@ public class Riding_VC : MonoBehaviour {
     public void onRidingStartButton() {
         offBeforeStartModal();
         beforeStartModal_AnimContainer.SetActive(true);
+        //초기 위칫값을 지정한다. (받은 값들의 평균)
+        gpsReceiver = Instantiate(gpsPref);
     }
 
     //라이딩 종료 버튼 눌렀을 때
@@ -115,7 +115,8 @@ public class Riding_VC : MonoBehaviour {
         Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
         GameManager.Instance.gameDispatcher.dispatch(act);
 
-        gpsReceiver = Instantiate(gpsPref);
+        gpsReceiver.GetComponent<GPSReceiver>().isFirstLoc = false;
+        //gpsReceiver = Instantiate(gpsPref);
     }
 
     public void pauseButtonPressed() {
@@ -123,9 +124,14 @@ public class Riding_VC : MonoBehaviour {
         if (isPausePressed) {
             isPausePressed = false;
             Time.timeScale = 1;
-
         }
         else {
+            GetGPSDataAction stopAct = (GetGPSDataAction)ActionCreator.createAction(ActionTypes.GET_GPS_DATA);
+            LocationInfo info = Input.location.lastData;
+            coordData data = new coordData(info.longitude, info.latitude, info.altitude, info.timestamp, info.horizontalAccuracy, info.verticalAccuracy);
+            stopAct.GPSInfo = data;
+            stopAct.isStop = true;
+            gameManager.gameDispatcher.dispatch(stopAct);
             isPausePressed = true;
             Time.timeScale = 0;
         }
