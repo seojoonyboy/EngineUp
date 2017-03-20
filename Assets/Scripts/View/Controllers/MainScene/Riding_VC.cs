@@ -30,7 +30,8 @@ public class Riding_VC : MonoBehaviour {
         avgSpeedLabel,
         distLabel,
         maxLabel,
-        timeLabel;
+        timeLabel,
+        uphillDistanceLabel;
 
     public Riding ridingStore;
     public User userStore;
@@ -41,9 +42,10 @@ public class Riding_VC : MonoBehaviour {
     }
 
     void OnEnable() {
-        avgSpeedLabel.text = "0 KM/H";
-        distLabel.text = "0 KM";
-        maxLabel.text = "0 KM/H";
+        avgSpeedLabel.text = "0";
+        distLabel.text = "0";
+        maxLabel.text = "0";
+        uphillDistanceLabel.text = "0";
     }
 
     void OnDisable() {
@@ -80,14 +82,15 @@ public class Riding_VC : MonoBehaviour {
         beforeStartModal_ButtonContainer.SetActive(false);
     }
 
-    public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time, float maxSpeed){
+    public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time, float maxSpeed, float uphillDist) {
         //Debug.Log("RIDING LISTENER");
         //currSpeedLabel.text = (Math.Round(currSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
-        avgSpeedLabel.text = (Math.Round(avgSpeed,2,MidpointRounding.AwayFromZero)).ToString() + " KM/H";
-        distLabel.text = (Math.Round(dist,2,MidpointRounding.AwayFromZero)).ToString() + " KM";
+        avgSpeedLabel.text = (Math.Round(avgSpeed,2,MidpointRounding.AwayFromZero)).ToString();
+        distLabel.text = (Math.Round(dist,2,MidpointRounding.AwayFromZero)).ToString();
         timeLabel.text = time;
-        maxLabel.text = (Math.Round(maxSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
-    }
+        maxLabel.text = (Math.Round(maxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
+        uphillDistanceLabel.text = (Math.Round(uphillDist, 2, MidpointRounding.AwayFromZero)).ToString();
+        }
 
     //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
     public void ridingEnd() {
@@ -150,13 +153,13 @@ public class Riding_VC : MonoBehaviour {
         float currSpeed = ridingStore.curSpeed;
         float avgSpeed = ridingStore.avgSpeed;
         float maxSpeed = ridingStore.maxSpeed;
-
+        float uphillDistance = ridingStore.uphillDistance;
         double dist = Math.Round(ridingStore.totalDist, 2);
 
         char delimeter = '.';
         //string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
         string time = ridingStore.totalTime;
-        refreshTxt(currSpeed, avgSpeed, dist, time, maxSpeed);
+        refreshTxt(currSpeed, avgSpeed, dist, time, maxSpeed, uphillDistance);
 
         //if (ridingStore.eventType == ActionTypes.RIDING_END) {
         //    stopGPSReceive();

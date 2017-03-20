@@ -19,6 +19,7 @@ public class Riding : AjwStore{
     public float curSpeed;
     public float avgSpeed;
     public float maxSpeed = 0;
+    public float uphillDistance;
     public string totalTime;
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
@@ -73,6 +74,7 @@ public class Riding : AjwStore{
                 totalDist = ridingData.distance;
                 avgSpeed = ridingData.avgSpeed;
                 maxSpeed = ridingData.maxSpeed;
+                uphillDistance = ridingData.uphillDistance;
                 filteredCoordsLists.Add(ridingData.filteredCoords);
                 _emitChange();
                 break;

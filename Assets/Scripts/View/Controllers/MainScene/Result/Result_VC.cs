@@ -9,7 +9,8 @@ public class Result_VC : MonoBehaviour {
         totalDist,
         totalTime,
         avgSpeed,
-        maxSpeed;
+        maxSpeed,
+        uphillDistanceLabel;
     public Riding ridingStore;
     public GameObject map;
 
@@ -22,6 +23,12 @@ public class Result_VC : MonoBehaviour {
         //임시로 직접 접근 (수정 필요)
         Debug.Log("filteredCoordsLists 비우기");
         ridingStore.filteredCoordsLists.Clear();
+
+        totalDist.text = "0";
+        avgSpeed.text = "0";
+        maxSpeed.text = "0";
+        uphillDistanceLabel.text = "0";
+        totalTime.text = null;
         gameObject.SetActive(false);
     }
 
@@ -35,18 +42,19 @@ public class Result_VC : MonoBehaviour {
         }
         if (ridingStore.eventType == ActionTypes.RIDING_END) {
             gameObject.SetActive(true);
-            setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed);
+            setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance);
         }
     }
 
-    public void setResult(float mDist, string mTime, float mAvgSpeed, float mMaxSpeed) {        
-        totalDist.text = (Math.Round(mDist, 2, MidpointRounding.AwayFromZero)).ToString() + " KM";
+    public void setResult(float mDist, string mTime, float mAvgSpeed, float mMaxSpeed, float uphillDist) {
+        totalDist.text = (Math.Round(mDist, 2, MidpointRounding.AwayFromZero)).ToString();
 
         //char delimeter = '.';
-        //totalTime.text = mTime.ToString().Split(delimeter)[0];
+        totalTime.text = mTime.ToString();
 
-        avgSpeed.text = (Math.Round(mAvgSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
-        maxSpeed.text = (Math.Round(mMaxSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
+        avgSpeed.text = (Math.Round(mAvgSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
+        maxSpeed.text = (Math.Round(mMaxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
+        uphillDistanceLabel.text = (Math.Round(uphillDist, 2, MidpointRounding.AwayFromZero)).ToString();
     }
 
     public void offResultPanel() {
@@ -61,7 +69,7 @@ public class Result_VC : MonoBehaviour {
         //Debug.Log("Count : " + ridingStore.filteredCoordsLists.Count);
         foreach (filteredCoords[] data in ridingStore.filteredCoordsLists) {
             List<Vector2> list = new List<Vector2>();
-            for(int i=0; i<data.Length; i++) {
+            for (int i = 0; i < data.Length; i++) {
                 Debug.Log("그리기위한 Filter된 CoordLists " + i + "번째 위도 : " + data[i].latitude + ", 경도 : " + data[i].longitude);
                 float lat = data[i].latitude;
                 float lon = data[i].longitude;
@@ -69,8 +77,16 @@ public class Result_VC : MonoBehaviour {
                 //OnlineMaps.instance.AddMarker(val);
                 list.Add(val);
                 //Debug.Log("X : " + val.x + ", Y : " + val.y);
-            }
+                }
             OnlineMaps.instance.AddDrawingElement(new OnlineMapsDrawingLine(list, Color.red, 5));
+        }
+        //지도 위치 수정
+        if(ridingStore.filteredCoordsLists.Count != 0) {
+            filteredCoords[] lastData = (filteredCoords[])ridingStore.filteredCoordsLists[ridingStore.filteredCoordsLists.Count - 1];
+            float lastLat = lastData[lastData.Length - 1].latitude;
+            float lastLon = lastData[lastData.Length - 1].longitude;
+            Vector2 lastVal = new Vector2(lastLat, lastLon);
+            OnlineMaps.instance.position = lastVal;
         }
     }
 
