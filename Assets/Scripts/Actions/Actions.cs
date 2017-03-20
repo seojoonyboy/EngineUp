@@ -143,7 +143,9 @@ public class GetGPSDataAction : Actions {
 //    public bool isStop = false;
 //}
 
-public class GPSSendAction : NetworkAction { }
+public class GPSSendAction : NetworkAction {
+    public bool isStop = false;
+ }
 
 public class RidingStartAction : NetworkAction {}
 public class RidingEndAction : Actions {}

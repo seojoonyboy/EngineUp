@@ -29,6 +29,7 @@ public class Riding_VC : MonoBehaviour {
         currSpeedLabel,
         avgSpeedLabel,
         distLabel,
+        maxLabel,
         timeLabel;
 
     public Riding ridingStore;
@@ -37,6 +38,12 @@ public class Riding_VC : MonoBehaviour {
     void Start() {
         gameManager = GameManager.Instance;
         //gosReceiver = Instantiate(gpsPref);
+    }
+
+    void OnEnable() {
+        avgSpeedLabel.text = "0 KM/H";
+        distLabel.text = "0 KM";
+        maxLabel.text = "0 KM/H";
     }
 
     void OnDisable() {
@@ -73,12 +80,13 @@ public class Riding_VC : MonoBehaviour {
         beforeStartModal_ButtonContainer.SetActive(false);
     }
 
-    public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time){
+    public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time, float maxSpeed){
         //Debug.Log("RIDING LISTENER");
         //currSpeedLabel.text = (Math.Round(currSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
         avgSpeedLabel.text = (Math.Round(avgSpeed,2,MidpointRounding.AwayFromZero)).ToString() + " KM/H";
         distLabel.text = (Math.Round(dist,2,MidpointRounding.AwayFromZero)).ToString() + " KM";
         timeLabel.text = time;
+        maxLabel.text = (Math.Round(maxSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
     }
 
     //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
@@ -141,12 +149,14 @@ public class Riding_VC : MonoBehaviour {
     public void onRidingListener() {
         float currSpeed = ridingStore.curSpeed;
         float avgSpeed = ridingStore.avgSpeed;
+        float maxSpeed = ridingStore.maxSpeed;
+
         double dist = Math.Round(ridingStore.totalDist, 2);
 
         char delimeter = '.';
         //string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
         string time = ridingStore.totalTime;
-        refreshTxt(currSpeed, avgSpeed, dist, time);
+        refreshTxt(currSpeed, avgSpeed, dist, time, maxSpeed);
 
         //if (ridingStore.eventType == ActionTypes.RIDING_END) {
         //    stopGPSReceive();

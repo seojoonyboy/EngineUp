@@ -14,6 +14,8 @@ public enum LocationState {
 }
 
 public class GPSReceiver : MonoBehaviour {
+    coordData _preLocation = null;
+
     public bool 
         isFirstLoc,
         firstLocSend;
@@ -73,24 +75,32 @@ public class GPSReceiver : MonoBehaviour {
         //Action 생성
         GetGPSDataAction action = (GetGPSDataAction)ActionCreator.createAction(ActionTypes.GET_GPS_DATA);
         GameManager gameManager = GameManager.Instance;
-        
+        bool result;
         while (true) {
             //Debug.Log("GET_GPS_DATA Action 발생시킴");
             if(isFirstLoc) {
                 Debug.Log("First Loc");
                 currGPSInfo = Input.location.lastData;
                 coordData data = new coordData(currGPSInfo.latitude, currGPSInfo.longitude, currGPSInfo.altitude, currGPSInfo.timestamp, currGPSInfo.horizontalAccuracy, currGPSInfo.verticalAccuracy);
-                firstLocArr.Add(data);
+                if (_filter(data)) {
+                    firstLocArr.Add(data);
+                } // 필터 적용
+
+                //첫 data
+                if (_preLocation == null) {
+                    _preLocation = data;
+                }
+                
             }
             else {
                 coordData data;
                 if (!firstLocSend) {
-                    Debug.Log("좌표 평균 구한 후 초기 좌표 보내기");
+                    //Debug.Log("좌표 평균 구한 후 초기 좌표 보내기");
                     data = setFirstLoc();
                     firstLocSend = true;
                 }
                 else {
-                    Debug.Log("일반 좌표 보내기");
+                    //Debug.Log("일반 좌표 보내기");
                     currGPSInfo = Input.location.lastData;
                     coordData currCoord = new coordData(currGPSInfo.latitude, currGPSInfo.longitude, currGPSInfo.altitude, currGPSInfo.timestamp, currGPSInfo.horizontalAccuracy, currGPSInfo.verticalAccuracy);
                     data = currCoord;
@@ -98,7 +108,7 @@ public class GPSReceiver : MonoBehaviour {
                 
                 TimeSpan timeSpane = TimeSpan.FromSeconds(time);
                 string timeText = string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpane.Hours, timeSpane.Minutes, timeSpane.Seconds);
-                Debug.Log(timeText);
+                //Debug.Log(timeText);
                 action.GPSInfo = data;
                 action.timeText = timeText;
                 gameManager.gameDispatcher.dispatch(action);
@@ -107,6 +117,14 @@ public class GPSReceiver : MonoBehaviour {
 
             yield return new WaitForSeconds(gpsInterval);
         }
+    }
+
+    public bool _filter(coordData loc) {
+        if (loc.timeStamp == 0) { return false; }
+        if (_preLocation == null) { return true; }
+        if (loc.timeStamp <= _preLocation.timeStamp) { return false; }
+
+        return true;
     }
 
     coordData setFirstLoc() {
@@ -125,7 +143,10 @@ public class GPSReceiver : MonoBehaviour {
             horizontalAcuracy = data.horizontalAcuracy;
             verticalAcuracy = data.verticalAcuracy;
         }
-
+        //Debug.Log(sumLat);
+        //Debug.Log(sumLon);
+        //Debug.Log(sumLon / firstLocArr.Count);
+        //Debug.Log(sumLat / firstLocArr.Count);
         coordData result = new coordData(sumLon / firstLocArr.Count, sumLat / firstLocArr.Count, altitude, timeStamp, horizontalAcuracy, verticalAcuracy);
 
         firstLocArr.Clear();

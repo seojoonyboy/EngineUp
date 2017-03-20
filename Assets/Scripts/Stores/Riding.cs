@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Riding : AjwStore{
     public storeStatus storeStatus = storeStatus.NORMAL;
@@ -23,7 +24,7 @@ public class Riding : AjwStore{
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
     public ArrayList coordList;
-    public filteredCoords[] filteredCoords;
+    public ArrayList filteredCoordsLists = new ArrayList();
     public Riding(QueueDispatcher<Actions> _dispatcher):base(_dispatcher){
         postBuffer = new coordData[10];
         postBufferCounter = 0;
@@ -54,19 +55,25 @@ public class Riding : AjwStore{
                     .Append(ridingId);
                 WWWForm f = new WWWForm();
                 f.AddField("coordData", coordData);
+                if(payload.isStop) {
+                    Debug.Log("일시정지함");
+                    //f.AddField("isPaused", "true");
+                    f.AddField("isPaused", 1);
+                }
 
+                Debug.Log("전송 CoordData : " + coordData);
                 networkManager.request("PUT", _sb.ToString(), f, ncExt.networkCallback(dispatcher, payload));
                 postBufferCounter = 0;
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                Debug.Log(payload.response.data);
+                Debug.Log("callback CoordData : " + payload.response.data);
                 RidingData ridingData = RidingData.fromJSON(payload.response.data);
 
                 totalDist = ridingData.distance;
                 avgSpeed = ridingData.avgSpeed;
                 maxSpeed = ridingData.maxSpeed;
-                filteredCoords = ridingData.filteredCoords;
+                filteredCoordsLists.Add(ridingData.filteredCoords);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -82,11 +89,12 @@ public class Riding : AjwStore{
         if (act.isStop) {
             Debug.Log("라이딩 일시 정지. gps 좌표를 모두 전송합니다.");
             GPSSendAction _act = ActionCreator.createAction(ActionTypes.GPS_SEND) as GPSSendAction;
+            _act.isStop = true;
             dispatcher.dispatch(_act);
             return;
         }
 
-        //if(!_filter(loc)){ return; } // 필터 적용
+        if (!_filter(loc)) { return; } // 필터 적용
         postBuffer[postBufferCounter] = loc;
         postBufferCounter++;
 
@@ -106,10 +114,10 @@ public class Riding : AjwStore{
         _preLocation = loc;
     }
 
-    bool _filter(LocationInfo loc) {
-        if( loc.timestamp == 0 ) { return false; }
+    public bool _filter(coordData loc) {
+        if( loc.timeStamp == 0 ) { return false; }
         if( _preLocation == null ) { return true; }
-        if( loc.timestamp <= _preLocation.timeStamp) { return false; }
+        if( loc.timeStamp <= _preLocation.timeStamp) { return false; }
 
         return true;
     }
@@ -167,8 +175,8 @@ public class Riding : AjwStore{
         case ActionTypes.RIDING_END:
             Screen.sleepTimeout = SleepTimeout.SystemSetting;
 
-            //GPSSendAction sendAct = ActionCreator.createAction(ActionTypes.GPS_SEND) as GPSSendAction;
-            //dispatcher.dispatch(sendAct);
+            GPSSendAction sendAct = ActionCreator.createAction(ActionTypes.GPS_SEND) as GPSSendAction;
+            dispatcher.dispatch(sendAct);
 
             _emitChange();
             break;
@@ -181,7 +189,7 @@ public class Riding : AjwStore{
     }
 }
 
-class RidingData {
+public class RidingData {
     public int id = -1;
     public float distance = 0;
     public string runningTime = null;
