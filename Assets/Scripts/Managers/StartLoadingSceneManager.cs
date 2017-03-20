@@ -10,6 +10,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         charselectModal,
         policyModal,
         policyErrorModal,
+        policyContextModal,
         NickNameCheckResultModal,
         buttonGroup;
 
@@ -86,6 +87,34 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     private void onPolicyModal() {
         modal.SetActive(true);
         policyModal.SetActive(true);
+    }
+
+    //이용 약관 보기 버튼
+    public void showPolicyModal(GameObject obj) {
+        policyContextModal.SetActive(true);
+
+        int index = obj.GetComponent<ButtonIndex>().index;
+        GameObject modal = obj.transform.Find("Modal/InnerModal").gameObject;
+        UILabel header = modal.transform.Find("ContextHeader").GetComponent<UILabel>();
+        UILabel context = modal.transform.Find("Context").GetComponent<UILabel>();
+
+        switch (index) {
+            //모바일 서비스 이용약관
+            case 0:
+                header.text = "제1조";
+                context.text = "제 1조 내용";
+                break;
+            //개인정보 수집 및 이용안내
+            case 1:
+                header.text = "제2조";
+                context.text = "제 2조 내용";
+                break;
+        }
+    }
+
+    //이용 약관 닫기 버튼
+    public void offPolicyModal() {
+        policyContextModal.SetActive(false);
     }
 
     //이용 약관 동의 버튼
