@@ -158,6 +158,10 @@ public class Riding : AjwStore{
 
     void _initRiding(){
         totalDist = 0;
+        curSpeed = 0;
+        maxSpeed = 0;
+        avgSpeed = 0;
+        uphillDistance = 0;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         ridingId = 0;
     }
