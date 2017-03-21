@@ -12,7 +12,9 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         policyErrorModal,
         policyContextModal,
         NickNameCheckResultModal,
-        buttonGroup;
+        buttonGroup,
+        mobileServiceContainer,
+        privacyContainer;
 
     public FacebookLogin facebooklogin;
     public NormalLogin normalLogin;
@@ -94,20 +96,15 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         policyContextModal.SetActive(true);
 
         int index = obj.GetComponent<ButtonIndex>().index;
-        GameObject modal = obj.transform.Find("Modal/InnerModal").gameObject;
-        UILabel header = modal.transform.Find("ContextHeader").GetComponent<UILabel>();
-        UILabel context = modal.transform.Find("Context").GetComponent<UILabel>();
 
         switch (index) {
             //모바일 서비스 이용약관
             case 0:
-                header.text = "제1조";
-                context.text = "제 1조 내용";
+                mobileServiceContainer.SetActive(true);
                 break;
             //개인정보 수집 및 이용안내
             case 1:
-                header.text = "제2조";
-                context.text = "제 2조 내용";
+                privacyContainer.SetActive(true);
                 break;
         }
     }
@@ -115,6 +112,8 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     //이용 약관 닫기 버튼
     public void offPolicyModal() {
         policyContextModal.SetActive(false);
+        mobileServiceContainer.SetActive(false);
+        privacyContainer.SetActive(false);
     }
 
     //이용 약관 동의 버튼
@@ -171,7 +170,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
         if (userStore.eventType  == ActionTypes.GAME_START) {
             loadMainScene();
-            if(userStore.loginType == SignupAction.loginType.FB) {
+            if (userStore.loginType == SignupAction.loginType.FB) {
                 PlayerPrefs.SetString("socialType", "FB");
             }
             if (userStore.loginType == SignupAction.loginType.NO) {
