@@ -3,7 +3,7 @@ using System.Collections;
 
 public enum MAIN_BUTTON {
     HOME,
-    ITEM,
+    GARAGE,
     AVATAR,
     COMMUNITY,
     SHOP,
@@ -18,6 +18,7 @@ public class MainButtonListener : MonoBehaviour {
         addMainBtnEvent(0,MAIN_BUTTON.RIDING);
         addMainBtnEvent(1, MAIN_BUTTON.COMMUNITY);
         addMainBtnEvent(2, MAIN_BUTTON.OPTION);
+        addMainBtnEvent(3, MAIN_BUTTON.GARAGE);
     }
 
     private void addMainBtnEvent(int index,MAIN_BUTTON type) {
