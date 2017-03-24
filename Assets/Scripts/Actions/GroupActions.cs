@@ -31,3 +31,6 @@ public class Group_accept : Group_myGroups {
 }
 public class Group_ban : Group_accept { }
 public class Group_del : Group_myGroups { }
+public class Group_posts : Group_myGroups {
+    public bool isFirst = false;
+}

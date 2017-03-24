@@ -19,6 +19,8 @@ public class Groups : AjwStore {
         myGroups,
         searchedGroups;
 
+    public Posts[] posts;
+
     public Group clickedGroup;
     public ActionTypes eventType;
     public int sceneIndex = -1;
@@ -33,7 +35,7 @@ public class Groups : AjwStore {
     public string groupEditCallbackMsg;
 
     //UTF8Encoding utf8 = new UTF8Encoding();
-
+    public string postsCallbackHeader;
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             //내 그룹 패널 활성화 액션
@@ -41,12 +43,10 @@ public class Groups : AjwStore {
                 Group_myGroups getMyGroupAct = action as Group_myGroups;
                 getMyGroups(getMyGroupAct);
                 break;
-
             case ActionTypes.GROUP_ADD:
                 Group_AddAction addAct = action as Group_AddAction;
                 addGroup(addAct);
                 break;
-
             case ActionTypes.GROUP_DETAIL:
                 Group_detail getMemberAct = action as Group_detail;
                 getGroupDetail(getMemberAct);
@@ -83,6 +83,10 @@ public class Groups : AjwStore {
             case ActionTypes.GROUP_DESTROY:
                 Group_del groupDelAct = action as Group_del;
                 delGroup(groupDelAct);
+                break;
+            case ActionTypes.GROUP_POSTS:
+                Group_posts getPostsAct = action as Group_posts;
+                getGroupPosts(getPostsAct);
                 break;
         }
         eventType = action.type;
@@ -473,6 +477,65 @@ public class Groups : AjwStore {
         }
     }
 
+    //그룹 이야기 가져오기
+    private void getGroupPosts(Group_posts payload) {
+        switch (payload.status)
+        {
+            case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id)
+                    .Append("/posts");
+                
+                if (!payload.isFirst) {
+                    //다음 페이지 로드
+                    if (postsCallbackHeader.Contains("next"))
+                    {
+                        int startIndex = postsCallbackHeader.IndexOf('?');
+                        int endIndex = postsCallbackHeader.IndexOf('>');
+                        string str = postsCallbackHeader.Substring(startIndex, endIndex - startIndex);
+                        strBuilder.Append(str);
+                    }
+                    //다음 페이지가 더이상 없는 경우
+                    else {
+                        return;
+                    }
+                }
+                Debug.Log(strBuilder);
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                //Debug.Log(payload.response.header);
+                Debug.Log(payload.response.data);
+                postsCallbackHeader = payload.response.header;
+                posts = JsonHelper.getJsonArray<Posts>(payload.response.data);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                GetPostsError error = GetPostsError.fromJSON(payload.response.data);
+                string detail = error.detail;
+                bool tmp = detail.Contains("permission");
+                if (tmp) {
+                    message = "접근 권한이 없습니다.";
+                }
+                else {
+                    setMessage(3);
+                }
+                //그룹원이 아닌경우 ERROR callback
+                //Debug.Log(payload.response.data);
+                setMessage(3);
+
+                _emitChange();
+                break;
+        }
+    }
+
     private void onPanel(int index) {
         sceneIndex = index;
         _emitChange();
@@ -538,5 +601,27 @@ public class GroupAddError {
 
     public static GroupAddError fromJSON(string json) {
         return JsonUtility.FromJson<GroupAddError>(json);
+    }
+}
+
+[System.Serializable]
+public class GetPostsError {
+    public string detail;
+
+    public static GetPostsError fromJSON(string json) {
+        return JsonUtility.FromJson<GetPostsError>(json);
+    }
+}
+
+[System.Serializable]
+public class Posts {
+    public int id;
+    public string text;
+    public CallbackUser writer;
+    public string createDate;
+
+    public static Posts fromJSON(string json)
+    {
+        return JsonUtility.FromJson<Posts>(json);
     }
 }

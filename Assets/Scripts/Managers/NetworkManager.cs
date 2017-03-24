@@ -3,8 +3,8 @@ using System.Collections;
 using UnityEngine.Networking;
 
 public class NetworkManager : Singleton<NetworkManager> {
-    public string baseUrl = "http://52.78.149.126/";
-    //public string baseUrl = "http://ajwapi-dev.fbl.kr/";
+    //public string baseUrl = "http://52.78.149.126/";
+    public string baseUrl = "http://ajwapi-dev.fbl.kr/";
     protected NetworkManager() {
 #if DEVELOPMENT_BUILD
         baseUrl = "http://ajwapi-dev.fbl.kr/";
@@ -59,12 +59,13 @@ public class HttpResponse {
     public string data;
     public long responseCode;
     public UnityWebRequest request;
-
+    public string header;
     public HttpResponse(UnityWebRequest _request){
         request = _request;
         responseCode = _request.responseCode;
         isError = _request.isError;
         errorMessage = _request.error;
         data = _request.downloadHandler.text;
+        header = _request.GetResponseHeader("Link");
     }
 }

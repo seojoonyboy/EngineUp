@@ -24,13 +24,28 @@ public class GroupDetailViewController : MonoBehaviour {
         quitMemberButton,
         settingButton,
         modal,
-        groupModal;
+        groupModal,
+        storyPref;
 
     private GameManager gm;
+    private GameObject storyGrid;
+    private Groups groupStore;
     // 이벤트 parameter를 생성하여 리턴.
+    private bool isFirstGetPosts = true;
+
+    void Start() {
+        storyGrid = gameObject.transform.Find("ScrollView/StoryGrid").gameObject;
+    }
 
     public void OnEnable() {
         gm = GameManager.Instance;
+    }
+
+    void OnDisable() {
+        gameObject.transform.Find("ScrollView/StoryGrid").transform.DestroyChildren();
+        isFirstGetPosts = true;
+        containerInit();
+        gameObject.transform.Find("ScrollView").gameObject.AddComponent<SpringPanel>().target = new Vector3(-700.0f, -2.0f, 0.0f);
     }
 
     public void refreshTxt() {
@@ -46,6 +61,17 @@ public class GroupDetailViewController : MonoBehaviour {
         checkMyStatAct.id = id;
         checkMyStatAct.userId = GameManager.Instance.userStore.userId;
         gm.gameDispatcher.dispatch(checkMyStatAct);
+    }
+
+    public void getPosts() {
+        //그룹 포스트 불러오기
+        Group_posts getPosts = ActionCreator.createAction(ActionTypes.GROUP_POSTS) as Group_posts;
+        getPosts.id = id;
+        if (isFirstGetPosts) {
+            getPosts.isFirst = true;
+        }
+        gm.gameDispatcher.dispatch(getPosts);
+        isFirstGetPosts = false;
     }
 
     public void offPanel() {
@@ -122,12 +148,13 @@ public class GroupDetailViewController : MonoBehaviour {
         groupDelView.onGroupStoreListener();
         manageMainView.onGroupStoreListener();
 
-        Groups groupStore = controller.groupStore;
+        groupStore = controller.groupStore;
         ActionTypes groupStoreEventType = groupStore.eventType;
 
         if (groupStoreEventType == ActionTypes.GROUP_DETAIL) {
             if (groupStore.storeStatus == storeStatus.NORMAL) {
                 refreshTxt();
+                getPosts();
             }
         }
 
@@ -169,5 +196,38 @@ public class GroupDetailViewController : MonoBehaviour {
                 Debug.Log("그룹 멤버가 아님");
             }
         }
+
+        if (groupStoreEventType == ActionTypes.GROUP_POSTS) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                makePostLists();
+                gameObject.transform.Find("ScrollView").GetComponent<refresh>().flag = true;
+            }
+            //grid 갱신
+            containerInit();
+        }
+    }
+
+    public void makePostLists() {
+        for (int i = 0; i < groupStore.posts.Length; i++) {
+            GameObject item = Instantiate(storyPref);
+            item.transform.SetParent(storyGrid.transform);
+
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localScale = Vector3.one;
+
+            UILabel memberLabel = item.transform.Find("Header/Writer").GetComponent<UILabel>();
+            memberLabel.text = groupStore.posts[i].writer.nickName;
+
+            UILabel dateLabel = item.transform.Find("Header/Date").GetComponent<UILabel>();
+            dateLabel.text = groupStore.posts[i].writer.createDate;
+
+            UILabel contextLabel = item.transform.Find("Body/Label").GetComponent<UILabel>();
+            contextLabel.text = groupStore.posts[i].text;
+        }
+    }
+
+    private void containerInit() {
+        storyGrid.GetComponent<UIGrid>().repositionNow = true;
+        storyGrid.GetComponent<UIGrid>().Reposition();
     }
 }
