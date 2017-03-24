@@ -78,7 +78,7 @@ public class Result_VC : MonoBehaviour {
                 list.Add(val);
                 //Debug.Log("X : " + val.x + ", Y : " + val.y);
                 }
-            OnlineMaps.instance.AddDrawingElement(new OnlineMapsDrawingLine(list, Color.red, 5));
+            OnlineMaps.instance.AddDrawingElement(new OnlineMapsDrawingLine(list, Color.red, 3.0f));
         }
         //지도 위치 수정
         if(ridingStore.filteredCoordsLists.Count != 0) {
