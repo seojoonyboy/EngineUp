@@ -6,7 +6,7 @@ public enum ActionTypes {
     SIGNUP, SIGNIN, GAME_START, GAME_END,
     GET_GPS_DATA, RIDING_START, RIDING_END,
     COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB,
-    GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ADD, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT, GROUP_POSTS,
+    GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ADD, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT, GROUP_POSTS, GROUP_ADD_POST, GROUP_DEL_POST, GROUP_MODIFY_POST,
     GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DESTROY, MY_GROUP_PANEL,
     GPS_SEND
 }
@@ -102,6 +102,15 @@ public static class ActionCreator{
             break;
         case ActionTypes.GROUP_POSTS:
             _return = new Group_posts();
+            break;
+        case ActionTypes.GROUP_ADD_POST:
+            _return = new Group_addPosts();
+            break;
+        case ActionTypes.GROUP_DEL_POST:
+            _return = new Group_delPost();
+            break;
+        case ActionTypes.GROUP_MODIFY_POST:
+            _return = new Group_modifyPost();
             break;
         }
          _return.type = _type;

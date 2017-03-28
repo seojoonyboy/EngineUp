@@ -20,6 +20,7 @@ public class Groups : AjwStore {
         searchedGroups;
 
     public Posts[] posts;
+    public Posts callbackPost;
 
     public Group clickedGroup;
     public ActionTypes eventType;
@@ -36,6 +37,7 @@ public class Groups : AjwStore {
 
     //UTF8Encoding utf8 = new UTF8Encoding();
     public string postsCallbackHeader;
+    public GameObject target;
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             //내 그룹 패널 활성화 액션
@@ -87,6 +89,14 @@ public class Groups : AjwStore {
             case ActionTypes.GROUP_POSTS:
                 Group_posts getPostsAct = action as Group_posts;
                 getGroupPosts(getPostsAct);
+                break;
+            case ActionTypes.GROUP_ADD_POST:
+                Group_addPosts addPostsAct = action as Group_addPosts;
+                addPosts(addPostsAct);
+                break;
+            case ActionTypes.GROUP_DEL_POST:
+                Group_delPost delPostAct = action as Group_delPost;
+                delPost(delPostAct);
                 break;
         }
         eventType = action.type;
@@ -490,7 +500,7 @@ public class Groups : AjwStore {
                     .Append("groups/")
                     .Append(payload.id)
                     .Append("/posts");
-                
+
                 if (!payload.isFirst) {
                     //다음 페이지 로드
                     if (postsCallbackHeader.Contains("next"))
@@ -502,15 +512,14 @@ public class Groups : AjwStore {
                     }
                     //다음 페이지가 더이상 없는 경우
                     else {
+                        Debug.Log("다음 글 없음");
                         return;
                     }
                 }
-                Debug.Log(strBuilder);
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                //Debug.Log(payload.response.header);
                 Debug.Log(payload.response.data);
                 postsCallbackHeader = payload.response.header;
                 posts = JsonHelper.getJsonArray<Posts>(payload.response.data);
@@ -532,6 +541,88 @@ public class Groups : AjwStore {
                 setMessage(3);
 
                 _emitChange();
+                break;
+        }
+    }
+
+    //그룹 이야기 생성
+    private void addPosts(Group_addPosts payload) {
+        switch (payload.status)
+        {
+            case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id)
+                    .Append("/posts");
+
+                WWWForm form = new WWWForm();
+                form.AddField("text", payload.context);
+
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                message = "그룹 이야기가 추가되었습니다.";
+                callbackPost = Posts.fromJSON(payload.response.data);
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                setMessage(3);
+
+                _emitChange();
+                Debug.Log(payload.response.data);
+                break;
+        }
+    }
+
+    //그룹 이야기 삭제
+    //자신이 쓴 글이거나 그룹장인 경우 삭제가 가능
+    private void delPost(Group_delPost payload) {
+        switch (payload.status)
+        {
+            case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+                target = payload.target;
+
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("groups/")
+                    .Append(payload.id)
+                    .Append("/posts/")
+                    .Append(payload.postId);
+                
+                networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                message = "그룹 이야기가 삭제되었습니다.";
+                callbackPost = Posts.fromJSON(payload.response.data);
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+
+                GetPostsError error = GetPostsError.fromJSON(payload.response.data);
+                string detail = error.detail;
+
+                bool tmp = detail.Contains("permission");
+                if (tmp) {
+                    message = "삭제 권한이 없습니다.";
+                }
+                else {
+                    setMessage(3);
+                }
+
+                _emitChange();
+                Debug.Log(payload.response.data);
                 break;
         }
     }
