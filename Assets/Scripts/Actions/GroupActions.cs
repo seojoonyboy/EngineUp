@@ -31,3 +31,14 @@ public class Group_accept : Group_myGroups {
 }
 public class Group_ban : Group_accept { }
 public class Group_del : Group_myGroups { }
+public class Group_posts : Group_myGroups {
+    public bool isFirst = false;
+}
+public class Group_addPosts : Group_myGroups {
+    public string context;
+}
+public class Group_delPost : Group_myGroups {
+    public GameObject target;
+    public int postId;
+}
+//public class Group_modifyPost : Group_myGroups { }
