@@ -42,6 +42,7 @@ public class GroupDetailViewController : MonoBehaviour {
     // 이벤트 parameter를 생성하여 리턴.
     private bool isFirstGetPosts = true;
 
+    private GameObject selectedStoryObj;
     void Start() {
         GameObject tmp = gameObject.transform.Find("ScrollView").gameObject;
         storyGrid = tmp.transform.Find("StoryGrid").gameObject.GetComponent<UIGrid>();
@@ -153,8 +154,10 @@ public class GroupDetailViewController : MonoBehaviour {
     }
 
     //그룹 이야기 삭제 버튼 클릭
-    public void onStoryDelModal() {
+    //모달 활성화
+    public void onStoryDelModal(GameObject obj) {
         storyDelModal.SetActive(true);
+        selectedStoryObj = obj;
     }
 
     public void offStoryDelModal() {
@@ -187,6 +190,13 @@ public class GroupDetailViewController : MonoBehaviour {
         newItem.transform.Find("Header/Date").GetComponent<UILabel>().text = post.createDate;
         newItem.transform.Find("Body/Label").GetComponent<UILabel>().text = post.text;
         newItem.GetComponent<GroupIndex>().id = post.id;
+
+        EventDelegate.Parameter param = new EventDelegate.Parameter();
+        EventDelegate delEvent = new EventDelegate(this, "onStoryDelModal");
+        param.obj = newItem;
+        delEvent.parameters[0] = param;
+        GameObject target = newItem.transform.Find("Header/DelButton").gameObject;
+        EventDelegate.Add(target.GetComponent<UIButton>().onClick, delEvent);
 
         containerInit();
     }
@@ -320,26 +330,17 @@ public class GroupDetailViewController : MonoBehaviour {
 
             item.GetComponent<GroupIndex>().id = groupStore.posts[i].id;
 
-            GameObject tmp = item.transform.Find("Header/ShowButton").gameObject;
-
-            EventDelegate.Parameter ContainerParam = new EventDelegate.Parameter();
-
-            ContainerParam.obj = tmp;
-            EventDelegate buttonContainerEvent = new EventDelegate(this, "postButtonContainer");
-            buttonContainerEvent.parameters[0] = ContainerParam;
-            EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, buttonContainerEvent);
-
             EventDelegate.Parameter param = new EventDelegate.Parameter();
-            EventDelegate delEvent = new EventDelegate(this, "delPost");
+            EventDelegate delEvent = new EventDelegate(this, "onStoryDelModal");
             param.obj = item;
             delEvent.parameters[0] = param;
-            tmp = item.transform.Find("ButtonContainer/DelButton").gameObject;
-            EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, delEvent);
+            GameObject target = item.transform.Find("Header/DelButton").gameObject;
+            EventDelegate.Add(target.GetComponent<UIButton>().onClick, delEvent);
 
-            EventDelegate modifyEvent = new EventDelegate(this, "modifyPost");
-            modifyEvent.parameters[0] = param;
-            tmp = item.transform.Find("ButtonContainer/ModifyButton").gameObject;
-            EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, modifyEvent);
+            //EventDelegate modifyEvent = new EventDelegate(this, "modifyPost");
+            //modifyEvent.parameters[0] = param;
+            //tmp = item.transform.Find("ButtonContainer/ModifyButton").gameObject;
+            //EventDelegate.Add(tmp.GetComponent<UIButton>().onClick, modifyEvent);
         }
     }
 
@@ -351,30 +352,25 @@ public class GroupDetailViewController : MonoBehaviour {
         storyGrid.Reposition();
     }
 
-    private void postButtonContainer(GameObject obj) {
-        Debug.Log(obj.name);
-        bool isOn = obj.GetComponent<boolIndex>().isOn;
-
-        obj.transform.parent.parent.Find("ButtonContainer").gameObject.SetActive(!isOn);
-        obj.GetComponent<boolIndex>().isOn = !isOn;
-    }
-
-    private void delPost(GameObject obj) {
+    public void delPost() {
         //Destroy(obj);
         //containerInit();
 
-        int index = obj.GetComponent<GroupIndex>().id;
+        int index = selectedStoryObj.GetComponent<GroupIndex>().id;
         Group_delPost delAct = ActionCreator.createAction(ActionTypes.GROUP_DEL_POST) as Group_delPost;
         delAct.id = id;
         delAct.postId = index;
-        delAct.target = obj;
+        delAct.target = selectedStoryObj;
 
         gm.gameDispatcher.dispatch(delAct);
+
+        offStoryDelModal();
     }
 
-    private void modifyPost(GameObject obj) {
-        storyModal.SetActive(true);
-        int index = obj.GetComponent<GroupIndex>().id;
-        addStoryInput.value = groupStore.posts[index].text;
-    }
+    //기획에서 제외
+    //private void modifyPost(GameObject obj) {
+    //    storyModal.SetActive(true);
+    //    int index = obj.GetComponent<GroupIndex>().id;
+    //    addStoryInput.value = groupStore.posts[index].text;
+    //}
 }

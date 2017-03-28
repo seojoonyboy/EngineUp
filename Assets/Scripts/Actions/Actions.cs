@@ -109,9 +109,9 @@ public static class ActionCreator{
         case ActionTypes.GROUP_DEL_POST:
             _return = new Group_delPost();
             break;
-        case ActionTypes.GROUP_MODIFY_POST:
-            _return = new Group_modifyPost();
-            break;
+        //case ActionTypes.GROUP_MODIFY_POST:
+        //    _return = new Group_modifyPost();
+        //    break;
         }
          _return.type = _type;
         return _return;

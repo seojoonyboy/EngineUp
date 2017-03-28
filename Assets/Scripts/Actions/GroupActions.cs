@@ -41,4 +41,4 @@ public class Group_delPost : Group_myGroups {
     public GameObject target;
     public int postId;
 }
-public class Group_modifyPost : Group_myGroups { }
+//public class Group_modifyPost : Group_myGroups { }
