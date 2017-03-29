@@ -6,6 +6,7 @@ public class MainSceneManager : fbl_SceneManager {
     public FriendsViewController friendViewCtrler;
     public GroupViewController groupViewCtrler;
     public StatViewController statViewCtrler;
+    public GarageViewController garageViewCtrler;
     
     private GameManager gm;
     public GameObject modal;
