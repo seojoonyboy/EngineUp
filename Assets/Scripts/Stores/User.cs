@@ -1,5 +1,6 @@
 ﻿using Flux;
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -73,7 +74,7 @@ public class User : AjwStore {
                 Debug.Log("회원가입 Callback : " + act.response.data);
 
                 LoginCallbackData callbackData = LoginCallbackData.fromJSON(act.response.data);
-                nickName = callbackData.user.nickName;
+                this.nickName = callbackData.user.nickName;
                 userTokenId = callbackData.key;
                 userId = callbackData.user.id;
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
@@ -82,13 +83,29 @@ public class User : AjwStore {
             case NetworkAction.statusTypes.FAIL:
                 Debug.Log(act.response.data);
                 storeStatus = storeStatus.ERROR;
-                SignUpError msg = SignUpError.fromJSON(act.response.data);
-                if(msg.deviceId != null) {
-                    message = "이미 이전에 회원가입을 하셨네요.";
+                //SignUpError msg = SignUpError.fromJSON(act.response.data);
+                var msg = GameManager.Instance.sb;
+                msg.Remove(0, msg.Length);
+                SignUpError errorJson = SignUpError.fromJSON(act.response.data);
+                //Debug.Log(act.response.data);
+                string[] nickName = errorJson.nickName;
+                if (errorJson.deviceId != null) {
+                    msg.Append("이미 이전에 회원가입을 하였습니다.");
                 }
-                else if(msg.nickName != null) {
-                    message = "이미 존재하는 닉네임입니다.";
+                else if(nickName != null) {
+                    foreach(string str in nickName) {
+                        if(str.Contains("banned")) {
+                            msg.Append("\n 욕설은 포함할 수 없습니다.");
+                        }
+                        else if (str.Contains("korean,alphabet,number")) {
+                            msg.Append("\n 오직 한글,알파벳,숫자만이 허용됩니다.");
+                        }
+                        else if(str.Contains("more")) {
+                            msg.Append("\n 8글자 이내에만 허용됩니다.");
+                        }
+                    }
                 }
+                message = msg.ToString();
                 _emitChange();
                 break;
         }
@@ -140,7 +157,6 @@ public class User : AjwStore {
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
-
                 storeStatus = storeStatus.ERROR;
                 message = "User 정보가 없습니다. 회원가입으로 넘어갑니다.";
                 Debug.Log("User 정보 없음.");
@@ -219,9 +235,11 @@ public class UserData {
     }
 }
 
-public class SignUpError {
-    public string[] nickName;
+[System.Serializable]
+class SignUpError {
+    public string[] represent_character;
     public string[] deviceId;
+    public string[] nickName;
 
     public static SignUpError fromJSON(string json) {
         return JsonUtility.FromJson<SignUpError>(json);
