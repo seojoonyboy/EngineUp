@@ -19,6 +19,7 @@ public class User : AjwStore {
     public int userId;
 
     public UserData[] findNickNameResult;
+    public character[] basicCharacters;
 
     NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
@@ -58,18 +59,17 @@ public class User : AjwStore {
                         break;
                 }
                 form.AddField("nickName", act.nickName);
-                form.AddField("representative", act.charIndex);
+                form.AddField("represent_character", act.charIndex);
 
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("signup");
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act), false);
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-
                 storeStatus = storeStatus.NORMAL;
                 setMessage(2);
 
-                Debug.Log("회원가입 Callback");
+                Debug.Log("회원가입 Callback : " + act.response.data);
 
                 LoginCallbackData callbackData = LoginCallbackData.fromJSON(act.response.data);
                 nickName = callbackData.user.nickName;
@@ -145,6 +145,34 @@ public class User : AjwStore {
         }
     }
 
+    void getCharInfo(GetDefaultCharInfo payload) {
+        switch (payload.status)
+        {
+            case NetworkAction.statusTypes.REQUEST:
+
+                storeStatus = storeStatus.WAITING_REQ;
+                setMessage(1);
+
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("starting_characters");
+
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload), false);
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                basicCharacters = JsonHelper.getJsonArray<character>(payload.response.data);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                message = "캐릭터 정보를 불러오는데 문제가 발생하였습니다.";
+                _emitChange();
+                break;
+        }
+    }
+
     protected override void _onDispatch(Actions action){
         switch(action.type){
         case ActionTypes.SIGNUP:
@@ -152,6 +180,9 @@ public class User : AjwStore {
             break;
         case ActionTypes.SIGNIN:
             signin(action as SigninAction);
+            break;
+        case ActionTypes.GET_DEFAULT_CHAR_INFO:
+            getCharInfo(action as GetDefaultCharInfo);
             break;
         }
         eventType = action.type;
@@ -200,6 +231,20 @@ class LoginCallbackData {
     public static LoginCallbackData fromJSON(string json) {
         return JsonUtility.FromJson<LoginCallbackData>(json);
     }
+}
+
+[System.Serializable]
+public class character {
+    public int id;
+    public string name;
+    public int cost;
+    public lvup_exps[] lvup_exps;
+}
+
+[System.Serializable]
+public class lvup_exps {
+    public int num1;
+    public int num2;
 }
 
 [System.Serializable]

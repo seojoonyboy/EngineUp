@@ -119,6 +119,9 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     //이용 약관 동의 버튼
     public void onAgreePolicy() {
         //캐릭터 선택 화면으로 넘어감
+        GetDefaultCharInfo getCharAct = ActionCreator.createAction(ActionTypes.GET_DEFAULT_CHAR_INFO) as GetDefaultCharInfo;
+        gm.gameDispatcher.dispatch(getCharAct);
+
         if (mobileServiceCheckBox.value && privacyCollectCheckBox.value) {
             policyModal.SetActive(false);
             charselectModal.SetActive(true);
@@ -165,6 +168,25 @@ public class StartLoadingSceneManager : fbl_SceneManager {
                 modal.SetActive(true);
                 NickNameCheckResultModal.SetActive(true);
                 NickNameCheckResultModal.transform.Find("Background/Label").GetComponent<UILabel>().text = userStore.message;
+            }
+        }
+
+        if(userStore.eventType == ActionTypes.GET_DEFAULT_CHAR_INFO) {
+            if(userStore.storeStatus == storeStatus.NORMAL) {
+                charselectModal.transform.Find("LoadingPanel").gameObject.SetActive(false);
+                GameObject charBtn = charselectModal.transform.Find("Grid/Man").gameObject;
+                charBtn.transform.Find("Label").GetComponent<UILabel>().text = userStore.basicCharacters[0].name;
+                charBtn.GetComponent<ButtonIndex>().index = userStore.basicCharacters[0].id;
+
+                charBtn = charselectModal.transform.Find("Grid/Woman").gameObject;
+                charBtn.transform.Find("Label").GetComponent<UILabel>().text = userStore.basicCharacters[1].name;
+                charBtn.GetComponent<ButtonIndex>().index = userStore.basicCharacters[1].id;
+            }
+
+            else if(userStore.storeStatus == storeStatus.ERROR) {
+                Debug.Log("불러오는 과정에서 오류 발생. 캐릭터 정보 불러오기 재시도");
+                GetDefaultCharInfo getCharAct = ActionCreator.createAction(ActionTypes.GET_DEFAULT_CHAR_INFO) as GetDefaultCharInfo;
+                gm.gameDispatcher.dispatch(getCharAct);
             }
         }
 

@@ -3,7 +3,7 @@ using System;
 using System.Text;
 
 public enum ActionTypes {
-    SIGNUP, SIGNIN, GAME_START, GAME_END,
+    SIGNUP, SIGNIN, GAME_START, GET_DEFAULT_CHAR_INFO, GAME_END,
     GET_GPS_DATA, RIDING_START, RIDING_END,
     COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB,
     GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ADD, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT, GROUP_POSTS, GROUP_ADD_POST, GROUP_DEL_POST, GROUP_MODIFY_POST,
@@ -109,6 +109,9 @@ public static class ActionCreator{
         case ActionTypes.GROUP_DEL_POST:
             _return = new Group_delPost();
             break;
+        case ActionTypes.GET_DEFAULT_CHAR_INFO:
+            _return = new GetDefaultCharInfo();
+            break;
         //case ActionTypes.GROUP_MODIFY_POST:
         //    _return = new Group_modifyPost();
         //    break;
@@ -128,6 +131,8 @@ public class SignupAction : NetworkAction {
 }
 
 public class SigninAction : SignupAction { }
+
+public class GetDefaultCharInfo : NetworkAction { }
 
 public class NetworkAction : Actions {
     public enum statusTypes {REQUEST, SUCCESS, FAIL};
