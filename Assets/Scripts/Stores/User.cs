@@ -20,6 +20,7 @@ public class User : AjwStore {
 
     public UserData[] findNickNameResult;
     public character[] basicCharacters;
+    public represent_character myCharacters;
 
     NetworkManager networkManager = NetworkManager.Instance;
     // end of prop
@@ -127,9 +128,12 @@ public class User : AjwStore {
 
                 LoginCallbackData callbackData = LoginCallbackData.fromJSON(act.response.data);
                 //Debug.Log("sign in에 대한 callback : " + act.response.data);
+                //Debug.Log(callbackData.user);
                 userTokenId = callbackData.key;
                 nickName = callbackData.user.nickName;
                 userId = callbackData.user.id;
+                myCharacters = callbackData.user.represent_character;
+
                 //Debug.Log("Nickname : " + nickName);
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
                 dispatcher.dispatch(startAct);
@@ -157,7 +161,7 @@ public class User : AjwStore {
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("starting_characters");
-
+                
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload), false);
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -224,13 +228,28 @@ public class SignUpError {
     }
 }
 
+[System.Serializable]
 class LoginCallbackData {
     public string key = null;
-    public string createDate = null;
+    //public string createDate = null;
     public SubLoginCallBack user = null;
     public static LoginCallbackData fromJSON(string json) {
         return JsonUtility.FromJson<LoginCallbackData>(json);
     }
+}
+
+[System.Serializable]
+class SubLoginCallBack {
+    public int id = -1;
+    public string nickName = null;
+    public represent_character represent_character;
+}
+
+[System.Serializable]
+public class represent_character {
+    public int user;
+    public int selectedLv;
+    public character_inventory character_inventory;
 }
 
 [System.Serializable]
@@ -245,10 +264,4 @@ public class character {
 public class lvup_exps {
     public int num1;
     public int num2;
-}
-
-[System.Serializable]
-class SubLoginCallBack {
-    public int id = -1;
-    public string nickName = null;
 }

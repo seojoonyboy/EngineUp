@@ -13,6 +13,7 @@ public class GameManager : Singleton<GameManager> {
     public Friends friendsStore;
     public Groups groupStore;
     public Locations locationStore;
+    public Char_Inventory charInvenStore;
 
     void Awake() {
         gameDispatcher = new QueueDispatcher<Actions>();
@@ -22,6 +23,7 @@ public class GameManager : Singleton<GameManager> {
         friendsStore = new Friends(gameDispatcher);
         groupStore = new Groups(gameDispatcher);
         locationStore = new Locations(gameDispatcher);
+        charInvenStore = new Char_Inventory(gameDispatcher);
 
         deviceId = SystemInfo.deviceUniqueIdentifier;
         Debug.Log("deviceId : " + deviceId);
