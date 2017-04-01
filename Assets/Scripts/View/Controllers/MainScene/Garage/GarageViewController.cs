@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class GarageViewController : MonoBehaviour {
     public void onGroupStoreListener() {
-
+        
     }
 }
