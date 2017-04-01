@@ -25,6 +25,9 @@ public class BicycleViewController : MonoBehaviour {
     public UIGrid[] pageGrids;
     public int pagePerSlotCount;
 
+    public UILabel[] spects;
+    public UIScrollView scrollview;
+
     void OnEnable() {
         makeList();
     }
@@ -121,7 +124,8 @@ public class BicycleViewController : MonoBehaviour {
                 item.name = "item";
 
                 item.GetComponent<ButtonIndex>().index = j;
-
+                item.AddComponent<UIDragScrollView>().scrollView = scrollview;
+                //store에 접근하여 item에 반영한다.
                 EventDelegate.Parameter param = new EventDelegate.Parameter();
                 EventDelegate onClick = new EventDelegate(this, "selected");
                 param.obj = item;
