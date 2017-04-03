@@ -22,7 +22,12 @@ public class BicycleItem_Inventory : AjwStore {
 
     public ActionTypes eventType;
 
-    public BicycleItem[] items;
+    public BicycleItem[] allItems;
+    public ArrayList 
+        wheelItems = new ArrayList(),
+        frameItems = new ArrayList(),
+        engineItems = new ArrayList();
+
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.GARAGE_ITEM_INIT:
@@ -52,7 +57,13 @@ public class BicycleItem_Inventory : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 message = "아이템을 성공적으로 불러왔습니다.";
                 Debug.Log(payload.response.data);
-                items = JsonHelper.getJsonArray<BicycleItem>(payload.response.data);
+                allItems = JsonHelper.getJsonArray<BicycleItem>(payload.response.data);
+
+                wheelItems.Clear();
+                frameItems.Clear();
+                engineItems.Clear();
+
+                itemCategorization(allItems);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -61,6 +72,22 @@ public class BicycleItem_Inventory : AjwStore {
                 message = "아이템 목록을 불러오는 과정에서 문제가 발생하였습니다.";
                 _emitChange();
                 break;
+        }
+    }
+
+    //자전거 아이템 종류별로 분류
+    private void itemCategorization(BicycleItem[] item) {
+        for(int i=0; i<item.Length; i++) {
+            Item _item = item[i].item;
+            if(_item.parts == "WH") {
+                wheelItems.Add(item[i]);
+            }
+            else if(_item.parts == "FR") {
+                frameItems.Add(item[i]);
+            }
+            else if(_item.parts == "DS") {
+                engineItems.Add(item[i]);
+            }
         }
     }
 
