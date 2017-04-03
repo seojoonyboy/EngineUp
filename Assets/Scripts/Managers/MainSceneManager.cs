@@ -31,6 +31,7 @@ public class MainSceneManager : fbl_SceneManager {
         gm.groupStore.addListener(groupViewCtrler.onGroupStoreListener);
         gm.locationStore.addListener(groupViewCtrler.onGroupStoreListener);
         gm.userStore.addListener(statViewCtrler.onUserListener);
+        gm.bicycleInventStore.addListener(garageViewCtrler.onBicycleStoreListener);
         //CommunityInitAction act = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE) as CommunityInitAction;
         //gm.gameDispatcher.dispatch(act);
     }

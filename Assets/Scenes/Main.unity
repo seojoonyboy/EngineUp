@@ -360,6 +360,53 @@ MonoBehaviour:
   mMaxLineHeight: 0
   mLineWidth: 0
   mMultiline: 1
+--- !u!1001 &12108445
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 379476812}
+    m_Modifications:
+    - target: {fileID: 4851077574815112, guid: 32572b0bf0bd4a043aa4d59f3106c521, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851077574815112, guid: 32572b0bf0bd4a043aa4d59f3106c521, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851077574815112, guid: 32572b0bf0bd4a043aa4d59f3106c521, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851077574815112, guid: 32572b0bf0bd4a043aa4d59f3106c521, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851077574815112, guid: 32572b0bf0bd4a043aa4d59f3106c521, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851077574815112, guid: 32572b0bf0bd4a043aa4d59f3106c521, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851077574815112, guid: 32572b0bf0bd4a043aa4d59f3106c521, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851077574815112, guid: 32572b0bf0bd4a043aa4d59f3106c521, type: 2}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 32572b0bf0bd4a043aa4d59f3106c521, type: 2}
+  m_IsPrefabParent: 0
+--- !u!4 &12108446 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4851077574815112, guid: 32572b0bf0bd4a043aa4d59f3106c521,
+    type: 2}
+  m_PrefabInternal: {fileID: 12108445}
 --- !u!1 &16145509
 GameObject:
   m_ObjectHideFlags: 0
@@ -991,6 +1038,7 @@ GameObject:
   m_Component:
   - component: {fileID: 22808436}
   - component: {fileID: 22808437}
+  - component: {fileID: 22808438}
   m_Layer: 5
   m_Name: Sprite (2)
   m_TagString: Untagged
@@ -1065,6 +1113,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &22808438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 22808435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &23175286
 GameObject:
   m_ObjectHideFlags: 0
@@ -2351,6 +2412,10 @@ Prefab:
     - target: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: onClick.Array.data[0].mMethodName
       value: offModal
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
@@ -3744,6 +3809,133 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: main_bottom_menu_community
   mFillCenter: 1
+--- !u!1 &83604020
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 83604021}
+  - component: {fileID: 83604024}
+  - component: {fileID: 83604023}
+  - component: {fileID: 83604022}
+  m_Layer: 5
+  m_Name: PutOffButton
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &83604021
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 83604020}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -205, y: -509, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1392985582}
+  m_Father: {fileID: 555445427}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &83604022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 83604020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tweenTarget: {fileID: 83604020}
+  hover: {r: 0.88235295, g: 0.78431374, b: 0.5882353, a: 1}
+  pressed: {r: 0.7176471, g: 0.6392157, b: 0.48235294, a: 1}
+  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  duration: 0.2
+  dragHighlight: 0
+  hoverSprite: 
+  pressedSprite: 
+  disabledSprite: 
+  hoverSprite2D: {fileID: 0}
+  pressedSprite2D: {fileID: 0}
+  disabledSprite2D: {fileID: 0}
+  pixelSnap: 0
+  onClick:
+  - mTarget: {fileID: 167112403}
+    mMethodName: offDetailModal
+    mParameters: []
+    oneShot: 0
+--- !u!65 &83604023
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 83604020}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 240, y: 100, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &83604024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 83604020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b3dc54f924693f41b5cbecb267e647a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftAnchor:
+    target: {fileID: 555445427}
+    relative: 0
+    absolute: 70
+  rightAnchor:
+    target: {fileID: 555445427}
+    relative: 0
+    absolute: 310
+  bottomAnchor:
+    target: {fileID: 555445427}
+    relative: 0
+    absolute: 62
+  topAnchor:
+    target: {fileID: 555445427}
+    relative: 0
+    absolute: 162
+  updateAnchors: 1
+  mColor: {r: 1, g: 1, b: 1, a: 1}
+  mPivot: 4
+  mWidth: 240
+  mHeight: 100
+  mDepth: 2
+  mMat: {fileID: 0}
+  autoResizeBoxCollider: 1
+  hideIfOffScreen: 0
+  keepAspectRatio: 0
+  aspectRatio: 2.4
+  mType: 1
+  mFillDirection: 4
+  mFillAmount: 1
+  mInvert: 0
+  mFlip: 0
+  mApplyGradient: 0
+  mGradientTop: {r: 1, g: 1, b: 1, a: 1}
+  mGradientBottom: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  centerType: 1
+  leftType: 1
+  rightType: 1
+  bottomType: 1
+  topType: 1
+  mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
+  mSpriteName: community_friend_button_green_normal
+  mFillCenter: 1
 --- !u!1001 &84884660
 Prefab:
   m_ObjectHideFlags: 0
@@ -4846,6 +5038,7 @@ GameObject:
   m_Component:
   - component: {fileID: 123267054}
   - component: {fileID: 123267055}
+  - component: {fileID: 123267056}
   m_Layer: 5
   m_Name: Sprite (11)
   m_TagString: Untagged
@@ -4920,6 +5113,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &123267056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 123267053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &125802833
 GameObject:
   m_ObjectHideFlags: 0
@@ -5869,6 +6075,10 @@ Prefab:
       propertyPath: onClick.Array.data[0].mParameters.Array.data[0].obj
       value: 
       objectReference: {fileID: 472908924}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_IsPrefabParent: 0
@@ -6397,7 +6607,6 @@ Transform:
   m_Children:
   - {fileID: 1285930087}
   - {fileID: 2005108346}
-  - {fileID: 794575883}
   - {fileID: 738574169}
   - {fileID: 999705389}
   - {fileID: 718076405}
@@ -6467,6 +6676,8 @@ MonoBehaviour:
   test: {fileID: 1107524931}
   test2: {fileID: 578987226}
   slotItem: {fileID: 1965254079920622, guid: 32572b0bf0bd4a043aa4d59f3106c521, type: 2}
+  sideBar: {fileID: 720966092}
+  selectedItem: {fileID: 0}
   sellButton: {fileID: 404838550}
   lockButton: {fileID: 472908924}
   sellingModal: {fileID: 738574168}
@@ -6483,6 +6694,8 @@ MonoBehaviour:
   - {fileID: 893900186}
   - {fileID: 192758741}
   scrollview: {fileID: 1450719739}
+  equiptedItemIndex: ffffffffffffffffffffffff
+  atlas: {fileID: 114209369144659982, guid: 0e401decb4263894ebc7043bc91fb0a5, type: 2}
 --- !u!1 &170952452
 GameObject:
   m_ObjectHideFlags: 0
@@ -6492,6 +6705,7 @@ GameObject:
   m_Component:
   - component: {fileID: 170952453}
   - component: {fileID: 170952454}
+  - component: {fileID: 170952455}
   m_Layer: 5
   m_Name: Sprite (1)
   m_TagString: Untagged
@@ -6566,6 +6780,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &170952455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 170952452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &175777259
 GameObject:
   m_ObjectHideFlags: 0
@@ -7018,6 +7245,10 @@ Prefab:
       propertyPath: onClick.Array.data[0].mParameters.Array.data[0].obj
       value: 
       objectReference: {fileID: 404838550}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_IsPrefabParent: 0
@@ -7464,7 +7695,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 6.206897
+  aspectRatio: 14.712644
   mType: 2
   mFillDirection: 4
   mFillAmount: 1
@@ -8271,6 +8502,7 @@ GameObject:
   m_Component:
   - component: {fileID: 221407730}
   - component: {fileID: 221407731}
+  - component: {fileID: 221407732}
   m_Layer: 5
   m_Name: Slot10
   m_TagString: Untagged
@@ -8345,6 +8577,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &221407732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 221407729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &222824850
 GameObject:
   m_ObjectHideFlags: 0
@@ -9421,7 +9666,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 239082396}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 237, y: -439, z: 0}
+  m_LocalPosition: {x: 243, y: -439, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2130595491}
@@ -9457,14 +9702,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 422
+  mWidth: 410
   mHeight: 2
   mDepth: 15
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 211
+  aspectRatio: 575
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -10367,6 +10612,7 @@ GameObject:
   m_Component:
   - component: {fileID: 257948859}
   - component: {fileID: 257948860}
+  - component: {fileID: 257948861}
   m_Layer: 5
   m_Name: Sprite (5)
   m_TagString: Untagged
@@ -10441,6 +10687,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &257948861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 257948858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &268112308
 GameObject:
   m_ObjectHideFlags: 0
@@ -12005,6 +12264,10 @@ Prefab:
       propertyPath: onClick.Array.data[0].mMethodName
       value: onQuitGroupButton
       objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_IsPrefabParent: 0
@@ -12257,6 +12520,7 @@ GameObject:
   m_Component:
   - component: {fileID: 322877573}
   - component: {fileID: 322877574}
+  - component: {fileID: 322877575}
   m_Layer: 5
   m_Name: Slot5
   m_TagString: Untagged
@@ -12331,6 +12595,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &322877575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 322877572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &324955487
 GameObject:
   m_ObjectHideFlags: 0
@@ -12340,6 +12617,7 @@ GameObject:
   m_Component:
   - component: {fileID: 324955488}
   - component: {fileID: 324955489}
+  - component: {fileID: 324955490}
   m_Layer: 5
   m_Name: Sprite (4)
   m_TagString: Untagged
@@ -12414,6 +12692,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &324955490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 324955487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1001 &325659693
 Prefab:
   m_ObjectHideFlags: 0
@@ -12595,6 +12886,10 @@ Prefab:
       propertyPath: onClick.Array.data[0].mMethodName
       value: onRidingCancelButton
       objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_IsPrefabParent: 0
@@ -12611,6 +12906,7 @@ GameObject:
   m_Component:
   - component: {fileID: 343207040}
   - component: {fileID: 343207041}
+  - component: {fileID: 343207042}
   m_Layer: 5
   m_Name: Slot2
   m_TagString: Untagged
@@ -12685,6 +12981,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &343207042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 343207039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &344386216
 GameObject:
   m_ObjectHideFlags: 0
@@ -14416,6 +14725,7 @@ GameObject:
   m_Component:
   - component: {fileID: 379476812}
   - component: {fileID: 379476813}
+  - component: {fileID: 379476814}
   m_Layer: 5
   m_Name: Slot4
   m_TagString: Untagged
@@ -14432,7 +14742,8 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 232.5, y: 77.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 12108446}
   m_Father: {fileID: 958876345}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14490,6 +14801,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &379476814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 379476811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &385609175
 GameObject:
   m_ObjectHideFlags: 0
@@ -16488,6 +16812,7 @@ GameObject:
   m_Component:
   - component: {fileID: 427529689}
   - component: {fileID: 427529690}
+  - component: {fileID: 427529691}
   m_Layer: 5
   m_Name: Sprite (3)
   m_TagString: Untagged
@@ -16562,6 +16887,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &427529691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 427529688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &427911465
 GameObject:
   m_ObjectHideFlags: 0
@@ -18109,6 +18447,7 @@ GameObject:
   m_Component:
   - component: {fileID: 448925098}
   - component: {fileID: 448925099}
+  - component: {fileID: 448925100}
   m_Layer: 5
   m_Name: Sprite (7)
   m_TagString: Untagged
@@ -18183,6 +18522,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &448925100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 448925097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &450073655
 GameObject:
   m_ObjectHideFlags: 0
@@ -18298,6 +18650,7 @@ GameObject:
   m_Component:
   - component: {fileID: 451703836}
   - component: {fileID: 451703837}
+  - component: {fileID: 451703838}
   m_Layer: 5
   m_Name: Sprite (2)
   m_TagString: Untagged
@@ -18372,6 +18725,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &451703838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 451703835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &455561509
 GameObject:
   m_ObjectHideFlags: 0
@@ -19736,6 +20102,10 @@ Prefab:
       propertyPath: onClick.Array.data[1].mMethodName
       value: offStoryModal
       objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_IsPrefabParent: 0
@@ -19809,7 +20179,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 3.936
+  aspectRatio: 9.856
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -21752,6 +22122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 525790966}
   - component: {fileID: 525790967}
+  - component: {fileID: 525790968}
   m_Layer: 5
   m_Name: Sprite (11)
   m_TagString: Untagged
@@ -21826,6 +22197,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &525790968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 525790965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1001 &529660929
 Prefab:
   m_ObjectHideFlags: 0
@@ -21974,6 +22358,10 @@ Prefab:
     - target: {fileID: 11400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: mText
       value: "\uACF5\uAD6C\uD568 \uC5F4\uAE30"
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
@@ -23173,6 +23561,7 @@ Transform:
   - {fileID: 889288025}
   - {fileID: 436586512}
   - {fileID: 1282108142}
+  - {fileID: 83604021}
   m_Father: {fileID: 718076405}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -23213,7 +23602,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 0.63607085
+  aspectRatio: 1.8293076
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -23419,6 +23808,7 @@ GameObject:
   m_Component:
   - component: {fileID: 558094900}
   - component: {fileID: 558094901}
+  - component: {fileID: 558094902}
   m_Layer: 5
   m_Name: Sprite (7)
   m_TagString: Untagged
@@ -23493,6 +23883,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &558094902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 558094899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &558425114
 GameObject:
   m_ObjectHideFlags: 0
@@ -23502,6 +23905,7 @@ GameObject:
   m_Component:
   - component: {fileID: 558425115}
   - component: {fileID: 558425116}
+  - component: {fileID: 558425117}
   m_Layer: 5
   m_Name: Slot9
   m_TagString: Untagged
@@ -23576,6 +23980,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &558425117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 558425114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &559860597
 GameObject:
   m_ObjectHideFlags: 0
@@ -29375,6 +29792,10 @@ Prefab:
       propertyPath: onClick.Array.data[0].mMethodName
       value: delPost
       objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_IsPrefabParent: 0
@@ -29662,7 +30083,7 @@ Transform:
   - {fileID: 359308591}
   - {fileID: 555445427}
   m_Father: {fileID: 167112401}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &718076406
 MonoBehaviour:
@@ -30491,7 +30912,7 @@ MonoBehaviour:
   friendViewCtrler: {fileID: 378383262}
   groupViewCtrler: {fileID: 416240837}
   statViewCtrler: {fileID: 978275570}
-  garageViewCtrler: {fileID: 0}
+  garageViewCtrler: {fileID: 2022653125}
   modal: {fileID: 1425861299}
 --- !u!1 &738574168
 GameObject:
@@ -30522,7 +30943,7 @@ Transform:
   - {fileID: 202838954}
   - {fileID: 1331731934}
   m_Father: {fileID: 167112401}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &738574170
 MonoBehaviour:
@@ -31217,7 +31638,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 749848218}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -274, y: -438, z: 0}
+  m_LocalPosition: {x: -268, y: -438, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1156589142}
@@ -31253,14 +31674,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 341
+  mWidth: 353
   mHeight: 2
   mDepth: 15
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 170.5
+  aspectRatio: 547
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -32696,13 +33117,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 794575882}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 385609176}
-  m_Father: {fileID: 167112401}
-  m_RootOrder: 2
+  m_Father: {fileID: 2022653124}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &794575884
 MonoBehaviour:
@@ -32742,7 +33163,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3032
+  startingRenderQueue: 3023
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -32970,6 +33391,7 @@ GameObject:
   m_Component:
   - component: {fileID: 805741677}
   - component: {fileID: 805741678}
+  - component: {fileID: 805741679}
   m_Layer: 5
   m_Name: Slot8
   m_TagString: Untagged
@@ -33044,6 +33466,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &805741679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 805741676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &806166819
 GameObject:
   m_ObjectHideFlags: 0
@@ -33724,6 +34159,7 @@ GameObject:
   m_Component:
   - component: {fileID: 824241295}
   - component: {fileID: 824241296}
+  - component: {fileID: 824241297}
   m_Layer: 5
   m_Name: Slot0
   m_TagString: Untagged
@@ -33798,6 +34234,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &824241297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 824241294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &826326668
 GameObject:
   m_ObjectHideFlags: 0
@@ -34228,7 +34677,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 830710668}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -274, y: -581, z: 0}
+  m_LocalPosition: {x: -268, y: -581, z: 0}
   m_LocalScale: {x: 0.99839985, y: 0.99839985, z: 0.99839985}
   m_Children:
   - {fileID: 1328526784}
@@ -34265,14 +34714,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 421
+  mWidth: 433
   mHeight: 273
   mDepth: 2
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1.5421245
+  aspectRatio: 1.5860806
 --- !u!1 &836278347
 GameObject:
   m_ObjectHideFlags: 0
@@ -35254,6 +35703,7 @@ GameObject:
   m_Component:
   - component: {fileID: 852196420}
   - component: {fileID: 852196421}
+  - component: {fileID: 852196422}
   m_Layer: 5
   m_Name: Sprite (8)
   m_TagString: Untagged
@@ -35328,6 +35778,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &852196422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 852196419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &857912195
 GameObject:
   m_ObjectHideFlags: 0
@@ -36317,6 +36780,10 @@ MonoBehaviour:
   onClick:
   - mTarget: {fileID: 167112403}
     mMethodName: offDetailModal
+    mParameters: []
+    oneShot: 0
+  - mTarget: {fileID: 167112403}
+    mMethodName: equip
     mParameters: []
     oneShot: 0
 --- !u!65 &889288027
@@ -40891,7 +41358,7 @@ Transform:
   - {fileID: 1196298987}
   - {fileID: 105120867}
   m_Father: {fileID: 167112401}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &999705390
 MonoBehaviour:
@@ -41876,6 +42343,10 @@ Prefab:
     - target: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: onClick.Array.data[0].mMethodName
       value: offModal
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
@@ -43007,6 +43478,10 @@ Prefab:
       propertyPath: onClick.Array.data[0].mMethodName
       value: cancelQuitGroup
       objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_IsPrefabParent: 0
@@ -44034,7 +44509,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1069024421}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 237, y: -409, z: 0}
+  m_LocalPosition: {x: 243, y: -409, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2130595491}
@@ -44070,14 +44545,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0.8901961, g: 0.75686276, b: 0.28235295, a: 1}
   mPivot: 4
-  mWidth: 312
+  mWidth: 300
   mHeight: 38
   mDepth: 16
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 8.210526
+  aspectRatio: 7.894737
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
@@ -45408,7 +45883,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 5.5670104
+  aspectRatio: 13.195876
   mType: 2
   mFillDirection: 4
   mFillAmount: 1
@@ -45738,7 +46213,11 @@ MonoBehaviour:
   pressedSprite2D: {fileID: 0}
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
-  onClick: []
+  onClick:
+  - mTarget: {fileID: 2022653125}
+    mMethodName: offPanel
+    mParameters: []
+    oneShot: 0
 --- !u!65 &1115621835
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -45749,7 +46228,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 88, y: 74, z: 0}
+  m_Size: {x: 123.44, y: 151.9, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1115638806
 GameObject:
@@ -46593,7 +47072,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1145728921}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -274, y: -544, z: 0}
+  m_LocalPosition: {x: -268, y: -544, z: 0}
   m_LocalScale: {x: 0.9983999, y: 0.9983999, z: 0.9983999}
   m_Children: []
   m_Father: {fileID: 1156589142}
@@ -46629,14 +47108,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 0.69803923}
   mPivot: 4
-  mWidth: 422
+  mWidth: 434
   mHeight: 348
   mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1.2126436
+  aspectRatio: 3.3793104
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -47203,6 +47682,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1166402762}
   - component: {fileID: 1166402763}
+  - component: {fileID: 1166402764}
   m_Layer: 5
   m_Name: Sprite (6)
   m_TagString: Untagged
@@ -47277,6 +47757,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1166402764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1166402761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1167085251
 GameObject:
   m_ObjectHideFlags: 0
@@ -51568,6 +52061,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1263173291}
   - component: {fileID: 1263173292}
+  - component: {fileID: 1263173293}
   m_Layer: 5
   m_Name: Sprite (6)
   m_TagString: Untagged
@@ -51642,6 +52136,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1263173293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1263173290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1264822526
 GameObject:
   m_ObjectHideFlags: 0
@@ -52221,7 +52728,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 100, y: 100, z: 0}
+  m_Size: {x: 58, y: 58, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1282108145
 MonoBehaviour:
@@ -52457,6 +52964,10 @@ Prefab:
     - target: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: onClick.Array.data[0].mMethodName
       value: offModal
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
@@ -54718,6 +55229,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1334357243}
   - component: {fileID: 1334357244}
+  - component: {fileID: 1334357245}
   m_Layer: 5
   m_Name: Sprite (4)
   m_TagString: Untagged
@@ -54792,6 +55304,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1334357245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1334357242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1335104991
 GameObject:
   m_ObjectHideFlags: 0
@@ -57033,6 +57558,103 @@ MonoBehaviour:
   mAlignment: 1
   mEncoding: 1
   mMaxLineCount: 1
+  mEffectStyle: 0
+  mEffectColor: {r: 0, g: 0, b: 0, a: 1}
+  mSymbols: 1
+  mEffectDistance: {x: 1, y: 1}
+  mOverflow: 0
+  mApplyGradient: 0
+  mGradientTop: {r: 1, g: 1, b: 1, a: 1}
+  mGradientBottom: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  mSpacingX: 0
+  mSpacingY: 0
+  mUseFloatSpacing: 0
+  mFloatSpacingX: 0
+  mFloatSpacingY: 0
+  mOverflowEllipsis: 0
+  mOverflowWidth: 0
+  mModifier: 0
+  mShrinkToFit: 0
+  mMaxLineWidth: 0
+  mMaxLineHeight: 0
+  mLineWidth: 0
+  mMultiline: 1
+--- !u!1 &1392985581
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1392985582}
+  - component: {fileID: 1392985583}
+  m_Layer: 5
+  m_Name: Label
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1392985582
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1392985581}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 83604021}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1392985583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1392985581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d0b5f3bbe925a408bd595c79d0bf63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftAnchor:
+    target: {fileID: 0}
+    relative: 0
+    absolute: 0
+  rightAnchor:
+    target: {fileID: 0}
+    relative: 1
+    absolute: 0
+  bottomAnchor:
+    target: {fileID: 0}
+    relative: 0
+    absolute: 0
+  topAnchor:
+    target: {fileID: 0}
+    relative: 1
+    absolute: 0
+  updateAnchors: 1
+  mColor: {r: 1, g: 1, b: 1, a: 1}
+  mPivot: 4
+  mWidth: 196
+  mHeight: 48
+  mDepth: 3
+  mMat: {fileID: 0}
+  autoResizeBoxCollider: 0
+  hideIfOffScreen: 0
+  keepAspectRatio: 0
+  aspectRatio: 4.0833335
+  keepCrispWhenShrunk: 1
+  mTrueTypeFont: {fileID: 0}
+  mFont: {fileID: 114000011092689454, guid: 389e6b28ca6e817498e03b80cf62c54e, type: 2}
+  mText: "\uD574\uC81C"
+  mFontSize: 60
+  mFontStyle: 0
+  mAlignment: 0
+  mEncoding: 1
+  mMaxLineCount: 0
   mEffectStyle: 0
   mEffectColor: {r: 0, g: 0, b: 0, a: 1}
   mSymbols: 1
@@ -59767,7 +60389,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 3.3375
+  aspectRatio: 3.8625
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
@@ -59949,7 +60571,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1483160380}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 237, y: -574, z: 0}
+  m_LocalPosition: {x: 243, y: -574, z: 0}
   m_LocalScale: {x: 0.99839985, y: 0.99839985, z: 0.99839985}
   m_Children:
   - {fileID: 2089620387}
@@ -59986,14 +60608,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 502
+  mWidth: 490
   mHeight: 284
   mDepth: 2
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1.7676057
+  aspectRatio: 1.7253522
 --- !u!1 &1483962755
 GameObject:
   m_ObjectHideFlags: 0
@@ -60634,6 +61256,10 @@ Prefab:
     - target: {fileID: 400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: m_LocalScale.z
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
@@ -63076,6 +63702,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1615036179}
   - component: {fileID: 1615036180}
+  - component: {fileID: 1615036181}
   m_Layer: 5
   m_Name: Sprite
   m_TagString: Untagged
@@ -63150,6 +63777,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1615036181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1615036178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1619780452
 GameObject:
   m_ObjectHideFlags: 0
@@ -63173,7 +63813,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1619780452}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 237, y: -543, z: 0}
+  m_LocalPosition: {x: 243, y: -543, z: 0}
   m_LocalScale: {x: 0.9983999, y: 0.9983999, z: 0.9983999}
   m_Children: []
   m_Father: {fileID: 2130595491}
@@ -63209,14 +63849,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 0.69803923}
   mPivot: 4
-  mWidth: 503
+  mWidth: 491
   mHeight: 346
   mDepth: 1
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1.4537572
+  aspectRatio: 3.5606937
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -63512,6 +64152,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1633959550}
   - component: {fileID: 1633959551}
+  - component: {fileID: 1633959552}
   m_Layer: 5
   m_Name: Sprite (8)
   m_TagString: Untagged
@@ -63586,6 +64227,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1633959552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1633959549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1639132619
 GameObject:
   m_ObjectHideFlags: 0
@@ -64007,6 +64661,10 @@ Prefab:
     - target: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: onClick.Array.data[0].mMethodName
       value: onRidingStartButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
@@ -64545,6 +65203,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1658898507}
   - component: {fileID: 1658898508}
+  - component: {fileID: 1658898509}
   m_Layer: 5
   m_Name: Sprite (10)
   m_TagString: Untagged
@@ -64619,6 +65278,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1658898509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1658898506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1667551400
 GameObject:
   m_ObjectHideFlags: 0
@@ -65072,6 +65744,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1687595491}
   - component: {fileID: 1687595492}
+  - component: {fileID: 1687595493}
   m_Layer: 5
   m_Name: Sprite (10)
   m_TagString: Untagged
@@ -65146,6 +65819,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1687595493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1687595490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1687962228
 GameObject:
   m_ObjectHideFlags: 0
@@ -67069,6 +67755,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1726351910}
   - component: {fileID: 1726351911}
+  - component: {fileID: 1726351912}
   m_Layer: 5
   m_Name: Slot3
   m_TagString: Untagged
@@ -67143,6 +67830,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &1726351912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1726351909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1730410806
 GameObject:
   m_ObjectHideFlags: 0
@@ -68242,6 +68942,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1766524358}
   - component: {fileID: 1766524359}
+  - component: {fileID: 1766524360}
   m_Layer: 5
   m_Name: Sprite (9)
   m_TagString: Untagged
@@ -68316,6 +69017,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1766524360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1766524357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1768672279
 GameObject:
   m_ObjectHideFlags: 0
@@ -68819,6 +69533,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1780937169}
   - component: {fileID: 1780937170}
+  - component: {fileID: 1780937171}
   m_Layer: 5
   m_Name: Sprite (1)
   m_TagString: Untagged
@@ -68893,6 +69608,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1780937171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1780937168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1781623051
 GameObject:
   m_ObjectHideFlags: 0
@@ -69166,6 +69894,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1784948617}
   - component: {fileID: 1784948618}
+  - component: {fileID: 1784948619}
   m_Layer: 5
   m_Name: Sprite
   m_TagString: Untagged
@@ -69240,6 +69969,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1784948619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1784948616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1787146119
 GameObject:
   m_ObjectHideFlags: 0
@@ -69761,6 +70503,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1800633207}
   - component: {fileID: 1800633208}
+  - component: {fileID: 1800633209}
   m_Layer: 5
   m_Name: Slot7
   m_TagString: Untagged
@@ -69835,6 +70578,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &1800633209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1800633206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1805543001
 GameObject:
   m_ObjectHideFlags: 0
@@ -69901,7 +70657,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 3.8695652
+  aspectRatio: 15.217391
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
@@ -70574,6 +71330,14 @@ Prefab:
     - target: {fileID: 11400006, guid: 8b0d1c50c984d704f94ef3e458f797fa, type: 2}
       propertyPath: rightAnchor.absolute
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: 8b0d1c50c984d704f94ef3e458f797fa, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 100008, guid: 8b0d1c50c984d704f94ef3e458f797fa, type: 2}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8b0d1c50c984d704f94ef3e458f797fa, type: 2}
@@ -72082,6 +72846,10 @@ Prefab:
       propertyPath: mColor.a
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
   m_IsPrefabParent: 0
@@ -72331,7 +73099,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1866987254}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -286, y: -407, z: 0}
+  m_LocalPosition: {x: -280, y: -407, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1156589142}
@@ -72367,14 +73135,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0.8901961, g: 0.75686276, b: 0.28235295, a: 1}
   mPivot: 4
-  mWidth: 243
+  mWidth: 255
   mHeight: 36
   mDepth: 16
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 6.75
+  aspectRatio: 7.0833335
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
@@ -72779,6 +73547,10 @@ Prefab:
     - target: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: onClick.Array.data[0].mMethodName
       value: offModal
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
@@ -73230,6 +74002,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1881499003}
   - component: {fileID: 1881499004}
+  - component: {fileID: 1881499005}
   m_Layer: 5
   m_Name: Sprite (3)
   m_TagString: Untagged
@@ -73304,6 +74077,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &1881499005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1881499002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1884775685
 GameObject:
   m_ObjectHideFlags: 0
@@ -73853,6 +74639,10 @@ Prefab:
     - target: {fileID: 11400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: mApplyGradient
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
@@ -75156,6 +75946,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1919458542}
   - component: {fileID: 1919458543}
+  - component: {fileID: 1919458544}
   m_Layer: 5
   m_Name: Slot1
   m_TagString: Untagged
@@ -75230,6 +76021,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &1919458544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1919458541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1922132839
 GameObject:
   m_ObjectHideFlags: 0
@@ -76425,6 +77229,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1966139917}
   - component: {fileID: 1966139918}
+  - component: {fileID: 1966139919}
   m_Layer: 5
   m_Name: Slot6
   m_TagString: Untagged
@@ -76499,6 +77304,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &1966139919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1966139916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &1970123970
 GameObject:
   m_ObjectHideFlags: 0
@@ -77018,7 +77836,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 3.379747
+  aspectRatio: 13.29114
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
@@ -77225,7 +78043,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 20.1875
+  aspectRatio: 66.375
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -78403,6 +79221,7 @@ Transform:
   - {fileID: 508020535}
   - {fileID: 167112401}
   - {fileID: 210341323}
+  - {fileID: 794575883}
   m_Father: {fileID: 1030472141}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -79378,7 +80197,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1.0670553
+  aspectRatio: 2.1472304
   mType: 0
   mFillDirection: 4
   mFillAmount: 1
@@ -80018,6 +80837,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2057187116}
   - component: {fileID: 2057187117}
+  - component: {fileID: 2057187118}
   m_Layer: 5
   m_Name: Sprite (5)
   m_TagString: Untagged
@@ -80092,6 +80912,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &2057187118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2057187115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &2057810480
 GameObject:
   m_ObjectHideFlags: 0
@@ -80188,6 +81021,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2060851396}
   - component: {fileID: 2060851397}
+  - component: {fileID: 2060851398}
   m_Layer: 5
   m_Name: Sprite (9)
   m_TagString: Untagged
@@ -80262,6 +81096,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: community_group_modal_white
   mFillCenter: 1
+--- !u!114 &2060851398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2060851395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &2062694736
 GameObject:
   m_ObjectHideFlags: 0
@@ -82107,6 +82954,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2129964894}
   - component: {fileID: 2129964895}
+  - component: {fileID: 2129964896}
   m_Layer: 5
   m_Name: Slot11
   m_TagString: Untagged
@@ -82181,6 +83029,19 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &2129964896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2129964893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 1450719739}
+  draggablePanel: {fileID: 0}
 --- !u!1 &2130437699
 GameObject:
   m_ObjectHideFlags: 0
