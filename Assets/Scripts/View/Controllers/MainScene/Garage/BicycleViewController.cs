@@ -218,7 +218,9 @@ public class BicycleViewController : MonoBehaviour {
         BicycleItem[] items;
         //Debug.Log(items.Length);
         UISprite sprite = null;
-
+        equipedItemIndex[0] = -1;
+        equipedItemIndex[1] = -1;
+        equipedItemIndex[2] = -1;
         //프레임 리스트 생성
         int cnt = 0;
         items = gm.bicycleInventStore.frameItems.ToArray(typeof(BicycleItem)) as BicycleItem[];
@@ -245,7 +247,7 @@ public class BicycleViewController : MonoBehaviour {
                     item.transform.Find("Equiped").gameObject.SetActive(true);
                     //장착중인 아이템
                     //따로 배열에 담는다.
-                    equipedItemIndex[1] = cnt - 1;
+                    equipedItemIndex[1] = items[cnt - 1].id;
                     //Debug.Log("현재 장착중인 Frame Id : " + items[cnt - 1].id);
                 }
 
@@ -287,7 +289,7 @@ public class BicycleViewController : MonoBehaviour {
                     item.transform.Find("Equiped").gameObject.SetActive(true);
                     //장착중인 아이템
                     //따로 배열에 담는다.
-                    equipedItemIndex[0] = cnt - 1;
+                    equipedItemIndex[0] = items[cnt - 1].id;
                     Debug.Log("현재 장착중인 Wheel Id : " + items[cnt - 1].id);
                 }
 
@@ -328,7 +330,7 @@ public class BicycleViewController : MonoBehaviour {
                     item.transform.Find("Equiped").gameObject.SetActive(true);
                     //장착중인 아이템
                     //따로 배열에 담는다.
-                    equipedItemIndex[2] = cnt - 1;
+                    equipedItemIndex[2] = items[cnt - 1].id;
                     Debug.Log("현재 장착중인 Engine Id : " + items[cnt - 1].id);
                 }
 
@@ -361,14 +363,13 @@ public class BicycleViewController : MonoBehaviour {
                     break;
             }
             sprite.atlas = atlas;
-            //if (equipedItemIndex[i] == -1) {
-            //    sprite.spriteName = "default";
-            //}
-            //else {
-            //    BicycleItem[] tmp = gm.bicycleInventStore.items;
-            //    int index = tmp[equipedItemIndex[i]].id;
-            //    sprite.spriteName = index.ToString();
-            //}
+            if (equipedItemIndex[i] == -1) {
+                sprite.spriteName = "default";
+            }
+            else {
+                int index = equipedItemIndex[i];
+                sprite.spriteName = index.ToString();
+            }
         }
     }
 
