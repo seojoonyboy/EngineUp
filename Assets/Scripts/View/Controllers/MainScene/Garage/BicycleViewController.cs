@@ -39,6 +39,9 @@ public class BicycleViewController : MonoBehaviour {
     public int[] equipedItemIndex;
     public UIAtlas atlas;
 
+    List<int> lockIdList = new List<int>();
+    List<int> sellList = new List<int>();
+
     void OnEnable() {
         gm = GameManager.Instance;
         itemInitAct();
@@ -100,20 +103,26 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     public void selected(GameObject obj) {
+        Info info = obj.GetComponent<Info>();
         //판매모드인 경우
-        if(isSellMode) {
+        if (isSellMode) {
             if(obj.tag == "locked") {
                 return;
             }
-            int index = obj.GetComponent<ButtonIndex>().index;
+            
             GameObject tmp = obj.transform.Find("Selected").gameObject;
             tmp.SetActive(!tmp.activeSelf);
 
             if(tmp.activeSelf) {
                 obj.tag = "selected";
+                int id = info.id;
+                sellList.Add(id);
             }
             else {
                 obj.tag = "unselected";
+                if (sellList.Contains(info.id)) {
+                    sellList.Remove(info.id);
+                }
             }
         }
         //잠금모드인 경우
@@ -122,9 +131,17 @@ public class BicycleViewController : MonoBehaviour {
             tmp.SetActive(!tmp.activeSelf);
             if(tmp.activeSelf) {
                 obj.tag = "locked";
+                //int 리스트
+                //리스트에 id값(int)을 담는다. (button index 말고 실제 아이템 id)
+                int id = info.id;
+                lockIdList.Add(id);
             }
             else {
                 obj.tag = "unselected";
+                //리스트에 담겨 있으면 제외시킨다.
+                if(lockIdList.Contains(info.id)) {
+                    lockIdList.Remove(info.id);
+                }
             }
         }
         else if(isLockMode == false && isSellMode == false) {
@@ -134,24 +151,22 @@ public class BicycleViewController : MonoBehaviour {
         }
     }
 
+    //아이템 상세보기 Modal
     public void onDetailModal() {
         detailModal.SetActive(true);
         GameObject modal = detailModal.transform.Find("Modal").gameObject;
-        int index = selectedItem.GetComponent<ButtonIndex>().index;
-        ArrayList result = _returnArr();
-        BicycleItem[] item = result.ToArray(typeof(BicycleItem)) as BicycleItem[];
+        Info info = selectedItem.GetComponent<Info>();
 
-        if(item == null) {
-            return;
-        }
-        Item innerItem = item[index].item;
-
-        modal.transform.Find("Name").GetComponent<UILabel>().text = innerItem.name;
-        modal.transform.Find("Desc").GetComponent<UILabel>().text = innerItem.desc;
+        modal.transform.Find("Name").GetComponent<UILabel>().text = info.name;
+        modal.transform.Find("Desc").GetComponent<UILabel>().text = info.desc;
+        UISprite img = modal.transform.Find("Image").GetComponent<UISprite>();
+        img.atlas = atlas;
+        img.spriteName = info.id.ToString();
+        img.MakePixelPerfect();
 
         //현재 장착중인 아이템인 경우
         //모달 내 해제하기 버튼 활성화
-        if (item[index].is_equiped == "true") {
+        if (info.is_equiped) {
             detailModal.transform.Find("Modal/PutOffButton").gameObject.SetActive(true);
             detailModal.transform.Find("Modal/PutOnButton").gameObject.SetActive(false);
         }
@@ -170,13 +185,8 @@ public class BicycleViewController : MonoBehaviour {
         }
         
         equip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_EQUIP) as equip_act;
-        int tmp = selectedItem.GetComponent<ButtonIndex>().index;
-
-        ArrayList result = _returnArr();
-        BicycleItem[] item = result.ToArray(typeof(BicycleItem)) as BicycleItem[];
-
-        int index = item[tmp].id;
-        Debug.Log("id : " + index + "인 아이템 장착");
+        Info info = selectedItem.GetComponent<Info>();
+        int index = info.id;
         act.id = index;
         gm.gameDispatcher.dispatch(act);
     }
@@ -189,38 +199,18 @@ public class BicycleViewController : MonoBehaviour {
 
         unequip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_UNEQUIP) as unequip_act;
         int tmp = selectedItem.GetComponent<ButtonIndex>().index;
-
-        ArrayList result = _returnArr();
-        BicycleItem[] item = result.ToArray(typeof(BicycleItem)) as BicycleItem[];
-
-        int index = item[tmp].id;
+        Info info = selectedItem.GetComponent<Info>();
+        int index = info.id;
         act.id = index;
         gm.gameDispatcher.dispatch(act);
     }
-
-    public ArrayList _returnArr() {
-        ArrayList arr = null;
-        if (selectedItem.transform.Find("TypeTag").tag == "WH") {
-            arr = gm.bicycleInventStore.wheelItems;
-        }
-        else if (selectedItem.transform.Find("TypeTag").tag == "FR") {
-            arr = gm.bicycleInventStore.frameItems;
-        }
-        else if (selectedItem.transform.Find("TypeTag").tag == "DS") {
-            arr = gm.bicycleInventStore.engineItems;
-        }
-        return arr;
-    } 
 
     public void makeList() {
         removeList();
         //slot 생성
         BicycleItem[] items;
-        //Debug.Log(items.Length);
+        init();
         UISprite sprite = null;
-        equipedItemIndex[0] = -1;
-        equipedItemIndex[1] = -1;
-        equipedItemIndex[2] = -1;
         //프레임 리스트 생성
         int cnt = 0;
         items = gm.bicycleInventStore.frameItems.ToArray(typeof(BicycleItem)) as BicycleItem[];
@@ -236,19 +226,30 @@ public class BicycleViewController : MonoBehaviour {
                 item.transform.SetParent(parent);
                 item.transform.localScale = Vector3.one;
                 item.transform.localPosition = Vector3.zero;
-                
                 item.GetComponent<ButtonIndex>().index = cnt - 1;
-                GameObject tag = item.transform.Find("TypeTag").gameObject;
-                tag.tag = items[cnt - 1].item.parts;
-                //Debug.Log("FR Id : " + items[cnt - 1].id);
-                Item bItem = items[cnt - 1].item;
 
-                if(items[cnt - 1].is_equiped == "true") {
+                Info info = item.AddComponent<Info>();
+                info.id = items[cnt - 1].id;
+                info.parts = items[cnt - 1].item.parts;
+                info.name = items[cnt - 1].item.name;
+                info.desc = items[cnt - 1].item.desc;
+
+                if (items[cnt - 1].is_equiped == "true") {
+                    info.is_equiped = true;
                     item.transform.Find("Equiped").gameObject.SetActive(true);
-                    //장착중인 아이템
-                    //따로 배열에 담는다.
                     equipedItemIndex[1] = items[cnt - 1].id;
-                    //Debug.Log("현재 장착중인 Frame Id : " + items[cnt - 1].id);
+                }
+                else {
+                    info.is_equiped = false;
+                }
+
+                if(items[cnt - 1].is_locked == "true") {
+                    info.is_locked = true;
+                    item.transform.Find("LockIcon").gameObject.SetActive(true);
+                    item.transform.Find("TypeTag").gameObject.tag = "locked";
+                }
+                else {
+                    info.is_locked = false;
                 }
 
                 EventDelegate.Parameter param = new EventDelegate.Parameter();
@@ -281,16 +282,29 @@ public class BicycleViewController : MonoBehaviour {
                 item.transform.localScale = Vector3.one;
                 item.transform.localPosition = Vector3.zero;
                 item.GetComponent<ButtonIndex>().index = cnt - 1;
-                GameObject tag = item.transform.Find("TypeTag").gameObject;
-                tag.tag = items[cnt - 1].item.parts;
-                Item bItem = items[cnt - 1].item;
+
+                Info info = item.AddComponent<Info>();
+                info.id = items[cnt - 1].id;
+                info.parts = items[cnt - 1].item.parts;
+                info.name = items[cnt - 1].item.name;
+                info.desc = items[cnt - 1].item.desc;
 
                 if (items[cnt - 1].is_equiped == "true") {
+                    info.is_equiped = true;
                     item.transform.Find("Equiped").gameObject.SetActive(true);
-                    //장착중인 아이템
-                    //따로 배열에 담는다.
                     equipedItemIndex[0] = items[cnt - 1].id;
-                    Debug.Log("현재 장착중인 Wheel Id : " + items[cnt - 1].id);
+                }
+                else {
+                    info.is_equiped = false;
+                }
+
+                if (items[cnt - 1].is_locked == "true") {
+                    info.is_locked = true;
+                    item.transform.Find("LockIcon").gameObject.SetActive(true);
+                    item.transform.Find("TypeTag").gameObject.tag = "locked";
+                }
+                else {
+                    info.is_locked = false;
                 }
 
                 EventDelegate.Parameter param = new EventDelegate.Parameter();
@@ -322,16 +336,29 @@ public class BicycleViewController : MonoBehaviour {
                 item.transform.localScale = Vector3.one;
                 item.transform.localPosition = Vector3.zero;
                 item.GetComponent<ButtonIndex>().index = cnt - 1;
-                GameObject tag = item.transform.Find("TypeTag").gameObject;
-                tag.tag = items[cnt - 1].item.parts;
-                Item bItem = items[cnt - 1].item;
+
+                Info info = item.AddComponent<Info>();
+                info.id = items[cnt - 1].id;
+                info.parts = items[cnt - 1].item.parts;
+                info.name = items[cnt - 1].item.name;
+                info.desc = items[cnt - 1].item.desc;
 
                 if (items[cnt - 1].is_equiped == "true") {
+                    info.is_equiped = true;
                     item.transform.Find("Equiped").gameObject.SetActive(true);
-                    //장착중인 아이템
-                    //따로 배열에 담는다.
                     equipedItemIndex[2] = items[cnt - 1].id;
-                    Debug.Log("현재 장착중인 Engine Id : " + items[cnt - 1].id);
+                }
+                else {
+                    info.is_equiped = false;
+                }
+
+                if (items[cnt - 1].is_locked == "true") {
+                    info.is_locked = true;
+                    item.transform.Find("LockIcon").gameObject.SetActive(true);
+                    item.transform.Find("TypeTag").gameObject.tag = "locked";
+                }
+                else {
+                    info.is_locked = false;
                 }
 
                 EventDelegate.Parameter param = new EventDelegate.Parameter();
@@ -395,17 +422,27 @@ public class BicycleViewController : MonoBehaviour {
         
     }
 
+    private void init() {
+        equipedItemIndex[0] = -1;
+        equipedItemIndex[1] = -1;
+        equipedItemIndex[2] = -1;
+        lockIdList.Clear();
+        sellList.Clear();
+    }
+
+    public void locking() {
+        garage_lock_act act = ActionCreator.createAction(ActionTypes.GARAGE_LOCK) as garage_lock_act;
+        act.type = "lock";
+        //id가 담겨있는 int 리스트를 이용하여 Action 작성
+        foreach (int id in lockIdList) {
+            act.id = id;
+            gm.gameDispatcher.dispatch(act);
+        }
+    }
+
     private void selling() {
-        for(int i=0; i< framePageGrids.Length; i++) {
-            for(int j=0; j<pagePerSlotCount; j++) {
-                GameObject item = framePageGrids[i].GetChild(j).FindChild("item").gameObject;
-                if (item.tag == "selected") {
-                    //Destroy(item);
-                    //삭제 Action 실행
-                    //삭제 성공시 makeList함수 호출
-                    itemInitAct();
-                }
-            }
+        foreach(int id in sellList) {
+            Debug.Log(id);
         }
     }
 
@@ -425,6 +462,11 @@ public class BicycleViewController : MonoBehaviour {
         itemInitAct();
     }
 
+    private void clearList() {
+        sellList.Clear();
+        lockIdList.Clear();
+    }
+
     public void offDetailModal() {
         detailModal.SetActive(false);
     }
@@ -433,5 +475,18 @@ public class BicycleViewController : MonoBehaviour {
         Debug.Log("Init");
         getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
         gm.gameDispatcher.dispatch(act);
+    }
+
+    private class Info : MonoBehaviour {
+        public int id;
+        public bool is_equiped;
+        public bool is_locked;
+
+        public string name;
+        public string desc;
+        public int grade;
+        public int gear;
+        public string parts;
+        public int limit_rank;
     }
 }

@@ -23,7 +23,7 @@ public class BicycleItem_Inventory : AjwStore {
     public ActionTypes eventType;
 
     public BicycleItem[] allItems;
-    public ArrayList 
+    public ArrayList
         wheelItems = new ArrayList(),
         frameItems = new ArrayList(),
         engineItems = new ArrayList();
@@ -38,6 +38,10 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case ActionTypes.GARAGE_ITEM_UNEQUIP:
                 unequip(action as unequip_act);
+                break;
+            case ActionTypes.GARAGE_LOCK:
+                _lock(action as garage_lock_act);
+                Debug.Log("!!");
                 break;
         }
         eventType = action.type;
@@ -77,15 +81,15 @@ public class BicycleItem_Inventory : AjwStore {
 
     //자전거 아이템 종류별로 분류
     private void itemCategorization(BicycleItem[] item) {
-        for(int i=0; i<item.Length; i++) {
+        for (int i = 0; i < item.Length; i++) {
             Item _item = item[i].item;
-            if(_item.parts == "WH") {
+            if (_item.parts == "WH") {
                 wheelItems.Add(item[i]);
             }
-            else if(_item.parts == "FR") {
+            else if (_item.parts == "FR") {
                 frameItems.Add(item[i]);
             }
-            else if(_item.parts == "DS") {
+            else if (_item.parts == "DS") {
                 engineItems.Add(item[i]);
             }
         }
@@ -144,6 +148,44 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
         }
     }
+
+    //아이템 잠금 및 해제
+    private void _lock(garage_lock_act payload){
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                Debug.Log("Lock");
+                if(payload.type == "lock") {
+                    strBuilder.Append(networkManager.baseUrl)
+                    .Append("inventory/items/")
+                    .Append(payload.id)
+                    .Append("/lock");
+                }
+                else if(payload.type == "unlock") {
+                    strBuilder.Append(networkManager.baseUrl)
+                    .Append("inventory/items/")
+                    .Append(payload.id)
+                    .Append("/unlock");
+                }
+                
+                WWWForm form = new WWWForm();
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                Debug.Log("아이템 잠금(해제) 완료");
+
+                getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+                dispatcher.dispatch(act);
+
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                _emitChange();
+                break;
+        }
+    }
 }
 
 [System.Serializable]
@@ -151,6 +193,7 @@ public class BicycleItem {
     public int id;
     public Item item;
     public string is_equiped;
+    public string is_locked;
 
     public static BicycleItem fromJSON(string json) {
         return JsonUtility.FromJson<BicycleItem>(json);
