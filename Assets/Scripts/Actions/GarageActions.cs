@@ -10,6 +10,7 @@ public class unequip_act : equip_act { }
 public class garage_lock_act : equip_act {
     public string type;
 }
+public class garage_sell_act : equip_act { }
 
 //캐릭터 관련
 public class getCharacters_act : NetworkAction { }

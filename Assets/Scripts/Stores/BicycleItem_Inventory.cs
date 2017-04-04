@@ -41,7 +41,9 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case ActionTypes.GARAGE_LOCK:
                 _lock(action as garage_lock_act);
-                Debug.Log("!!");
+                break;
+            case ActionTypes.GARAGE_SELL:
+                sell(action as garage_sell_act);
                 break;
         }
         eventType = action.type;
@@ -150,31 +152,60 @@ public class BicycleItem_Inventory : AjwStore {
     }
 
     //아이템 잠금 및 해제
-    private void _lock(garage_lock_act payload){
+    private void _lock(garage_lock_act payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 Debug.Log("Lock");
-                if(payload.type == "lock") {
+                if (payload.type == "lock") {
                     strBuilder.Append(networkManager.baseUrl)
                     .Append("inventory/items/")
                     .Append(payload.id)
                     .Append("/lock");
                 }
-                else if(payload.type == "unlock") {
+                else if (payload.type == "unlock") {
                     strBuilder.Append(networkManager.baseUrl)
                     .Append("inventory/items/")
                     .Append(payload.id)
                     .Append("/unlock");
                 }
-                
+
                 WWWForm form = new WWWForm();
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 Debug.Log("아이템 잠금(해제) 완료");
+
+                getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+                dispatcher.dispatch(act);
+
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                _emitChange();
+                break;
+        }
+    }
+
+    //아이템 판매
+    private void sell(garage_sell_act payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("inventory/items/")
+                    .Append(payload.id)
+                    .Append("/sell");
+
+                WWWForm form = new WWWForm();
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                Debug.Log("아이템 판매 완료");
 
                 getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
                 dispatcher.dispatch(act);
@@ -202,6 +233,7 @@ public class BicycleItem {
 
 [System.Serializable]
 public class Item {
+    public int id;
     public string name;
     public string desc;
     public int grade;

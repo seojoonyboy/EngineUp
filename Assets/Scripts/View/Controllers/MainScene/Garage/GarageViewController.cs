@@ -23,6 +23,12 @@ public class GarageViewController : MonoBehaviour {
                 bicycleController.makeList();
             }
         }
+
+        if (bicycleItemStoreEventType == ActionTypes.GARAGE_SELL) {
+            if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+                bicycleController.makeList();
+            }
+        }
     }
 
     public void offPanel() {
