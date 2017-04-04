@@ -18,10 +18,8 @@ public class Char_Inventory : AjwStore {
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
-    public character_inventory[] 
-        all_characters,
-        my_characters;
-
+    public character_inventory[] my_characters;
+    public all_characters[] all_characters;
     public ActionTypes eventType;
 
     protected override void _onDispatch(Actions action) {
@@ -77,8 +75,17 @@ public class character_inventory {
 }
 
 [System.Serializable]
+public class all_characters {
+    public int id;
+    public string name;
+    public string desc;
+    public int cost;
+    public int[] lvup_exps;
+}
+
+[System.Serializable]
 public class callbackGetchar {
-    public character_inventory[] all_characters;
+    public all_characters[] all_characters;
     public character_inventory[] character_inventory;
 
     public static callbackGetchar fromJSON(string json) {

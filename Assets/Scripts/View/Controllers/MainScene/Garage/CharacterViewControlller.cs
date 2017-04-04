@@ -92,11 +92,6 @@ public class CharacterViewControlller : MonoBehaviour {
         
     }
 
-    //캐릭터 스토리 보기
-    public void showCharDesc() {
-        descModal.SetActive(true);
-    }
-
     public void offCharDesc() {
         descModal.SetActive(false);
     }
@@ -104,7 +99,7 @@ public class CharacterViewControlller : MonoBehaviour {
     public void makeList() {
         removeList();
         //내 캐릭터 리스트 생성
-        character_inventory[] allChars = charInvenStore.all_characters;
+        all_characters[] allChars = charInvenStore.all_characters;
         //character_inventory[] allChars = charInvenStore.all_characters;
         for (int i=0; i<allChars.Length; i++) {
             GameObject item = Instantiate(itemPref);
@@ -114,11 +109,11 @@ public class CharacterViewControlller : MonoBehaviour {
 
             Info info = item.AddComponent<Info>();
             info.id = allChars[i].id;
-            info.paid = allChars[i].paid;
-            info.lv = allChars[i].lv;
-            info.exp = allChars[i].exp;
+            //info.paid = allChars[i].paid;
+            //info.lv = allChars[i].lv;
+            //info.exp = allChars[i].exp;
             //info.user = allChars[i].user;
-            info.character = allChars[i].character;
+            //info.character = allChars[i].character;
 
             UISprite sprite = item.transform.Find("Portrait").GetComponent<UISprite>();
             sprite.atlas = atlasArr[i];
@@ -132,11 +127,11 @@ public class CharacterViewControlller : MonoBehaviour {
             param.obj = item;
             onClick.parameters[0] = param;
             EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
+            selectedChar = item;
         }
         //sidebar 갱신
 
         //메인화면 캐릭터 갱신
-
         init();
     }
 
@@ -151,8 +146,20 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void onDetailModal() {
         descModal.SetActive(true);
+        Info info = selectedChar.GetComponent<Info>();
+        GameObject modal = descModal.transform.Find("Modal").gameObject;
+        UILabel nameLabel = modal.transform.Find("Name").GetComponent<UILabel>();
+        UILabel descLabel = modal.transform.Find("Desc").GetComponent<UILabel>();
 
-
+        int index = info.id;
+        all_characters[] allChars = charInvenStore.all_characters;
+        Debug.Log(allChars.Length);
+        for (int i=0; i< allChars.Length; i++) {
+            if(allChars[i].id == index) {
+                nameLabel.text = "이름 : " + allChars[i].name;
+                descLabel.text = "설명 : " + allChars[i].desc;
+            }
+        }
     }
 
     private class Info : MonoBehaviour {
