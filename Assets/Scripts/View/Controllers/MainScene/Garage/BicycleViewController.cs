@@ -7,7 +7,8 @@ public class BicycleViewController : MonoBehaviour {
     //판매 버튼 클릭시
     private bool 
         isSellMode = false,
-        isLockMode = false;
+        isLockMode = false,
+        isSingleSellOrLock = false;
 
     public GameObject 
         test,
@@ -153,6 +154,7 @@ public class BicycleViewController : MonoBehaviour {
     //아이템 상세보기 Modal
     public void onDetailModal() {
         detailModal.SetActive(true);
+        isSingleSellOrLock = true;
         GameObject modal = detailModal.transform.Find("Modal").gameObject;
         Info info = selectedItem.GetComponent<Info>();
 
@@ -435,25 +437,48 @@ public class BicycleViewController : MonoBehaviour {
     public void locking() {
         garage_lock_act act = ActionCreator.createAction(ActionTypes.GARAGE_LOCK) as garage_lock_act;
         act.type = "lock";
-        //id가 담겨있는 int 리스트를 이용하여 Action 작성
-        foreach (int id in lockIdList) {
-            act.id = id;
+        //단일 잠금
+        if (isSingleSellOrLock) {
+            act.id = selectedItem.GetComponent<Info>().id;
             gm.gameDispatcher.dispatch(act);
         }
-
-        act.type = "unlock";
-        foreach(int id in unlockList) {
-            act.id = id;
-            gm.gameDispatcher.dispatch(act);
+        //다중 잠금
+        else {
+            foreach (int id in lockIdList) {
+                act.id = id;
+                gm.gameDispatcher.dispatch(act);
+            }
+            act.type = "unlock";
+            foreach (int id in unlockList) {
+                act.id = id;
+                gm.gameDispatcher.dispatch(act);
+            }
         }
+        isSingleSellOrLock = false;
     }
 
     public void selling() {
         garage_sell_act act = ActionCreator.createAction(ActionTypes.GARAGE_SELL) as garage_sell_act;
-        foreach (int id in sellList) {
-            act.id = id;
+        //단일 판매
+        Debug.Log(isSingleSellOrLock);
+        if (isSingleSellOrLock) {
+            Debug.Log("단일 판매");
+            Info info = selectedItem.GetComponent<Info>();
+            if (info.is_locked) {
+                //잠금이 되어 있어 팔지 못함 Modal 표시
+                return;
+            }
+            act.id = info.id;
             gm.gameDispatcher.dispatch(act);
         }
+        //다중 판매
+        else {
+            foreach (int id in sellList) {
+                act.id = id;
+                gm.gameDispatcher.dispatch(act);
+            }
+        }
+        isSingleSellOrLock = false;
     }
 
     public void offSellingModal() {
