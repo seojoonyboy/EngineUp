@@ -16,17 +16,24 @@ public class GarageViewController : MonoBehaviour {
         charItemStore = gm.charInvenStore;
     }
 
-    public void onBicycleStoreListener() {
+    public void onStoreListener() {
         ActionTypes bicycleItemStoreEventType = bicycleItemStore.eventType;
-        if(bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
+        ActionTypes charStoreEventType = charItemStore.eventType;
+        if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
             if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
                 bicycleController.makeList();
             }
         }
 
-        if (bicycleItemStoreEventType == ActionTypes.GARAGE_SELL) {
+        else if (bicycleItemStoreEventType == ActionTypes.GARAGE_SELL) {
             if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
                 bicycleController.makeList();
+            }
+        }
+
+        else if (charStoreEventType == ActionTypes.GARAGE_CHAR_INIT) {
+            if (charItemStore.storeStatus == storeStatus.NORMAL) {
+                charController.makeList();
             }
         }
     }

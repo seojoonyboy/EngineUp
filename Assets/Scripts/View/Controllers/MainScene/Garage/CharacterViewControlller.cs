@@ -22,10 +22,10 @@ public class CharacterViewControlller : MonoBehaviour {
     public GameObject
         descModal;
 
-    public UIAtlas[] altlasArr;
+    public UIAtlas[] atlasArr;
     public RuntimeAnimatorController[] animatorArr;
-    
-    public UIGrid 
+
+    public UIGrid
         itemGrid,
         sideBarGrid;
 
@@ -37,28 +37,34 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     void OnEnable() {
-        //characters = charInvenStore.myCharacters.character_inventory;
-        //Debug.Log(characters[0].cost);
-        //setMainChar(0);
+        getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
+        gm.gameDispatcher.dispatch(act);
     }
 
     //내 캐릭터중 하나 선택시
     public void charSelected(GameObject obj) {
         selectedChar = obj;
-        int index = obj.GetComponent<ButtonIndex>().index;
-        setMainChar(index);
-        setSideBar(index);
-        setSlot();
-        setButton();
+
+        Info info = obj.GetComponent<Info>();
+        Debug.Log("ID : " + info.id);
+        setMainChar(info.id);
+        setSideBar(info.id);
+        //setSlot();
+        //setButton();
         //Debug.Log(index);
     }
 
     private void setMainChar(int index) {
-        mainStageChar.GetComponent<Animator>().runtimeAnimatorController = animatorArr[0];
+        //mainStageChar.GetComponent<Animator>().runtimeAnimatorController = animatorArr[0];
+        UISprite sprite = mainStageChar.GetComponent<UISprite>();
+        sprite.atlas = atlasArr[index - 1];
+        sprite.spriteName = index.ToString();
     }
 
     private void setSideBar(int index) {
-        
+        UISprite sprite = sideBarGrid.transform.Find("Lv1Container/Sprite").GetComponent<UISprite>();
+        sprite.atlas = atlasArr[index - 1];
+        sprite.spriteName = index.ToString();
     }
 
     private void setSlot() {
@@ -93,5 +99,68 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void offCharDesc() {
         descModal.SetActive(false);
+    }
+
+    public void makeList() {
+        removeList();
+        //내 캐릭터 리스트 생성
+        character_inventory[] allChars = charInvenStore.all_characters;
+        //character_inventory[] allChars = charInvenStore.all_characters;
+        for (int i=0; i<allChars.Length; i++) {
+            GameObject item = Instantiate(itemPref);
+            item.transform.SetParent(itemGrid.transform);
+            item.transform.localScale = Vector3.one;
+            item.transform.localPosition = Vector3.zero;
+
+            Info info = item.AddComponent<Info>();
+            info.id = allChars[i].id;
+            info.paid = allChars[i].paid;
+            info.lv = allChars[i].lv;
+            info.exp = allChars[i].exp;
+            //info.user = allChars[i].user;
+            info.character = allChars[i].character;
+
+            UISprite sprite = item.transform.Find("Portrait").GetComponent<UISprite>();
+            sprite.atlas = atlasArr[i];
+            sprite.spriteName = (i + 1).ToString();
+
+            UIDragScrollView dScrollView = item.AddComponent<UIDragScrollView>();
+            dScrollView.scrollView = itemGrid.transform.parent.GetComponent<UIScrollView>();
+
+            EventDelegate.Parameter param = new EventDelegate.Parameter();
+            EventDelegate onClick = new EventDelegate(this, "charSelected");
+            param.obj = item;
+            onClick.parameters[0] = param;
+            EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
+        }
+        //sidebar 갱신
+
+        //메인화면 캐릭터 갱신
+
+        init();
+    }
+
+    private void removeList() {
+        itemGrid.transform.DestroyChildren();
+    }
+
+    private void init() {
+        itemGrid.repositionNow = true;
+        itemGrid.Reposition();
+    }
+
+    public void onDetailModal() {
+        descModal.SetActive(true);
+
+
+    }
+
+    private class Info : MonoBehaviour {
+        public int id;
+        public int paid;
+        public int lv;
+        public int exp;
+        public int user;
+        public int character;
     }
 }

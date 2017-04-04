@@ -117,6 +117,7 @@ public static class ActionCreator{
             _return = new getItems_act();
             break;
         case ActionTypes.GARAGE_CHAR_INIT:
+            _return = new getCharacters_act();
             break;
         case ActionTypes.GARAGE_ITEM_EQUIP:
             _return = new equip_act();
