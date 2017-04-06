@@ -10,14 +10,13 @@ public class GarageViewController : MonoBehaviour {
     
     private BicycleItem_Inventory bicycleItemStore;
     private Char_Inventory charItemStore;
-    private User userStore;
+    public User userStore;
 
     void Awake() {
         gm = GameManager.Instance;
 
         bicycleItemStore = gm.bicycleInventStore;
         charItemStore = gm.charInvenStore;
-        userStore = gm.userStore;
     }
 
     public void onUserStoreListener() {

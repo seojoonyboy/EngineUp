@@ -31,11 +31,14 @@ public class Riding_VC : MonoBehaviour {
         distLabel,
         maxLabel,
         timeLabel,
-        uphillDistanceLabel;
+        uphillDistanceLabel,
+        boxLabel;
 
     public Riding ridingStore;
     public User userStore;
 
+    public UISlider slider;
+    public int sliderMaxValue;
     void Start() {
         gameManager = GameManager.Instance;
         //gosReceiver = Instantiate(gpsPref);
@@ -82,7 +85,7 @@ public class Riding_VC : MonoBehaviour {
         beforeStartModal_ButtonContainer.SetActive(false);
     }
 
-    public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time, float maxSpeed, float uphillDist) {
+    public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time, float maxSpeed, float uphillDist, int boxNum) {
         //Debug.Log("RIDING LISTENER");
         //currSpeedLabel.text = (Math.Round(currSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
         avgSpeedLabel.text = (Math.Round(avgSpeed,2,MidpointRounding.AwayFromZero)).ToString();
@@ -90,7 +93,13 @@ public class Riding_VC : MonoBehaviour {
         timeLabel.text = time;
         maxLabel.text = (Math.Round(maxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
         uphillDistanceLabel.text = (Math.Round(uphillDist, 2, MidpointRounding.AwayFromZero)).ToString();
-        }
+        boxLabel.text = "X " + boxNum;
+    }
+
+    private void sliderRefresh(double dist) {
+        float remainder = (float) (dist %= sliderMaxValue);
+        slider.value = remainder;
+    }
 
     //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
     public void ridingEnd() {
@@ -155,16 +164,12 @@ public class Riding_VC : MonoBehaviour {
         float maxSpeed = ridingStore.maxSpeed;
         float uphillDistance = ridingStore.uphillDistance;
         double dist = Math.Round(ridingStore.totalDist, 2);
-
+        int boxNum = ridingStore.boxes;
         char delimeter = '.';
         //string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
         string time = ridingStore.totalTime;
-        refreshTxt(currSpeed, avgSpeed, dist, time, maxSpeed, uphillDistance);
-
-        //if (ridingStore.eventType == ActionTypes.RIDING_END) {
-        //    stopGPSReceive();
-        //    Debug.Log("Stop GPS RECEIVE");
-        //}
+        refreshTxt(currSpeed, avgSpeed, dist, time, maxSpeed, uphillDistance, boxNum);
+        sliderRefresh(dist);
     }
 
     void offToggleGroup() {

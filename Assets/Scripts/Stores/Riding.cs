@@ -21,6 +21,7 @@ public class Riding : AjwStore{
     public float maxSpeed = 0;
     public float uphillDistance;
     public string totalTime;
+    public int boxes = 0;
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
@@ -76,6 +77,8 @@ public class Riding : AjwStore{
                 maxSpeed = ridingData.maxSpeed;
                 uphillDistance = ridingData.uphillDistance;
                 filteredCoordsLists.Add(ridingData.filteredCoords);
+                boxes = ridingData.get_boxes;
+
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -96,7 +99,7 @@ public class Riding : AjwStore{
             return;
         }
 
-        if (!_filter(loc)) { return; } // 필터 적용
+        //if (!_filter(loc)) { return; } // 필터 적용
         postBuffer[postBufferCounter] = loc;
         postBufferCounter++;
 
@@ -203,6 +206,7 @@ public class RidingData {
     public float maxSpeed = 0;
     public float uphillDistance = 0;
     public filteredCoords[] filteredCoords;
+    public int get_boxes;
 
     public static RidingData fromJSON(string json){
         return JsonUtility.FromJson<RidingData>(json);

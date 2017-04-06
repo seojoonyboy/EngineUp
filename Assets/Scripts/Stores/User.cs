@@ -49,6 +49,7 @@ public class User : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 setMessage(2);
                 myData = UserData.fromJSON(payload.response.data);
+                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -303,6 +304,7 @@ public class represent_character {
     public int user;
     public int selectedLv;
     public character_inventory character_inventory;
+    public status status;
 }
 
 [System.Serializable]
@@ -317,4 +319,15 @@ public class character {
 public class lvup_exps {
     public int num1;
     public int num2;
+}
+
+[System.Serializable]
+public class status {
+    public int user;
+    public int rank;
+    public int exp;
+    public int strength;
+    public int speed;
+    public int endurance;
+    public int regeneration;
 }

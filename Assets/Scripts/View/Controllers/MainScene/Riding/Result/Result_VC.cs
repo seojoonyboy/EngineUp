@@ -4,15 +4,22 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Result_VC : MonoBehaviour {
-
     public UILabel
         totalDist,
         totalTime,
         avgSpeed,
         maxSpeed,
-        uphillDistanceLabel;
+        uphillDistanceLabel,
+        boxLabel;
+
     public Riding ridingStore;
     public GameObject map;
+
+    public GameManager gm;
+
+    void Awake() {
+        gm = GameManager.Instance;
+    }
 
     void OnEnable() {
         StartCoroutine("drawLine");
@@ -42,11 +49,14 @@ public class Result_VC : MonoBehaviour {
         }
         if (ridingStore.eventType == ActionTypes.RIDING_END) {
             gameObject.SetActive(true);
-            setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance);
+            setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance, ridingStore.boxes);
+
+            MyInfo infoRefresh = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+            gm.gameDispatcher.dispatch(infoRefresh);
         }
     }
 
-    public void setResult(float mDist, string mTime, float mAvgSpeed, float mMaxSpeed, float uphillDist) {
+    public void setResult(float mDist, string mTime, float mAvgSpeed, float mMaxSpeed, float uphillDist, int boxNum) {
         totalDist.text = (Math.Round(mDist, 2, MidpointRounding.AwayFromZero)).ToString();
 
         //char delimeter = '.';
@@ -55,6 +65,8 @@ public class Result_VC : MonoBehaviour {
         avgSpeed.text = (Math.Round(mAvgSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
         maxSpeed.text = (Math.Round(mMaxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
         uphillDistanceLabel.text = (Math.Round(uphillDist, 2, MidpointRounding.AwayFromZero)).ToString();
+
+        boxLabel.text = "상자 " + boxNum + "개를 획득하셨습니다.";
     }
 
     public void offResultPanel() {
@@ -83,10 +95,13 @@ public class Result_VC : MonoBehaviour {
         //지도 위치 수정
         if(ridingStore.filteredCoordsLists.Count != 0) {
             filteredCoords[] lastData = (filteredCoords[])ridingStore.filteredCoordsLists[ridingStore.filteredCoordsLists.Count - 1];
-            float lastLat = lastData[lastData.Length - 1].latitude;
-            float lastLon = lastData[lastData.Length - 1].longitude;
-            Vector2 lastVal = new Vector2(lastLat, lastLon);
-            OnlineMaps.instance.position = lastVal;
+            Debug.Log(lastData.Length);
+            if(lastData.Length != 0) {
+                float lastLat = lastData[0].latitude;
+                float lastLon = lastData[0].longitude;
+                Vector2 lastVal = new Vector2(lastLat, lastLon);
+                OnlineMaps.instance.position = lastVal;
+            }
         }
     }
 

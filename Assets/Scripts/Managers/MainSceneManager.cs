@@ -25,6 +25,7 @@ public class MainSceneManager : fbl_SceneManager {
         groupViewCtrler.groupStore = gm.groupStore;
         groupViewCtrler.locationStore = gm.locationStore;
         statViewCtrler.userStore = gm.userStore;
+        garageViewCtrler.userStore = gm.userStore;
 
         gm.friendsStore.addListener(friendViewCtrler.OnFriendsStoreListener);
         gm.ridingStore.addListener(resultViewCtrler.onRidingListener);
