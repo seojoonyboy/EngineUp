@@ -19,7 +19,6 @@ public class User : AjwStore {
 
     public int userId;
 
-    public UserData[] findNickNameResult;
     public character[] basicCharacters;
     public represent_character myCharacters;
 
@@ -27,9 +26,37 @@ public class User : AjwStore {
     // end of prop
     public User(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher){}
 
+    public UserData myData;
+
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
     public ActionTypes eventType;
     public SignupAction.loginType loginType;
+    //최신 내 정보 불러오기
+    void myInfo(MyInfo payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+                setMessage(1);
+
+                var strBuilder = GameManager.Instance.sb;
+                WWWForm form = new WWWForm();
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("me");
+                networkManager.request("GET", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                setMessage(2);
+                myData = UserData.fromJSON(payload.response.data);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                _emitChange();
+                break;
+        }
+    }
 
     void signup(SignupAction act) {
         switch (act.status) {
@@ -154,6 +181,7 @@ public class User : AjwStore {
                 //Debug.Log("Nickname : " + nickName);
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
                 dispatcher.dispatch(startAct);
+
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -195,18 +223,23 @@ public class User : AjwStore {
 
     protected override void _onDispatch(Actions action){
         switch(action.type){
-        case ActionTypes.SIGNUP:
-            signup(action as SignupAction);
-            break;
-        case ActionTypes.SIGNIN:
-            signin(action as SigninAction);
-            break;
-        case ActionTypes.GET_DEFAULT_CHAR_INFO:
-            getCharInfo(action as GetDefaultCharInfo);
-            break;
+            case ActionTypes.SIGNUP:
+                signup(action as SignupAction);
+                break;
+            case ActionTypes.SIGNIN:
+                signin(action as SigninAction);
+                break;
+            case ActionTypes.GET_DEFAULT_CHAR_INFO:
+                getCharInfo(action as GetDefaultCharInfo);
+                break;
+            case ActionTypes.MYINFO:
+                myInfo(action as MyInfo);
+                break;
+            case ActionTypes.GAME_START:
+                _emitChange();
+                break;
         }
         eventType = action.type;
-        _emitChange();
     }
 
     private void setMessage(int type) {
@@ -227,8 +260,10 @@ public class User : AjwStore {
 
 public class UserData {
     public int id;
-    //public string deviceId;
     public string nickName;
+    public int gears;
+    public int boxes;
+    public represent_character represent_character;
 
     public static UserData fromJSON(string json){
         return JsonUtility.FromJson<UserData>(json);

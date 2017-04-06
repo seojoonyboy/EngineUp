@@ -184,8 +184,8 @@ public class BicycleViewController : MonoBehaviour {
         if(selectedItem == null) {
             return;
         }
-        
         equip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_EQUIP) as equip_act;
+        act._type = equip_act.type.ITEM;
         Info info = selectedItem.GetComponent<Info>();
         int index = info.id;
         act.id = index;
@@ -510,6 +510,7 @@ public class BicycleViewController : MonoBehaviour {
     private void itemInitAct() {
         Debug.Log("Init");
         getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+        act._type = equip_act.type.ITEM;
         gm.gameDispatcher.dispatch(act);
     }
 

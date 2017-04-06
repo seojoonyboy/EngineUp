@@ -19,7 +19,7 @@ public class Char_Inventory : AjwStore {
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
     public character_inventory[] my_characters;
-    public all_characters[] all_characters;
+    public Dictionary<int, all_characters> all_characters = new Dictionary<int, all_characters>();
     public ActionTypes eventType;
 
     protected override void _onDispatch(Actions action) {
@@ -33,10 +33,17 @@ public class Char_Inventory : AjwStore {
             case ActionTypes.GARAGE_CHAR_INIT:
                 getMyChar(action as getCharacters_act);
                 break;
+            case ActionTypes.CHAR_OPEN:
+                unlock(action as garage_unlock_char);
+                break;
+            case ActionTypes.GARAGE_ITEM_EQUIP:
+                equip(action as equip_act);
+                break;
         }
         eventType = action.type;
     }
 
+    //내 캐릭터 목록 가져오기
     private void getMyChar(getCharacters_act payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
@@ -48,16 +55,78 @@ public class Char_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                message = "아이템을 성공적으로 불러왔습니다.";
+                message = "캐릭터 아이템을 성공적으로 불러왔습니다.";
                 callbackGetchar callback = callbackGetchar.fromJSON(payload.response.data);
-                all_characters = callback.all_characters;
+                all_characters.Clear();
+                all_characters[] tmp = callback.all_characters;
+                for(int i=0; i<tmp.Length; i++) {
+                    all_characters.Add(tmp[i].id, tmp[i]);
+                }
+
                 my_characters = callback.character_inventory;
+
+                MyInfo myinfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+                dispatcher.dispatch(myinfoAct);
+
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 Debug.Log(payload.response.data);
-                message = "아이템 목록을 불러오는 과정에서 문제가 발생하였습니다.";
+                message = "캐릭터 정보를 불러오는 과정에서 문제가 발생하였습니다.";
+                _emitChange();
+                break;
+        }
+    }
+
+    //캐릭터 장착
+    private void equip(equip_act payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("inventory/characters/")
+                    .Append(payload.id)
+                    .Append("/equip");
+                WWWForm form = new WWWForm();
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                Debug.Log("캐릭터 장착 완료");
+                getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
+                dispatcher.dispatch(act);
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
+        }
+    }
+
+    //캐릭터 해금
+    private void unlock(garage_unlock_char payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("inventory/characters/")
+                    .Append(payload.id)
+                    .Append("/get");
+                WWWForm form = new WWWForm();
+                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                Debug.Log("캐릭터 해금 완료");
+                getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
+                dispatcher.dispatch(act);
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
                 _emitChange();
                 break;
         }
@@ -67,11 +136,11 @@ public class Char_Inventory : AjwStore {
 [System.Serializable]
 public class character_inventory {
     public int id;
+    public int character;
     public int paid;
     public int lv;
     public int exp;
-    public int user;
-    public int character;
+    public string has_character;
 }
 
 [System.Serializable]

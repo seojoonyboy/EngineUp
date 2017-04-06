@@ -9,7 +9,9 @@ public enum ActionTypes {
     GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ADD, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT, GROUP_POSTS, GROUP_ADD_POST, GROUP_DEL_POST, GROUP_MODIFY_POST,
     GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DESTROY, MY_GROUP_PANEL,
     GPS_SEND,
-    GARAGE_CHAR_INIT, GARAGE_ITEM_INIT, GARAGE_ITEM_EQUIP, GARAGE_ITEM_UNEQUIP, GARAGE_LOCK, GARAGE_SELL
+    GARAGE_CHAR_INIT, GARAGE_ITEM_INIT, GARAGE_ITEM_EQUIP, GARAGE_ITEM_UNEQUIP, GARAGE_LOCK, GARAGE_SELL, 
+    BOX_INIT, BOX_OPEN, CHAR_OPEN,
+    MYINFO
 }
 
 public class Actions{
@@ -20,6 +22,9 @@ public static class ActionCreator{
     public static Actions createAction(ActionTypes _type){
         Actions _return = null;
         switch(_type){
+        case ActionTypes.MYINFO:
+            _return = new MyInfo();
+            break;
         case ActionTypes.SIGNUP:
             _return = new SignupAction();
             break;
@@ -131,6 +136,15 @@ public static class ActionCreator{
         case ActionTypes.GARAGE_SELL:
             _return = new garage_sell_act();
             break;
+        case ActionTypes.BOX_INIT:
+            _return = new garage_getBox_act();
+            break;
+        case ActionTypes.BOX_OPEN:
+            _return = new garage_box_open();
+            break;
+        case ActionTypes.CHAR_OPEN:
+            _return = new garage_unlock_char();
+            break;
         }
          _return.type = _type;
         return _return;
@@ -227,3 +241,5 @@ public class GetDistrictsData : NetworkAction {
 public class GetCityData : NetworkAction {
     public int id;
 }
+
+public class MyInfo : NetworkAction { }

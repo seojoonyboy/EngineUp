@@ -15,6 +15,7 @@ public class GameManager : Singleton<GameManager> {
     public Locations locationStore;
     public Char_Inventory charInvenStore;
     public BicycleItem_Inventory bicycleInventStore;
+    public Box_Inventory boxInvenStore;
 
     void Awake() {
         gameDispatcher = new QueueDispatcher<Actions>();
@@ -26,6 +27,7 @@ public class GameManager : Singleton<GameManager> {
         locationStore = new Locations(gameDispatcher);
         charInvenStore = new Char_Inventory(gameDispatcher);
         bicycleInventStore = new BicycleItem_Inventory(gameDispatcher);
+        boxInvenStore = new Box_Inventory(gameDispatcher);
 
         deviceId = SystemInfo.deviceUniqueIdentifier;
         Debug.Log("deviceId : " + deviceId);

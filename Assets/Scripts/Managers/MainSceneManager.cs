@@ -7,7 +7,8 @@ public class MainSceneManager : fbl_SceneManager {
     public GroupViewController groupViewCtrler;
     public StatViewController statViewCtrler;
     public GarageViewController garageViewCtrler;
-    
+    public BoxViewController boxViewCtrler;
+
     private GameManager gm;
     public GameObject modal;
 
@@ -31,10 +32,12 @@ public class MainSceneManager : fbl_SceneManager {
         gm.groupStore.addListener(groupViewCtrler.onGroupStoreListener);
         gm.locationStore.addListener(groupViewCtrler.onGroupStoreListener);
         gm.userStore.addListener(statViewCtrler.onUserListener);
-        gm.bicycleInventStore.addListener(garageViewCtrler.onStoreListener);
-        gm.charInvenStore.addListener(garageViewCtrler.onStoreListener);
-        //CommunityInitAction act = ActionCreator.createAction(ActionTypes.COMMUNITY_INITIALIZE) as CommunityInitAction;
-        //gm.gameDispatcher.dispatch(act);
+
+        gm.bicycleInventStore.addListener(garageViewCtrler.onBicycleStoreListener);
+        gm.charInvenStore.addListener(garageViewCtrler.onCharStoreListener);
+        gm.userStore.addListener(garageViewCtrler.onUserStoreListener);
+
+        gm.boxInvenStore.addListener(boxViewCtrler.onStoreListener);
     }
 
     public void offModal() {

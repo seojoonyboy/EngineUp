@@ -9,18 +9,34 @@ public class GarageViewController : MonoBehaviour {
     private GameManager gm;
     
     private BicycleItem_Inventory bicycleItemStore;
-    public Char_Inventory charItemStore;
+    private Char_Inventory charItemStore;
+    private User userStore;
+
     void Awake() {
         gm = GameManager.Instance;
+
         bicycleItemStore = gm.bicycleInventStore;
         charItemStore = gm.charInvenStore;
+        userStore = gm.userStore;
     }
 
-    public void onStoreListener() {
+    public void onUserStoreListener() {
+        ActionTypes userStoreEventType = userStore.eventType;
+
+        if (userStoreEventType == ActionTypes.MYINFO) {
+            if(userStore.storeStatus == storeStatus.NORMAL) {
+                character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+                charController.setMainChar(charInfo.id);
+                charController.setSideBar(charInfo.id);
+            }
+        }
+    }
+
+    public void onBicycleStoreListener() {
         ActionTypes bicycleItemStoreEventType = bicycleItemStore.eventType;
-        ActionTypes charStoreEventType = charItemStore.eventType;
+
         if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
-            if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+            if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
                 bicycleController.makeList();
             }
         }
@@ -30,12 +46,19 @@ public class GarageViewController : MonoBehaviour {
                 bicycleController.makeList();
             }
         }
+    }
 
-        else if (charStoreEventType == ActionTypes.GARAGE_CHAR_INIT) {
-            if (charItemStore.storeStatus == storeStatus.NORMAL) {
-                charController.makeList();
-            }
+    public void onCharStoreListener() {
+        ActionTypes charStoreEventType = charItemStore.eventType;
+
+        if(charStoreEventType == ActionTypes.GARAGE_CHAR_INIT) {
+            charController.makeList();
+            Debug.Log("?!");
         }
+
+        //if(charStoreEventType == ActionTypes.GARAGE_ITEM_EQUIP) {
+        //    Debug.Log("캐릭터 장착");
+        //}
     }
 
     public void offPanel() {

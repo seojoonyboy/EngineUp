@@ -31,7 +31,10 @@ public class BicycleItem_Inventory : AjwStore {
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.GARAGE_ITEM_INIT:
-                getItems(action as getItems_act);
+                getItems_act getItemsAct = action as getItems_act;
+                if(getItemsAct._type == equip_act.type.ITEM) {
+                    getItems(action as getItems_act);
+                }
                 break;
             case ActionTypes.GARAGE_ITEM_EQUIP:
                 equip(action as equip_act);
@@ -53,6 +56,7 @@ public class BicycleItem_Inventory : AjwStore {
     private void getItems(getItems_act payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -99,6 +103,10 @@ public class BicycleItem_Inventory : AjwStore {
 
     //아이템 장착
     private void equip(equip_act payload) {
+        if(payload._type != equip_act.type.ITEM) {
+            payload.status = NetworkAction.statusTypes.FAIL;
+            return;
+        }
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
@@ -114,6 +122,7 @@ public class BicycleItem_Inventory : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 Debug.Log("아이템 장착 완료");
                 getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+                act._type = equip_act.type.ITEM;
                 dispatcher.dispatch(act);
 
                 break;
@@ -141,6 +150,7 @@ public class BicycleItem_Inventory : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 Debug.Log("아이템 해제 완료");
                 getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+                act._type = equip_act.type.ITEM;
                 dispatcher.dispatch(act);
 
                 break;
@@ -179,6 +189,7 @@ public class BicycleItem_Inventory : AjwStore {
                 Debug.Log("아이템 잠금(해제) 완료");
 
                 getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+                act._type = equip_act.type.ITEM;
                 dispatcher.dispatch(act);
 
                 break;
@@ -208,6 +219,7 @@ public class BicycleItem_Inventory : AjwStore {
                 Debug.Log("아이템 판매 완료");
 
                 getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+                act._type = equip_act.type.ITEM;
                 dispatcher.dispatch(act);
 
                 break;
