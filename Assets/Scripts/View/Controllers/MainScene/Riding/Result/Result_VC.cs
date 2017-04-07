@@ -15,18 +15,44 @@ public class Result_VC : MonoBehaviour {
     public Riding ridingStore;
     public GameObject map;
 
-    public GameManager gm;
-
+    private GameManager gm;
+    OnlineMapsDrawingLine _line;
     void Awake() {
         gm = GameManager.Instance;
     }
 
     void OnEnable() {
+        map.SetActive(true);
+        List<Vector2> line = new List<Vector2>
+        {
+            //Geographic coordinates
+            new Vector2(3, 3),
+            new Vector2(5, 3),
+            new Vector2(4, 4),
+            new Vector2(9.3f, 6.5f)
+        };
+        _line = new OnlineMapsDrawingLine(line, Color.green, 1f);
+        OnlineMaps.instance.AddDrawingElement(_line);
+        OnlineMapsControlBase.instance.OnMapZoom += zooming;
+
         StartCoroutine("drawLine");
+    }
+
+    void zooming() {
+        Debug.Log("Zooming");
+        int level = OnlineMaps.instance.zoom;
+        Debug.Log("zoom Level : " + level);
+        if(level > 10) {
+            _line.weight = 0.5f;
+        }
+        else {
+            _line.weight = 1f;
+        }
     }
 
     void OnDisable() {
         map.GetComponent<OnlineMaps>().RemoveAllDrawingElements();
+        map.SetActive(true);
         //임시로 직접 접근 (수정 필요)
         Debug.Log("filteredCoordsLists 비우기");
         ridingStore.filteredCoordsLists.Clear();
@@ -49,7 +75,7 @@ public class Result_VC : MonoBehaviour {
         }
         if (ridingStore.eventType == ActionTypes.RIDING_END) {
             gameObject.SetActive(true);
-            setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance, ridingStore.boxes);
+            //setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance, ridingStore.boxes);
 
             MyInfo infoRefresh = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
             gm.gameDispatcher.dispatch(infoRefresh);
@@ -91,6 +117,7 @@ public class Result_VC : MonoBehaviour {
                 //Debug.Log("X : " + val.x + ", Y : " + val.y);
                 }
             OnlineMaps.instance.AddDrawingElement(new OnlineMapsDrawingLine(list, Color.red, 3.0f));
+            //OnlineMaps.instance.on
         }
         //지도 위치 수정
         if(ridingStore.filteredCoordsLists.Count != 0) {
