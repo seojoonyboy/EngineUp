@@ -97,8 +97,13 @@ public class Riding_VC : MonoBehaviour {
     }
 
     private void sliderRefresh(double dist) {
-        float remainder = (float) (dist %= sliderMaxValue);
-        slider.value = remainder;
+        if(dist < sliderMaxValue) {
+            slider.value = (float)dist;
+        }
+        else {
+            float remainder = (int)(dist % sliderMaxValue) / sliderMaxValue;
+            slider.value = remainder;
+        }
     }
 
     //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
