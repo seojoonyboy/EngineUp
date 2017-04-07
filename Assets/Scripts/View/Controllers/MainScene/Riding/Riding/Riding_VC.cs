@@ -101,7 +101,7 @@ public class Riding_VC : MonoBehaviour {
             slider.value = (float)dist;
         }
         else {
-            float remainder = (int)(dist % sliderMaxValue) / sliderMaxValue;
+            float remainder = ((int)(dist % sliderMaxValue)) / sliderMaxValue;
             slider.value = remainder;
         }
     }
