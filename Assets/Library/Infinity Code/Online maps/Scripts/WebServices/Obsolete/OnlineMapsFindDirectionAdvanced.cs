@@ -5,6 +5,9 @@ using System;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGoogleDirections.
+/// </summary>
 [Obsolete("OnlineMapsFindDirectionAdvanced is obsolete. Use OnlineMapsGoogleDirections.")]
 public class OnlineMapsFindDirectionAdvanced:OnlineMapsGoogleDirections
 {

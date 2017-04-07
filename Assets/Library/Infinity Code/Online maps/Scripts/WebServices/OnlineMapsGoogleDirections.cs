@@ -8,7 +8,7 @@ using UnityEngine;
 
 /// <summary>
 /// This class is used to search for a route by address or coordinates.\n
-/// You can create a new instance using OnlineMapsFindDirection.Find.\n
+/// You can create a new instance using OnlineMapsGoogleDirections.Find.\n
 /// https://developers.google.com/maps/documentation/directions/intro
 /// </summary>
 public class OnlineMapsGoogleDirections : OnlineMapsGoogleAPIQuery
@@ -94,7 +94,7 @@ public class OnlineMapsGoogleDirections : OnlineMapsGoogleAPIQuery
         if (!string.IsNullOrEmpty(p.language)) url.Append("&language=").Append(p.language);
         if (!string.IsNullOrEmpty(p.key)) url.Append("&key=").Append(p.key);
         if (p.traffic_model.HasValue && p.traffic_model.Value != TrafficModel.bestGuess) url.Append("&traffic_model=").Append(Enum.GetName(typeof(TrafficModel), p.traffic_model.Value));
-        if (p.transit_mode.HasValue) GetValuesFromEnum(url, "transit_mode", typeof(TransitMode), (int)p.transit_mode.Value);
+        if (p.transit_mode.HasValue) OnlineMapsUtils.GetValuesFromEnum(url, "transit_mode", typeof(TransitMode), (int)p.transit_mode.Value);
         if (p.transit_routing_preference.HasValue) url.Append("&transit_routing_preference=").Append(Enum.GetName(typeof(TransitRoutingPreference), p.transit_routing_preference.Value));
 
         www = OnlineMapsUtils.GetWWW(url);
@@ -158,23 +158,7 @@ public class OnlineMapsGoogleDirections : OnlineMapsGoogleAPIQuery
         return null;
     }
 
-    private void GetValuesFromEnum(StringBuilder builder, string key, Type type, int value)
-    {
-        builder.Append("&").Append(key).Append("=");
-        Array values = Enum.GetValues(type);
-
-        bool addSeparator = false;
-        for (int i = 0; i < values.Length; i++)
-        {
-            int v = (int)values.GetValue(i);
-            if ((value & v) == v)
-            {
-                if (addSeparator) builder.Append(",");
-                builder.Append(Enum.GetName(type, v));
-                addSeparator = true;
-            }
-        }
-    }
+    
 
     /// <summary>
     /// Request parameters.

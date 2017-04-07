@@ -121,9 +121,9 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
     public Vector3 originalPosition;
     public Vector3 originalScale;
 
-    protected GameObject markersGameObject;
-    protected Mesh markersMesh;
-    protected Renderer markersRenderer;
+    protected List<GameObject> markersGameObjects;
+    protected List<Mesh> markersMeshes;
+    protected List<Renderer> markersRenderers;
 
 #if (!UNITY_ANDROID && !UNITY_IPHONE) || UNITY_EDITOR
     private bool isCameraControl = false;
@@ -304,26 +304,10 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
 
         if (allowAddMarker3DByN && Input.GetKeyUp(KeyCode.N))
         {
-            OnlineMapsMarker3D m = new OnlineMapsMarker3D
-            {
-                position = GetCoords(),
-                scale = marker3DScale,
-                prefab = default3DMarker,
-                instance = default3DMarker != null? Instantiate(default3DMarker) as GameObject: null,
-                control = this
-            };
-            m.Init(transform);
-            m.Update();
-
-            if (markers3D == null) markers3D = new OnlineMapsMarker3D[0];
-            Array.Resize(ref markers3D, markers3D.Length + 1);
-            markers3D[markers3D.Length - 1] = m;
+            OnlineMapsMarker3D marker = AddMarker3D(GetCoords(), default3DMarker != null? Instantiate(default3DMarker) as GameObject: null);
+            marker.control = this;
+            marker.scale = marker3DScale;
         }
-    }
-
-    protected override void BeforeUpdate()
-    {
-        base.BeforeUpdate();
     }
 
     protected void Clear2DMarkerBillboards()
@@ -337,8 +321,8 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
         }
         
         markerBillboards = null;
-        OnlineMapsUtils.DestroyImmediate(markersGameObject);
-        markersGameObject = null;
+        foreach (GameObject go in markersGameObjects) OnlineMapsUtils.DestroyImmediate(go);
+        markersGameObjects = null;
     }
 
     public virtual void Clear2DMarkerInstances(OnlineMapsMarker2DMode mode)
@@ -397,7 +381,7 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// <param name="topLeftPosition">Top-Left corner coordinates of map.</param>
     /// <param name="bottomRightPosition">Bottom-Right corner coordinates of map.</param>
     /// <returns>Elevation value.</returns>
-    public virtual float GetElevationValue(float x, float z, float yScale, Vector2 topLeftPosition, Vector2 bottomRightPosition)
+    public virtual float GetElevationValue(double x, double z, float yScale, Vector2 topLeftPosition, Vector2 bottomRightPosition)
     {
         return 0;
     }
@@ -413,10 +397,25 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// <param name="brx">Bottom-right longitude of map.</param>
     /// <param name="bry">Bottom-right latitude of map.</param>
     /// <returns>Elevation value.</returns>
-    public virtual float GetElevationValue(float x, float z, float yScale, double tlx, double tly, double brx,
-        double bry)
+    public virtual float GetElevationValue(double x, double z, float yScale, double tlx, double tly, double brx, double bry)
     {
         return 0;
+    }
+
+    public override IOnlineMapsInteractiveElement GetInteractiveElement(Vector2 screenPosition)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(activeCamera.ScreenPointToRay(screenPosition), out hit, OnlineMapsUtils.maxRaycastDistance))
+        {
+            OnlineMapsMarkerInstanceBase markerInstance = hit.collider.gameObject.GetComponent<OnlineMapsMarkerInstanceBase>();
+            if (markerInstance != null) return markerInstance.marker;
+        }
+
+        OnlineMapsMarker marker = map.GetMarkerFromScreen(screenPosition);
+        if (marker != null) return marker;
+
+        OnlineMapsDrawingElement drawingElement = map.GetDrawingElement(screenPosition);
+        return drawingElement;
     }
 
     public override Vector2 GetScreenPosition(Vector2 coords)
@@ -466,24 +465,37 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
         return cam.WorldToScreenPoint(worldPos);
     }
 
-    protected void InitMarkersMesh()
+    protected Mesh InitMarkersMesh(int index)
     {
-        markersGameObject = new GameObject("Markers");
-        markersGameObject.transform.parent = transform;
+        string name = "Markers";
+        if (index > 0) name += index;
+        GameObject go = new GameObject(name);
+        go.transform.parent = transform;
+        go.layer = gameObject.layer;
+
         if (this is OnlineMapsTileSetControl)
         {
-            markersGameObject.transform.localPosition = new Vector3(0, OnlineMaps.instance.tilesetSize.magnitude / 2896, 0);
-            markersGameObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            go.transform.localPosition = new Vector3(0, OnlineMaps.instance.tilesetSize.magnitude / 2896, 0);
+            go.transform.localRotation = Quaternion.Euler(Vector3.zero);
         }
-        else markersGameObject.transform.localPosition = new Vector3(0, 0.2f, 0);
-        markersGameObject.transform.localScale = Vector3.one;
+        else go.transform.localPosition = new Vector3(0, 0.2f, 0);
+        go.transform.localScale = Vector3.one;
 
-        markersRenderer = markersGameObject.AddComponent<MeshRenderer>();
-        MeshFilter meshFilter = markersGameObject.AddComponent<MeshFilter>();
-        markersMesh = new Mesh();
-        markersMesh.name = "MarkersMesh";
-        markersMesh.MarkDynamic();
-        meshFilter.mesh = markersMesh;
+        if (markersGameObjects == null) markersGameObjects = new List<GameObject>();
+        if (markersRenderers == null) markersRenderers = new List<Renderer>();
+        if (markersMeshes == null) markersMeshes = new List<Mesh>();
+
+        markersGameObjects.Add(go);
+        markersRenderers.Add(go.AddComponent<MeshRenderer>());
+
+        MeshFilter meshFilter = go.AddComponent<MeshFilter>();
+        Mesh mesh = new Mesh();
+        mesh.name = "MarkersMesh";
+        mesh.MarkDynamic();
+        meshFilter.mesh = mesh;
+        markersMeshes.Add(mesh);
+
+        return mesh;
     }
 
     protected override void OnDestroyLate()
@@ -492,12 +504,18 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
 
         OnCameraControl = null;
 
-        if (markersGameObject != null) OnlineMapsUtils.DestroyImmediate(markersGameObject);
-        markersGameObject = null;
+        if (markersGameObjects != null)
+        {
+            foreach (GameObject go in markersGameObjects)
+            {
+                OnlineMapsUtils.DestroyImmediate(go);
+            }
+        }
+        markersGameObjects = null;
 
         markers3D = null;
-        markersMesh = null;
-        markersRenderer = null;
+        markersMeshes = null;
+        markersRenderers = null;
     }
 
     protected override void OnEnableLate()
@@ -661,6 +679,8 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
 
     protected void UpdateMarkers3D()
     {
+        if (markers3D == null) return;
+
         int zoom = map.zoom;
 
         double tlx, tly, brx, bry;
@@ -670,13 +690,13 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
         map.projection.CoordinatesToTile(tlx, tly, zoom, out ttlx, out ttly);
         map.projection.CoordinatesToTile(brx, bry, zoom, out tbrx, out tbry);
 
-        Bounds bounds = GetComponent<Collider>().bounds;
+        Bounds bounds = cl.bounds;
         float bestYScale = GetBestElevationYScale(tlx, tly, brx, bry);
 
         for (int i = 0; i < markers3D.Length; i++)
         {
             OnlineMapsMarker3D marker = markers3D[i];
-            marker.Update(map, this, bounds, tlx, tly, brx, bry, zoom, ttlx, ttly, tbrx, tbry, bestYScale);
+            if (marker != null) marker.Update(map, this, bounds, tlx, tly, brx, bry, zoom, ttlx, ttly, tbrx, tbry, bestYScale);
         }
     }
 
@@ -685,7 +705,7 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
     /// </summary>
     protected void UpdateMarkersBillboard()
     {
-        if (markersGameObject == null) InitMarkersMesh();
+        if (markersGameObjects == null) InitMarkersMesh(0);
         if (markerBillboards == null) markerBillboards = new Dictionary<int, OnlineMapsMarkerBillboard>();
 
         double tlx, tly, brx, bry;
@@ -719,12 +739,13 @@ public abstract class OnlineMapsControlBase3D: OnlineMapsControlBase
                 my < tly && my > bry)) continue;
 
             int markerHashCode = marker.GetHashCode();
-            OnlineMapsMarkerBillboard markerBillboard = null;
+            OnlineMapsMarkerBillboard markerBillboard;
 
             if (!markerBillboards.ContainsKey(markerHashCode))
             {
                 markerBillboard = OnlineMapsMarkerBillboard.Create(marker);
-                markerBillboard.transform.parent = markersGameObject.transform;
+                markerBillboard.transform.parent = markersGameObjects[0].transform;
+                markerBillboard.gameObject.layer = markersGameObjects[0].layer;
 
                 markerBillboards.Add(markerHashCode, markerBillboard);
             }

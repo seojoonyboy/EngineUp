@@ -24,8 +24,7 @@ namespace InfinityCode.OnlineMapsExamples
             {
                 Vector2 mouseCoords = OnlineMapsControlBase.instance.GetCoords();
                 bool hasWater = HasWater(mouseCoords.x, mouseCoords.y);
-                if (hasWater) Debug.Log("Has Water");
-                else Debug.Log("No Water");
+                Debug.Log(hasWater ? "Has Water" : "No Water");
             }
         }
 

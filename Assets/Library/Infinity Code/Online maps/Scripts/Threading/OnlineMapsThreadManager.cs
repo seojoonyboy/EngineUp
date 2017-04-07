@@ -100,14 +100,7 @@ public class OnlineMapsThreadManager
                     actionInvoked = true;
                 }
             }
-            if (!actionInvoked)
-            {
-#if !NETFX_CORE
-                Thread.Sleep(1);
-#else
-                OnlineMapsThreadWINRT.Sleep(1);
-#endif
-            }
+            if (!actionInvoked) OnlineMapsUtils.ThreadSleep(1);
         }
         threadActions = null;
 #endif

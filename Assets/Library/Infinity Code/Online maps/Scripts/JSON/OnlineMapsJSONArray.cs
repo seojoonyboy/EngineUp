@@ -2,7 +2,6 @@
 /*   http://www.infinity-code.com   */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -70,13 +69,14 @@ public class OnlineMapsJSONArray : OnlineMapsJSONItem
     public override object Deserialize(Type type)
     {
         if (_count == 0) return null;
+
         if (type.IsArray)
         {
             Type elementType = type.GetElementType();
             Array v = Array.CreateInstance(elementType, _count);
             if (array[0] is OnlineMapsJSONObject)
             {
-                MemberInfo[] members = elementType.GetMembers(BindingFlags.Instance | BindingFlags.Public);
+                IEnumerable<MemberInfo> members = OnlineMapsReflectionHelper.GetMembers(elementType, BindingFlags.Instance | BindingFlags.Public);
                 for (int i = 0; i < _count; i++)
                 {
                     OnlineMapsJSONItem child = array[i];
@@ -96,25 +96,22 @@ public class OnlineMapsJSONArray : OnlineMapsJSONItem
 
             return v;
         }
-#if !NETFX_CORE
-        if (type.IsGenericType)
-#else
-        if (type.GetTypeInfo().IsGenericType)
-#endif
+        if (OnlineMapsReflectionHelper.IsGenericType(type))
         {
-            Type listType = type.GetGenericArguments()[0];
+            Type listType = OnlineMapsReflectionHelper.GetGenericArguments(type)[0];
             object v = Activator.CreateInstance(type);
 
             if (array[0] is OnlineMapsJSONObject)
             {
-                MemberInfo[] members = listType.GetMembers(BindingFlags.Instance | BindingFlags.Public);
+                IEnumerable<MemberInfo> members = OnlineMapsReflectionHelper.GetMembers(listType, BindingFlags.Instance | BindingFlags.Public);
                 for (int i = 0; i < _count; i++)
                 {
                     OnlineMapsJSONItem child = array[i];
                     object item = (child as OnlineMapsJSONObject).Deserialize(listType, members);
                     try
                     {
-                        type.GetMethod("Add").Invoke(v, new[] { item });
+                        MethodInfo methodInfo = OnlineMapsReflectionHelper.GetMethod(type, "Add");
+                        if (methodInfo != null) methodInfo.Invoke(v, new[] { item });
                     }
                     catch
                     {
@@ -129,7 +126,8 @@ public class OnlineMapsJSONArray : OnlineMapsJSONItem
                     object item = child.Deserialize(listType);
                     try
                     {
-                        type.GetMethod("Add").Invoke(v, new[] { item });
+                        MethodInfo methodInfo = OnlineMapsReflectionHelper.GetMethod(type, "Add");
+                        if (methodInfo != null) methodInfo.Invoke(v, new[] { item });
                     }
                     catch
                     {
@@ -240,14 +238,7 @@ public class OnlineMapsJSONArray : OnlineMapsJSONItem
 
     public override object Value(Type type)
     {
-#if !NETFX_CORE
-        if (type.IsValueType)
-#else
-        if (type.GetTypeInfo().IsValueType)
-#endif
-        {
-            return Activator.CreateInstance(type);
-        }
+        if (OnlineMapsReflectionHelper.IsValueType(type)) return Activator.CreateInstance(type);
         return null;
 
     }

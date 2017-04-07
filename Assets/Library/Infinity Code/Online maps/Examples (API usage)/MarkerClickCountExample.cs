@@ -11,6 +11,9 @@ namespace InfinityCode.OnlineMapsExamples
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/MarkerClickCountExample")]
     public class MarkerClickCountExample : MonoBehaviour
     {
+        /// <summary>
+        /// Prefab of 3D marker
+        /// </summary>
         public GameObject prefab;
 
         public class MarkerClickCountExampleCustomData

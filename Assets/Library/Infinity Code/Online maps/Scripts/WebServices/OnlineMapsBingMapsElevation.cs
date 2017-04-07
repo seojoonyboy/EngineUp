@@ -144,7 +144,7 @@ public class OnlineMapsBingMapsElevation:OnlineMapsTextWebService
         if (array == null) throw new Exception("Array can not be null.");
 
         int rank = array.Rank;
-        if (rank < 1 || rank > 2) throw new Exception("Supports only one-dimensional and two-dimensional arrays.");
+        if (rank > 2) throw new Exception("Supports only one-dimensional and two-dimensional arrays.");
 
         int l1 = array.GetLength(0);
         int l2 = 1;
@@ -155,126 +155,127 @@ public class OnlineMapsBingMapsElevation:OnlineMapsTextWebService
 
         try
         {
-            if (outputType == Output.json) ParseJSONElevations(response, array, l1, l2, rank, t2);
-            else ParseXMLElevations(response, array, l1, l2, rank, t2);
+            if (outputType == Output.json) return ParseJSONElevations(response, array, l1, l2, rank, t2);
+            return ParseXMLElevations(response, array, l1, l2, rank, t2);
         }
         catch
         {
             return false;
         }
+    }
 
+    private static bool ParseJSONElevations(string response, Array array, int l1, int l2, int rank, Type t2)
+    {
+        int startIndex = IndexOf(response, "\"elevations\":[", "\"offsets\":[");
+        if (startIndex == -1) return false;
+
+        int index = 0;
+        int v = 0;
+        bool isNegative = false;
+        bool smallArray = false;
+
+        int x, y;
+
+        for (int i = startIndex; i < response.Length; i++)
+        {
+            char c = response[i];
+            if (c == ',')
+            {
+                x = index % l1;
+                y = index / l2;
+                if (isNegative) v = -v;
+
+                if (rank == 1)
+                {
+                    if (y < l1) array.SetValue(Convert.ChangeType(v, t2), y);
+                    else smallArray = true;
+                }
+                else
+                {
+                    if (x < l1 && y < l2) array.SetValue(Convert.ChangeType(v, t2), x, y);
+                    else smallArray = true;
+                }
+
+                isNegative = false;
+                v = 0;
+                index++;
+            }
+            else if (c == '-') isNegative = true;
+            else if (c > 47 && c < 58) v = v * 10 + (c - 48);
+            else break;
+        }
+
+        x = index % l1;
+        y = index / l2;
+
+        if (rank == 1)
+        {
+            if (y < l1) array.SetValue(Convert.ChangeType(v, t2), y);
+            else smallArray = true;
+        }
+        else
+        {
+            if (x < l1 && y < l2) array.SetValue(Convert.ChangeType(v, t2), x, y);
+            else smallArray = true;
+        }
+
+        if (smallArray)
+        {
+            Debug.LogWarning("Invalid array. The response contains " + (index + 1) +" elements.");
+            return false;
+        }
         return true;
     }
 
-    private static void ParseJSONElevations(string response, Array array, int l1, int l2, int rank, Type t2)
-    {
-        int startIndex = IndexOf(response, "\"elevations\":[", "\"offsets\":[");
-        if (startIndex != -1)
-        {
-            int index = 0;
-            int v = 0;
-            bool isNegative = false;
-            bool smallArray = false;
-
-            int x, y;
-
-            for (int i = startIndex; i < response.Length; i++)
-            {
-                char c = response[i];
-                if (c == ',')
-                {
-                    x = index % l1;
-                    y = index / l2;
-                    if (isNegative) v = -v;
-
-                    if (rank == 1)
-                    {
-                        if (y < l1) array.SetValue(Convert.ChangeType(v, t2), y);
-                        else smallArray = true;
-                    }
-                    else
-                    {
-                        if (x < l1 && y < l2) array.SetValue(Convert.ChangeType(v, t2), x, y);
-                        else smallArray = true;
-                    }
-
-                    isNegative = false;
-                    v = 0;
-                    index++;
-                }
-                else if (c == '-') isNegative = true;
-                else if (c > 47 && c < 58) v = v * 10 + (c - 48);
-                else break;
-            }
-
-            x = index % l1;
-            y = index / l2;
-
-            if (rank == 1)
-            {
-                if (y < l1) array.SetValue(Convert.ChangeType(v, t2), y);
-                else smallArray = true;
-            }
-            else
-            {
-                if (x < l1 && y < l2) array.SetValue(Convert.ChangeType(v, t2), x, y);
-                else smallArray = true;
-            }
-
-            if (smallArray)
-            {
-                Debug.LogWarning("Invalid array. The response contains " + (index + 1) +" elements.");
-            }
-        }
-    }
-
-    private static void ParseXMLElevations(string response, Array array, int l1, int l2, int rank, Type t2)
+    private static bool ParseXMLElevations(string response, Array array, int l1, int l2, int rank, Type t2)
     {
         int startIndex = IndexOf(response, "Elevations>", "Offsets>");
-        if (startIndex != -1)
+        if (startIndex == -1) return false;
+
+        int index = 0;
+        int v = 0;
+        bool isNegative = false;
+
+        int x, y;
+
+        for (int i = startIndex; i < response.Length; i++)
         {
-            int index = 0;
-            int v = 0;
-            bool isNegative = false;
-
-            int x, y;
-
-            for (int i = startIndex; i < response.Length; i++)
+            char c = response[i];
+            if (c == '/')
             {
-                char c = response[i];
-                if (c == '/')
-                {
-                    x = index % l1;
-                    y = index / l2;
-                    if (isNegative) v = -v;
+                x = index % l1;
+                y = index / l2;
+                if (isNegative) v = -v;
 
-                    if (rank == 1)
-                    {
-                        if (y < l2) array.SetValue(Convert.ChangeType(v, t2), y);
-                    }
-                    else
-                    {
-                        if (x < l1 && y < l2) array.SetValue(Convert.ChangeType(v, t2), x, y);
-                    }
-
-                    isNegative = false;
-                    v = 0;
-                    index++;
-                }
-                else if (c == '-') isNegative = true;
-                else if (c > 47 && c < 58) v = v * 10 + (c - 48);
-                else if (c == 'E')
+                if (rank == 1)
                 {
-                    Debug.Log(response.Substring(startIndex, i - startIndex));
-                    break;
+                    if (y < l2) array.SetValue(Convert.ChangeType(v, t2), y);
                 }
+                else
+                {
+                    if (x < l1 && y < l2) array.SetValue(Convert.ChangeType(v, t2), x, y);
+                }
+
+                isNegative = false;
+                v = 0;
+                index++;
             }
-
-            if (index - 1 > l1 * l2)
+            else if (c == '-') isNegative = true;
+            else if (c > 47 && c < 58) v = v * 10 + (c - 48);
+            else if (c == 'E')
             {
-                Debug.LogWarning("Invalid array. The response contains " + (index - 1) + " elements.");
+                Debug.Log(response.Substring(startIndex, i - startIndex));
+                //break;
+                return false;
             }
         }
+
+        if (index - 1 > l1 * l2)
+        {
+            Debug.LogWarning("Invalid array. The response contains " + (index - 1) + " elements.");
+            return false;
+        }
+        return true;
     }
 
     private abstract class Params
@@ -319,7 +320,6 @@ public class OnlineMapsBingMapsElevation:OnlineMapsTextWebService
 
         public string EncodePoints()
         {
-            double latitude = 0;
             double longitude = 0;
 
             long prevLatitude = 0;
@@ -340,6 +340,7 @@ public class OnlineMapsBingMapsElevation:OnlineMapsTextWebService
                     else throw new Exception("Unknown type of points. Must be IEnumerable<double>, IEnumerable<float> or IEnumerable<Vector2>.");
                 }
 
+                double latitude;
                 if (type == 0 || type == 1)
                 {
                     if (i % 2 == 1)
@@ -354,7 +355,7 @@ public class OnlineMapsBingMapsElevation:OnlineMapsTextWebService
                         continue;
                     }
                 }
-                else if (type == 2)
+                else
                 {
                     Vector2 v = (Vector2) p;
                     longitude = v.x;

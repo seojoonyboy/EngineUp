@@ -2,7 +2,6 @@
 /*   http://www.infinity-code.com   */
 
 using UnityEngine;
-using Sprite = UnityEngine.Sprite;
 
 /// <summary>
 /// Class control the map for the SpriteRenderer.
@@ -59,7 +58,7 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
     public override Vector2 GetCoords(Vector2 position)
     {
         Vector2 coords2D = GetCoords2D(position);
-        return (coords2D != Vector2.zero)? coords2D: GetCoords3D(position);
+        return coords2D != Vector2.zero? coords2D: GetCoords3D(position);
     }
 
     private Vector2 GetCoords2D(Vector2 position)
@@ -89,16 +88,15 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
     private Vector2 GetCoords3D(Vector2 position)
     {
         RaycastHit hit;
-        if (!Physics.Raycast(Camera.main.ScreenPointToRay(position), out hit))
-            return Vector2.zero;
+        if (!Physics.Raycast(Camera.main.ScreenPointToRay(position), out hit)) return Vector2.zero;
 
         if (hit.collider.gameObject != gameObject) return Vector2.zero;
 
-        Vector3 size = (cl.bounds.max - hit.point);
+        Vector3 size = cl.bounds.max - hit.point;
         size.x = size.x / cl.bounds.size.x;
         size.y = size.y / cl.bounds.size.y;
 
-        Vector2 r = new Vector3((size.x - .5f), (size.y - .5f));
+        Vector2 r = new Vector3(size.x - .5f, size.y - .5f);
 
         int countX = map.width / OnlineMapsUtils.tileSize;
         int countY = map.height / OnlineMapsUtils.tileSize;
@@ -120,7 +118,7 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
 
         if (hit.collider.gameObject != gameObject) return false;
 
-        Vector3 size = (cl.bounds.max - hit.point);
+        Vector3 size = cl.bounds.max - hit.point;
         size.x = size.x / cl.bounds.size.x;
         size.y = size.y / cl.bounds.size.y;
 
@@ -136,6 +134,14 @@ public class OnlineMapsSpriteRendererControl:OnlineMapsControlBase2D
 
         map.projection.TileToCoordinates(px, py, map.zoom, out lng, out lat);
         return true;
+    }
+
+    public override Rect GetRect()
+    {
+        Vector2 p1 = Camera.main.WorldToScreenPoint(cl.bounds.min);
+        Vector2 p2 = Camera.main.WorldToScreenPoint(cl.bounds.max);
+        Vector2 s = p2 - p1;
+        return new Rect(p1.x, p1.y, s.x, s.y);
     }
 
     protected override void OnEnableLate()

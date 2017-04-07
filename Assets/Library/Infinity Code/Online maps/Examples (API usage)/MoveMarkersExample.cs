@@ -12,7 +12,7 @@ namespace InfinityCode.OnlineMapsExamples
     public class MoveMarkersExample : MonoBehaviour
     {
         // Move time
-        private float time = 10;
+        public float time = 10;
 
         private OnlineMapsMarker marker;
 

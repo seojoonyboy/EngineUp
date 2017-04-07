@@ -64,9 +64,9 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
         get
         {
             if (map.target == OnlineMapsTarget.tileset) return _colors;
-            if (_rotation == 0 && scale == 1) return _colors;
+            if (Math.Abs(_rotation) < float.Epsilon && Math.Abs(scale - 1) < float.Epsilon) return _colors;
 
-            if (_lastRotation != _rotation || _lastScale != _scale) UpdateRotatedBuffer();
+            if (Math.Abs(_lastRotation - _rotation) > float.Epsilon || Math.Abs(_lastScale - _scale) > float.Epsilon) UpdateRotatedBuffer();
             return _rotatedColors;
         }
     }
@@ -112,7 +112,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
         get { return _rotation; }
         set
         {
-            if (_rotation != value)
+            if (Math.Abs(_rotation - value) > float.Epsilon)
             {
                 _rotation = value;
                 if (Application.isPlaying)
@@ -227,14 +227,14 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
     {
         OnlineMapsVector2i offset = GetAlignOffset();
 
-        if (_lastRotation != _rotation || _lastScale != _scale) UpdateRotatedBuffer();
-        if (_rotation == 0 && scale == 1) return new OnlineMapsVector2i(px - offset.x, py - offset.y);
+        if (Math.Abs(_lastRotation - _rotation) > float.Epsilon || Math.Abs(_lastScale - _scale) > float.Epsilon) UpdateRotatedBuffer();
+        if (Math.Abs(_rotation) < float.Epsilon && Math.Abs(scale - 1) < float.Epsilon) return new OnlineMapsVector2i(px - offset.x, py - offset.y);
 
         float angle = 1 - Mathf.Repeat(_rotation * 360, 360);
         Matrix4x4 matrix = new Matrix4x4();
 
-        matrix.SetTRS(new Vector3(_width / 2, 0, _height / 2), Quaternion.Euler(0, angle, 0), new Vector3(scale, scale, scale));
-        Vector3 off = matrix.MultiplyPoint(new Vector3(offset.x - _textureWidth / 2, 0, offset.y - _textureHeight / 2));
+        matrix.SetTRS(new Vector3(_width >> 1, 0, _height >> 1), Quaternion.Euler(0, angle, 0), new Vector3(scale, scale, scale));
+        Vector3 off = matrix.MultiplyPoint(new Vector3(offset.x - (_textureWidth >> 1), 0, offset.y - (_textureHeight >> 1)));
         px -= (int)off.x;
         py -= (int)off.z;
 
@@ -353,7 +353,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
                 _height = _textureHeight = defaultTexture.height;
             }
         }
-        if (_rotation != 0 || scale != 1) UpdateRotatedBuffer();
+        if (Math.Abs(_rotation) > float.Epsilon || Math.Abs(scale - 1) > float.Epsilon) UpdateRotatedBuffer();
     }
 
     public override void LookToCoordinates(Vector2 coordinates)
@@ -378,7 +378,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
         _lastRotation = _rotation;
         _lastScale = _scale;
 
-        if ((_rotation == 0 && scale == 1) || map.target == OnlineMapsTarget.tileset)
+        if ((Math.Abs(_rotation) < float.Epsilon && Math.Abs(scale - 1) < float.Epsilon) || map.target == OnlineMapsTarget.tileset)
         {
             _width = _textureWidth;
             _height = _textureHeight;
@@ -389,11 +389,7 @@ public class OnlineMapsMarker : OnlineMapsMarkerBase
         int maxLocked = 20;
         while (locked && maxLocked > 0)
         {
-#if !NETFX_CORE
-            Thread.Sleep(1);
-#else
-            OnlineMapsThreadWINRT.Sleep(1);
-#endif
+            OnlineMapsUtils.ThreadSleep(1);
             maxLocked--;
         }
 #endif

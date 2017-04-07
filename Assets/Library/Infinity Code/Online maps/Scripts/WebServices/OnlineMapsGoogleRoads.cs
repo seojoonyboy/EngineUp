@@ -20,7 +20,6 @@ public class OnlineMapsGoogleRoads:OnlineMapsTextWebService
 
         int type = -1;
         int i = -1;
-        double latitude = 0;
         double longitude = 0;
         bool isFirst = true;
 
@@ -35,6 +34,7 @@ public class OnlineMapsGoogleRoads:OnlineMapsTextWebService
                 else throw new Exception("Unknown type of points. Must be IEnumerable<double>, IEnumerable<float> or IEnumerable<Vector2>.");
             }
 
+            double latitude;
             if (type == 0 || type == 1)
             {
                 if (i % 2 == 1)
@@ -49,7 +49,7 @@ public class OnlineMapsGoogleRoads:OnlineMapsTextWebService
                     continue;
                 }
             }
-            else if (type == 2)
+            else
             {
                 Vector2 v = (Vector2)p;
                 longitude = v.x;
@@ -110,10 +110,13 @@ public class OnlineMapsGoogleRoads:OnlineMapsTextWebService
 
             if (type < 3)
             {
-                if (isFirst) builder.Append("&path=");
+                if (isFirst)
+                {
+                    builder.Append("&path=");
+                    isFirst = false;
+                }
                 else builder.Append("|");
 
-                isFirst = false;
                 builder.Append(latitude).Append(",").Append(longitude);
             }
             else builder.Append("&placeId=").Append((string) p);

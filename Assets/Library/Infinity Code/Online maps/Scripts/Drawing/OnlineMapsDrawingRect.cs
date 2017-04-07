@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -11,20 +10,16 @@ using UnityEngine;
 /// </summary>
 public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
 {
-    /// <summary>
-    /// Background color of the rectangle.
-    /// </summary>
-    public Color backgroundColor = new Color(1, 1, 1, 0);
+    private static List<Vector3> vertices;
+    private static List<Vector3> normals;
+    private static List<int> backTriangles;
+    private static List<int> borderTriangles;
+    private static List<Vector2> uv;
+    private static List<Vector2> activePoints;
 
-    /// <summary>
-    /// Border color of the rectangle.
-    /// </summary>
-    public Color borderColor = Color.black;
-
-    /// <summary>
-    /// Border weight of the rectangle.
-    /// </summary>
-    public float borderWeight = 1;
+    private Color _backgroundColor = new Color(1, 1, 1, 0);
+    private Color _borderColor = Color.black;
+    public float _borderWidth = 1;
     
     private double[] points;
     private double _height = 1;
@@ -38,6 +33,52 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     public override Vector2 center
     {
         get { return new Vector2((float)(_x + _width / 2), (float)(_y + _height / 2)); }
+    }
+
+    [Obsolete("Renamed. Use borderWidth.")]
+    public float borderWeight
+    {
+        get { return borderWidth; }
+        set { borderWidth = value; }
+    }
+
+    /// <summary>
+    /// Background color of the rectangle.
+    /// </summary>
+    public Color backgroundColor
+    {
+        get { return _backgroundColor; }
+        set
+        {
+            _backgroundColor = value;
+            OnlineMaps.instance.Redraw();
+        }
+    }
+
+    /// <summary>
+    /// Border color of the rectangle.
+    /// </summary>
+    public Color borderColor
+    {
+        get { return _borderColor; }
+        set
+        {
+            _borderColor = value; 
+            OnlineMaps.instance.Redraw();
+        }
+    }
+
+    /// <summary>
+    /// Border width of the rectangle.
+    /// </summary>
+    public float borderWidth
+    {
+        get { return _borderWidth; }
+        set
+        {
+            _borderWidth = value;
+            OnlineMaps.instance.Redraw();
+        }
     }
 
     /// <summary>
@@ -246,11 +287,11 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// <param name="width">Width. Geographic coordinates.</param>
     /// <param name="height">Height. Geographic coordinates.</param>
     /// <param name="borderColor">Border color.</param>
-    /// <param name="borderWeight">Border weight.</param>
-    public OnlineMapsDrawingRect(float x, float y, float width, float height, Color borderColor, float borderWeight)
+    /// <param name="borderWidth">Border width.</param>
+    public OnlineMapsDrawingRect(float x, float y, float width, float height, Color borderColor, float borderWidth)
         : this(x, y, width, height, borderColor)
     {
-        this.borderWeight = borderWeight;
+        this.borderWidth = borderWidth;
     }
 
     /// <summary>
@@ -259,11 +300,11 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// <param name="position">The position of the rectangle. Geographic coordinates.</param>
     /// <param name="size">The size of the rectangle. Geographic coordinates.</param>
     /// <param name="borderColor">Border color.</param>
-    /// <param name="borderWeight">Border weight.</param>
-    public OnlineMapsDrawingRect(Vector2 position, Vector2 size, Color borderColor, float borderWeight)
+    /// <param name="borderWidth">Border width.</param>
+    public OnlineMapsDrawingRect(Vector2 position, Vector2 size, Color borderColor, float borderWidth)
         : this(position, size, borderColor)
     {
-        this.borderWeight = borderWeight;
+        this.borderWidth = borderWidth;
     }
 
     /// <summary>
@@ -271,11 +312,11 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// </summary>
     /// <param name="rect">Rectangle. Geographic coordinates.</param>
     /// <param name="borderColor">Border color.</param>
-    /// <param name="borderWeight">Border weight.</param>
-    public OnlineMapsDrawingRect(Rect rect, Color borderColor, float borderWeight)
+    /// <param name="borderWidth">Border width.</param>
+    public OnlineMapsDrawingRect(Rect rect, Color borderColor, float borderWidth)
         : this(rect, borderColor)
     {
-        this.borderWeight = borderWeight;
+        this.borderWidth = borderWidth;
     }
 
     /// <summary>
@@ -286,10 +327,10 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// <param name="width">Width. Geographic coordinates.</param>
     /// <param name="height">Height. Geographic coordinates.</param>
     /// <param name="borderColor">Border color.</param>
-    /// <param name="borderWeight">Border weight.</param>
+    /// <param name="borderWidth">Border width.</param>
     /// <param name="backgroundColor">Background color.</param>
-    public OnlineMapsDrawingRect(float x, float y, float width, float height, Color borderColor, float borderWeight, Color backgroundColor)
-        : this(x, y, width, height, borderColor, borderWeight)
+    public OnlineMapsDrawingRect(float x, float y, float width, float height, Color borderColor, float borderWidth, Color backgroundColor)
+        : this(x, y, width, height, borderColor, borderWidth)
     {
         this.backgroundColor = backgroundColor;
     }
@@ -300,10 +341,10 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// <param name="position">The position of the rectangle. Geographic coordinates.</param>
     /// <param name="size">The size of the rectangle. Geographic coordinates.</param>
     /// <param name="borderColor">Border color.</param>
-    /// <param name="borderWeight">Border weight.</param>
+    /// <param name="borderWidth">Border width.</param>
     /// <param name="backgroundColor">Background color.</param>
-    public OnlineMapsDrawingRect(Vector2 position, Vector2 size, Color borderColor, float borderWeight, Color backgroundColor)
-        : this(position, size, borderColor, borderWeight)
+    public OnlineMapsDrawingRect(Vector2 position, Vector2 size, Color borderColor, float borderWidth, Color backgroundColor)
+        : this(position, size, borderColor, borderWidth)
     {
         this.backgroundColor = backgroundColor;
     }
@@ -313,10 +354,10 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     /// </summary>
     /// <param name="rect">Rectangle. Geographic coordinates.</param>
     /// <param name="borderColor">Border color.</param>
-    /// <param name="borderWeight">Border weight.</param>
+    /// <param name="borderWidth">Border width.</param>
     /// <param name="backgroundColor">Background color.</param>
-    public OnlineMapsDrawingRect(Rect rect, Color borderColor, float borderWeight, Color backgroundColor)
-        : this(rect, borderColor, borderWeight)
+    public OnlineMapsDrawingRect(Rect rect, Color borderColor, float borderWidth, Color backgroundColor)
+        : this(rect, borderColor, borderWidth)
     {
         this.backgroundColor = backgroundColor;
     }
@@ -326,7 +367,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
         if (!visible) return;
 
         FillPoly(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, backgroundColor, invertY);
-        DrawLineToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, borderColor, borderWeight, true, invertY);
+        DrawLineToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, borderColor, borderWidth, true, invertY);
     }
 
     public override void DrawOnTileset(OnlineMapsTileSetControl control, int index)
@@ -341,32 +382,13 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
 
         InitMesh(control, "Rect", borderColor, backgroundColor);
 
-        api.GetCorners(out tlx, out tly, out brx, out bry);
+        OnlineMaps map = api;
+        map.GetCorners(out tlx, out tly, out brx, out bry);
 
         List<Vector2> localPoints = GetLocalPoints(points, true, false);
 
-        if (localPoints.All(p => p.x < 0))
-        {
-            active = false;
-            return;
-        }
-        if (localPoints.All(p => p.x > api.tilesetSize.x))
-        {
-            active = false;
-            return;
-        }
-        if (localPoints.All(p => p.y < 0))
-        {
-            active = false;
-            return;
-        }
-        if (localPoints.All(p => p.y > api.tilesetSize.y))
-        {
-            active = false;
-            return;
-        }
-
-        if (!active) active = true;
+        Rect rect1 = new Rect(localPoints[0].x, localPoints[2].y, localPoints[2].x - localPoints[0].x, localPoints[0].y - localPoints[2].y);
+        Rect rect2 = new Rect(0, 0, map.tilesetSize.x, map.tilesetSize.y);
 
         bool ignoreLeft = false;
         bool ignoreRight = false;
@@ -374,70 +396,90 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
         bool ignoreBottom = false;
         int countIgnore = 0;
 
-        for (int i = 0; i < localPoints.Count; i++)
+        if (checkMapBoundaries)
         {
-            Vector2 point = localPoints[i];
-            if (point.x < 0)
+            if (!rect2.Overlaps(rect1))
             {
-                point.x = 0;
-                if (!ignoreLeft) countIgnore++;
-                ignoreLeft = true;
+                if (active) active = false;
+                return;
             }
-            if (point.y < 0)
-            {
-                point.y = 0;
-                if (!ignoreTop) countIgnore++;
-                ignoreTop = true;
-            }
-            if (point.x > api.tilesetSize.x)
-            {
-                point.x = api.tilesetSize.x;
-                if (!ignoreRight) countIgnore++;
-                ignoreRight = true;
-            }
-            if (point.y > api.tilesetSize.y)
-            {
-                point.y = api.tilesetSize.y;
-                if (!ignoreBottom) countIgnore++;
-                ignoreBottom = true;
-            }
+            if (!active) active = true;
 
-            localPoints[i] = point;
+            for (int i = 0; i < localPoints.Count; i++)
+            {
+                Vector2 point = localPoints[i];
+                if (point.x < 0)
+                {
+                    point.x = 0;
+                    if (!ignoreLeft) countIgnore++;
+                    ignoreLeft = true;
+                }
+                if (point.y < 0)
+                {
+                    point.y = 0;
+                    if (!ignoreTop) countIgnore++;
+                    ignoreTop = true;
+                }
+                if (point.x > map.tilesetSize.x)
+                {
+                    point.x = map.tilesetSize.x;
+                    if (!ignoreRight) countIgnore++;
+                    ignoreRight = true;
+                }
+                if (point.y > map.tilesetSize.y)
+                {
+                    point.y = map.tilesetSize.y;
+                    if (!ignoreBottom) countIgnore++;
+                    ignoreBottom = true;
+                }
+
+                localPoints[i] = point;
+            }
         }
+        
 
-        List<Vector3> verticles = new List<Vector3>(16);
-        List<Vector3> normals = new List<Vector3>(16);
-        List<int> backTriangles = new List<int>(6);
-        List<int> borderTriangles = new List<int>();
-        List<Vector2> uv = new List<Vector2>(16);
+        if (vertices == null) vertices = new List<Vector3>(16);
+        else vertices.Clear();
 
-        verticles.Add(new Vector3(-localPoints[0].x, -0.05f, localPoints[0].y));
-        verticles.Add(new Vector3(-localPoints[1].x, -0.05f, localPoints[1].y));
-        verticles.Add(new Vector3(-localPoints[2].x, -0.05f, localPoints[2].y));
-        verticles.Add(new Vector3(-localPoints[3].x, -0.05f, localPoints[3].y));
+        if (normals == null) normals = new List<Vector3>(16);
+        else normals.Clear();
+
+        if (backTriangles == null) backTriangles = new List<int>(6);
+        else backTriangles.Clear();
+
+        if (borderTriangles == null) borderTriangles = new List<int>();
+        else borderTriangles.Clear();
+
+        if (uv == null) uv = new List<Vector2>(16);
+        else uv.Clear();
+
+        vertices.Add(new Vector3(-localPoints[0].x, -0.05f, localPoints[0].y));
+        vertices.Add(new Vector3(-localPoints[1].x, -0.05f, localPoints[1].y));
+        vertices.Add(new Vector3(-localPoints[2].x, -0.05f, localPoints[2].y));
+        vertices.Add(new Vector3(-localPoints[3].x, -0.05f, localPoints[3].y));
 
         if (!ignoreTop)
         {
-            verticles[2] += new Vector3(0, 0, borderWeight);
-            verticles[3] += new Vector3(0, 0, borderWeight);
+            vertices[2] += new Vector3(0, 0, borderWidth);
+            vertices[3] += new Vector3(0, 0, borderWidth);
         }
 
         if (!ignoreBottom)
         {
-            verticles[0] -= new Vector3(0, 0, borderWeight);
-            verticles[1] -= new Vector3(0, 0, borderWeight);
+            vertices[0] -= new Vector3(0, 0, borderWidth);
+            vertices[1] -= new Vector3(0, 0, borderWidth);
         }
 
         if (!ignoreLeft)
         {
-            verticles[0] -= new Vector3(borderWeight, 0, 0);
-            verticles[3] -= new Vector3(borderWeight, 0, 0);
+            vertices[0] -= new Vector3(borderWidth, 0, 0);
+            vertices[3] -= new Vector3(borderWidth, 0, 0);
         }
 
         if (!ignoreRight)
         {
-            verticles[1] += new Vector3(borderWeight, 0, 0);
-            verticles[2] += new Vector3(borderWeight, 0, 0);
+            vertices[1] += new Vector3(borderWidth, 0, 0);
+            vertices[2] += new Vector3(borderWidth, 0, 0);
         }
 
         normals.Add(Vector3.up);
@@ -457,16 +499,17 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
         backTriangles.Add(3);
         backTriangles.Add(2);
 
-        List<Vector2> activePoints = new List<Vector2>();
+        if (activePoints == null) activePoints = new List<Vector2>();
+        else activePoints.Clear();
 
         if (countIgnore == 0)
         {
-            activePoints.Add(localPoints[0] + new Vector2(borderWeight, 0));
+            activePoints.Add(localPoints[0] + new Vector2(borderWidth, 0));
             activePoints.Add(localPoints[1]);
             activePoints.Add(localPoints[2]);
             activePoints.Add(localPoints[3]);
-            activePoints.Add(localPoints[0] + new Vector2(0, borderWeight));
-            DrawActivePoints(control, ref activePoints, ref verticles, ref normals, ref borderTriangles, ref uv, borderWeight);
+            activePoints.Add(localPoints[0] + new Vector2(0, borderWidth));
+            DrawActivePoints(control, ref activePoints, ref vertices, ref normals, ref borderTriangles, ref uv, borderWidth);
         }
         else if (countIgnore == 1)
         {
@@ -481,7 +524,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
                 if (ci > 3) ci -= 4;
                 activePoints.Add(localPoints[ci]);
             }
-            DrawActivePoints(control, ref activePoints, ref verticles, ref normals, ref borderTriangles, ref uv, borderWeight);
+            DrawActivePoints(control, ref activePoints, ref vertices, ref normals, ref borderTriangles, ref uv, borderWidth);
         }
         else if (countIgnore == 2)
         {
@@ -489,34 +532,44 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
             {
                 activePoints.Add(localPoints[1]);
                 activePoints.Add(localPoints[2]);
-                DrawActivePoints(control, ref activePoints, ref verticles, ref normals, ref borderTriangles, ref uv, borderWeight);
+                DrawActivePoints(control, ref activePoints, ref vertices, ref normals, ref borderTriangles, ref uv, borderWidth);
                 activePoints.Add(localPoints[3]);
                 activePoints.Add(localPoints[0]);
-                DrawActivePoints(control, ref activePoints, ref verticles, ref normals, ref borderTriangles, ref uv, borderWeight);
+                DrawActivePoints(control, ref activePoints, ref vertices, ref normals, ref borderTriangles, ref uv, borderWidth);
             }
             else if (ignoreLeft && ignoreRight)
             {
                 activePoints.Add(localPoints[0]);
                 activePoints.Add(localPoints[1]);
-                DrawActivePoints(control, ref activePoints, ref verticles, ref normals, ref borderTriangles, ref uv, borderWeight);
+                DrawActivePoints(control, ref activePoints, ref vertices, ref normals, ref borderTriangles, ref uv, borderWidth);
                 activePoints.Add(localPoints[2]);
                 activePoints.Add(localPoints[3]);
-                DrawActivePoints(control, ref activePoints, ref verticles, ref normals, ref borderTriangles, ref uv, borderWeight);
+                DrawActivePoints(control, ref activePoints, ref vertices, ref normals, ref borderTriangles, ref uv, borderWidth);
             }
             else
             {
-                DrawActivePointsCI3(control, ignoreTop, ignoreRight, ignoreBottom, activePoints, localPoints, ref verticles, ref normals, ref borderTriangles, ref uv);
+                DrawActivePointsCI3(control, ignoreTop, ignoreRight, ignoreBottom, activePoints, localPoints, ref vertices, ref normals, ref borderTriangles, ref uv);
             }
         }
         else if (countIgnore == 3)
         {
-            DrawActivePointsCI3(control, ignoreTop, ignoreRight, ignoreBottom, activePoints, localPoints, ref verticles, ref normals, ref borderTriangles, ref uv);
+            DrawActivePointsCI3(control, ignoreTop, ignoreRight, ignoreBottom, activePoints, localPoints, ref vertices, ref normals, ref borderTriangles, ref uv);
+        }
+        else if (countIgnore == 4)
+        {
+            DrawActivePoints(control, ref activePoints, ref vertices, ref normals, ref borderTriangles, ref uv, borderWidth);
         }
 
         mesh.Clear();
-        mesh.vertices = verticles.ToArray();
+#if UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1
+        mesh.vertices = vertices.ToArray();
         mesh.normals = normals.ToArray();
         mesh.uv = uv.ToArray();
+#else
+        mesh.SetVertices(vertices);
+        mesh.SetNormals(normals);
+        mesh.SetUVs(0, uv);
+#endif
         mesh.subMeshCount = 2;
 
         mesh.SetTriangles(borderTriangles.ToArray(), 0);
@@ -526,7 +579,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
     }
 
     private void DrawActivePointsCI3(OnlineMapsTileSetControl control, bool ignoreTop, bool ignoreRight, bool ignoreBottom, List<Vector2> activePoints,
-        List<Vector2> localPoints, ref List<Vector3> verticles, ref List<Vector3> normals, ref List<int> borderTriangles, ref List<Vector2> uv)
+        List<Vector2> localPoints, ref List<Vector3> vertices, ref List<Vector3> normals, ref List<int> borderTriangles, ref List<Vector2> uv)
     {
         int off = 0;
 
@@ -540,7 +593,7 @@ public class OnlineMapsDrawingRect : OnlineMapsDrawingElement
             if (ci > 3) ci -= 4;
             activePoints.Add(localPoints[ci]);
         }
-        DrawActivePoints(control, ref activePoints, ref verticles, ref normals, ref borderTriangles, ref uv, borderWeight);
+        DrawActivePoints(control, ref activePoints, ref vertices, ref normals, ref borderTriangles, ref uv, borderWidth);
     }
 
     public override bool HitTest(Vector2 positionLngLat, int zoom)

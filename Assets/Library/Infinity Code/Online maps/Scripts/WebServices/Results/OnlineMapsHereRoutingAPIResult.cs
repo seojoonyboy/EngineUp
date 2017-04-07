@@ -727,7 +727,6 @@ public class OnlineMapsHereRoutingAPIResult
                     else if (n.name == "Line") line = n.Value();
                     else if (n.name == "ToLine") toLine = n.Value();
                     else if (n.name == "AccessPointName") accessPointName = n.Value();
-                    else if (n.name == "NextRoadName") nextRoadName = n.Value();
                     else if (n.name == "WaitTime") waitTime = n.Value<double>();
                     else if (n.name == "TimeEstimatePrecision") timeEstimatePrecision = n.Value<double>();
                     else if (n.name == "Ticket") ticket = n.Value();

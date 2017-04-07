@@ -6,10 +6,20 @@ using UnityEngine.UI;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to make a tooltip using uGUI for all markers
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/uGUICustomTooltipForAllMarkersExample")]
     public class uGUICustomTooltipForAllMarkersExample : MonoBehaviour
     {
+        /// <summary>
+        /// Prefab of the tooltip
+        /// </summary>
         public GameObject tooltipPrefab;
+
+        /// <summary>
+        /// Container for tooltip
+        /// </summary>
         public Canvas container;
 
         private GameObject tooltip;

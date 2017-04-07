@@ -237,6 +237,12 @@ public class OnlineMapsEditor : Editor
             textureImporter.textureFormat = TextureImporterFormat.RGB24;
             needReimport = true;
         }
+#else
+        if (textureImporter.textureCompression != TextureImporterCompression.Uncompressed)
+        {
+            textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
+            needReimport = true;
+        }
 #endif
         if (textureImporter.maxTextureSize < 256)
         {
@@ -291,6 +297,12 @@ public class OnlineMapsEditor : Editor
         if (textureImporter.textureFormat != TextureImporterFormat.ARGB32)
         {
             textureImporter.textureFormat = TextureImporterFormat.ARGB32;
+            needReimport = true;
+        }
+#else
+        if (textureImporter.textureCompression != TextureImporterCompression.Uncompressed)
+        {
+            textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
             needReimport = true;
         }
 #endif
@@ -355,6 +367,8 @@ public class OnlineMapsEditor : Editor
             textureImporter.isReadable = true;
 #if !UNITY_5_5P
             textureImporter.textureFormat = TextureImporterFormat.RGB24;
+#else
+            textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
 #endif
             textureImporter.maxTextureSize = Mathf.Max(textureWidth, textureHeight);
 
@@ -806,16 +820,13 @@ public class OnlineMapsEditor : Editor
             if (mapType.provider.types.Length > 1)
             {
                 GUIContent[] availableTypes = mapType.provider.types.Select(t => new GUIContent(t.title)).ToArray();
-                if (availableTypes != null)
+                int index = mapType.index;
+                EditorGUI.BeginChangeCheck();
+                index = EditorGUILayout.Popup(new GUIContent("Type", "Type of map texture"), index, availableTypes);
+                if (EditorGUI.EndChangeCheck())
                 {
-                    int index = mapType.index;
-                    EditorGUI.BeginChangeCheck();
-                    index = EditorGUILayout.Popup(new GUIContent("Type", "Type of map texture"), index, availableTypes);
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        mapType = mapType.provider.types[index];
-                        pMapType.stringValue = mapType.ToString();
-                    }
+                    mapType = mapType.provider.types[index];
+                    pMapType.stringValue = mapType.ToString();
                 }
             }
 
@@ -860,8 +871,8 @@ public class OnlineMapsEditor : Editor
         /*if (pTilesetWidth.intValue % dts != 0) pTilesetWidth.intValue = Mathf.FloorToInt(pTilesetWidth.intValue / (float) dts + 0.5f) * dts;
         if (pTilesetHeight.intValue % dts != 0) pTilesetHeight.intValue = Mathf.FloorToInt(pTilesetHeight.intValue / (float) dts + 0.5f) * dts;*/
 
-        if (pTilesetWidth.intValue <= 0) pTilesetWidth.intValue = dts;
-        if (pTilesetHeight.intValue <= 0) pTilesetHeight.intValue = dts;
+        if (pTilesetWidth.intValue <= 128) pTilesetWidth.intValue = dts;
+        if (pTilesetHeight.intValue <= 128) pTilesetHeight.intValue = dts;
     }
 
     private void DrawToolbarGUI()
@@ -961,6 +972,8 @@ public class OnlineMapsEditor : Editor
             textureImporter.isReadable = true;
 #if !UNITY_5_5P
             textureImporter.textureFormat = TextureImporterFormat.RGB24;
+#else
+            textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
 #endif
             textureImporter.wrapMode = TextureWrapMode.Clamp;
             textureImporter.maxTextureSize = 256;

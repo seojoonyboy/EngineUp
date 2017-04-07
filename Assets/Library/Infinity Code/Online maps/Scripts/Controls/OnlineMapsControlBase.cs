@@ -4,7 +4,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -142,15 +141,16 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
     protected OnlineMaps map;
     
     protected float lastGestureDistance;
+    protected Vector2 lastGestureCenter = Vector2.zero;
     protected Vector2 lastInputPosition;
     protected int lastTouchCount;
+    protected bool lockClick;
     protected bool waitZeroTouches = false;
 
     private OnlineMapsMarkerBase _dragMarker;
     private long[] lastClickTimes = {0, 0};
     private Vector2 pressPoint;
     private IEnumerator longPressEnumenator;
-    protected Vector2 lastGestureCenter = Vector2.zero;
     private double lastPositionLng;
     private double lastPositionLat;
     private bool isMapPress;
@@ -245,7 +245,7 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
             double offsetX = lng - lastPositionLng;
             double offsetY = lat - lastPositionLat;
 
-            if (offsetX != 0 || offsetY != 0)
+            if (Math.Abs(offsetX) > double.Epsilon || Math.Abs(offsetY) > double.Epsilon)
             {
                 double px, py;
                 dragMarker.GetPosition(out px, out py);
@@ -315,6 +315,15 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         return Input.mousePosition;
     }
 
+    public virtual IOnlineMapsInteractiveElement GetInteractiveElement(Vector2 screenPosition)
+    {
+        OnlineMapsMarker marker = map.GetMarkerFromScreen(screenPosition);
+        if (marker != null) return marker;
+
+        OnlineMapsDrawingElement drawingElement = map.GetDrawingElement(screenPosition);
+        return drawingElement;
+    }
+
     /// <summary>
     /// Converts geographical coordinate to position in the scene relative to the top-left corner of the map in map space.
     /// </summary>
@@ -329,8 +338,8 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         px -= tlx;
         py -= tly;
 
-        int maxX = 1 << map.zoom;
-        if (px < maxX / -2) px += maxX;
+        int maxX = 1 << (map.zoom - 1);
+        if (px < -maxX) px += maxX << 1;
         return new Vector2((float)(px * OnlineMapsUtils.tileSize), (float)(py * OnlineMapsUtils.tileSize));
     }
 
@@ -350,8 +359,8 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         map.projection.CoordinatesToTile(tx, ty, map.zoom, out dtx, out dty);
         dx -= dtx;
         dy -= dty;
-        int maxX = 1 << map.zoom;
-        if (dx < maxX / -2) dx += maxX;
+        int maxX = 1 << (map.zoom - 1);
+        if (dx < -maxX) dx += maxX << 1;
         px = dx * OnlineMapsUtils.tileSize;
         py = dy * OnlineMapsUtils.tileSize;
     }
@@ -485,13 +494,13 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         _instance = this;
         dragMarker = null;
         map = GetComponent<OnlineMaps>();
-        activeTexture = map.texture;
         if (map == null)
         {
             Debug.LogError("Can not find a script OnlineMaps.");
             OnlineMapsUtils.DestroyImmediate(this);
             return;
         }
+        activeTexture = map.texture;
         map.control = this;
         OnEnableLate();
     }
@@ -520,6 +529,7 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
     protected void OnMapBasePress()
     {
         isMapPress = false;
+        lockClick = false;
 
         if (waitZeroTouches)
         {
@@ -556,14 +566,16 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
 
         isMapPress = true;
 
-        OnlineMapsMarker marker = null;
+        OnlineMapsMarkerBase marker = null;
+        OnlineMapsDrawingElement drawingElement = null;
 
-        if (this is OnlineMapsControlBase3D && OnlineMapsControlBase3D.instance.marker2DMode == OnlineMapsMarker2DMode.billboard)
+        IOnlineMapsInteractiveElement interactiveElement = GetInteractiveElement(inputPosition);
+
+        if (interactiveElement != null)
         {
-            OnlineMapsMarkerInstanceBase instanceBase = OnlineMapsControlBase3D.instance.GetBillboardMarkerFromScreen(inputPosition);
-            if (instanceBase != null) marker = instanceBase.marker as OnlineMapsMarker;
+            if (interactiveElement is OnlineMapsMarkerBase) marker = interactiveElement as OnlineMapsMarkerBase;
+            else if (interactiveElement is OnlineMapsDrawingElement) drawingElement = interactiveElement as OnlineMapsDrawingElement;
         }
-        else marker = map.GetMarkerFromScreen(inputPosition);
 
         if (marker != null)
         {
@@ -575,17 +587,13 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
             }
             if (Input.GetKey(KeyCode.LeftControl)) dragMarker = marker;
         }
-        else
+        else if (drawingElement != null)
         {
-            OnlineMapsDrawingElement drawingElement = map.GetDrawingElement(inputPosition);
-            if (drawingElement != null)
+            if (drawingElement.OnPress != null) drawingElement.OnPress(drawingElement);
+            if (map.showMarkerTooltip == OnlineMapsShowMarkerTooltip.onPress)
             {
-                if (drawingElement.OnPress != null) drawingElement.OnPress(drawingElement);
-                if (map.showMarkerTooltip == OnlineMapsShowMarkerTooltip.onPress)
-                {
-                    map.tooltipDrawingElement = drawingElement;
-                    map.tooltip = drawingElement.tooltip;
-                }
+                map.tooltipDrawingElement = drawingElement;
+                map.tooltip = drawingElement.tooltip;
             }
         }
 
@@ -610,7 +618,7 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         if (GUIUtility.hotControl != 0) return;
 
         Vector2 inputPosition = GetInputPosition();
-        bool isClick = (pressPoint - inputPosition).sqrMagnitude < 400;
+        bool isClick = (pressPoint - inputPosition).sqrMagnitude < 400 && !lockClick;
         isMapDrag = false;
         mapDragStarted = false;
         dragMarker = null;
@@ -628,17 +636,16 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         isMapPress = false;
         if (OnMapRelease != null) OnMapRelease();
 
-        OnlineMapsMarker marker = null;
-
-        if (this is OnlineMapsControlBase3D &&
-            OnlineMapsControlBase3D.instance.marker2DMode == OnlineMapsMarker2DMode.billboard)
-        {
-            OnlineMapsMarkerInstanceBase instanceBase = OnlineMapsControlBase3D.instance.GetBillboardMarkerFromScreen(inputPosition);
-            if (instanceBase != null) marker = instanceBase.marker as OnlineMapsMarker;
-        }
-        else marker = map.GetMarkerFromScreen(inputPosition);
-
+        OnlineMapsMarkerBase marker = null;
         OnlineMapsDrawingElement drawingElement = null;
+
+        IOnlineMapsInteractiveElement interactiveElement = GetInteractiveElement(inputPosition);
+
+        if (interactiveElement != null)
+        {
+            if (interactiveElement is OnlineMapsMarkerBase) marker = interactiveElement as OnlineMapsMarkerBase;
+            else if (interactiveElement is OnlineMapsDrawingElement) drawingElement = interactiveElement as OnlineMapsDrawingElement;
+        }
 
         if (map.showMarkerTooltip == OnlineMapsShowMarkerTooltip.onPress && (map.tooltipMarker != null || map.tooltipDrawingElement != null))
         {
@@ -652,10 +659,9 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
             if (marker.OnRelease != null) marker.OnRelease(marker);
             if (isClick && marker.OnClick != null) marker.OnClick(marker);
         }
-        else
+        else if (drawingElement != null)
         {
-            drawingElement = map.GetDrawingElement(inputPosition);
-            if (drawingElement != null && drawingElement.OnRelease != null) drawingElement.OnRelease(drawingElement);
+            if (drawingElement.OnRelease != null) drawingElement.OnRelease(drawingElement);
         }
 
         if (isClick && DateTime.Now.Ticks - lastClickTimes[0] < 5000000)
@@ -666,7 +672,13 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
             {
                 if (OnMapDoubleClick != null) OnMapDoubleClick();
 
-                if (allowZoom && zoomInOnDoubleClick) ZoomOnPoint(1, inputPosition);
+                if (allowZoom && zoomInOnDoubleClick)
+                {
+                    if (!((marker != null && marker.OnClick != null) || (drawingElement != null && drawingElement.OnClick != null)))
+                    {
+                        ZoomOnPoint(1, inputPosition);
+                    }
+                }
             }
             
             lastClickTimes[0] = 0;
@@ -755,7 +767,7 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
 
             OnGestureZoom(p1, p2);
 
-            if (lastGestureDistance == 0)
+            if (Math.Abs(lastGestureDistance) < float.Epsilon)
             {
                 lastGestureDistance = distance;
                 return;
@@ -813,8 +825,11 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         {
             double offsetX = lng - lastPositionLng;
             double offsetY = lat - lastPositionLat;
+
+            if (offsetX > 270) offsetX -= 360;
+            else if (offsetX < -270) offsetX += 360;
             
-            if (offsetX != 0 || offsetY != 0)
+            if (Math.Abs(offsetX) > double.Epsilon || Math.Abs(offsetY) > double.Epsilon)
             {
                 double px, py;
                 map.GetPosition(out px, out py);
@@ -872,7 +887,7 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
         if (inputPosition.x <= 0 || inputPosition.x >= Screen.width || inputPosition.y <= 0 || inputPosition.y >= Screen.height) return;
 
         float wheel = Input.GetAxis("Mouse ScrollWheel");
-        if (wheel == 0) return;
+        if (Math.Abs(wheel) < float.Epsilon) return;
 
 #if NETFX_CORE
         wheel = -wheel;
@@ -886,17 +901,20 @@ public abstract class OnlineMapsControlBase : MonoBehaviour
     {
         yield return new WaitForSeconds(longPressDelay);
 
-        OnlineMapsMarker marker = null;
+        OnlineMapsMarkerBase marker = null;
+        OnlineMapsDrawingElement drawingElement = null;
         Vector2 inputPosition = GetInputPosition();
 
-        if (this is OnlineMapsControlBase3D && OnlineMapsControlBase3D.instance.marker2DMode == OnlineMapsMarker2DMode.billboard)
+        IOnlineMapsInteractiveElement interactiveElement = GetInteractiveElement(inputPosition);
+
+        if (interactiveElement != null)
         {
-            OnlineMapsMarkerInstanceBase instanceBase = OnlineMapsControlBase3D.instance.GetBillboardMarkerFromScreen(inputPosition);
-            if (instanceBase != null) marker = instanceBase.marker as OnlineMapsMarker;
+            if (interactiveElement is OnlineMapsMarkerBase) marker = interactiveElement as OnlineMapsMarkerBase;
+            else if (interactiveElement is OnlineMapsDrawingElement) drawingElement = interactiveElement as OnlineMapsDrawingElement;
         }
-        else marker = map.GetMarkerFromScreen(inputPosition);
 
         if (marker != null && marker.OnLongPress != null) marker.OnLongPress(marker);
+        else if (drawingElement != null && drawingElement.OnLongPress != null) drawingElement.OnLongPress(drawingElement);
         else if (OnMapLongPress != null)
         {
             OnMapLongPress();

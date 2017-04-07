@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using UnityEngine;
 
 /// <summary>
@@ -92,6 +93,14 @@ public static class OnlineMapsUtils
         return Mathf.Atan2(point2.z - point1.z, point2.x - point1.x) * Mathf.Rad2Deg;
     }
 
+    /// <summary>
+    /// The angle between the two points in degree.
+    /// </summary>
+    /// <param name="p1x">Point 1 X</param>
+    /// <param name="p1y">Point 1 Y</param>
+    /// <param name="p2x">Point 2 X</param>
+    /// <param name="p2y">Point 2 Y</param>
+    /// <returns>Angle in degree</returns>
     public static double Angle2D(double p1x, double p1y, double p2x, double p2y)
     {
         return Math.Atan2(p2y - p1y, p2x - p1x) * Rad2Deg;
@@ -158,9 +167,9 @@ public static class OnlineMapsUtils
 
     public static Vector2 Crossing(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
     {
-        if (p3.x == p4.x)
+        if (Math.Abs(p3.x - p4.x) < float.Epsilon)
         {
-            float y = p1.y + ((p2.y - p1.y) * (p3.x - p1.x)) / (p2.x - p1.x);
+            float y = p1.y + (p2.y - p1.y) * (p3.x - p1.x) / (p2.x - p1.x);
             if (y > Mathf.Max(p3.y, p4.y) || y < Mathf.Min(p3.y, p4.y) || y > Mathf.Max(p1.y, p2.y) || y < Mathf.Min(p1.y, p2.y)) return Vector2.zero;
             return new Vector2(p3.x, y);
         }
@@ -179,28 +188,19 @@ public static class OnlineMapsUtils
         if (obj == null) return null;
         Type type = obj.GetType();
 
-#if !NETFX_CORE
-        if (type.IsValueType || type == typeof(string)) return obj;
-#else
-        if (type.GetTypeInfo().IsValueType || type == typeof(string)) return obj;
-#endif
+        if (OnlineMapsReflectionHelper.IsValueType(type) || type == typeof(string)) return obj;
         if (type.IsArray)
         {
             Type elementType = Type.GetType(targetType.FullName.Replace("[]", string.Empty));
-            var array = obj as Array;
+            Array array = obj as Array;
             Array copied = Array.CreateInstance(elementType, array.Length);
             for (int i = 0; i < array.Length; i++) copied.SetValue(DeepCopy(array.GetValue(i), elementType), i);
             return copied;
         }
-#if !NETFX_CORE
-        if (type.IsClass)
-#else
-        if (type.GetTypeInfo().IsClass)
-#endif
+        if (OnlineMapsReflectionHelper.IsClass(type))
         {
             object target = Activator.CreateInstance(targetType);
-            FieldInfo[] fields = type.GetFields(BindingFlags.Public |
-                        BindingFlags.NonPublic | BindingFlags.Instance);
+            IEnumerable<FieldInfo> fields = OnlineMapsReflectionHelper.GetFields(type, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (FieldInfo field in fields)
             {
                 object fieldValue = field.GetValue(obj);
@@ -249,7 +249,7 @@ public static class OnlineMapsUtils
                 if (index >= polylinechars.Length)
                     break;
 
-                currentLat += (sum & 1) == 1 ? ~(sum >> 1) : (sum >> 1);
+                currentLat += (sum & 1) == 1 ? ~(sum >> 1) : sum >> 1;
 
                 sum = 0;
                 shifter = 0;
@@ -262,7 +262,7 @@ public static class OnlineMapsUtils
 
                 if (index >= polylinechars.Length && next5bits >= 32) break;
 
-                currentLng += (sum & 1) == 1 ? ~(sum >> 1) : (sum >> 1);
+                currentLng += (sum & 1) == 1 ? ~(sum >> 1) : sum >> 1;
                 Vector2 p = new Vector2(Convert.ToSingle(currentLng) / 100000.0f, Convert.ToSingle(currentLat) / 100000.0f);
                 poly.Add(p);
             }
@@ -271,12 +271,17 @@ public static class OnlineMapsUtils
         return poly;
     }
 
+    /// <summary>
+    /// Removes a gameobject, component or asset.
+    /// </summary>
+    /// <param name="obj">The object to destroy.</param>
     public static void DestroyImmediate(UnityEngine.Object obj)
     {
         if (obj == null) return;
 
 #if UNITY_EDITOR
-        UnityEngine.Object.DestroyImmediate(obj);
+        if (Application.isPlaying) UnityEngine.Object.Destroy(obj);
+        else UnityEngine.Object.DestroyImmediate(obj);
 #else
         UnityEngine.Object.Destroy(obj);
 #endif
@@ -339,7 +344,6 @@ public static class OnlineMapsUtils
         dy = 0;
 
         object v1 = null;
-        object v2 = null;
         object pv1 = null;
         object pv2 = null;
         bool isV1 = true;
@@ -363,7 +367,7 @@ public static class OnlineMapsUtils
                 if (isV1) v1 = p;
                 else
                 {
-                    v2 = p;
+                    object v2 = p;
                     if (isFirst) isFirst = false;
                     else
                     {
@@ -379,7 +383,7 @@ public static class OnlineMapsUtils
 
                 isV1 = !isV1;
             }
-            else if (type == 2 || type == 3)
+            else
             {
                 if (isFirst) isFirst = false;
                 else
@@ -645,30 +649,62 @@ public static class OnlineMapsUtils
         zoom = 3;
     }
 
+    /// <summary>
+    /// Given a start point, angle and distance, this will calculate the destina­tion point travelling along a (shortest distance) great circle arc.
+    /// </summary>
+    /// <param name="lng">Longitude of start point</param>
+    /// <param name="lat">Latitude of start point</param>
+    /// <param name="distance">Distance (km)</param>
+    /// <param name="angle">Angle, clockwise from north (degree)</param>
+    /// <param name="nlng">Longitude of destination point</param>
+    /// <param name="nlat">Latitude of destination point</param>
+    public static void GetCoordinateInDistance(double lng, double lat, float distance, float angle, out double nlng, out double nlat)
+    {
+        double d = distance / R;
+        double a = angle * Deg2Rad;
+
+        double f1 = lat * Deg2Rad;
+        double l1 = lng * Deg2Rad;
+
+        double sinF1 = Math.Sin(f1);
+        double cosF1 = Math.Cos(f1);
+        double sinD = Math.Sin(d);
+        double cosD = Math.Cos(d);
+        double sinA = Math.Sin(a);
+        double cosA = Math.Cos(a);
+
+        double sinF2 = sinF1 * cosD + cosF1 * sinD * cosA;
+        double f2 = Math.Asin(sinF2);
+        double y = sinA * sinD * cosF1;
+        double x = cosD - sinF1 * sinF2;
+        double l2 = l1 + Math.Atan2(y, x);
+
+        nlat = f2 * Rad2Deg;
+        nlng = (l2 * Rad2Deg + 540) % 360 - 180;
+    }
+
     public static Vector2 GetIntersectionPointOfTwoLines(Vector2 p11, Vector2 p12, Vector2 p21, Vector2 p22, out int state)
     {
-        state = -2;
         Vector2 result = new Vector2();
         float m = (p22.x - p21.x) * (p11.y - p21.y) - (p22.y - p21.y) * (p11.x - p21.x);
         float n = (p22.y - p21.y) * (p12.x - p11.x) - (p22.x - p21.x) * (p12.y - p11.y);
 
         float Ua = m / n;
 
-        if (n == 0 && m != 0) state = -1;
-        else if (m == 0 && n == 0) state = 0;
+        if (Math.Abs(n) < float.Epsilon && Math.Abs(m) > float.Epsilon) state = -1;
+        else if (Math.Abs(m) < float.Epsilon && Math.Abs(n) < float.Epsilon) state = 0;
         else
         {
             result.x = p11.x + Ua * (p12.x - p11.x);
             result.y = p11.y + Ua * (p12.y - p11.y);
-
-            if ((result.x >= p11.x || result.x <= p11.x) && (result.x >= p21.x || result.x <= p21.x) && (result.y >= p11.y || result.y <= p11.y) && (result.y >= p21.y || result.y <= p21.y)) state = 1;
+            state = 1;
         }
         return result;
     }
 
     public static int GetIntersectionPointOfTwoLines(float p11x, float p11y, float p12x, float p12y, float p21x, float p21y, float p22x, float p22y, out float resultx, out float resulty)
     {
-        int state = -2;
+        int state;
         resultx = 0;
         resulty = 0;
         
@@ -677,14 +713,13 @@ public static class OnlineMapsUtils
 
         float Ua = m / n;
 
-        if (n == 0 && m != 0) state = -1;
-        else if (m == 0 && n == 0) state = 0;
+        if (Math.Abs(n) < float.Epsilon && Math.Abs(m) > float.Epsilon) state = -1;
+        else if (Math.Abs(m) < float.Epsilon && Math.Abs(n) < float.Epsilon) state = 0;
         else
         {
             resultx = p11x + Ua * (p12x - p11x);
             resulty = p11y + Ua * (p12y - p11y);
-
-            if ((resultx >= p11x || resultx <= p11x) && (resultx >= p21x || resultx <= p21x) && (resulty >= p11y || resulty <= p11y) && (resulty >= p21y || resulty <= p21y)) state = 1;
+            state = 1;
         }
         return state;
     }
@@ -692,6 +727,24 @@ public static class OnlineMapsUtils
     public static Vector2 GetIntersectionPointOfTwoLines(Vector3 p11, Vector3 p12, Vector3 p21, Vector3 p22, out int state)
     {
         return GetIntersectionPointOfTwoLines(new Vector2(p11.x, p11.z), new Vector2(p12.x, p12.z), new Vector2(p21.x, p21.z), new Vector2(p22.x, p22.z), out state);
+    }
+
+    public static void GetValuesFromEnum(StringBuilder builder, string key, Type type, int value)
+    {
+        builder.Append("&").Append(key).Append("=");
+        Array values = Enum.GetValues(type);
+
+        bool addSeparator = false;
+        for (int i = 0; i < values.Length; i++)
+        {
+            int v = (int)values.GetValue(i);
+            if ((value & v) == v)
+            {
+                if (addSeparator) builder.Append(",");
+                builder.Append(Enum.GetName(type, v));
+                addSeparator = true;
+            }
+        }
     }
 
     /// <summary>
@@ -738,6 +791,11 @@ public static class OnlineMapsUtils
         return GetWWW(url.ToString());
     }
 
+    /// <summary>
+    /// Converts HEX string to color.
+    /// </summary>
+    /// <param name="hex">HEX string</param>
+    /// <returns>Color</returns>
     public static Color HexToColor(string hex)
     {
         byte r = Byte.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
@@ -896,7 +954,7 @@ public static class OnlineMapsUtils
             if (e > 0 || e < f) return Vector2.zero;
         }
 
-        if (f == 0) return Vector2.zero;
+        if (Math.Abs(f) < double.Epsilon) return Vector2.zero;
 
         Vector2 intersection;
 
@@ -937,7 +995,7 @@ public static class OnlineMapsUtils
 
         object firstValue = null;
         object secondValue = null;
-        object v1 = null, v2 = null, v3 = null, v4 = null;
+        object v1 = null, v2 = null, v3 = null;
 
         int i = 0;
 
@@ -953,7 +1011,7 @@ public static class OnlineMapsUtils
 
             if (i == 1) secondValue = p;
 
-            v4 = v3;
+            object v4 = v3;
             v3 = v2;
             v2 = v1;
             v1 = p;
@@ -1258,10 +1316,8 @@ public static class OnlineMapsUtils
         double ly = pointY - lineStartY;
         double closestPoint = (lx * ldX + ly * ldY) / (ldX * ldX + ldY * ldY);
 
-        double fdm = Math.Sqrt(fdX * fdX + fdY * fdY);
-
         if (closestPoint < 0) closestPoint = 0;
-        else if (closestPoint > fdm) closestPoint = fdm;
+        else if (closestPoint > magnitude) closestPoint = magnitude;
 
         nearestPointX = lineStartX + closestPoint * ldX;
         nearestPointY = lineStartY + closestPoint * ldY;
@@ -1303,6 +1359,16 @@ public static class OnlineMapsUtils
     public static double SqrMagnitude(double p1x, double p1y, double p2x, double p2y)
     {
         return (p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y);
+    }
+
+    public static void ThreadSleep(int millisecondsTimeout)
+    {
+#if !NETFX_CORE
+        Thread.Sleep(millisecondsTimeout);
+#else
+        OnlineMapsThreadWINRT.Sleep(millisecondsTimeout);
+#endif
+
     }
 
     /// <summary>
@@ -1438,8 +1504,6 @@ public static class OnlineMapsUtils
         int n = countVertices;
         if (n < 3) return indices;
 
-        int countIndices = 0;
-
         int[] V = new int[n];
         if (TriangulateArea(points, countVertices) > 0)
         {
@@ -1470,7 +1534,6 @@ public static class OnlineMapsUtils
                 indices.Add(V[u]);
                 indices.Add(V[v]);
                 indices.Add(V[w]);
-                countIndices += 3;
                 for (s = v, t = v + 1; t < nv; s++, t++) V[s] = V[t];
                 nv--;
                 count = 2 * nv;
@@ -1542,10 +1605,6 @@ public static class OnlineMapsUtils
 
     private static bool TriangulateSnip(float[] points, int u, int v, int w, int n, int[] V)
     {
-        /*Vector2 A = points[V[u]];
-        Vector2 B = points[V[v]];
-        Vector2 C = points[V[w]];*/
-
         float ax = points[V[u] * 2];
         float ay = points[V[u] * 2 + 1];
         float bx = points[V[v] * 2];

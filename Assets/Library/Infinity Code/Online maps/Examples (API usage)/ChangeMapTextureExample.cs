@@ -25,10 +25,9 @@ namespace InfinityCode.OnlineMapsExamples
 #else
             GUITexture gt = GetComponent<GUITexture>();
 #endif
-            Texture2D activeTexture = (gt.texture == texture1) ? texture2 : texture1;
+            Texture2D activeTexture = gt.texture == texture1 ? texture2 : texture1;
             gt.texture = activeTexture;
-            gt.pixelInset = new Rect(activeTexture.width / -2, activeTexture.height / -2, activeTexture.width,
-                activeTexture.height);
+            gt.pixelInset = new Rect(activeTexture.width / -2, activeTexture.height / -2, activeTexture.width, activeTexture.height);
 
             // Change map texture
             OnlineMaps.instance.SetTexture(activeTexture);

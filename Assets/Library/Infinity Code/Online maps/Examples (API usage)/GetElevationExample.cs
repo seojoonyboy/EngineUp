@@ -19,8 +19,11 @@ namespace InfinityCode.OnlineMapsExamples
 
         private void OnMapClick()
         {
+            // Get the coordinates where the user clicked.
+            Vector2 coords = OnlineMapsControlBase.instance.GetCoords();
+
             // Get elevation on click point
-            OnlineMapsGoogleElevation.Find(OnlineMapsControlBase.instance.GetCoords()).OnComplete += OnComplete;
+            OnlineMapsGoogleElevation.Find(coords).OnComplete += OnComplete;
         }
 
         private void OnComplete(string response)

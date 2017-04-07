@@ -506,14 +506,14 @@ public class OnlineMapsHereRoutingAPI: OnlineMapsTextWebService
             }
             if (vehicleType != null) vehicleType.GetURLKey(builder);
             if (maxNumberOfChanges.HasValue) builder.Append("&maxNumberOfChanges=").Append(maxNumberOfChanges.Value);
-            if (avoidTransportTypes.HasValue) GetValuesFromEnum(builder, "avoidTransportTypes", typeof(PublicTransportType), (int)avoidTransportTypes.Value);
+            if (avoidTransportTypes.HasValue) OnlineMapsUtils.GetValuesFromEnum(builder, "avoidTransportTypes", typeof(PublicTransportType), (int)avoidTransportTypes.Value);
             if (walkTimeMultiplier.HasValue) builder.Append("&walkTimeMultiplier=").Append(walkTimeMultiplier.Value);
             if (walkSpeed.HasValue) builder.Append("&walkSpeed=").Append(walkSpeed.Value);
             if (walkRadius.HasValue) builder.Append("&walkRadius=").Append(walkRadius.Value);
             if (combineChange) builder.Append("&combineChange=true");
             if (truckType.HasValue) builder.Append("&truckType=").Append(truckType.Value);
             if (trailersCount.HasValue) builder.Append("&trailersCount=").Append(trailersCount.Value);
-            if (shippedHazardousGoods.HasValue) GetValuesFromEnum(builder, "shippedHazardousGoods", typeof(HazardousGoodType), (int)shippedHazardousGoods.Value);
+            if (shippedHazardousGoods.HasValue) OnlineMapsUtils.GetValuesFromEnum(builder, "shippedHazardousGoods", typeof(HazardousGoodType), (int)shippedHazardousGoods.Value);
             if (limitedWeight.HasValue) builder.Append("&limitedWeight=").Append(limitedWeight.Value);
             if (weightPerAxle.HasValue) builder.Append("&weightPerAxle=").Append(weightPerAxle.Value);
             if (height.HasValue) builder.Append("&height=").Append(height.Value);
@@ -521,24 +521,6 @@ public class OnlineMapsHereRoutingAPI: OnlineMapsTextWebService
             if (length.HasValue) builder.Append("&length=").Append(length.Value);
             if (!string.IsNullOrEmpty(tunnelCategory)) builder.Append("&tunnelCategory=").Append(tunnelCategory);
             if (returnelevation) builder.Append("&returnelevation=true");
-        }
-
-        private void GetValuesFromEnum(StringBuilder builder, string key, Type type, int value)
-        {
-            builder.Append("&").Append(key).Append("=");
-            Array values = Enum.GetValues(type);
-
-            bool addSeparator = false;
-            for (int i = 0; i < values.Length; i++)
-            {
-                int v = (int)values.GetValue(i);
-                if ((value & v) == v)
-                {
-                    if (addSeparator) builder.Append(",");
-                    builder.Append(Enum.GetName(type, v));
-                    addSeparator = true;
-                }
-            }
         }
 
         private void GetShortNamesFromEnum(StringBuilder builder, string key, Type type, int value)
@@ -553,9 +535,8 @@ public class OnlineMapsHereRoutingAPI: OnlineMapsTextWebService
                 if ((value & v) == v)
                 {
                     if (addSeparator) builder.Append(",");
-                    string name = Enum.GetName(type, v);
-                    MemberInfo[] infos = type.GetMember(name);
-                    object[] attributes = infos[0].GetCustomAttributes(typeof(ShortNameAttribute), false).ToArray();
+                    MemberInfo firstInfo = OnlineMapsReflectionHelper.GetMember(type, Enum.GetName(type, v));
+                    object[] attributes = firstInfo.GetCustomAttributes(typeof(ShortNameAttribute), false).ToArray();
                     builder.Append(((ShortNameAttribute)attributes[0]).shortName);
                     addSeparator = true;
                 }

@@ -65,7 +65,8 @@ namespace InfinityCode.OnlineMapsExamples
                     OnlineMapsMarker marker = ms[j];
                     MarkerGroup group = null;
                     double px, py;
-                    marker.GetTilePosition(out px, out py);
+                    marker.GetPosition(out px, out py);
+                    OnlineMaps.instance.projection.CoordinatesToTile(px, py, zoom, out px, out py);
 
                     int k = j + 1;
 
@@ -74,7 +75,8 @@ namespace InfinityCode.OnlineMapsExamples
                         OnlineMapsMarker marker2 = ms[k];
 
                         double p2x, p2y;
-                        marker2.GetTilePosition(out p2x, out p2y);
+                        marker2.GetPosition(out p2x, out p2y);
+                        OnlineMaps.instance.projection.CoordinatesToTile(p2x, p2y, zoom, out p2x, out p2y);
 
                         if (OnlineMapsUtils.Magnitude(px, py, p2x, p2y) < distance)
                         {
@@ -148,7 +150,7 @@ namespace InfinityCode.OnlineMapsExamples
                     int co = cText[i] - '0' - 1;
                     if (co < 0) co += 10;
 
-                    int fx = (co % 5) * cw;
+                    int fx = co % 5 * cw;
                     int fy = (1 - co / 5) * ch;
 
                     for (int x = 0; x < cw; x++)

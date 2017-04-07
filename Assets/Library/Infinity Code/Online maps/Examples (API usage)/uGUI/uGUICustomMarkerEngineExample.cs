@@ -6,26 +6,40 @@ using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to create your own system of markers for uGUI.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/uGUICustomMarkerEngineExample")]
     public class uGUICustomMarkerEngineExample : MonoBehaviour 
     {
         private static uGUICustomMarkerEngineExample _instance;
         private static List<uGUICustomMarkerExample> markers;
 
+        /// <summary>
+        /// The container where markers will be created.
+        /// </summary>
         public RectTransform markerContainer;
+
+        /// <summary>
+        /// Prefab of UI Marker
+        /// </summary>
         public GameObject markerPrefab;
 
-        private GameObject container;
-        private bool needUpdateMarkers;
         private Canvas canvas;
         private OnlineMaps map;
         private OnlineMapsControlBase control;
 
+        /// <summary>
+        /// Reference to marker engine.
+        /// </summary>
         public static uGUICustomMarkerEngineExample instance
         {
             get { return _instance; }
         }
 
+        /// <summary>
+        /// Reference to the camera
+        /// </summary>
         private Camera worldCamera
         {
             get
@@ -35,11 +49,24 @@ namespace InfinityCode.OnlineMapsExamples
             }
         }
 
+        /// <summary>
+        /// Creates a new marker
+        /// </summary>
+        /// <param name="position">Marker coordinates</param>
+        /// <param name="text">Marker text</param>
+        /// <returns>Instance of the marker</returns>
         public static uGUICustomMarkerExample AddMarker(Vector2 position, string text)
         {
             return AddMarker(position.x, position.y, text);
         }
 
+        /// <summary>
+        /// Creates a new marker
+        /// </summary>
+        /// <param name="lng">Longitude</param>
+        /// <param name="lat">Latitude</param>
+        /// <param name="text">Marker text</param>
+        /// <returns>Instance of the marker</returns>
         public static uGUICustomMarkerExample AddMarker(double lng, double lat, string text)
         {
             GameObject markerGameObject = Instantiate(_instance.markerPrefab) as GameObject;
@@ -57,6 +84,32 @@ namespace InfinityCode.OnlineMapsExamples
             return marker;
         }
 
+        /// <summary>
+        /// Gets the coordinates of the corners of the map
+        /// </summary>
+        /// <param name="tlx">Longitude of the left border of the map</param>
+        /// <param name="tly">Latitude of the top border of the map</param>
+        /// <param name="brx">Longitude of the right border of the map</param>
+        /// <param name="bry">Latitude of the bottom border of the map</param>
+        private void GetCorners(out double tlx, out double tly, out double brx, out double bry)
+        {
+            int countX = map.width / OnlineMapsUtils.tileSize;
+            int countY = map.height / OnlineMapsUtils.tileSize;
+
+            double px, py;
+            map.projection.CoordinatesToTile(map.buffer.apiPosition.x, map.buffer.apiPosition.y, map.buffer.apiZoom, out px, out py);
+
+            px -= countX / 2f;
+            py -= countY / 2f;
+
+            map.projection.TileToCoordinates(px, py, map.buffer.apiZoom, out tlx, out tly);
+
+            px += countX;
+            py += countY;
+
+            map.projection.TileToCoordinates(px, py, map.buffer.apiZoom, out brx, out bry);
+        }
+
         private void OnEnable()
         {
             _instance = this;
@@ -64,6 +117,9 @@ namespace InfinityCode.OnlineMapsExamples
             canvas = markerContainer.GetComponentInParent<Canvas>();
         }
 
+        /// <summary>
+        /// Removes all markers
+        /// </summary>
         public static void RemoveAllMarkers()
         {
             foreach (uGUICustomMarkerExample marker in markers)
@@ -74,6 +130,10 @@ namespace InfinityCode.OnlineMapsExamples
             markers.Clear();
         }
 
+        /// <summary>
+        /// Removes the specified marker
+        /// </summary>
+        /// <param name="marker">Marker for removal</param>
         public static void RemoveMarker(uGUICustomMarkerExample marker)
         {
             OnlineMapsUtils.DestroyImmediate(marker.gameObject);
@@ -81,6 +141,10 @@ namespace InfinityCode.OnlineMapsExamples
             markers.Remove(marker);
         }
 
+        /// <summary>
+        /// Removes a marker by index
+        /// </summary>
+        /// <param name="index">Index of marker</param>
         public static void RemoveMarkerAt(int index)
         {
             if (index < 0 || index >= markers.Count) return;
@@ -102,34 +166,37 @@ namespace InfinityCode.OnlineMapsExamples
             AddMarker(map.position, "Example Marker");
         }
 
+        /// <summary>
+        /// Updates the positions of all markers
+        /// </summary>
         private void UpdateMarkers()
         {
-            foreach (uGUICustomMarkerExample marker in markers) UpdateMarker(marker);
+            double tly, brx, bry, tlx;
+            GetCorners(out tlx, out tly, out brx, out bry);
+
+            foreach (uGUICustomMarkerExample marker in markers) UpdateMarker(marker, tlx, tly, brx, bry);
         }
 
+        /// <summary>
+        /// Updates the position of the specified marker
+        /// </summary>
+        /// <param name="marker">Marker</param>
         private void UpdateMarker(uGUICustomMarkerExample marker)
         {
             double tlx, tly, brx, bry;
-
-            int countX = map.width / OnlineMapsUtils.tileSize;
-            int countY = map.height / OnlineMapsUtils.tileSize;
-
-            double px, py;
-            map.projection.CoordinatesToTile(map.buffer.apiPosition.x, map.buffer.apiPosition.y, map.buffer.apiZoom, out px, out py);
-
-            px -= countX / 2f;
-            py -= countY / 2f;
-
-            map.projection.TileToCoordinates(px, py, map.buffer.apiZoom, out tlx, out tly);
-
-            px += countX;
-            py += countY;
-
-            map.projection.TileToCoordinates(px, py, map.buffer.apiZoom, out brx, out bry);
+            GetCorners(out tlx, out tly, out brx, out bry);
 
             UpdateMarker(marker, tlx, tly, brx, bry);
         }
 
+        /// <summary>
+        /// Updates the position of the specified marker
+        /// </summary>
+        /// <param name="marker">Marker</param>
+        /// <param name="tlx">Longitude of the left border of the map</param>
+        /// <param name="tly">Latitude of the top border of the map</param>
+        /// <param name="brx">Longitude of the right border of the map</param>
+        /// <param name="bry">Latitude of the bottom border of the map</param>
         private void UpdateMarker(uGUICustomMarkerExample marker, double tlx, double tly, double brx, double bry)
         {
             double px = marker.lng;

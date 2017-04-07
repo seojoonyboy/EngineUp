@@ -3,6 +3,9 @@
 
 using System;
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGoogleGeocoding.
+/// </summary>
 [Obsolete("OnlineMapsFindLocation is obsolete. Use OnlineMapsGoogleGeocoding.")]
 public class OnlineMapsFindLocation: OnlineMapsGoogleGeocoding
 {
@@ -13,6 +16,9 @@ public class OnlineMapsFindLocation: OnlineMapsGoogleGeocoding
     }
 }
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGoogleGeocodingResult.
+/// </summary>
 [Obsolete("OnlineMapsFindLocationResult is obsolete. Use OnlineMapsGoogleGeocodingResult.")]
 public class OnlineMapsFindLocationResult : OnlineMapsGoogleGeocodingResult
 {
@@ -26,6 +32,9 @@ public class OnlineMapsFindLocationResult : OnlineMapsGoogleGeocodingResult
     }
 }
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGoogleGeocodingResult.AddressComponent.
+/// </summary>
 [Obsolete("OnlineMapsFindLocationResultAddressComponent is obsolete. Use OnlineMapsGoogleGeocodingResult.AddressComponent.")]
 public class OnlineMapsFindLocationResultAddressComponent : OnlineMapsGoogleGeocodingResult.AddressComponent
 {

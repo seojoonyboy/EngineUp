@@ -3,11 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
 
 /// <summary>
 /// This class of buffer tile image. \n
@@ -173,7 +170,6 @@ public class OnlineMapsTile
     /// </summary>
     public readonly int zoom;
 
-    private string _cacheFilename;
     private Color32[] _colors;
     private string _trafficURL;
     private string _url;
@@ -586,7 +582,7 @@ public class OnlineMapsTile
             for (int i = 0; i < _colors.Length; i++)
             {
                 float a = labelColors[i].a;
-                if (a != 0)
+                if (Math.Abs(a) > float.Epsilon)
                 {
                     labelColors[i].a = 1;
                     _colors[i] = Color32.Lerp(_colors[i], labelColors[i], a);
@@ -601,9 +597,12 @@ public class OnlineMapsTile
     public void OnDownloadComplete()
     {
         if (www == null) Debug.Log(status + "  " + this);
-        data = www.bytes;
-        LoadTexture();
-        data = null;
+        else
+        {
+            data = www.bytes;
+            LoadTexture();
+            data = null;
+        }
     }
 
     public void OnDownloadError()

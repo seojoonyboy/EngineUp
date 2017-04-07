@@ -24,6 +24,9 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
     /// </summary>
     public Predicate<OnlineMapsMarker> OnCheckMarker2DVisibility;
 
+    /// <summary>
+    /// The event that occurs after draw the tile.
+    /// </summary>
     public Action<OnlineMapsTile, Material> OnDrawTile;
 
     /// <summary>
@@ -191,6 +194,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
 
     private OnlineMapsVector2i _bufferPosition;
 
+    [NonSerialized]
     private OnlineMapsBingMapsElevation elevationRequest;
     private float elevationRequestX1;
     private float elevationRequestY1;
@@ -227,6 +231,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
     private bool waitSetElevationData;
     private int waitMapZoom;
     private bool needRestoreGestureZoom;
+    private List<Vector3> markersVertices;
 
     /// <summary>
     /// Singleton instance of OnlineMapsTileSetControl control.
@@ -281,8 +286,8 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
         }
         else
         {
-            OnlineMapsUtils.DestroyImmediate(markersGameObject);
-            markersGameObject = null;
+            foreach (GameObject go in markersGameObjects) OnlineMapsUtils.DestroyImmediate(go);
+            markersGameObjects = null;
         }
     }
 
@@ -409,8 +414,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
 
         if (OnGetElevation == null)
         {
-            elevationRequest = OnlineMapsBingMapsElevation.GetElevationByBounds(bingAPI, sx, sy, ex, ey, 32, 32);
-            elevationRequest.OnComplete += OnElevationRequestComplete;
+            StartDownloadElevation(sx, sy, ex, ey);
         }
         else
         {
@@ -419,92 +423,12 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
         }
     }
 
-    public override float GetElevationValue(float x, float z, float yScale, Vector2 topLeftPosition, Vector2 bottomRightPosition)
+    public override float GetElevationValue(double x, double z, float yScale, Vector2 topLeftPosition, Vector2 bottomRightPosition)
     {
-        if (elevationData == null) return 0;
-
-        x /= -map.tilesetSize.x;
-        z /= map.tilesetSize.y;
-
-        int ew = elevationDataWidth - 1;
-        int eh = elevationDataHeight - 1;
-
-        float cx = (bottomRightPosition.x - topLeftPosition.x) * x + topLeftPosition.x;
-        float cz = (bottomRightPosition.y - topLeftPosition.y) * z + topLeftPosition.y;;
-
-        float rx = (cx - elevationX1) / elevationW * ew;
-        float ry = (cz - elevationY1) / elevationH * eh;
-
-        if (rx < 0) rx = 0;
-        else if (rx > ew) rx = ew;
-
-        if (ry < 0) ry = 0;
-        else if (ry > eh) ry = eh;
-
-        int x1 = (int)rx;
-        int x2 = x1 + 1;
-        int y1 = (int)ry;
-        int y2 = y1 + 1;
-        if (x2 > ew) x2 = ew;
-        if (y2 > eh) y2 = eh;
-
-        float p1 = (elevationData[x2, eh - y1] - elevationData[x1, eh - y1]) * (rx - x1) + elevationData[x1, eh - y1];
-        float p2 = (elevationData[x2, eh - y2] - elevationData[x1, eh - y2]) * (rx - x1) + elevationData[x1, eh - y2];
-
-        float v = (p2 - p1) * (ry - y1) + p1;
-        if (elevationBottomMode == ElevationBottomMode.minValue) v -= elevationMinValue;
-        return v * yScale * elevationScale;
+        return GetElevationValue(x, z, yScale, topLeftPosition.x, topLeftPosition.y, bottomRightPosition.x, bottomRightPosition.y);
     }
 
-    public override float GetElevationValue(float x, float z, float yScale, double tlx, double tly, double brx, double bry)
-    {
-        if (elevationData == null) return 0;
-
-        x = Mathf.Clamp01(x / -map.tilesetSize.x);
-        z = Mathf.Clamp01(z / map.tilesetSize.y);
-
-        int ew = elevationDataWidth - 1;
-        int eh = elevationDataHeight - 1;
-
-        double cx = (brx - tlx) * x + tlx;
-        double cz = (bry - tly) * z + tly;
-
-        float rx = (float)((cx - elevationX1) / elevationW * ew);
-        float ry = (float)((cz - elevationY1) / elevationH * eh);
-
-        if (rx < 0) rx = 0;
-        else if (rx > ew) rx = ew;
-
-        if (ry < 0) ry = 0;
-        else if (ry > eh) ry = eh;
-
-        int x1 = (int)rx;
-        int x2 = x1 + 1;
-        int y1 = (int)ry;
-        int y2 = y1 + 1;
-        if (x2 > ew) x2 = ew;
-        if (y2 > eh) y2 = eh;
-
-        float p1 = (elevationData[x2, eh - y1] - elevationData[x1, eh - y1]) * (rx - x1) + elevationData[x1, eh - y1];
-        float p2 = (elevationData[x2, eh - y2] - elevationData[x1, eh - y2]) * (rx - x1) + elevationData[x1, eh - y2];
-
-        float v = (p2 - p1) * (ry - y1) + p1;
-        if (elevationBottomMode == ElevationBottomMode.minValue) v -= elevationMinValue;
-        return v * yScale * elevationScale;
-    }
-
-    /// <summary>
-    /// Returns the elevation value, based on the coordinates of the scene.
-    /// </summary>
-    /// <param name="x">Scene X.</param>
-    /// <param name="z">Scene Z.</param>
-    /// <param name="yScale">Scale factor for evevation value.</param>
-    /// <param name="tlx">Top-left longitude of map.</param>
-    /// <param name="tly">Top-left latitude of map.</param>
-    /// <param name="brx">Bottom-right longitude of map.</param>
-    /// <param name="bry">Bottom-right latitude of map.</param>
-    /// <returns>Elevation value.</returns>
-    public float GetElevationValue(double x, double z, float yScale, double tlx, double tly, double brx, double bry)
+    public override float GetElevationValue(double x, double z, float yScale, double tlx, double tly, double brx, double bry)
     {
         if (elevationData == null) return 0;
 
@@ -578,7 +502,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
                 {
                     double mx, my;
                     flatMarker.marker.GetPosition(out mx, out my);
-                    if (my < lat || (my == lat && mx > lng)) marker = flatMarker.marker;
+                    if (my < lat || (Math.Abs(my - lat) < double.Epsilon && mx > lng)) marker = flatMarker.marker;
                 }
             }
         }
@@ -720,6 +644,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
         drawingsGameObject.transform.localPosition = new Vector3(0, OnlineMaps.instance.tilesetSize.magnitude / 4344, 0);
         drawingsGameObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
         drawingsGameObject.transform.localScale = Vector3.one;
+        drawingsGameObject.layer = gameObject.layer;
     }
 
     private void InitMapMesh()
@@ -866,9 +791,9 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
             {
                 int ti = tx * 6 + cy;
                 int p1 = py1 + tx;
-                int p2 = py1 + tx + 1;
+                int p2 = p1 + 1;
                 int p3 = py2 + tx;
-                int p4 = py2 + tx + 1;
+                int p4 = p3 + 1;
 
                 triangles[ti] = p1;
                 triangles[ti + 1] = p2;
@@ -970,18 +895,22 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
 
         try
         {
-            if (elevationData == null) elevationData = new short[elevationDataResolution, elevationDataResolution];
+            bool isFirstResponse = false;
+            if (elevationData == null)
+            {
+                elevationData = new short[elevationDataResolution, elevationDataResolution];
+                isFirstResponse = true;
+            }
             Array ed = elevationData;
 
             if (OnlineMapsBingMapsElevation.ParseElevationArray(response, OnlineMapsBingMapsElevation.Output.json, ref ed))
-            //if (string.IsNullOrEmpty(elevationRequest.error))
             {
                 elevationX1 = elevationRequestX1;
                 elevationY1 = elevationRequestY1;
                 elevationW = elevationRequestW;
                 elevationH = elevationRequestH;
-                elevationDataWidth = 32;
-                elevationDataHeight = 32;
+                elevationDataWidth = elevationDataResolution;
+                elevationDataHeight = elevationDataResolution;
 
                 UpdateElevationMinMax();
                 if (OnElevationUpdated != null) OnElevationUpdated();
@@ -991,6 +920,15 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
             }
             else
             {
+                if (isFirstResponse)
+                {
+                    elevationX1 = elevationRequestX1;
+                    elevationY1 = elevationRequestY1;
+                    elevationW = elevationRequestW;
+                    elevationH = elevationRequestH;
+                    elevationDataWidth = elevationDataResolution;
+                    elevationDataHeight = elevationDataResolution;
+                }
                 Debug.LogWarning(response);
             }
             elevationRequest = null;
@@ -1184,6 +1122,98 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
         UpdateControl();
     }
 
+    private void SetMarkersMesh(int usedMarkersCount, List<Texture> usedTextures, List<List<int>> usedTexturesMarkerIndex, int meshIndex)
+    {
+        Vector2[] markersUV = new Vector2[markersVertices.Count];
+        Vector3[] markersNormals = new Vector3[markersVertices.Count];
+
+        Vector2 uvp1 = new Vector2(1, 1);
+        Vector2 uvp2 = new Vector2(0, 1);
+        Vector2 uvp3 = new Vector2(0, 0);
+        Vector2 uvp4 = new Vector2(1, 0);
+
+        for (int i = 0; i < usedMarkersCount; i++)
+        {
+            int vi = i * 4;
+            markersNormals[vi] = Vector3.up;
+            markersNormals[vi + 1] = Vector3.up;
+            markersNormals[vi + 2] = Vector3.up;
+            markersNormals[vi + 3] = Vector3.up;
+
+            markersUV[vi] = uvp2;
+            markersUV[vi + 1] = uvp1;
+            markersUV[vi + 2] = uvp4;
+            markersUV[vi + 3] = uvp3;
+        }
+
+        Mesh markersMesh = markersMeshes.Count > meshIndex? markersMeshes[meshIndex]: null;
+        if (markersMesh == null) markersMesh = InitMarkersMesh(meshIndex);
+
+#if UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1
+        markersMesh.vertices = markersVertices.ToArray();
+#else
+        markersMesh.SetVertices(markersVertices);
+#endif
+
+        markersMesh.uv = markersUV;
+        markersMesh.normals = markersNormals;
+
+        Renderer markersRenderer = markersRenderers[meshIndex];
+
+        if (markersRenderer.materials.Length != usedTextures.Count) markersRenderer.materials = new Material[usedTextures.Count];
+
+        markersMesh.subMeshCount = usedTextures.Count;
+
+        for (int i = 0; i < usedTextures.Count; i++)
+        {
+            int markerCount = usedTexturesMarkerIndex[i].Count;
+            int[] markersTriangles = new int[markerCount * 6];
+
+            for (int j = 0; j < markerCount; j++)
+            {
+                int vi = usedTexturesMarkerIndex[i][j] * 4;
+                int vj = j * 6;
+
+                markersTriangles[vj + 0] = vi;
+                markersTriangles[vj + 1] = vi + 1;
+                markersTriangles[vj + 2] = vi + 2;
+                markersTriangles[vj + 3] = vi;
+                markersTriangles[vj + 4] = vi + 2;
+                markersTriangles[vj + 5] = vi + 3;
+            }
+
+            markersMesh.SetTriangles(markersTriangles, i);
+
+            Material material = markersRenderer.materials[i];
+            if (material == null)
+            {
+                if (markerMaterial != null) material = markersRenderer.materials[i] = new Material(markerMaterial);
+                else material = markersRenderer.materials[i] = new Material(markerShader);
+            }
+
+            if (material.mainTexture != usedTextures[i])
+            {
+                if (markerMaterial != null)
+                {
+                    material.shader = markerMaterial.shader;
+                    material.CopyPropertiesFromMaterial(markerMaterial);
+                }
+                else
+                {
+                    material.shader = markerShader;
+                    material.color = Color.white;
+                }
+                material.SetTexture("_MainTex", usedTextures[i]);
+            }
+        }
+    }
+
+    public void StartDownloadElevation(double sx, double sy, double ex, double ey)
+    {
+        elevationRequest = OnlineMapsBingMapsElevation.GetElevationByBounds(bingAPI, sx, sy, ex, ey, 32, 32);
+        elevationRequest.OnComplete += OnElevationRequestComplete;
+    }
+
     public override void UpdateControl()
     {
         base.UpdateControl();
@@ -1262,6 +1292,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
                 if (OnSmoothZoomInit != null) OnSmoothZoomInit();
 
                 smoothZoomPoint = center;
+                lockClick = true;
 
                 RaycastHit hit;
                 if (!cl.Raycast(activeCamera.ScreenPointToRay(center), out hit, OnlineMapsUtils.maxRaycastDistance)) return;
@@ -1272,7 +1303,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
                 }
                 else
                 {
-                    smoothZoomHitPoint = transform.position + transform.rotation * new Vector3(map.tilesetSize.x / -2, 0, map.tilesetSize.y / 2);
+                    smoothZoomHitPoint = transform.position + transform.rotation * new Vector3(map.tilesetSize.x / -2 * transform.lossyScale.x, 0, map.tilesetSize.y / 2 * transform.lossyScale.z);
                 }
 
                 originalPosition = transform.position;
@@ -1299,11 +1330,15 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
                     else scale = lastGestureDistance / distance;
                 }
 
-                transform.localScale *= scale;
+                transform.localScale = transform.localScale * scale;
+
                 if (transform.localScale.x < smoothZoomMinScale) transform.localScale = new Vector3(smoothZoomMinScale, smoothZoomMinScale, smoothZoomMinScale);
                 else if (transform.localScale.x > smoothZoomMaxScale) transform.localScale = new Vector3(smoothZoomMaxScale, smoothZoomMaxScale, smoothZoomMaxScale);
 
-                Vector3 p = transform.rotation * new Vector3(map.tilesetWidth * (transform.localScale.x - 1) * smoothZoomOffset.x, 0, map.tilesetHeight * (transform.localScale.z - 1) * smoothZoomOffset.z);
+                Vector3 s = transform.localScale - originalScale;
+                s.Scale(new Vector3(1f / originalScale.x, 1 / originalScale.y, 1 / originalScale.z));
+
+                Vector3 p = transform.rotation * new Vector3(map.tilesetWidth * smoothZoomOffset.x * s.x, 0, map.tilesetHeight * smoothZoomOffset.z * s.z);
                 transform.position = originalPosition - p;
 
                 OnGestureZoom(p1, p2);
@@ -1321,7 +1356,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
                 smoothZoomStarted = false;
 
                 float s = transform.localScale.x;
-                int offset = Mathf.RoundToInt(s > 1 ? s - 1 : -1 / s + 1);
+                int offset = Mathf.RoundToInt(s > originalScale.x ? s / originalScale.x - 1 : -1 / (s / originalScale.x) + 1);
 
                 lastGestureDistance = 0;
                 lastGestureCenter = Vector2.zero;
@@ -1561,6 +1596,12 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
                 if (fy < minY) minY = fy;
                 if (fy > maxY) maxY = fy;
 
+                if (fux < 0) fux = 0;
+                else if (fux > 1) fux = 1;
+
+                if (fuy < 0.005f) fuy = 0.005f;
+                else if (fuy > 1 - 0.005f) fuy = 1 - 0.005f;
+
                 vertices[i] = new Vector3(fx, fy, fz);
                 uv[i++] = new Vector2(fux, fuy);
             }
@@ -1659,7 +1700,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
 
     private void UpdateMarkersMesh()
     {
-        if (markersGameObject == null) InitMarkersMesh();
+        if (markersGameObjects == null) InitMarkersMesh(0);
 
         double tlx, tly, brx, bry;
         map.GetCorners(out tlx, out tly, out brx, out bry);
@@ -1680,10 +1721,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
         if (usedMarkers == null) usedMarkers = new List<TilesetFlatMarker>(32);
         else
         {
-            for (int i = 0; i < usedMarkers.Count; i++)
-            {
-                usedMarkers[i].Dispose();
-            }
+            for (int i = 0; i < usedMarkers.Count; i++) usedMarkers[i].Dispose();
             usedMarkers.Clear();
         }
 
@@ -1691,8 +1729,6 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
         List<List<int>> usedTexturesMarkerIndex = new List<List<int>>(32) { new List<int>(32) };
 
         int usedMarkersCount = 0;
-
-        Matrix4x4 matrix = new Matrix4x4();
 
         Bounds tilesetBounds = new Bounds(new Vector3(map.tilesetSize.x / -2, 0, map.tilesetSize.y / 2), new Vector3(map.tilesetSize.x, 0, map.tilesetSize.y));
 
@@ -1744,7 +1780,6 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
             if (useOffsetY)
             {
                 int countMarkers = markers.Count();
-                offsets = new float[countMarkers];
 
                 TilesetSortedMarker[] sortedMarkers = new TilesetSortedMarker[countMarkers];
                 foreach (OnlineMapsMarker marker in markers)
@@ -1756,14 +1791,29 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
                     };
                 }
 
-                markers = sortedMarkers.OrderBy(m => m.offset).Select(sm => sm.marker);
-                foreach (TilesetSortedMarker marker in sortedMarkers) marker.Dispose();
+                offsets = new float[countMarkers];
+                OnlineMapsMarker[] nMarkers = new OnlineMapsMarker[countMarkers];
+                int i = 0;
+                foreach (TilesetSortedMarker sm in sortedMarkers.OrderBy(m => m.offset))
+                {
+                    nMarkers[i] = sm.marker;
+                    offsets[i] = sm.offset;
+                    i++;
+                    sm.Dispose();
+                }
+                markers = nMarkers;
             }
         }
 
-        List<Vector3> markersVerticles = new List<Vector3>(64);
+        if (markersVertices == null) markersVertices = new List<Vector3>(64);
+        else markersVertices.Clear(); 
+
         Vector3 tpos = transform.position;
 
+        foreach (Mesh mesh in markersMeshes) mesh.Clear();
+
+        Matrix4x4 matrix = new Matrix4x4();
+        int meshIndex = 0;
         index = -1;
         foreach (OnlineMapsMarker marker in markers)
         {
@@ -1799,7 +1849,7 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
 
             float angle = Mathf.Repeat(marker.rotation, 1) * 360;
 
-            if (angle != 0)
+            if (Math.Abs(angle) > float.Epsilon)
             {
                 matrix.SetTRS(Vector3.zero, Quaternion.Euler(0, angle, 0), Vector3.one);
 
@@ -1828,10 +1878,10 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
 
             p1.y = p2.y = p3.y = p4.y = y + yOffset;
 
-            markersVerticles.Add(p1);
-            markersVerticles.Add(p2);
-            markersVerticles.Add(p3);
-            markersVerticles.Add(p4);
+            markersVertices.Add(p1);
+            markersVertices.Add(p2);
+            markersVertices.Add(p3);
+            markersVertices.Add(p4);
 
             usedMarkers.Add(new TilesetFlatMarker(marker, p1 + tpos, p2 + tpos, p3 + tpos, p4 + tpos));
 
@@ -1855,98 +1905,21 @@ public class OnlineMapsTileSetControl : OnlineMapsControlBase3D
             }
 
             usedMarkersCount++;
-        }
 
-        Vector2[] markersUV = new Vector2[markersVerticles.Count];
-        Vector3[] markersNormals = new Vector3[markersVerticles.Count];
-
-        Vector2 uvp1 = new Vector2(1, 1);
-        Vector2 uvp2 = new Vector2(0, 1);
-        Vector2 uvp3 = new Vector2(0, 0);
-        Vector2 uvp4 = new Vector2(1, 0);
-
-        for (int i = 0; i < usedMarkersCount; i++)
-        {
-            int vi = i * 4;
-            markersNormals[vi] = Vector3.up;
-            markersNormals[vi + 1] = Vector3.up;
-            markersNormals[vi + 2] = Vector3.up;
-            markersNormals[vi + 3] = Vector3.up;
-
-            markersUV[vi] = uvp2;
-            markersUV[vi + 1] = uvp1;
-            markersUV[vi + 2] = uvp4;
-            markersUV[vi + 3] = uvp3;
-        }
-
-        if (markersMesh == null)
-        {
-            for (int i = 0; i < transform.childCount; i++)
+            if (usedMarkersCount == 16250)
             {
-                Transform t = transform.GetChild(i);
-                if (t.name == "Markers")
-                {
-                    MeshFilter filter = t.GetComponent<MeshFilter>();
-
-                    if (filter != null) markersMesh = filter.sharedMesh;
-                    else InitMarkersMesh();
-
-                    break;
-                }
+                SetMarkersMesh(usedMarkersCount, usedTextures, usedTexturesMarkerIndex, meshIndex);
+                meshIndex++;
+                markersVertices.Clear();
+                usedMarkersCount = 0;
+                usedTextures.Clear();
+                usedTextures.Add(map.defaultMarkerTexture);
+                usedTexturesMarkerIndex.Clear();
+                usedTexturesMarkerIndex.Add(new List<int>(32));
             }
         }
 
-        markersMesh.Clear();
-        markersMesh.vertices = markersVerticles.ToArray();
-        markersMesh.uv = markersUV;
-        markersMesh.normals = markersNormals;
-
-        if (markersRenderer.materials.Length != usedTextures.Count) markersRenderer.materials = new Material[usedTextures.Count];
-
-        markersMesh.subMeshCount = usedTextures.Count;
-
-        for (int i = 0; i < usedTextures.Count; i++)
-        {
-            int markerCount = usedTexturesMarkerIndex[i].Count;
-            int[] markersTriangles = new int[markerCount * 6];
-
-            for (int j = 0; j < markerCount; j++)
-            {
-                int vi = usedTexturesMarkerIndex[i][j] * 4;
-                int vj = j * 6;
-
-                markersTriangles[vj + 0] = vi;
-                markersTriangles[vj + 1] = vi + 1;
-                markersTriangles[vj + 2] = vi + 2;
-                markersTriangles[vj + 3] = vi;
-                markersTriangles[vj + 4] = vi + 2;
-                markersTriangles[vj + 5] = vi + 3;
-            }
-
-            markersMesh.SetTriangles(markersTriangles, i);
-
-            Material material = markersRenderer.materials[i];
-            if (material == null)
-            {
-                if (markerMaterial != null) material = markersRenderer.materials[i] = new Material(markerMaterial);
-                else material = markersRenderer.materials[i] = new Material(markerShader);
-            }
-
-            if (material.mainTexture != usedTextures[i])
-            {
-                if (markerMaterial != null)
-                {
-                    material.shader = markerMaterial.shader;
-                    material.CopyPropertiesFromMaterial(markerMaterial);
-                }
-                else
-                {
-                    material.shader = markerShader;
-                    material.color = Color.white;
-                }
-                material.SetTexture("_MainTex", usedTextures[i]);
-            }
-        }
+        SetMarkersMesh(usedMarkersCount, usedTextures, usedTexturesMarkerIndex, meshIndex);
     }
 
     private void UpdateSimpleMeshCollider(float yScale, double tlx, double tly, double brx, double bry)

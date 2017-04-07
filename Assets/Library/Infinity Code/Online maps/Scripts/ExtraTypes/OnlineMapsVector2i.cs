@@ -29,7 +29,7 @@ public class OnlineMapsVector2i
     {
         get
         {
-            return new OnlineMapsVector2i(0, 0);
+            return new OnlineMapsVector2i();
         }
     }
 

@@ -87,7 +87,7 @@ public class OnlineMapsGooglePlaces: OnlineMapsGoogleAPIQuery
 
         if (minprice != -1) p.minprice = minprice;
         if (maxprice != -1) p.maxprice = maxprice;
-        if (opennow) p.opennow = opennow;
+        if (opennow) p.opennow = true;
         if (rankBy != OnlineMapsFindPlacesRankBy.prominence) p.rankBy = rankBy;
 
         return new OnlineMapsGooglePlaces(key, p);
@@ -163,7 +163,7 @@ public class OnlineMapsGooglePlaces: OnlineMapsGoogleAPIQuery
         if (radius != -1) p.radius = radius;
         if (minprice != -1) p.minprice = minprice;
         if (maxprice != -1) p.maxprice = maxprice;
-        if (opennow) p.opennow = opennow;
+        if (opennow) p.opennow = true;
 
         return new OnlineMapsGooglePlaces(key, p);
     }
@@ -239,7 +239,7 @@ public class OnlineMapsGooglePlaces: OnlineMapsGoogleAPIQuery
 
         if (minprice != -1) p.minprice = minprice;
         if (maxprice != -1) p.maxprice = maxprice;
-        if (opennow) p.opennow = opennow;
+        if (opennow) p.opennow = true;
 
         return new OnlineMapsGooglePlaces(key, p);
     }

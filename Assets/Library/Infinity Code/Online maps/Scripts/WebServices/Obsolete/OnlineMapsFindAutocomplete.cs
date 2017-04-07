@@ -3,6 +3,9 @@
 
 using System;
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGooglePlacesAutocomplete.
+/// </summary>
 [Obsolete("OnlineMapsFindAutocomplete is obsolete. Use OnlineMapsGooglePlacesAutocomplete.")]
 public class OnlineMapsFindAutocomplete: OnlineMapsGooglePlacesAutocomplete
 {
@@ -13,6 +16,9 @@ public class OnlineMapsFindAutocomplete: OnlineMapsGooglePlacesAutocomplete
     }
 }
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGooglePlacesAutocompleteResult.
+/// </summary>
 [Obsolete("OnlineMapsFindAutocompleteResult is obsolete. Use OnlineMapsGooglePlacesAutocompleteResult.")]
 public class OnlineMapsFindAutocompleteResult : OnlineMapsGooglePlacesAutocompleteResult
 {
@@ -26,6 +32,9 @@ public class OnlineMapsFindAutocompleteResult : OnlineMapsGooglePlacesAutocomple
     }
 }
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGooglePlacesAutocompleteResult.Term.
+/// </summary>
 [Obsolete("OnlineMapsFindAutocompleteResultTerm is obsolete. Use OnlineMapsGooglePlacesAutocompleteResult.Term.")]
 public class OnlineMapsFindAutocompleteResultTerm : OnlineMapsGooglePlacesAutocompleteResult.Term
 {
@@ -39,6 +48,9 @@ public class OnlineMapsFindAutocompleteResultTerm : OnlineMapsGooglePlacesAutoco
     }
 }
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGooglePlacesAutocompleteResult.MatchedSubstring.
+/// </summary>
 [Obsolete("OnlineMapsFindAutocompleteResultMatchedSubstring is obsolete. Use OnlineMapsGooglePlacesAutocompleteResult.MatchedSubstring.")]
 public class OnlineMapsFindAutocompleteResultMatchedSubstring : OnlineMapsGooglePlacesAutocompleteResult.MatchedSubstring
 {

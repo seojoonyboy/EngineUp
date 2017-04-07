@@ -1,7 +1,7 @@
 ﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
-#if !UNITY_WEBPLAYER && (!UNITY_WEBGL || UNITY_EDITOR)
+#if !UNITY_WEBPLAYER && ((!UNITY_WP_8_1 && !UNITY_WEBGL) || UNITY_EDITOR)
 #define ALLOW_FILECACHE
 #endif
 
@@ -351,6 +351,7 @@ public class OnlineMapsCache:MonoBehaviour
         {
             tile.ApplyTexture(texture);
             map.buffer.ApplyTile(tile);
+            OnlineMapsUtils.DestroyImmediate(texture);
         }
         else
         {
@@ -748,13 +749,12 @@ public class OnlineMapsCache:MonoBehaviour
             byte c1 = reader.ReadByte();
             byte c2 = reader.ReadByte();
 
-            int cacheVersion = 0;
-
             if (c1 == 'T' && c2 == 'C')
             {
-                cacheVersion = reader.ReadInt16();
+                int cacheVersion = reader.ReadInt16();
                 if (cacheVersion > 0)
                 {
+                    // For future versions
                 }
             }
             else stream.Position = 0;

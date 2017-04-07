@@ -2,7 +2,6 @@
 /*   http://www.infinity-code.com   */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
@@ -31,7 +30,11 @@ public class OnlineMapsJSONValue : OnlineMapsJSONItem
         get { return _value; }
         set
         {
+#if !UNITY_WP_8_1 || UNITY_EDITOR
             if (value == null || value is DBNull)
+#else
+            if (value == null)
+#endif
             {
                 _type = ValueType.NULL;
                 _value = value;
@@ -133,14 +136,7 @@ public class OnlineMapsJSONValue : OnlineMapsJSONItem
     {
         if (_type == ValueType.NULL || _value == null)
         {
-#if !NETFX_CORE
-            if (t.IsValueType)
-#else
-            if (t.GetTypeInfo().IsValueType)
-#endif
-            {
-                return Activator.CreateInstance(t);
-            }
+            if (OnlineMapsReflectionHelper.IsValueType(t)) return Activator.CreateInstance(t);
             return null;
         }
 
@@ -164,19 +160,9 @@ public class OnlineMapsJSONValue : OnlineMapsJSONItem
         }
         else if (_type == ValueType.STRING)
         {
-            try
-            {
-#if !NETFX_CORE
-                MethodInfo method = t.GetMethod("Parse", new[] { typeof(string) });
-#else
-                MethodInfo method = t.GetTypeInfo().GetDeclaredMethod("Parse");
-#endif
-                return method.Invoke(null, new[] { _value });
-            }
-            catch
-            {
-                throw;
-            }
+            MethodInfo method = OnlineMapsReflectionHelper.GetMethod(t, "Parse", new[] { typeof(string) });
+            if (method != null) return method.Invoke(null, new[] {_value});
+            return null;
         }
         StringBuilder builder = new StringBuilder();
         ToJSON(builder);

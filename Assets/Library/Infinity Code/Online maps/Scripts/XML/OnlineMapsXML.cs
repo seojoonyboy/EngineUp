@@ -29,9 +29,9 @@ public class OnlineMapsXML : IEnumerable
     public string name
     {
 #if !NETFX_CORE
-        get { return (_element != null) ? _element.Name : null; }
+        get { return _element != null ? _element.Name : null; }
 #else
-        get { return (_element != null) ? _element.TagName: null; }
+        get { return _element != null ? _element.TagName: null; }
 #endif
     }
 
@@ -74,11 +74,7 @@ public class OnlineMapsXML : IEnumerable
     {
         get
         {
-#if !NETFX_CORE
-            return _element != null && _element.HasAttributes;
-#else
             return _element != null && _element.Attributes.Count > 0;
-#endif
         }
     }
 
@@ -105,9 +101,9 @@ public class OnlineMapsXML : IEnumerable
         get
         {
 #if !NETFX_CORE
-            return (_element != null) ? _element.OuterXml : null;
+            return _element != null ? _element.OuterXml : null;
 #else
-            return (_element != null)? _element.GetXml(): null;
+            return _element != null? _element.GetXml(): null;
 #endif
         }
     }
@@ -218,11 +214,7 @@ public class OnlineMapsXML : IEnumerable
         if (type == typeof(string)) return (T)Convert.ChangeType(value, type);
 
         T obj = default(T);
-#if !NETFX_CORE
-        PropertyInfo[] properties = type.GetProperties();
-#else
-        PropertyInfo[] properties = type.GetTypeInfo().DeclaredProperties.ToArray();
-#endif
+        PropertyInfo[] properties = OnlineMapsReflectionHelper.GetProperties(type);
         Type underlyingType = type;
 
 #if !UNITY_WSA
@@ -231,19 +223,8 @@ public class OnlineMapsXML : IEnumerable
         if (properties.Length == 2 && string.Equals(properties[0].Name, "HasValue", StringComparison.OrdinalIgnoreCase)) underlyingType = properties[1].PropertyType;
 #endif
 
-        try
-        {
-#if !NETFX_CORE
-            MethodInfo method = underlyingType.GetMethod("Parse", new[] { typeof(string) });
-#else
-            MethodInfo method = underlyingType.GetTypeInfo().GetDeclaredMethod("Parse");
-#endif
-            obj = (T)method.Invoke(null, new[] { value });
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        MethodInfo method = OnlineMapsReflectionHelper.GetMethod(underlyingType, "Parse", new[] {typeof (string)});
+        if (method != null) obj = (T)method.Invoke(null, new[] { value });
 
         return obj;
     }
@@ -450,7 +431,7 @@ public class OnlineMapsXML : IEnumerable
     /// <returns>Child element.</returns>
     public OnlineMapsXML Create(string nodeName, Object value)
     {
-        return Create(nodeName, (value != null) ? value.GetInstanceID() : 0);
+        return Create(nodeName, value != null ? value.GetInstanceID() : 0);
     }
 
     /// <summary>
@@ -633,11 +614,7 @@ public class OnlineMapsXML : IEnumerable
 #endif
 
         T obj = default(T);
-#if !NETFX_CORE
-        PropertyInfo[] properties = type.GetProperties();
-#else
-        PropertyInfo[] properties = type.GetTypeInfo().DeclaredProperties.ToArray();
-#endif
+        PropertyInfo[] properties = OnlineMapsReflectionHelper.GetProperties(type);
         Type underlyingType = type;
 
 #if !UNITY_WSA
@@ -648,22 +625,8 @@ public class OnlineMapsXML : IEnumerable
 
         try
         {
-#if !NETFX_CORE
-            MethodInfo method = underlyingType.GetMethod("Parse", new[] { typeof(string) });
-#else
-            MethodInfo method = null;
-            var methods = underlyingType.GetTypeInfo().GetDeclaredMethods("Parse");
-            foreach(var m in methods)
-            {
-                var parms = m.GetParameters();
-                if (parms != null && parms.Length == 1 && parms[0].ParameterType == typeof(string))
-                {
-                    method = m;
-                    break;
-                }
-            }
-#endif
-            obj = (T)method.Invoke(null, new[] { value });
+            MethodInfo method = OnlineMapsReflectionHelper.GetMethod(underlyingType, "Parse", new[] {typeof (string)});
+            if (method != null) obj = (T)method.Invoke(null, new[] { value });
         }
         catch (Exception exception)
         {
@@ -708,11 +671,7 @@ public class OnlineMapsXML : IEnumerable
 #endif
 
         T obj = defaultValue;
-#if !NETFX_CORE
-        PropertyInfo[] properties = type.GetProperties();
-#else
-        PropertyInfo[] properties = type.GetTypeInfo().DeclaredProperties.ToArray();
-#endif
+        PropertyInfo[] properties = OnlineMapsReflectionHelper.GetProperties(type);
         Type underlyingType = type;
 
 #if !UNITY_WSA
@@ -723,22 +682,8 @@ public class OnlineMapsXML : IEnumerable
 
         try
         {
-#if !NETFX_CORE
-            MethodInfo method = underlyingType.GetMethod("Parse", new[] { typeof(string) });
-#else
-            MethodInfo method = null;
-            var methods = underlyingType.GetTypeInfo().GetDeclaredMethods("Parse");
-            foreach(var m in methods)
-            {
-                var parms = m.GetParameters();
-                if (parms != null && parms.Length == 1 && parms[0].ParameterType == typeof(string))
-                {
-                    method = m;
-                    break;
-                }
-            }
-#endif
-            obj = (T)method.Invoke(null, new[] { value });
+            MethodInfo method = OnlineMapsReflectionHelper.GetMethod(underlyingType, "Parse", new[] {typeof (string)});
+            if (method != null) obj = (T)method.Invoke(null, new[] { value });
         }
         catch (Exception exception)
         {

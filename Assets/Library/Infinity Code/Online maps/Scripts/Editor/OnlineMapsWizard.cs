@@ -324,6 +324,8 @@ public class OnlineMapsWizard : EditorWindow
             textureImporter.isReadable = true;
 #if UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4
             textureImporter.textureFormat = TextureImporterFormat.RGB24;
+#else
+            textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
 #endif
             textureImporter.maxTextureSize = Mathf.Max(textureWidth, textureHeight);
 
@@ -468,7 +470,7 @@ public class OnlineMapsWizard : EditorWindow
 
     }
 
-    private void DrawProvider(ref bool allowCreate)
+    private void DrawProvider()
     {
         EditorGUI.BeginChangeCheck();
         providerIndex = EditorGUILayout.Popup("Provider", providerIndex, providersTitle);
@@ -500,16 +502,13 @@ public class OnlineMapsWizard : EditorWindow
         {
             webplayerProxyURL = EditorGUILayout.TextField("Proxy (for Webplayer): ", webplayerProxyURL);
 
-            DrawProvider(ref allowCreate);
+            DrawProvider();
 
-            GUIContent[] aviableTypes = activeMapType.provider.types.Select(t => new GUIContent(t.title)).ToArray();
-            if (aviableTypes != null)
-            {
-                int index = activeMapType.index;
-                EditorGUI.BeginChangeCheck();
-                index = EditorGUILayout.Popup(new GUIContent("Type: ", "Type of map texture"), index, aviableTypes);
-                if (EditorGUI.EndChangeCheck()) activeMapType = activeMapType.provider.types[index];
-            }
+            GUIContent[] availableTypes = activeMapType.provider.types.Select(t => new GUIContent(t.title)).ToArray();
+            int index = activeMapType.index;
+            EditorGUI.BeginChangeCheck();
+            index = EditorGUILayout.Popup(new GUIContent("Type: ", "Type of map texture"), index, availableTypes);
+            if (EditorGUI.EndChangeCheck()) activeMapType = activeMapType.provider.types[index];
 
             DrawLabels();
         }
@@ -542,7 +541,7 @@ public class OnlineMapsWizard : EditorWindow
 
         float needFixCameraDistance = CheckCameraDistance(activeCamera);
 
-        if (needFixCameraDistance != -1)
+        if (Math.Abs(needFixCameraDistance + 1) > float.Epsilon)
         {
             EditorGUILayout.HelpBox(
                 "Potential problem detected:\n\"Camera - Clipping Planes - Far\" is too small.",

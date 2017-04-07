@@ -143,6 +143,8 @@ MonoBehaviour:
   markers3D: []
   marker3DScale: 1
   maxCameraRotationX: 80
+  originalPosition: {x: 0, y: 0, z: 0}
+  originalScale: {x: 0, y: 0, z: 0}
   bingAPI: 
   checkMarker2DVisibility: 0
   colliderType: 2
@@ -157,8 +159,6 @@ MonoBehaviour:
   elevationScale: 1
   elevationBottomMode: 1
   elevationResolution: 32
-  elevationMinValue: 0
-  elevationMaxValue: 0
   lockYScale: 0
   markerMaterial: {fileID: 0}
   markerShader: {fileID: 30, guid: 0000000000000000f000000000000000, type: 0}
@@ -166,8 +166,6 @@ MonoBehaviour:
   smoothZoomMinScale: -3.4028235e+38
   smoothZoomMaxScale: 3.4028235e+38
   smoothZoomStarted: 0
-  originalPosition: {x: 0, y: 0, z: 0}
-  originalScale: {x: 0, y: 0, z: 0}
   tileMaterial: {fileID: 0}
   tilesetShader: {fileID: 4800000, guid: f65580aa9bbbd7e42b05adab01e1ca2d, type: 3}
   useElevation: 0
@@ -185,26 +183,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowRedraw: 1
   control: {fileID: 0}
-  customProviderURL: http://localhost/{zoom}/{y}/{x}
-  customTrafficProviderURL: http://localhost/{zoom}/{y}/{x}
+  customProviderURL: 687474703a2f2f6c6f63616c686f73742f7b7a6f6f6d7d2f7b797d2f7b787d
+  customTrafficProviderURL: 687474703a2f2f6c6f63616c686f73742f7b7a6f6f6d7d2f7b797d2f7b787d
   defaultMarkerAlign: 7
   defaultMarkerTexture: {fileID: 2800000, guid: ea7eb0aa8eaab054a91d4219f9719f63,
     type: 3}
   defaultTileTexture: {fileID: 0}
   dispatchEvents: 1
-  emptyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  emptyColor:
+    r: 0.5
+    g: 0.5
+    b: 0.5
+    a: 1
   height: 0
   labels: 1
-  language: en
+  language: 656e
   lockRedraw: 0
   markers: []
   needRedraw: 1
   notInteractUnderGUI: 1
   provider: 2
-  mapType: nokia.satellite
+  mapType: 6e6f6b69612e736174656c6c697465
   redrawOnPlay: 0
-  renderInThread: 1
-  resourcesPath: OnlineMapsTiles/{zoom}/{x}/{y}
+  renderInThread: 0
+  resourcesPath: 4f6e6c696e654d61707354696c65732f7b7a6f6f6d7d2f7b787d2f7b797d
   showMarkerTooltip: 0
   smartTexture: {fileID: 0}
   source: 0
@@ -229,19 +231,19 @@ MonoBehaviour:
   tooltipBackgroundTexture: {fileID: 2800000, guid: a8d1734e646100c4e83635fecf978e15,
     type: 3}
   traffic: 0
-  trafficProviderID: googlemaps
+  trafficProviderID: 676f6f676c656d617073
   type: 0
   useCurrentZoomTiles: 0
   useSoftwareJPEGDecoder: 0
   useSmartTexture: 1
   useWebplayerProxy: 1
-  webplayerProxyURL: http://service.infinity-code.com/redirect.php?
+  webplayerProxyURL: 687474703a2f2f736572766963652e696e66696e6974792d636f64652e636f6d2f72656469726563742e7068703f
   width: 0
   latitude: 0
   longitude: 0
   _position: {x: 0, y: 0}
   _zoom: 3
-  _activeTypeSettings: 09Anonymous225106App ID11008App Code110
+  _activeTypeSettings: 3039416e6f6e796d6f7573323235313036417070204944313130303841707020436f6465313130
 --- !u!4 &193630191
 Transform:
   m_ObjectHideFlags: 0
@@ -283,7 +285,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fileCacheLocation: 0
   fileCacheCustomPath: 
-  fileCacheTilePath: TileCache/{pid}/{mid}/{lbs}/{lng}/{zoom}/{x}/{y}
+  fileCacheTilePath: 54696c6543616368652f7b7069647d2f7b6d69647d2f7b6c62737d2f7b6c6e677d2f7b7a6f6f6d7d2f7b787d2f7b797d
   fileCacheUnloadRate: 0.3
   maxFileCacheSize: 100
   maxMemoryCacheSize: 10

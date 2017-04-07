@@ -37,8 +37,7 @@ namespace InfinityCode.OnlineMapsExamples
                 if (item == null) continue;
 
                 // Update marker labels.
-                if (item.zoomRange.InRange(map.zoom)) marker.label = item.label;
-                else marker.label = "";
+                marker.label = item.zoomRange.InRange(map.zoom) ? item.label : "";
             }
         }
 

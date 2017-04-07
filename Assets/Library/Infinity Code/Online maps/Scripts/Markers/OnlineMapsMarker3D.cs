@@ -14,11 +14,6 @@ using Object = UnityEngine.Object;
 public class OnlineMapsMarker3D : OnlineMapsMarkerBase
 {
     /// <summary>
-    /// Event that occurs when the marker position changed.
-    /// </summary>
-    public Action<OnlineMapsMarker3D> OnPositionChanged;
-
-    /// <summary>
     /// Specifies whether to use a marker event for 3D markers. \n
     /// Otherwise you will have to create their own events using MonoBehaviour.
     /// </summary>
@@ -30,7 +25,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
     public float? altitude;
 
     /// <summary>
-    /// Do I need to check the map boundaries? \n
+    /// Need to check the map boundaries? \n
     /// It allows you to make 3D markers, which are active outside the map.
     /// </summary>
     public bool checkMapBoundaries = true;
@@ -139,7 +134,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
     {
         get
         {
-            return (instance != null)? instance.transform: null;
+            return instance != null? instance.transform: null;
         }
     }
 
@@ -189,11 +184,12 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
             instance = GameObject.CreatePrimitive(PrimitiveType.Cube);
             instance.transform.localScale = Vector3.one;
         }
-        else instance = (GameObject)Object.Instantiate(prefab);
+        else instance = Object.Instantiate(prefab) as GameObject;
 
         _prefab = prefab;
         
         instance.transform.parent = parent;
+        instance.layer = parent.gameObject.layer;
         instance.AddComponent<OnlineMapsMarker3DInstance>().marker = this;
         visible = false;
         inited = true;
@@ -281,6 +277,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
     {
         if (!enabled) return;
         if (instance == null) Init(map.transform);  
+        if (control == null) control = OnlineMapsControlBase3D.instance;
 
         if (!range.InRange(zoom)) visible = false;
         else if (checkMapBoundaries)
@@ -305,7 +302,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
 
         int maxX = 1 << zoom;
 
-        Bounds bounds = map.GetComponent<Collider>().bounds;
+        Bounds bounds = control.cl.bounds;
 
         double sx = tbrx - ttlx;
         double mpx = mx - ttlx;
@@ -338,8 +335,8 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         {
             Vector3 center = bounds.center;
             Vector3 size = bounds.size;
-            px = center.x - (px - 0.5) * size.x - map.transform.position.x;
-            pz = center.z + (pz - 0.5) * size.z - map.transform.position.z;
+            px = center.x - (px - 0.5) * size.x / map.transform.lossyScale.x - map.transform.position.x;
+            pz = center.z + (pz - 0.5) * size.z / map.transform.lossyScale.z - map.transform.position.z;
         }
 
         Vector3 oldPosition = instance.transform.localPosition;
@@ -364,7 +361,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         if (oldPosition != newPosition)
         {
             instance.transform.localPosition = newPosition;
-            if (OnPositionChanged != null) OnPositionChanged(this);
+            //if (OnPositionChanged != null) OnPositionChanged(this);
         }
     }
 
@@ -377,6 +374,12 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         else if (checkMapBoundaries)
         {
             if (latitude > tly || latitude < bry) visible = false;
+            /*else if (Math.Abs(brx - tlx) < 1)
+            {
+                brx += 360;
+                tbrx += 1 << zoom;
+                visible = true;
+            }*/
             else if (tlx < brx && (longitude < tlx || longitude > brx)) visible = false;
             else if (tlx > brx && longitude < tlx && longitude > brx) visible = false;
             else visible = true;
@@ -395,9 +398,12 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         double sx = tbrx - ttlx;
         double mpx = mx - ttlx;
         if (sx < 0) sx += maxX;
+        //else if (sx > maxX) sx -= maxX;
+
         if (checkMapBoundaries)
         {
             if (mpx < 0) mpx += maxX;
+            else if (mpx > maxX) mpx -= maxX;
         }
         else
         {
@@ -423,8 +429,8 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         {
             Vector3 center = bounds.center;
             Vector3 size = bounds.size;
-            px = center.x - (px - 0.5) * size.x - map.transform.position.x;
-            pz = center.z + (pz - 0.5) * size.z - map.transform.position.z;
+            px = center.x - (px - 0.5) * size.x / map.transform.lossyScale.x - map.transform.position.x;
+            pz = center.z + (pz - 0.5) * size.z / map.transform.lossyScale.z - map.transform.position.z;
         }
 
         Vector3 oldPosition = instance.transform.localPosition;
@@ -449,7 +455,7 @@ public class OnlineMapsMarker3D : OnlineMapsMarkerBase
         if (oldPosition != newPosition)
         {
             instance.transform.localPosition = newPosition;
-            if (OnPositionChanged != null) OnPositionChanged(this);
+            //if (OnPositionChanged != null) OnPositionChanged(this);
         }
     }
 }

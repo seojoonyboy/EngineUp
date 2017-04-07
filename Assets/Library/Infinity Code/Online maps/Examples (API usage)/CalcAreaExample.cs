@@ -1,6 +1,7 @@
 ﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -21,7 +22,7 @@ namespace InfinityCode.OnlineMapsExamples
         /// <summary>
         /// Line width.
         /// </summary>
-        public float borderWeight = 1;
+        public float borderWidth = 1;
 
         private OnlineMaps map;
         private bool changed = false;
@@ -29,7 +30,7 @@ namespace InfinityCode.OnlineMapsExamples
         private List<Vector2> markerPositions = new List<Vector2>();
         private OnlineMapsDrawingPoly polygon;
 
-        private float _borderWeight;
+        private float _borderWidth;
 
         private void CheckMarkerPositions()
         {
@@ -70,17 +71,17 @@ namespace InfinityCode.OnlineMapsExamples
             // Get a reference to an instance of the map.
             map = OnlineMaps.instance;
 
-            _borderWeight = borderWeight;
+            _borderWidth = borderWidth;
         }
 
         private void Update()
         {
-            if (_borderWeight != borderWeight)
+            if (Math.Abs(_borderWidth - borderWidth) > float.Epsilon)
             {
-                _borderWeight = borderWeight;
+                _borderWidth = borderWidth;
                 if (polygon != null)
                 {
-                    polygon.borderWeight = borderWeight;
+                    polygon.borderWidth = borderWidth;
                     map.Redraw();
                 }
             }
@@ -104,7 +105,7 @@ namespace InfinityCode.OnlineMapsExamples
             {
                 // For points, reference to markerPositions. 
                 // If you change the values ​​in markerPositions, value in the polygon will be adjusted automatically.
-                polygon = new OnlineMapsDrawingPoly(markerPositions, Color.black, borderWeight, new Color(1, 1, 1, 0.3f));
+                polygon = new OnlineMapsDrawingPoly(markerPositions, Color.black, borderWidth, new Color(1, 1, 1, 0.3f));
 
                 // Add an element to the map.
                 map.AddDrawingElement(polygon);

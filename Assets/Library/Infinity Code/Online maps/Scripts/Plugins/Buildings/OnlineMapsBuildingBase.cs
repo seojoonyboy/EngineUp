@@ -104,6 +104,7 @@ public abstract class OnlineMapsBuildingBase:MonoBehaviour
         buildingGameObject.SetActive(false);
 
         buildingGameObject.transform.parent = OnlineMapsBuildings.buildingContainer.transform;
+        buildingGameObject.layer = OnlineMapsBuildings.buildingContainer.layer;
         return buildingGameObject;
     }
 
@@ -175,10 +176,10 @@ public abstract class OnlineMapsBuildingBase:MonoBehaviour
         double sx, sy;
         api.projection.CoordinatesToTile(tlx, tly, api.buffer.apiZoom, out sx, out sy);
 
-        List<Vector3> localPoints = new List<Vector3>(nodes.Count);
+        List<Vector3> localPoints = new List<Vector3>(Mathf.Min(nodes.Count, 8));
 
-        float sw = OnlineMapsUtils.tileSize * api.tilesetSize.x / api.tilesetWidth;
-        float sh = OnlineMapsUtils.tileSize * api.tilesetSize.y / api.tilesetHeight;
+        float sw = OnlineMapsUtils.tileSize * api.tilesetSize.x / api.tilesetWidth * api.transform.lossyScale.x;
+        float sh = OnlineMapsUtils.tileSize * api.tilesetSize.y / api.tilesetHeight * api.transform.lossyScale.z;
 
         for (int i = 0; i < nodes.Count; i++)
         {

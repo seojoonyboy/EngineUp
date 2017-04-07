@@ -2,7 +2,6 @@
 /*   http://www.infinity-code.com   */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -50,11 +49,6 @@ public class OnlineMapsBuffer
     public int height;
 
     /// <summary>
-    /// List of tiles that are already loaded, but not yet applied to the buffer.
-    /// </summary>
-    public List<OnlineMapsTile> newTiles;
-
-    /// <summary>
     /// Type redraw the map.
     /// </summary>
     public OnlineMapsRedrawType redrawType;
@@ -70,6 +64,11 @@ public class OnlineMapsBuffer
     /// Width of the map.
     /// </summary>
     public int width;
+
+    /// <summary>
+    /// List of tiles that are already loaded, but not yet applied to the buffer.
+    /// </summary>
+    private List<OnlineMapsTile> newTiles;
 
     private Color32[] backBuffer;
     private int bufferZoom;
@@ -134,11 +133,7 @@ public class OnlineMapsBuffer
                 int counter = 20;
                 while (tile.colors.Length < OnlineMapsUtils.sqrTileSize && counter > 0)
                 {
-#if !NETFX_CORE
-                    Thread.Sleep(1);
-#else
-                    OnlineMapsThreadWINRT.Sleep(1);
-#endif
+                    OnlineMapsUtils.ThreadSleep(1);
                     counter--;
                 }
 #endif
@@ -236,11 +231,7 @@ public class OnlineMapsBuffer
                 while (status != OnlineMapsBufferStatus.start && api.renderInThread)
                 {
                     if (disposed) return;
-#if NETFX_CORE
-                    OnlineMapsThreadWINRT.Sleep(1);
-#else
-                    Thread.Sleep(1);
-#endif
+                    OnlineMapsUtils.ThreadSleep(1);
                 }
 #endif
 
@@ -430,43 +421,6 @@ public class OnlineMapsBuffer
             int sx = tile.x % 2 * hs;
             int sy = tile.y % 2 * hs;
             if (SetBufferTileFromParent(tile, px, py, s / 2, sx, sy)) return new Rect(px, py, OnlineMapsUtils.tileSize, OnlineMapsUtils.tileSize);
-            /*else
-            {
-                int maxSize = width * height;
-
-                for (int y = py + s - 1; y >= py; y--)
-                {
-                    int bp = y * width + px;
-                    if (bp + s < 0 || bp >= maxSize) continue;
-                    int l = s;
-                    if (bp < 0)
-                    {
-                        l -= bp;
-                        bp = 0;
-                    }
-                    else if (bp + s > maxSize)
-                    {
-                        l -= maxSize - (bp + s);
-                        bp = maxSize - s - 1;
-                    }
-
-                    try
-                    {
-                        //Array.Copy(colors, i, backBuffer, bp, l);
-                        for (int x = 0; x < l; x++)
-                        {
-                            backBuffer[bp + x] = api.emptyColor;
-                        }
-                    }
-                    catch
-                    {
-                    }
-
-                    i += s;
-                }
-
-                return new Rect(px, py, OnlineMapsUtils.tileSize, OnlineMapsUtils.tileSize);
-            }*/
         }
 
         Color32[] colors = tile.colors;
@@ -559,7 +513,7 @@ public class OnlineMapsBuffer
 
     private void SetColorToBuffer(Color clr, OnlineMapsVector2i ip, int y, int x)
     {
-        if (clr.a == 0) return;
+        if (Math.Abs(clr.a) < float.Epsilon) return;
         int bufferIndex = (ip.y + y) * width + ip.x + x;
         if (clr.a < 1)
         {
@@ -588,11 +542,7 @@ public class OnlineMapsBuffer
         int maxCount = 20;
         while (marker.locked && maxCount > 0)
         {
-#if !NETFX_CORE
-            Thread.Sleep(1);
-#else
-            OnlineMapsThreadWINRT.Sleep(1);
-#endif
+            OnlineMapsUtils.ThreadSleep(1);
             maxCount--;
         }
 #endif
@@ -662,11 +612,7 @@ public class OnlineMapsBuffer
         if (ex < sx) ex += 360;
 
         IEnumerable<OnlineMapsMarker> usedMarkers = markers.Where(m => m.enabled && m.range.InRange(bufferZoom));
-        if (OnSortMarker != null) usedMarkers = OnSortMarker(usedMarkers);
-        else
-        {
-            usedMarkers = usedMarkers.OrderByDescending(m => m, new MarkerComparer());
-        }
+        usedMarkers = OnSortMarker != null ? OnSortMarker(usedMarkers) : usedMarkers.OrderByDescending(m => m, new MarkerComparer());
 
         foreach (OnlineMapsMarker marker in usedMarkers)
         {
@@ -684,11 +630,7 @@ public class OnlineMapsBuffer
 
         while (api.renderInThread && !allowUnloadTiles && count > 0)
         {
-#if !NETFX_CORE
-            Thread.Sleep(1);
-#else
-            OnlineMapsThreadWINRT.Sleep(1);
-#endif
+            OnlineMapsUtils.ThreadSleep(1);
             count--;
         }
 
@@ -815,7 +757,7 @@ public class OnlineMapsBuffer
             m2.GetPosition(out m2x, out m2y);
 
             if (m1y > m2y) return 1;
-            if (m1y == m2y)
+            if (Math.Abs(m1y - m2y) < double.Epsilon)
             {
                 if (m1x < m2x) return 1;
                 return 0;

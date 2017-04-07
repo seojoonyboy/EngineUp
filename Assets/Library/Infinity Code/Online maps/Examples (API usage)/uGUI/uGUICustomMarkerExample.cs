@@ -6,17 +6,32 @@ using UnityEngine.UI;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of a marker instance for uGUICustomMarkerEngineExample.
+    /// </summary>
     [AddComponentMenu("")]
     public class uGUICustomMarkerExample:MonoBehaviour
     {
+        /// <summary>
+        /// Longitude
+        /// </summary>
         public double lng;
+
+        /// <summary>
+        /// Latitude
+        /// </summary>
         public double lat;
 
+        /// <summary>
+        /// Reference to the TextField
+        /// </summary>
         public Text textField;
-        public float height;
 
         private string _text;
 
+        /// <summary>
+        /// Gets / sets the marker text
+        /// </summary>
         public string text
         {
             get { return _text; }
@@ -27,6 +42,9 @@ namespace InfinityCode.OnlineMapsExamples
             }
         }
 
+        /// <summary>
+        /// Disposes the marker
+        /// </summary>
         public void Dispose()
         {
             textField = null;

@@ -126,7 +126,7 @@ namespace InfinityCode.OnlineMapsExamples
                 else
                 {
                     // Orient marker
-                    if (orientMarkerOnNextPoint) marker.rotation = 1.25f - OnlineMapsUtils.Angle2D((Vector2)p2, (Vector2)points[pointIndex + 1]) / 360;
+                    if (orientMarkerOnNextPoint) marker.rotation = 1.25f - OnlineMapsUtils.Angle2D((Vector2)p2, points[pointIndex + 1]) / 360;
                 }
             }
 

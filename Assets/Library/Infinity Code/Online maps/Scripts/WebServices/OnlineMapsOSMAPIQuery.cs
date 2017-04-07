@@ -1,10 +1,8 @@
 ﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -47,9 +45,24 @@ public class OnlineMapsOSMAPIQuery: OnlineMapsTextWebService
     /// <param name="relations">List of relations</param>
     public static void ParseOSMResponse(string response, out List<OnlineMapsOSMNode> nodes, out List<OnlineMapsOSMWay> ways, out List<OnlineMapsOSMRelation> relations)
     {
+        List<OnlineMapsOSMArea> areas;
+        ParseOSMResponse(response, out nodes, out ways, out relations, out areas);
+    }
+
+    /// <summary>
+    /// Get data from the response Open Street Map Overpass API.
+    /// </summary>
+    /// <param name="response">Response from Overpass API</param>
+    /// <param name="nodes">List of nodes</param>
+    /// <param name="ways">List of ways</param>
+    /// <param name="relations">List of relations</param>
+    /// <param name="areas">List of areas</param>
+    public static void ParseOSMResponse(string response, out List<OnlineMapsOSMNode> nodes, out List<OnlineMapsOSMWay> ways, out List<OnlineMapsOSMRelation> relations, out List<OnlineMapsOSMArea> areas)
+    {
         nodes = new List<OnlineMapsOSMNode>();
         ways = new List<OnlineMapsOSMWay>();
         relations = new List<OnlineMapsOSMRelation>();
+        areas = new List<OnlineMapsOSMArea>();
 
         try
         {
@@ -60,6 +73,7 @@ public class OnlineMapsOSMAPIQuery: OnlineMapsTextWebService
                 if (node.name == "node") nodes.Add(new OnlineMapsOSMNode(node));
                 else if (node.name == "way") ways.Add(new OnlineMapsOSMWay(node));
                 else if (node.name == "relation") relations.Add(new OnlineMapsOSMRelation(node));
+                else if (node.name == "area") areas.Add(new OnlineMapsOSMArea(node));
             }
         }
         catch
@@ -77,9 +91,24 @@ public class OnlineMapsOSMAPIQuery: OnlineMapsTextWebService
     /// <param name="relations">List of relations</param>
     public static void ParseOSMResponse(string response, out Dictionary<string, OnlineMapsOSMNode> nodes, out List<OnlineMapsOSMWay> ways, out List<OnlineMapsOSMRelation> relations)
     {
-        nodes = new Dictionary<string, OnlineMapsOSMNode>(64);
-        ways = new List<OnlineMapsOSMWay>(64);
-        relations = new List<OnlineMapsOSMRelation>(64);
+        List<OnlineMapsOSMArea> areas;
+        ParseOSMResponse(response, out nodes, out ways, out relations, out areas);
+    }
+
+    /// <summary>
+    /// Get data from the response Open Street Map Overpass API.
+    /// </summary>
+    /// <param name="response">Response from Overpass API</param>
+    /// <param name="nodes">Dictionary of nodes</param>
+    /// <param name="ways">List of ways</param>
+    /// <param name="relations">List of relations</param>
+    /// <param name="areas">List of areas</param>
+    public static void ParseOSMResponse(string response, out Dictionary<string, OnlineMapsOSMNode> nodes, out List<OnlineMapsOSMWay> ways, out List<OnlineMapsOSMRelation> relations, out List<OnlineMapsOSMArea> areas)
+    {
+        nodes = new Dictionary<string, OnlineMapsOSMNode>();
+        ways = new List<OnlineMapsOSMWay>();
+        relations = new List<OnlineMapsOSMRelation>();
+        areas = new List<OnlineMapsOSMArea>();
 
         try
         {
@@ -92,14 +121,9 @@ public class OnlineMapsOSMAPIQuery: OnlineMapsTextWebService
                     OnlineMapsOSMNode osmNode = new OnlineMapsOSMNode(node);
                     nodes.Add(osmNode.id, osmNode);
                 }
-                else if (node.name == "way")
-                {
-                    ways.Add(new OnlineMapsOSMWay(node));
-                }
-                else if (node.name == "relation")
-                {
-                    relations.Add(new OnlineMapsOSMRelation(node));
-                }
+                else if (node.name == "way") ways.Add(new OnlineMapsOSMWay(node));
+                else if (node.name == "relation") relations.Add(new OnlineMapsOSMRelation(node));
+                else if (node.name == "area") areas.Add(new OnlineMapsOSMArea(node));
             }
         }
         catch
@@ -122,9 +146,9 @@ public class OnlineMapsOSMAPIQuery: OnlineMapsTextWebService
 
         if (rootNode.childs == null)
         {
-            nodes = new Dictionary<string, OnlineMapsOSMNode>(0);
-            ways = new List<OnlineMapsOSMWay>(0);
-            relations = new List<OnlineMapsOSMRelation>(0);
+            nodes = new Dictionary<string, OnlineMapsOSMNode>();
+            ways = new List<OnlineMapsOSMWay>();
+            relations = new List<OnlineMapsOSMRelation>();
             return;
         }
 
@@ -238,6 +262,7 @@ public class OnlineMapsOSMAPIQuery: OnlineMapsTextWebService
                             int it2 = 0;
                             while (i < l)
                             {
+                                c = s[i];
                                 if (it2++ > 100)
                                 {
                                     Debug.Log("it2 > 100");
@@ -918,4 +943,30 @@ public class OnlineMapsOSMTag
     {
         return key + ": " + value;
     }
+}
+
+/// <summary>
+/// Open Street Map area element class
+/// </summary>
+public class OnlineMapsOSMArea : OnlineMapsOSMBase
+{
+
+    public OnlineMapsOSMArea(OnlineMapsOSMAPIQuery.OSMXMLNode node)
+    {
+        id = node.GetAttribute("id");
+    }
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="node">Node</param>
+    public OnlineMapsOSMArea(OnlineMapsXML node)
+    {
+        id = node.A("id");
+
+        tags = new List<OnlineMapsOSMTag>(node.count);
+
+        foreach (OnlineMapsXML subNode in node) tags.Add(new OnlineMapsOSMTag(subNode));
+    }
+
 }

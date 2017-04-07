@@ -3,6 +3,9 @@
 
 using System;
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGoogleDirections.
+/// </summary>
 [Obsolete("OnlineMapsFindDirection is obsolete. Use OnlineMapsGoogleDirections.")]
 public class OnlineMapsFindDirection: OnlineMapsGoogleDirections
 {
@@ -13,6 +16,9 @@ public class OnlineMapsFindDirection: OnlineMapsGoogleDirections
     }
 }
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGoogleDirectionsResult.
+/// </summary>
 [Obsolete("OnlineMapsFindDirectionResult is obsolete. Use OnlineMapsGoogleDirectionsResult.")]
 public class OnlineMapsFindDirectionResult : OnlineMapsGoogleDirectionsResult
 {

@@ -84,11 +84,8 @@ namespace InfinityCode.OnlineMapsExamples
             isInteract = false;
 
             // Calculates the average speed.
-            if (speedX.Count > 0) rsX = speedX.Average();
-            else rsX = 0;
-
-            if (speedY.Count > 0) rsY = speedY.Average();
-            else rsY = 0;
+            rsX = speedX.Count > 0 ? speedX.Average() : 0;
+            rsY = speedY.Count > 0 ? speedY.Average() : 0;
 
             speedX.Clear();
             speedY.Clear();

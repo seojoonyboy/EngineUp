@@ -8,7 +8,6 @@
 #endif
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -32,7 +31,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     /// <summary>
     /// The current version of Online Maps
     /// </summary>
-    public const string version = "2.5.1.6";
+    public const string version = "2.5.5.1";
 
     /// <summary>
     /// The maximum zoom level.
@@ -252,6 +251,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     /// <summary>
     /// Limits the range of map coordinates.
     /// </summary>
+    [NonSerialized]
     public OnlineMapsPositionRange positionRange;
 
     /// <summary>
@@ -335,6 +335,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     /// <summary>
     /// Drawing element for which displays tooltip.
     /// </summary>
+    [NonSerialized]
     public OnlineMapsDrawingElement tooltipDrawingElement;
 
     /// <summary>
@@ -352,6 +353,9 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     /// </summary>
     public bool traffic = false;
 
+    /// <summary>
+    /// Provider of traffic jams
+    /// </summary>
     [NonSerialized]
     public OnlineMapsTrafficProvider trafficProvider;
 
@@ -410,25 +414,21 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     private double longitude;
 
     [SerializeField]
-    private Vector2 _position;
-
-    [SerializeField]
     private int _zoom;
 
     [NonSerialized]
     private OnlineMapsProvider.MapType _activeType;
 
+    [NonSerialized]
     private OnlineMapsBuffer _buffer;
     private bool _labels;
     private string _language;
     private string _mapType;
     private bool _traffic;
     
-    private Texture2D activeTexture;
     private Color[] defaultColors;
-    private OnlineMapsTile downloads;
     private OnlineMapsRedrawType redrawType = OnlineMapsRedrawType.none;
-    private OnlineMapsMarker rolledMarker;
+    private OnlineMapsMarkerBase rolledMarker;
     private GUIStyle tooltipStyle;
 
 #if NETFX_CORE
@@ -497,7 +497,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     {
         get
         {
-            if (bottomRightLatitude == 0 && bottomRightLongitude == 0) UpdateBottonRightPosition();
+            if (Math.Abs(bottomRightLatitude) < double.Epsilon && Math.Abs(bottomRightLongitude) < double.Epsilon) UpdateBottonRightPosition();
             return new Vector2((float)bottomRightLongitude, (float)bottomRightLatitude);
         }
     }
@@ -556,7 +556,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     {
         get
         {
-            if (topLeftLatitude == 0 && topLeftLongitude == 0) UpdateTopLeftPosition();
+            if (Math.Abs(topLeftLatitude) < double.Epsilon && Math.Abs(topLeftLongitude) < double.Epsilon) UpdateTopLeftPosition();
 
             return new Vector2((float)topLeftLongitude, (float)topLeftLatitude);
         }
@@ -979,15 +979,22 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     /// <param name="lat">Latitude</param>
     public void GetBottomRightPosition(out double lng, out double lat)
     {
-        if (bottomRightLatitude == 0 && bottomRightLongitude == 0) UpdateBottonRightPosition();
+        if (Math.Abs(bottomRightLatitude) < double.Epsilon && Math.Abs(bottomRightLongitude) < double.Epsilon) UpdateBottonRightPosition();
         lng = bottomRightLongitude;
         lat = bottomRightLatitude;
     }
 
+    /// <summary>
+    /// Returns the coordinates of the corners of the map
+    /// </summary>
+    /// <param name="tlx">Longitude of the left border</param>
+    /// <param name="tly">Latitude of the top border</param>
+    /// <param name="brx">Longitude of the right border</param>
+    /// <param name="bry">Latitude of the bottom border</param>
     public void GetCorners(out double tlx, out double tly, out double brx, out double bry)
     {
-        if (bottomRightLatitude == 0 && bottomRightLongitude == 0) UpdateBottonRightPosition();
-        if (topLeftLatitude == 0 && topLeftLongitude == 0) UpdateTopLeftPosition();
+        if (Math.Abs(bottomRightLatitude) < double.Epsilon && Math.Abs(bottomRightLongitude) < double.Epsilon) UpdateBottonRightPosition();
+        if (Math.Abs(topLeftLatitude) < double.Epsilon && Math.Abs(topLeftLongitude) < double.Epsilon) UpdateTopLeftPosition();
 
         brx = bottomRightLongitude;
         bry = bottomRightLatitude;
@@ -1031,7 +1038,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
             if (m.HitTest(coords, zoom))
             {
                 m.GetPosition(out mx, out my);
-                if (my < lat || (my == lat && mx > lng))
+                if (my < lat || (Math.Abs(my - lat) < double.Epsilon && mx > lng))
                 {
                     marker = m;
                     lat = my;
@@ -1063,11 +1070,28 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     /// <param name="bry">Bottom tile Y</param>
     public void GetTileCorners(out double tlx, out double tly, out double brx, out double bry)
     {
-        if (bottomRightLatitude == 0 && bottomRightLongitude == 0) UpdateBottonRightPosition();
-        if (topLeftLatitude == 0 && topLeftLongitude == 0) UpdateTopLeftPosition();
+        if (Math.Abs(bottomRightLatitude) < double.Epsilon && Math.Abs(bottomRightLongitude) < double.Epsilon) UpdateBottonRightPosition();
+        if (Math.Abs(topLeftLatitude) < double.Epsilon && Math.Abs(topLeftLongitude) < double.Epsilon) UpdateTopLeftPosition();
 
         projection.CoordinatesToTile(topLeftLongitude, topLeftLatitude, _zoom, out tlx, out tly);
         projection.CoordinatesToTile(bottomRightLongitude, bottomRightLatitude, _zoom, out brx, out bry);
+    }
+
+    /// <summary>
+    /// Get the tile coordinates of the corners of the map
+    /// </summary>
+    /// <param name="tlx">Left tile X</param>
+    /// <param name="tly">Top tile Y</param>
+    /// <param name="brx">Right tile X</param>
+    /// <param name="bry">Bottom tile Y</param>
+    /// <param name="zoom">Zoom</param>
+    public void GetTileCorners(out double tlx, out double tly, out double brx, out double bry, int zoom)
+    {
+        if (Math.Abs(bottomRightLatitude) < double.Epsilon && Math.Abs(bottomRightLongitude) < double.Epsilon) UpdateBottonRightPosition();
+        if (Math.Abs(topLeftLatitude) < double.Epsilon && Math.Abs(topLeftLongitude) < double.Epsilon) UpdateTopLeftPosition();
+
+        projection.CoordinatesToTile(topLeftLongitude, topLeftLatitude, zoom, out tlx, out tly);
+        projection.CoordinatesToTile(bottomRightLongitude, bottomRightLatitude, zoom, out brx, out bry);
     }
 
     /// <summary>
@@ -1081,13 +1105,24 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     }
 
     /// <summary>
+    /// Get the tile coordinates of the map
+    /// </summary>
+    /// <param name="px">Tile X</param>
+    /// <param name="py">Tile Y</param>
+    /// <param name="zoom">Zoom</param>
+    public void GetTilePosition(out double px, out double py, int zoom)
+    {
+        projection.CoordinatesToTile(longitude, latitude, zoom, out px, out py);
+    }
+
+    /// <summary>
     /// Get the top-left corner of the map.
     /// </summary>
     /// <param name="lng">Longitude</param>
     /// <param name="lat">Latitude</param>
     public void GetTopLeftPosition(out double lng, out double lat)
     {
-        if (topLeftLatitude == 0 && topLeftLongitude == 0) UpdateTopLeftPosition();
+        if (Math.Abs(topLeftLatitude) < double.Epsilon && Math.Abs(topLeftLongitude) < double.Epsilon) UpdateTopLeftPosition();
         lng = topLeftLongitude;
         lat = topLeftLatitude;
     }
@@ -1254,6 +1289,8 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
         {
             if (OnlineMapsControlBase.instance is OnlineMapsTileSetControl)
             {
+                OnlineMapsTileSetControl tsControl = OnlineMapsTileSetControl.instance;
+
                 double tlx = topLeftLongitude;
                 double tly = topLeftLatitude;
                 double brx = bottomRightLongitude;
@@ -1273,11 +1310,11 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
                     else if (OnlineMapsMarkerBase.OnMarkerDrawTooltip != null) OnlineMapsMarkerBase.OnMarkerDrawTooltip(marker);
                     else
                     {
-                        Vector3 p1 = OnlineMapsTileSetControl.instance.GetWorldPositionWithElevation(mx, my, tlx, tly, brx, bry);
+                        Vector3 p1 = tsControl.GetWorldPositionWithElevation(mx, my, tlx, tly, brx, bry);
                         Vector3 p2 = p1 + new Vector3(0, 0, tilesetSize.y / tilesetHeight * marker.height * marker.scale);
 
-                        Vector2 screenPoint1 = OnlineMapsTileSetControl.instance.activeCamera.WorldToScreenPoint(p1);
-                        Vector2 screenPoint2 = OnlineMapsTileSetControl.instance.activeCamera.WorldToScreenPoint(p2);
+                        Vector2 screenPoint1 = tsControl.activeCamera.WorldToScreenPoint(p1);
+                        Vector2 screenPoint2 = tsControl.activeCamera.WorldToScreenPoint(p2);
 
                         float yOffset = (screenPoint1.y - screenPoint2.y) * transform.localScale.x - 10;
 
@@ -1285,7 +1322,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
                     }
                 }
 
-                foreach (OnlineMapsMarker3D marker in OnlineMapsTileSetControl.instance.markers3D)
+                foreach (OnlineMapsMarker3D marker in tsControl.markers3D)
                 {
                     if (string.IsNullOrEmpty(marker.label)) continue;
 
@@ -1300,11 +1337,11 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
                     else if (OnlineMapsMarkerBase.OnMarkerDrawTooltip != null) OnlineMapsMarkerBase.OnMarkerDrawTooltip(marker);
                     else
                     {
-                        Vector3 p1 = OnlineMapsTileSetControl.instance.GetWorldPositionWithElevation(mx, my, tlx, tly, brx, bry);
+                        Vector3 p1 = tsControl.GetWorldPositionWithElevation(mx, my, tlx, tly, brx, bry);
                         Vector3 p2 = p1 + new Vector3(0, 0, tilesetSize.y / tilesetHeight * marker.scale);
 
-                        Vector2 screenPoint1 = OnlineMapsTileSetControl.instance.activeCamera.WorldToScreenPoint(p1);
-                        Vector2 screenPoint2 = OnlineMapsTileSetControl.instance.activeCamera.WorldToScreenPoint(p2);
+                        Vector2 screenPoint1 = tsControl.activeCamera.WorldToScreenPoint(p1);
+                        Vector2 screenPoint2 = tsControl.activeCamera.WorldToScreenPoint(p2);
 
                         float yOffset = (screenPoint1.y - screenPoint2.y) * transform.localScale.x - 10;
 
@@ -1325,6 +1362,51 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
                         if (marker.OnDrawTooltip != null) marker.OnDrawTooltip(marker);
                         else if (OnlineMapsMarkerBase.OnMarkerDrawTooltip != null) OnlineMapsMarkerBase.OnMarkerDrawTooltip(marker);
                         else OnGUITooltip(style, marker.label, new Vector2(rect.x + rect.width / 2, rect.y + rect.height));
+                    }
+                }
+
+                if (control is OnlineMapsControlBase3D)
+                {
+                    double tlx = topLeftLongitude;
+                    double tly = topLeftLatitude;
+                    double brx = bottomRightLongitude;
+                    double bry = bottomRightLatitude;
+                    if (brx < tlx) brx += 360;
+
+                    foreach (OnlineMapsMarker3D marker in OnlineMapsControlBase3D.instance.markers3D)
+                    {
+                        if (string.IsNullOrEmpty(marker.label)) continue;
+
+                        double mx, my;
+                        marker.GetPosition(out mx, out my);
+
+                        if (!(((mx > tlx && mx < brx) || (mx + 360 > tlx && mx + 360 < brx) ||
+                           (mx - 360 > tlx && mx - 360 < brx)) &&
+                          my < tly && my > bry)) continue;
+
+                        if (marker.OnDrawTooltip != null) marker.OnDrawTooltip(marker);
+                        else if (OnlineMapsMarkerBase.OnMarkerDrawTooltip != null) OnlineMapsMarkerBase.OnMarkerDrawTooltip(marker);
+                        else
+                        {
+                            double mx1, my1;
+                            OnlineMapsControlBase3D.instance.GetPosition(mx, my, out mx1, out my1);
+
+                            double px = (-mx1 / width + 0.5) * OnlineMapsControlBase3D.instance.cl.bounds.size.x;
+                            double pz = (my1 / height - 0.5) * OnlineMapsControlBase3D.instance.cl.bounds.size.z;
+
+                            Vector3 offset = transform.rotation * new Vector3((float)px, 0, (float)pz);
+                            offset.Scale(transform.lossyScale);
+
+                            Vector3 p1 = transform.position + offset;
+                            Vector3 p2 = p1 + new Vector3(0, 0, OnlineMapsControlBase3D.instance.cl.bounds.size.z / height * marker.scale);
+
+                            Vector2 screenPoint1 = OnlineMapsControlBase3D.instance.activeCamera.WorldToScreenPoint(p1);
+                            Vector2 screenPoint2 = OnlineMapsControlBase3D.instance.activeCamera.WorldToScreenPoint(p2);
+
+                            float yOffset = (screenPoint1.y - screenPoint2.y) * transform.localScale.x - 10;
+
+                            OnGUITooltip(style, marker.label, screenPoint1 + new Vector2(0, yOffset));
+                        }
                     }
                 }
             }
@@ -1655,44 +1737,67 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
             {
                 double px, py;
                 projection.CoordinatesToTile(lng, lat, _zoom, out px, out py);
-                Vector2 offset = new Vector2(countX / 2f, countY / 2f);
+                double ox = countX / 2d;
+                double oy = countY / 2d;
 
                 double tlx, tly, brx, bry;
 
-                projection.TileToCoordinates(px - offset.x, py - offset.y, _zoom, out tlx, out tly);
-                projection.TileToCoordinates(px + offset.x, py + offset.y, _zoom, out brx, out bry);
+                projection.TileToCoordinates(px - ox, py - oy, _zoom, out tlx, out tly);
+                projection.TileToCoordinates(px + ox, py + oy, _zoom, out brx, out bry);
 
-                double ltlx = tlx;
-                double lbrx = brx;
+                bool tlxc = false;
+                bool tlyc = false;
+                bool brxc = false;
+                bool bryc = false;
 
-                bool tlc = positionRange.CheckAndFix(ref tlx, ref tly);
-                bool brc = positionRange.CheckAndFix(ref brx, ref bry);
-
-                if (tlc && brc)
+                if (tlx < positionRange.minLng)
                 {
-                    if (ltlx == tlx || lbrx == brx)
-                    {
-                        double tx, ty;
-                        projection.CoordinatesToTile(tlx, tly, _zoom, out tx, out ty);
-                        projection.TileToCoordinates(tx + offset.x, ty + offset.y, _zoom, out lng, out lat);
-                    }
-                    else
-                    {
-                        lng = positionRange.center.x;
-                        lat = positionRange.center.y;
-                    }
+                    tlxc = true;
+                    tlx = positionRange.minLng;
                 }
-                else if (tlc)
+                if (brx > positionRange.maxLng)
                 {
-                    double tx, ty;
-                    projection.CoordinatesToTile(tlx, tly, _zoom, out tx, out ty);
-                    projection.TileToCoordinates(tx + offset.x, ty + offset.y, _zoom, out lng, out lat);
+                    brxc = true;
+                    brx = positionRange.maxLng;
                 }
-                else if (brc)
+                if (tly > positionRange.maxLat)
                 {
-                    double tx, ty;
-                    projection.CoordinatesToTile(brx, bry, _zoom, out tx, out ty);
-                    projection.TileToCoordinates(tx - offset.x, ty - offset.y, _zoom, out lng, out lat);
+                    tlyc = true;
+                    tly = positionRange.maxLat;
+                }
+                if (bry < positionRange.minLat)
+                {
+                    bryc = true;
+                    bry = positionRange.minLat;
+                }
+
+                if (tlxc || brxc || tlyc || bryc)
+                {
+                    double tx, ty, tmp;
+                    projection.CoordinatesToTile(lng, lat, _zoom, out tx, out ty);
+                    if (tlxc)
+                    {
+                        projection.CoordinatesToTile(tlx, tly, _zoom, out tx, out tmp);
+                        tx += ox;
+                    }
+                    else if (brxc)
+                    {
+                        projection.CoordinatesToTile(brx, bry, _zoom, out tx, out tmp);
+                        tx -= ox;
+                    }
+
+                    if (tlyc)
+                    {
+                        projection.CoordinatesToTile(tlx, tly, _zoom, out tmp, out ty);
+                        ty += oy;
+                    }
+                    else if (bryc)
+                    {
+                        projection.CoordinatesToTile(brx, bry, _zoom, out tmp, out ty);
+                        ty -= oy;
+                    }
+
+                    projection.TileToCoordinates(tx, ty, _zoom, out lng, out lat);
                 }
             }
         }
@@ -1716,7 +1821,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
 
         if (modified) projection.TileToCoordinates(tpx, tpy, _zoom, out lng, out lat);
 
-        if (latitude == lat && longitude == lng) return;
+        if (Math.Abs(latitude - lat) < double.Epsilon && Math.Abs(longitude - lng) < double.Epsilon) return;
 
         allowRedraw = true;
         needRedraw = true;
@@ -1738,10 +1843,10 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
     /// <param name="lng">Longitude</param>
     /// <param name="lat">Latitude</param>
     /// <param name="ZOOM">Zoom</param>
-    public void SetPositionAndZoom(float lng, float lat, int ZOOM = 0)
+    public void SetPositionAndZoom(double lng, double lat, int ZOOM = 0)
     {
-        SetPosition(lng, lat);
         if (ZOOM != 0) zoom = ZOOM;
+        SetPosition(lng, lat);
     }
 
     /// <summary>
@@ -1772,12 +1877,8 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
             tooltipMarker = null;
         }
 
-        if (control is OnlineMapsControlBase3D && OnlineMapsControlBase3D.instance.marker2DMode == OnlineMapsMarker2DMode.billboard)
-        {
-            return;
-        }
-
-        OnlineMapsMarker marker = GetMarkerFromScreen(screenPosition);
+        IOnlineMapsInteractiveElement el = control.GetInteractiveElement(screenPosition);
+        OnlineMapsMarkerBase marker = el as OnlineMapsMarkerBase;
 
         if (showMarkerTooltip == OnlineMapsShowMarkerTooltip.onHover)
         {
@@ -1821,7 +1922,7 @@ public class OnlineMaps : MonoBehaviour, ISerializationCallbackReceiver
         long startTick = DateTime.Now.Ticks;
 
         int countDownload = 0;
-        OnlineMapsTile[] downloadTiles = null;
+        OnlineMapsTile[] downloadTiles;
         int c = 0;
 
         lock (OnlineMapsTile.tiles)

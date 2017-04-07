@@ -48,7 +48,7 @@ public class OnlineMapsGoogleDirectionsResult
         }
 
         this.routes = routes.ToArray();
-        this.geocoded_waypoints = geocodedWaypoints.ToArray();
+        geocoded_waypoints = geocodedWaypoints.ToArray();
     }
 
     /// <summary>
@@ -392,7 +392,7 @@ public class OnlineMapsGoogleDirectionsResult
             }
 
             this.legs = legs.ToArray();
-            this.waypoint_order = waypointOrder.ToArray();
+            waypoint_order = waypointOrder.ToArray();
             this.warnings = warnings.ToArray();
         }
     }

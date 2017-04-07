@@ -200,7 +200,7 @@ public class OnlineMapsProvider
             },
             new OnlineMapsProvider("CartoDB")
             {
-                url = "https://a.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}.png",
+                url = "http://a.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}.png",
                 _types = new []
                 {
                     new MapType("Positron")
@@ -213,6 +213,29 @@ public class OnlineMapsProvider
                         variantWithLabels = "dark_all",
                         variantWithoutLabels = "dark_nolabels"
                     },
+                }
+            },
+            new OnlineMapsProvider("DigitalGlobe")
+            {
+                url = "https://a.tiles.mapbox.com/v4/digitalglobe.{variant}/{zoom}/{x}/{y}.jpg?access_token={accesstoken}",
+                _types = new []
+                {
+                    new MapType("Satellite")
+                    {
+                        variantWithoutLabels = "nal0g75k"
+                    },
+                    new MapType("Street")
+                    {
+                        variantWithLabels = "nako6329",
+                    },
+                    new MapType("Terrain")
+                    {
+                        variantWithLabels = "nako1fhg",
+                    },
+                },
+                extraFields = new []
+                {
+                    new ExtraField("Access Token", "accesstoken"),
                 }
             },
             new OnlineMapsProvider("google", "Google Maps")
@@ -404,7 +427,7 @@ public class OnlineMapsProvider
                 _types = new []
                 {
                     new MapType("Mapnik") { urlWithLabels = "https://a.tile.openstreetmap.org/{zoom}/{x}/{y}.png" },
-                    new MapType("BlackAndWhite") { urlWithLabels = "https://a.tiles.wmflabs.org/bw-mapnik/{zoom}/{x}/{y}.png" },
+                    new MapType("BlackAndWhite") { urlWithLabels = "http://a.tiles.wmflabs.org/bw-mapnik/{zoom}/{x}/{y}.png" },
                     new MapType("DE") { urlWithLabels = "http://a.tile.openstreetmap.de/tiles/osmde/{zoom}/{x}/{y}.png" },
                     new MapType("France") { urlWithLabels = "https://a.tile.openstreetmap.fr/osmfr/{zoom}/{x}/{y}.png" },
                     new MapType("HOT") { urlWithLabels = "https://a.tile.openstreetmap.fr/hot/{zoom}/{x}/{y}.png" },
@@ -945,11 +968,29 @@ public class OnlineMapsProvider
         }
     }
 
+    /// <summary>
+    /// Group of toggle extra fields
+    /// </summary>
     public class ToggleExtraGroup: IExtraField
     {
+        /// <summary>
+        /// Array of extra fields
+        /// </summary>
         public IExtraField[] fields;
+
+        /// <summary>
+        /// Group title
+        /// </summary>
         public string title;
+
+        /// <summary>
+        /// Group value
+        /// </summary>
         public bool value = false;
+
+        /// <summary>
+        /// Group ID
+        /// </summary>
         public string id;
 
         public ToggleExtraGroup(string title, bool value = false)
@@ -1021,7 +1062,7 @@ public class OnlineMapsProvider
     }
 
     /// <summary>
-    /// Interface for additional fields tile provider
+    /// Interface for extra fields tile provider
     /// </summary>
     public interface IExtraField
     {
@@ -1030,11 +1071,29 @@ public class OnlineMapsProvider
         bool TryLoadSettings(string title, string settings, int index, int contentSize);
     }
 
+    /// <summary>
+    /// Class for extra field
+    /// </summary>
     public class ExtraField: IExtraField
     {
+        /// <summary>
+        /// Title
+        /// </summary>
         public string title;
+
+        /// <summary>
+        /// Value
+        /// </summary>
         public string value;
+
+        /// <summary>
+        /// Default value
+        /// </summary>
         public string defaultValue;
+
+        /// <summary>
+        /// Token (ID)
+        /// </summary>
         public string token;
 
         public ExtraField(string title, string token)

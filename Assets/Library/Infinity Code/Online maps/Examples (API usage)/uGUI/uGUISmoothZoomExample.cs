@@ -8,11 +8,25 @@ using UnityEngine.UI;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to implement a smooth zoom for uGUI map.
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/uGUISmoothZoomExample")]
     public class uGUISmoothZoomExample : MonoBehaviour
     {
+        /// <summary>
+        /// Event, which occurs when the smooth zoom is started.
+        /// </summary>
         public Action OnSmoothZoomBegin;
+
+        /// <summary>
+        /// Event, which occurs when the smooth zoom is finish.
+        /// </summary>
         public Action OnSmoothZoomFinish;
+
+        /// <summary>
+        /// Event, which occurs when the smooth zoom is process.
+        /// </summary>
         public Action OnSmoothZoomProcess;
 
         private int touchCount;
@@ -31,6 +45,9 @@ namespace InfinityCode.OnlineMapsExamples
         private float initialDistance;
 #endif
 
+        /// <summary>
+        /// Reference to the camera
+        /// </summary>
         private Camera worldCamera
         {
             get

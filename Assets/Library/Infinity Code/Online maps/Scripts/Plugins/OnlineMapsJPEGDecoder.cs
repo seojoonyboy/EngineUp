@@ -374,7 +374,7 @@ public class OnlineMapsJPEGDecoder
         int rstcount = context.rstinterval, nextrst = 0;
         Component c;
         DecodeLength();
-        if (context.length < (4 + 2 * context.ncomp)) Throw(JPEGResult.SYNTAX_ERROR);
+        if (context.length < 4 + 2 * context.ncomp) Throw(JPEGResult.SYNTAX_ERROR);
         if (context.posb[context.pos] != context.ncomp) Throw(JPEGResult.UNSUPPORTED);
         Skip(1);
         for (i = 0; i < context.ncomp; ++i)
@@ -407,7 +407,7 @@ public class OnlineMapsJPEGDecoder
                 mbx = 0;
                 if (++mby >= context.mbheight) break;
             }
-            if (context.rstinterval != 0 && (--rstcount) != 0)
+            if (context.rstinterval != 0 && --rstcount != 0)
             {
                 ByteAlign();
                 i = GetBits(16);
@@ -441,7 +441,7 @@ public class OnlineMapsJPEGDecoder
                 Throw(JPEGResult.UNSUPPORTED);
                 break;
         }
-        if (context.length < (context.ncomp * 3)) Throw(JPEGResult.SYNTAX_ERROR);
+        if (context.length < context.ncomp * 3) Throw(JPEGResult.SYNTAX_ERROR);
         for (i = 0; i < context.ncomp; ++i)
         {
             c = context.comp[i];
@@ -477,7 +477,6 @@ public class OnlineMapsJPEGDecoder
         if (context.ncomp == 3)
         {
             context.rgb = new byte[context.width * context.height * context.ncomp];
-            if (context.rgb == null) Throw(JPEGResult.OUT_OF_MEM);
         }
         Skip(context.length);
     }

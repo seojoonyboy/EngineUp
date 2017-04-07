@@ -1,6 +1,7 @@
 ﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
+using System;
 using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
@@ -35,7 +36,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void Update()
         {
             // Update the transparency of overlay.
-            if (_alpha != alpha)
+            if (Math.Abs(_alpha - alpha) > float.Epsilon)
             {
                 _alpha = alpha;
                 lock (OnlineMapsTile.tiles)

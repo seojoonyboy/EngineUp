@@ -16,7 +16,7 @@ public abstract class OnlineMapsJSONItem: IEnumerable<OnlineMapsJSONItem>
     /// </summary>
     /// <param name="index">Index of element</param>
     /// <returns>Element</returns>
-    public abstract OnlineMapsJSONItem this[string key]{ get; }
+    public abstract OnlineMapsJSONItem this[int index] { get; }
 
     /// <summary>
     /// Get the element by key.\n
@@ -29,7 +29,7 @@ public abstract class OnlineMapsJSONItem: IEnumerable<OnlineMapsJSONItem>
     /// </summary>
     /// <param name="key">Element key</param>
     /// <returns>Element</returns>
-    public abstract OnlineMapsJSONItem this[int index] { get; }
+    public abstract OnlineMapsJSONItem this[string key] { get; }
 
     /// <summary>
     /// Deserializes current element
@@ -51,7 +51,7 @@ public abstract class OnlineMapsJSONItem: IEnumerable<OnlineMapsJSONItem>
     /// <summary>
     /// Get all elements with the key on the first or the deeper levels of the current element.
     /// </summary>
-    /// <param name="k">Key</param>
+    /// <param name="key">Key</param>
     /// <returns>Elements</returns>
     public abstract OnlineMapsJSONItem GetAll(string key);
 

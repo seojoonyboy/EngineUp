@@ -12,7 +12,7 @@ public class OnlineMapsProjectionSphericalMercator:OnlineMapsProjection
     {
         double sy = Math.Sin(lat * DEG2RAD);
         lng = (lng + 180) / 360;
-        lat = 0.5 - Math.Log((1 + sy) / (1 - sy)) / (Math.PI * 4);
+        lat = 0.5 - Math.Log((1 + sy) / (1 - sy)) / PI4;
         int mapSize = OnlineMapsUtils.tileSize << zoom;
         double px = lng * mapSize + 0.5;
         double py = lat * mapSize + 0.5;

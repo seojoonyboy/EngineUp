@@ -11,6 +11,9 @@ namespace InfinityCode.OnlineMapsExamples
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/Marker3D_Example")]
     public class Marker3D_Example : MonoBehaviour
     {
+        /// <summary>
+        /// Prefab of 3D marker
+        /// </summary>
         public GameObject markerPrefab;
 
         private OnlineMapsMarker3D marker3D;

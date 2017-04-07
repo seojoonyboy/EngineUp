@@ -59,9 +59,7 @@ public class OnlineMapsJSONObject : OnlineMapsJSONItem
 
     public override object Deserialize(Type type)
     {
-        //FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
-        //PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-        MemberInfo[] members = type.GetMembers(BindingFlags.Instance | BindingFlags.Public);
+        IEnumerable<MemberInfo> members = OnlineMapsReflectionHelper.GetMembers(type, BindingFlags.Instance | BindingFlags.Public);
         return Deserialize(type, members);
     }
 
@@ -69,16 +67,14 @@ public class OnlineMapsJSONObject : OnlineMapsJSONItem
     /// Deserializes current element
     /// </summary>
     /// <param name="type">Type</param>
-    /// <param name="fields">Fields of variable</param>
+    /// <param name="members">Members of variable</param>
     /// <returns>Object</returns>
-    public object Deserialize(Type type, MemberInfo[] members)
+    public object Deserialize(Type type, IEnumerable<MemberInfo> members)
     {
         object v = Activator.CreateInstance(type);
 
-        for (int i = 0; i < members.Length; i++)
+        foreach (MemberInfo member in members)
         {
-            MemberInfo member = members[i];
-
 #if !NETFX_CORE
             MemberTypes memberType = member.MemberType;
             if (memberType != MemberTypes.Field && memberType != MemberTypes.Property) continue;
@@ -139,7 +135,7 @@ public class OnlineMapsJSONObject : OnlineMapsJSONItem
         if (key.Length > 2 && key[0] == '/' && key[1] == '/')
         {
             string k = key.Substring(2);
-            if (string.IsNullOrEmpty("k") || k.StartsWith("//")) return null;
+            if (string.IsNullOrEmpty(k) || k.StartsWith("//")) return null;
             return GetAll(k);
         }
         return GetThis(key);
@@ -229,14 +225,7 @@ public class OnlineMapsJSONObject : OnlineMapsJSONItem
 
     public override object Value(Type type)
     {
-#if !NETFX_CORE
-        if (type.IsValueType)
-#else
-        if (type.GetTypeInfo().IsValueType)
-#endif
-        {
-            return Activator.CreateInstance(type);
-        }
+        if (OnlineMapsReflectionHelper.IsValueType(type)) return Activator.CreateInstance(type);
         return null;
     }
 }

@@ -6,17 +6,25 @@ using UnityEngine.UI;
 
 namespace InfinityCode.OnlineMapsExamples
 {
+    /// <summary>
+    /// Example of how to make a tooltip using uGUI for a single marker
+    /// </summary>
     [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/uGUICustomTooltipExample")]
     public class uGUICustomTooltipExample : MonoBehaviour
     {
+        /// <summary>
+        /// Prefab of the tooltip
+        /// </summary>
         public GameObject tooltipPrefab;
+
+        /// <summary>
+        /// Container for tooltip
+        /// </summary>
         public Canvas container;
 
         private OnlineMapsMarker marker;
         private GameObject tooltip;
 
-
-	    // Use this for initialization
 	    private void Start ()
         {
             marker = OnlineMaps.instance.AddMarker(Vector2.zero, "Hello World");

@@ -6,15 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 /// <summary>
 /// Class implements the basic functionality of drawing on the map.
 /// </summary>
-public class OnlineMapsDrawingElement
+public class OnlineMapsDrawingElement: IOnlineMapsInteractiveElement
 {
-    private static bool _drawingChanged;
-
     /// <summary>
     /// Default event caused to draw tooltip.
     /// </summary>
@@ -35,6 +32,8 @@ public class OnlineMapsDrawingElement
     /// </summary>
     public Action<OnlineMapsDrawingElement> OnDrawTooltip;
 
+    public Action<OnlineMapsDrawingElement> OnLongPress;
+
     /// <summary>
     /// Events that occur when user press on the drawing element.
     /// </summary>
@@ -44,6 +43,12 @@ public class OnlineMapsDrawingElement
     /// Events that occur when user release on the drawing element.
     /// </summary>
     public Action<OnlineMapsDrawingElement> OnRelease;
+
+    /// <summary>
+    /// Need to check the map boundaries? \n
+    /// It allows you to make drawing element, which are active outside the map.\n
+    /// </summary>
+    public bool checkMapBoundaries = true;
 
     /// <summary>
     /// In this variable you can put any data that you need to work with drawing element.
@@ -67,6 +72,7 @@ public class OnlineMapsDrawingElement
     protected Material[] materials;
 
     private int _renderQueueOffset;
+    private static List<Vector2> localPoints;
 
     protected static OnlineMaps api 
     {
@@ -77,11 +83,12 @@ public class OnlineMapsDrawingElement
     {
         get
         {
+            if (gameObject == null) return false;
             return gameObject.activeSelf;
         }
         set
         {
-            gameObject.SetActive(value);
+            if (gameObject != null) gameObject.SetActive(value);
         }
     }
 
@@ -166,7 +173,7 @@ public class OnlineMapsDrawingElement
         
     }
 
-    protected void DrawActivePoints(OnlineMapsTileSetControl control, ref List<Vector2> activePoints, ref List<Vector3> verticles, ref List<Vector3> normals, ref List<int> triangles, ref List<Vector2> uv, float weight)
+    protected void DrawActivePoints(OnlineMapsTileSetControl control, ref List<Vector2> activePoints, ref List<Vector3> vertices, ref List<Vector3> normals, ref List<int> triangles, ref List<Vector2> uv, float width)
     {
         if (activePoints.Count < 2)
         {
@@ -174,7 +181,7 @@ public class OnlineMapsDrawingElement
             return;
         }
 
-        float w2 = weight * 2;
+        float w2 = width * 2;
 
         Vector3 prevS1 = Vector3.zero;
         Vector3 prevS2 = Vector3.zero;
@@ -186,8 +193,8 @@ public class OnlineMapsDrawingElement
             float px = -activePoints[i].x;
             float pz = activePoints[i].y;
 
-            Vector3 s1 = Vector3.zero;
-            Vector3 s2 = Vector3.zero;
+            Vector3 s1;
+            Vector3 s2;
 
             if (i == 0 || i == c)
             {
@@ -209,8 +216,8 @@ public class OnlineMapsDrawingElement
                 }
 
                 float a = OnlineMapsUtils.Angle2DRad(p1x, p1z, p2x, p2z, 90);
-                float offX = Mathf.Cos(a) * weight;
-                float offZ = Mathf.Sin(a) * weight;
+                float offX = Mathf.Cos(a) * width;
+                float offZ = Mathf.Sin(a) * width;
                 float s1x = px + offX;
                 float s1z = pz + offZ;
                 float s2x = px - offX;
@@ -232,10 +239,10 @@ public class OnlineMapsDrawingElement
                 float a1 = OnlineMapsUtils.Angle2DRad(p1x, p1z, px, pz, 90);
                 float a2 = OnlineMapsUtils.Angle2DRad(px, pz, p2x, p2z, 90);
 
-                float off1x = Mathf.Cos(a1) * weight;
-                float off1z = Mathf.Sin(a1) * weight;
-                float off2x = Mathf.Cos(a2) * weight;
-                float off2z = Mathf.Sin(a2) * weight;
+                float off1x = Mathf.Cos(a1) * width;
+                float off1z = Mathf.Sin(a1) * width;
+                float off2x = Mathf.Cos(a2) * width;
+                float off2z = Mathf.Sin(a2) * width;
 
                 float p21x = px + off1x;
                 float p21z = pz + off1z;
@@ -289,12 +296,12 @@ public class OnlineMapsDrawingElement
 
             if (i > 0)
             {
-                int ti = verticles.Count;
+                int ti = vertices.Count;
 
-                verticles.Add(prevS1);
-                verticles.Add(s1);
-                verticles.Add(s2);
-                verticles.Add(prevS2);
+                vertices.Add(prevS1);
+                vertices.Add(s1);
+                vertices.Add(s2);
+                vertices.Add(prevS2);
 
                 normals.Add(Vector3.up);
                 normals.Add(Vector3.up);
@@ -321,7 +328,7 @@ public class OnlineMapsDrawingElement
         activePoints.Clear();
     }
 
-    protected void DrawLineToBuffer(Color32[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom, IEnumerable points, Color32 color, float weight, bool closed, bool invertY)
+    protected void DrawLineToBuffer(Color32[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom, IEnumerable points, Color32 color, float width, bool closed, bool invertY)
     {
         if (color.a == 0) return;
 
@@ -330,8 +337,7 @@ public class OnlineMapsDrawingElement
 
         int maxX = 1 << zoom;
 
-        //int off = closed ? 1 : 0;
-        int w = Mathf.RoundToInt(weight);
+        int w = Mathf.RoundToInt(width);
 
         double ppx1 = 0;
 
@@ -340,14 +346,12 @@ public class OnlineMapsDrawingElement
         int by1 = bufferPosition.y;
         int by2 = by1 + bufferHeight / OnlineMapsUtils.tileSize;
 
-        //int count = points.Count();
         int valueType = -1; // 0 - Vector2, 1 - float, 2 - double
         object firstValue = null;
         object secondValue = null;
         object v1 = null;
         object v2 = null;
         object v3 = null;
-        object v4 = null;
         int i = 0;
 
         lock (points)
@@ -362,7 +366,7 @@ public class OnlineMapsDrawingElement
                     else if (p is double) valueType = 2;
                 }
 
-                v4 = v3;
+                object v4 = v3;
                 v3 = v2;
                 v2 = v1;
                 v1 = p;
@@ -453,8 +457,8 @@ public class OnlineMapsDrawingElement
 
     private static void DrawLinePartToBuffer(Color32[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, Color32 color, double sx, double sy, double p1tx, double p1ty, double p2tx, double p2ty, int j, int maxX, ref double ppx1, int w, bool invertY)
     {
-        if ((p1tx < bufferPosition.x && p2tx < bufferPosition.x) || (p1tx > bufferPosition.x + bufferWidth / 256 && p2tx > bufferPosition.x + bufferWidth / 256)) return;
-        if ((p1ty < bufferPosition.y && p2ty < bufferPosition.y) || (p1ty > bufferPosition.y + bufferHeight / 256 && p2ty > bufferPosition.y + bufferHeight / 256)) return;
+        if ((p1tx < bufferPosition.x && p2tx < bufferPosition.x) || (p1tx > bufferPosition.x + (bufferWidth >> 8) && p2tx > bufferPosition.x + (bufferWidth >> 8))) return;
+        if ((p1ty < bufferPosition.y && p2ty < bufferPosition.y) || (p1ty > bufferPosition.y + (bufferHeight >> 8) && p2ty > bufferPosition.y + (bufferHeight >> 8))) return;
 
         if (Math.Sqrt((p1tx - p2tx) * (p1tx - p2tx) + (p1ty - p2ty) * (p1ty - p2ty)) > 0.2)
         {
@@ -557,7 +561,7 @@ public class OnlineMapsDrawingElement
                 double onpx = centerX - npx;
                 double onpy = centerY - npy;
 
-                double dist = (onpx * onpx + onpy * onpy);
+                double dist = onpx * onpx + onpy * onpy;
 
                 if (dist <= sqrW)
                 {
@@ -578,7 +582,8 @@ public class OnlineMapsDrawingElement
     /// <summary>
     /// Draws element on a specified TilesetControl.
     /// </summary>
-    /// <param name="control"></param>
+    /// <param name="control">Reeference to tileset control.</param>
+    /// <param name="index">Index of drawing element</param>
     public virtual void DrawOnTileset(OnlineMapsTileSetControl control, int index)
     {
         
@@ -589,79 +594,8 @@ public class OnlineMapsDrawingElement
         float alpha = color.a / 255f;
         if (color.a == 0) return;
 
-        int countPoints = points.Cast<object>().Count();
-
-        double[] bufferPoints = null;
-
-        double minX = double.MaxValue;
-        double maxX = double.MinValue;
-        double minY = double.MaxValue;
-        double maxY = double.MinValue;
-
-        int valueType = -1; // 0 - Vector2, 1 - float, 2 - double
-        object v1 = null, v2 = null;
-
-        int i = 0;
-
-        foreach (object p in points)
-        {
-            if (valueType == -1)
-            {
-                if (p is Vector2)
-                {
-                    valueType = 0;
-                    bufferPoints = new double[countPoints * 2];
-                }
-                else if (p is float)
-                {
-                    valueType = 1;
-                    bufferPoints = new double[countPoints];
-                }
-                else if (p is double)
-                {
-                    valueType = 2;
-                    bufferPoints = new double[countPoints];
-                }
-            }
-
-            v2 = v1;
-            v1 = p;
-
-            if (valueType == 0)
-            {
-                Vector2 point = (Vector2)p;
-                double tx, ty;
-                api.projection.CoordinatesToTile(point.x, point.y, zoom, out tx, out ty);
-                tx = (tx - bufferPosition.x) * OnlineMapsUtils.tileSize;
-                ty = (ty - bufferPosition.y) * OnlineMapsUtils.tileSize;
-
-                if (tx < minX) minX = tx;
-                if (tx > maxX) maxX = tx;
-                if (ty < minY) minY = ty;
-                if (ty > maxY) maxY = ty;
-
-                bufferPoints[i * 2] = tx;
-                bufferPoints[i * 2 + 1] = ty;
-            }
-            else if (i % 2 == 1)
-            {
-                double tx = 0, ty = 0;
-                if (valueType == 1) api.projection.CoordinatesToTile((float)v2, (float)v1, zoom, out tx, out ty);
-                else if (valueType == 2) api.projection.CoordinatesToTile((double)v2, (double)v1, zoom, out tx, out ty);
-                tx = (tx - bufferPosition.x) * OnlineMapsUtils.tileSize;
-                ty = (ty - bufferPosition.y) * OnlineMapsUtils.tileSize;
-
-                if (tx < minX) minX = tx;
-                if (tx > maxX) maxX = tx;
-                if (ty < minY) minY = ty;
-                if (ty > maxY) maxY = ty;
-
-                bufferPoints[i - 1] = tx;
-                bufferPoints[i] = ty;
-            }
-
-            i++;
-        }
+        double minX, maxX, minY, maxY;
+        double[] bufferPoints = GetBufferPoints(bufferPosition, zoom, points, out minX, out maxX, out minY, out maxY);
 
         if (maxX < 0 || minX > bufferWidth || maxY < 0 || minY > bufferHeight) return;
 
@@ -686,7 +620,7 @@ public class OnlineMapsDrawingElement
 
         Color32 clr = new Color32(color.r, color.g, color.b, 255);
 
-        const int blockSize = 11;
+        const int blockSize = 5;
         int blockCountX = lengthX / blockSize + (lengthX % blockSize == 0 ? 0 : 1);
         int blockCountY = lengthY / blockSize + (lengthY % blockSize == 0 ? 0 : 1);
 
@@ -772,31 +706,115 @@ public class OnlineMapsDrawingElement
         }
     }
 
+    private static double[] GetBufferPoints(OnlineMapsVector2i bufferPosition, int zoom, IEnumerable points, out double minX, out double maxX, out double minY, out double maxY)
+    {
+        double[] bufferPoints = null;
+
+        int countPoints = points.Cast<object>().Count();
+
+        minX = double.MaxValue;
+        maxX = double.MinValue;
+        minY = double.MaxValue;
+        maxY = double.MinValue;
+
+        int valueType = -1; // 0 - Vector2, 1 - float, 2 - double
+        object v1 = null;
+
+        int i = 0;
+
+        foreach (object p in points)
+        {
+            if (valueType == -1)
+            {
+                if (p is Vector2)
+                {
+                    valueType = 0;
+                    bufferPoints = new double[countPoints * 2];
+                }
+                else if (p is float)
+                {
+                    valueType = 1;
+                    bufferPoints = new double[countPoints];
+                }
+                else if (p is double)
+                {
+                    valueType = 2;
+                    bufferPoints = new double[countPoints];
+                }
+            }
+
+            object v2 = v1;
+            v1 = p;
+
+            if (valueType == 0)
+            {
+                Vector2 point = (Vector2) p;
+                double tx, ty;
+                api.projection.CoordinatesToTile(point.x, point.y, zoom, out tx, out ty);
+                tx = (tx - bufferPosition.x) * OnlineMapsUtils.tileSize;
+                ty = (ty - bufferPosition.y) * OnlineMapsUtils.tileSize;
+
+                if (tx < minX) minX = tx;
+                if (tx > maxX) maxX = tx;
+                if (ty < minY) minY = ty;
+                if (ty > maxY) maxY = ty;
+
+                bufferPoints[i * 2] = tx;
+                bufferPoints[i * 2 + 1] = ty;
+            }
+            else if (i % 2 == 1)
+            {
+                double tx = 0, ty = 0;
+                if (valueType == 1) api.projection.CoordinatesToTile((float) v2, (float) v1, zoom, out tx, out ty);
+                else if (valueType == 2) api.projection.CoordinatesToTile((double) v2, (double) v1, zoom, out tx, out ty);
+                tx = (tx - bufferPosition.x) * OnlineMapsUtils.tileSize;
+                ty = (ty - bufferPosition.y) * OnlineMapsUtils.tileSize;
+
+                if (tx < minX) minX = tx;
+                if (tx > maxX) maxX = tx;
+                if (ty < minY) minY = ty;
+                if (ty > maxY) maxY = ty;
+
+                bufferPoints[i - 1] = tx;
+                bufferPoints[i] = ty;
+            }
+
+            i++;
+        }
+        return bufferPoints;
+    }
+
     protected List<Vector2> GetLocalPoints(IEnumerable points, bool closed = false, bool optimize = true)
     {
         double sx, sy;
-        int apiZoom = api.buffer.apiZoom;
-        OnlineMapsProjection projection = api.projection;
+        OnlineMaps map = api;
+        int apiZoom = map.buffer.apiZoom;
+        OnlineMapsProjection projection = map.projection;
         projection.CoordinatesToTile(tlx, tly, apiZoom, out sx, out sy);
 
         int maxX = 1 << apiZoom;
 
-        List<Vector2> localPoints = new List<Vector2>(1024);
+        if (localPoints == null) localPoints = new List<Vector2>();
+        else localPoints.Clear();
 
         double ppx = 0;
-        double scaleX = OnlineMapsUtils.tileSize * api.tilesetSize.x / api.tilesetWidth;
-        double scaleY = OnlineMapsUtils.tileSize * api.tilesetSize.y / api.tilesetHeight;
+        double scaleX = OnlineMapsUtils.tileSize * map.tilesetSize.x / map.tilesetWidth;
+        double scaleY = OnlineMapsUtils.tileSize * map.tilesetSize.y / map.tilesetHeight;
 
         double prx = 0, pry = 0;
 
-        object v1 = null, v2 = null;
-        int i = 0;
+        object v1 = null;
+        int i = -1;
         int valueType = -1; // 0 - Vector2, 1 - float, 2 - double
         bool isOptimized = false;
         double px = 0, py = 0;
 
-        foreach (object p in points)
+        IEnumerator enumerator = points.GetEnumerator();
+        while (enumerator.MoveNext())
         {
+            i++;
+
+            object p = enumerator.Current;
             if (valueType == -1)
             {
                 if (p is Vector2) valueType = 0;
@@ -804,7 +822,7 @@ public class OnlineMapsDrawingElement
                 else if (p is double) valueType = 2;
             }
 
-            v2 = v1;
+            object v2 = v1;
             v1 = p;
 
             bool useValue = false;
@@ -821,8 +839,6 @@ public class OnlineMapsDrawingElement
                 else if (valueType == 2) projection.CoordinatesToTile((double)v2, (double)v1, apiZoom, out px, out py);
                 useValue = true;
             }
-
-            i++;
 
             if (!useValue) continue;
 
@@ -890,7 +906,6 @@ public class OnlineMapsDrawingElement
 
             Vector2 np = new Vector2((float)rx1, (float)ry1);
             localPoints.Add(np);
-
         }
 
         if (closed) localPoints.Add(localPoints[0]);
@@ -915,12 +930,12 @@ public class OnlineMapsDrawingElement
         return false;
     }
 
-    protected void InitLineMesh(IEnumerable points, OnlineMapsTileSetControl control, out List<Vector3> verticles, out List<Vector3> normals, out List<int> triangles, out List<Vector2> uv, float weight, bool closed = false)
+    protected void InitLineMesh(IEnumerable points, OnlineMapsTileSetControl control, ref List<Vector3> vertices, ref List<Vector3> normals, ref List<int> triangles, ref List<Vector2> uv, float width, bool closed = false, bool optimize = true)
     {
         api.buffer.GetCorners(out tlx, out tly, out brx, out bry);
         if (brx < tlx) brx += 360;
 
-        List<Vector2> localPoints = GetLocalPoints(points, closed);
+        List<Vector2> localPoints = GetLocalPoints(points, closed, optimize);
         List<Vector2> activePoints = new List<Vector2>(localPoints.Count);
 
         float lastPointX = 0;
@@ -931,10 +946,17 @@ public class OnlineMapsDrawingElement
 
         bestElevationYScale = control.GetBestElevationYScale(tlx, tly, brx, bry);
 
-        verticles = new List<Vector3>(localPoints.Count * 4);
-        normals = new List<Vector3>(localPoints.Count * 4);
-        triangles = new List<int>(localPoints.Count * 6);
-        uv = new List<Vector2>(localPoints.Count * 6);
+        if (vertices == null) vertices = new List<Vector3>(Mathf.Max(Mathf.NextPowerOfTwo(localPoints.Count * 4), 32));
+        else vertices.Clear();
+
+        if (normals == null) normals = new List<Vector3>(vertices.Capacity);
+        else normals.Clear();
+
+        if (triangles == null) triangles = new List<int>(Mathf.Max(Mathf.NextPowerOfTwo(localPoints.Count * 6), 32));
+        else triangles.Clear();
+
+        if (uv == null) uv = new List<Vector2>(triangles.Capacity);
+        else uv.Clear();
 
         Vector2[] intersections = new Vector2[4];
 
@@ -946,7 +968,7 @@ public class OnlineMapsDrawingElement
 
             int countIntersections = 0;
 
-            if (i > 0)
+            if (i > 0 && checkMapBoundaries)
             {
                 float crossTopX, crossTopY, crossLeftX, crossLeftY, crossBottomX, crossBottomY, crossRightX, crossRightY;
 
@@ -980,31 +1002,38 @@ public class OnlineMapsDrawingElement
                 else if (countIntersections == 2)
                 {
                     Vector2 lastPoint = new Vector2(lastPointX, lastPointY);
-                    int minIndex = (lastPoint - intersections[0]).magnitude < (lastPoint - intersections[1]).magnitude? 0: 1;
+                    int minIndex = (lastPoint - intersections[0]).sqrMagnitude < (lastPoint - intersections[1]).sqrMagnitude? 0: 1;
                     activePoints.Add(intersections[minIndex]);
                     activePoints.Add(intersections[1 - minIndex]);
                 }
             }
 
-            if (px >= 0 && py >= 0 && px <= sizeX && py <= sizeY) activePoints.Add(p);
-            else if (activePoints.Count > 0) DrawActivePoints(control, ref activePoints, ref verticles, ref normals, ref triangles, ref uv, weight);
+            if (!checkMapBoundaries || (px >= 0 && py >= 0 && px <= sizeX && py <= sizeY)) activePoints.Add(p);
+            else if (activePoints.Count > 0) DrawActivePoints(control, ref activePoints, ref vertices, ref normals, ref triangles, ref uv, width);
 
             lastPointX = px;
             lastPointY = py;
         }
 
-        if (activePoints.Count > 0) DrawActivePoints(control, ref activePoints, ref verticles, ref normals, ref triangles, ref uv, weight);
+        if (activePoints.Count > 0) DrawActivePoints(control, ref activePoints, ref vertices, ref normals, ref triangles, ref uv, width);
     }
 
     protected bool InitMesh(OnlineMapsTileSetControl control, string name, Color borderColor, Color backgroundColor = default(Color), Texture borderTexture = null, Texture backgroundTexture = null)
     {
-        if (mesh != null) return false;
+        if (mesh != null)
+        {
+            materials[0].color = borderColor;
+            if (backgroundColor != default(Color)) materials[1].color = backgroundColor;
+            return false;
+        }
 
         gameObject = new GameObject(name);
         gameObject.transform.parent = control.drawingsGameObject.transform;
         gameObject.transform.localPosition = Vector3.zero;
         gameObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
         gameObject.transform.localScale = Vector3.one;
+        gameObject.layer = control.drawingsGameObject.layer;
+
         MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
         MeshRenderer renderer = gameObject.AddComponent<MeshRenderer>();
         mesh = new Mesh {name = name};

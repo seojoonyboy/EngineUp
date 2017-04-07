@@ -8,7 +8,7 @@ using UnityEngine;
 /// The base class for markers.
 /// </summary>
 [Serializable]
-public class OnlineMapsMarkerBase
+public class OnlineMapsMarkerBase: IOnlineMapsInteractiveElement
 {
     /// <summary>
     /// Default event caused to draw tooltip.
@@ -49,6 +49,11 @@ public class OnlineMapsMarkerBase
     /// Events that occur when user press on the marker.
     /// </summary>
     public Action<OnlineMapsMarkerBase> OnPress;
+
+    /// <summary>
+    /// Event that occurs when the marker position changed.
+    /// </summary>
+    public Action<OnlineMapsMarkerBase> OnPositionChanged;
 
     /// <summary>
     /// Events that occur when user release on the marker.
@@ -129,6 +134,7 @@ public class OnlineMapsMarkerBase
         {
             longitude = value.x;
             latitude = value.y;
+            if (OnPositionChanged != null) OnPositionChanged(this);
         }
     }
 
@@ -198,6 +204,11 @@ public class OnlineMapsMarkerBase
         map.projection.CoordinatesToTile(longitude, latitude, map.zoom, out px, out py);
     }
 
+    public void GetTilePosition(out double px, out double py, int zoom)
+    {
+        map.projection.CoordinatesToTile(longitude, latitude, zoom, out px, out py);
+    }
+
     /// <summary>
     /// Turns the marker in the direction specified coordinates.
     /// </summary>
@@ -234,6 +245,7 @@ public class OnlineMapsMarkerBase
     {
         longitude = lng;
         latitude = lat;
+        if (OnPositionChanged != null) OnPositionChanged(this);
     }
 
     /// <summary>

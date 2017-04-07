@@ -123,6 +123,8 @@ public class OnlineMapsBuildings : MonoBehaviour
     private bool sendBuildingsReceived = false;
     private string requestData;
     private float lastRequestTime;
+
+    [NonSerialized]
     private OnlineMapsOSMAPIQuery osmRequest;
 
     private static OnlineMaps map
@@ -151,9 +153,7 @@ public class OnlineMapsBuildings : MonoBehaviour
         if (OnCreateBuilding != null && !OnCreateBuilding(data)) return;
         if (buildings.ContainsKey(data.way.id) || unusedBuildings.ContainsKey(data.way.id)) return;
 
-        OnlineMapsBuildingBase building = null;
-
-        building = OnlineMapsBuildingBuiltIn.Create(this, data.way, data.nodes);
+        OnlineMapsBuildingBase building = OnlineMapsBuildingBuiltIn.Create(this, data.way, data.nodes);
 
         if (building != null)
         {
@@ -243,6 +243,7 @@ public class OnlineMapsBuildings : MonoBehaviour
         buildingContainer.transform.parent = transform;
         buildingContainer.transform.localPosition = Vector3.zero;
         buildingContainer.transform.localRotation = Quaternion.Euler(Vector3.zero);
+        buildingContainer.transform.localScale = Vector3.one;
     }
 
     private void SendRequest()
@@ -258,6 +259,8 @@ public class OnlineMapsBuildings : MonoBehaviour
 
     private void Start()
     {
+        buildingContainer.layer = map.gameObject.layer;
+
         map.OnChangePosition += UpdateBuildings;
         map.OnChangeZoom += UpdateBuildingsScale;
 
@@ -360,7 +363,7 @@ public class OnlineMapsBuildings : MonoBehaviour
         double px, py;
         map.GetTilePosition(out px, out py);
 
-        float maxDistance = Mathf.Pow(map.width / 2 / OnlineMapsUtils.tileSize, 2) + Mathf.Pow(map.height / 2 / OnlineMapsUtils.tileSize, 2) * 4;
+        float maxDistance = Mathf.Pow((map.width / OnlineMapsUtils.tileSize) >> 1, 2) + Mathf.Pow((map.height / OnlineMapsUtils.tileSize) >> 1, 2) * 4;
 
         foreach (KeyValuePair<string, OnlineMapsBuildingBase> building in unusedBuildings)
         {
@@ -423,21 +426,15 @@ public class OnlineMapsBuildings : MonoBehaviour
     private void UpdateBuildingsScale()
     {
         UpdateBuildings();
-        foreach (KeyValuePair<string, OnlineMapsBuildingBase> building in buildings)
-        {
-            OnlineMapsBuildingBase value = building.Value;
-            if (value.initialZoom == map.zoom) value.transform.localScale = Vector3.one;
-            else if (value.initialZoom < map.zoom) value.transform.localScale = Vector3.one * (1 << map.zoom - value.initialZoom);
-            else if (value.initialZoom > map.zoom) value.transform.localScale = Vector3.one / (1 << value.initialZoom - map.zoom);
-        }
+        foreach (KeyValuePair<string, OnlineMapsBuildingBase> building in buildings) UpdateBuildingScale(building.Value);
+        foreach (KeyValuePair<string, OnlineMapsBuildingBase> building in unusedBuildings) UpdateBuildingScale(building.Value);
+    }
 
-        foreach (KeyValuePair<string, OnlineMapsBuildingBase> building in unusedBuildings)
-        {
-            OnlineMapsBuildingBase value = building.Value;
-            if (value.initialZoom == map.zoom) value.transform.localScale = Vector3.one;
-            else if (value.initialZoom < map.zoom) value.transform.localScale = Vector3.one * (1 << map.zoom - value.initialZoom);
-            else if (value.initialZoom > map.zoom) value.transform.localScale = Vector3.one / (1 << value.initialZoom - map.zoom);
-        }
+    private static void UpdateBuildingScale(OnlineMapsBuildingBase building)
+    {
+        if (building.initialZoom == map.zoom) building.transform.localScale = Vector3.one;
+        else if (building.initialZoom < map.zoom) building.transform.localScale = Vector3.one * (1 << map.zoom - building.initialZoom);
+        else if (building.initialZoom > map.zoom) building.transform.localScale = Vector3.one / (1 << building.initialZoom - map.zoom);
     }
 }
 

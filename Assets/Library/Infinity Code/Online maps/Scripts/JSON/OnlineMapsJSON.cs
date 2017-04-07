@@ -64,34 +64,31 @@ public class OnlineMapsJSON
             for (int i = 0; i < list.Count; i++)
             {
                 object child = list[i];
-                object item = null;
+                object item;
                 if (child is IDictionary) item = DeserializeObject(elementType, child as Dictionary<string, object>);
                 else if (child is IList) item = DeserializeArray(elementType, child as List<object>);
-                else item = DeserializeValue(elementType, child); ;
+                else item = DeserializeValue(elementType, child);
                 v.SetValue(item, i);
             }
 
             return v;
         }
-#if !NETFX_CORE
-        if (type.IsGenericType)
-#else
-        if (type.GetTypeInfo().IsGenericType)
-#endif
+        if (OnlineMapsReflectionHelper.IsGenericType(type))
         {
-            Type listType = type.GetGenericArguments()[0];
+            Type listType = OnlineMapsReflectionHelper.GetGenericArguments(type)[0];
             object v = Activator.CreateInstance(type);
 
             for (int i = 0; i < list.Count; i++)
             {
                 object child = list[i];
-                object item = null;
+                object item;
                 if (child is IDictionary) item = DeserializeObject(listType, child as Dictionary<string, object>);
                 else if (child is IList) item = DeserializeArray(listType, child as List<object>);
-                else item = DeserializeValue(listType, child); ;
+                else item = DeserializeValue(listType, child);
                 try
                 {
-                    type.GetMethod("Add").Invoke(v, new[] { item });
+                    MethodInfo methodInfo = OnlineMapsReflectionHelper.GetMethod(type, "Add");
+                    if (methodInfo != null) methodInfo.Invoke(v, new[] { item });
                 }
                 catch
                 {
@@ -107,14 +104,12 @@ public class OnlineMapsJSON
 
     private static object DeserializeObject(Type type, Dictionary<string, object> table)
     {
-        MemberInfo[] members = type.GetMembers(BindingFlags.Instance | BindingFlags.Public);
+        IEnumerable<MemberInfo> members = OnlineMapsReflectionHelper.GetMembers(type, BindingFlags.Instance | BindingFlags.Public);
 
         object v = Activator.CreateInstance(type);
 
-        for (int i = 0; i < members.Length; i++)
+        foreach (MemberInfo member in members)
         {
-            MemberInfo member = members[i];
-
 #if !NETFX_CORE
             MemberTypes memberType = member.MemberType;
             if (memberType != MemberTypes.Field && memberType != MemberTypes.Property) continue;
@@ -144,15 +139,7 @@ public class OnlineMapsJSON
             {
                 if (table.TryGetValue(member.Name, out item))
                 {
-                    object cv = null;
-                    Type t = memberType == MemberTypes.Field ? ((FieldInfo) member).FieldType : ((PropertyInfo) member).PropertyType;
-                    if (item is IDictionary) cv = DeserializeObject(t, item as Dictionary<string, object>);
-                    else if (item is IList) cv = DeserializeArray(t, item as List<object>);
-                    else cv = DeserializeValue(t, item);
-
-                    if (memberType == MemberTypes.Field) ((FieldInfo)member).SetValue(v, cv);
-                    else ((PropertyInfo)member).SetValue(v, cv, null);
-
+                    DeserializeValue(memberType, member, item, v);
                     continue;
                 }
             }
@@ -162,15 +149,7 @@ public class OnlineMapsJSON
                 {
                     if (table.TryGetValue(alias.aliases[j], out item))
                     {
-                        object cv = null;
-                        Type t = memberType == MemberTypes.Field ? ((FieldInfo)member).FieldType : ((PropertyInfo)member).PropertyType;
-                        if (item is IDictionary) cv = DeserializeObject(t, item as Dictionary<string, object>);
-                        else if (item is IList) cv = DeserializeArray(t, item as List<object>);
-                        else cv = DeserializeValue(t, item);
-
-                        if (memberType == MemberTypes.Field) ((FieldInfo)member).SetValue(v, cv);
-                        else ((PropertyInfo)member).SetValue(v, cv, null);
-
+                        DeserializeValue(memberType, member, item, v);
                         break;
                     }
                 }
@@ -178,6 +157,18 @@ public class OnlineMapsJSON
         }
 
         return v;
+    }
+
+    private static void DeserializeValue(MemberTypes memberType, MemberInfo member, object item, object v)
+    {
+        object cv;
+        Type t = memberType == MemberTypes.Field ? ((FieldInfo) member).FieldType : ((PropertyInfo) member).PropertyType;
+        if (item is IDictionary) cv = DeserializeObject(t, item as Dictionary<string, object>);
+        else if (item is IList) cv = DeserializeArray(t, item as List<object>);
+        else cv = DeserializeValue(t, item);
+
+        if (memberType == MemberTypes.Field) ((FieldInfo) member).SetValue(v, cv);
+        else ((PropertyInfo) member).SetValue(v, cv, null);
     }
 
     private Token LookAhead()
@@ -665,7 +656,11 @@ public class OnlineMapsJSON
 
     public static OnlineMapsJSONItem Serialize(object obj)
     {
+#if !UNITY_WP_8_1 || UNITY_EDITOR
         if (obj == null || obj is DBNull) return new OnlineMapsJSONValue(obj, OnlineMapsJSONValue.ValueType.NULL);
+#else
+        if (obj == null) return new OnlineMapsJSONValue(obj, OnlineMapsJSONValue.ValueType.NULL);
+#endif
         if (obj is string || obj is bool || obj is int || obj is long || obj is short || obj is float || obj is double) return new OnlineMapsJSONValue(obj);
         if (obj is IEnumerable)
         {
@@ -677,7 +672,7 @@ public class OnlineMapsJSON
 
         OnlineMapsJSONObject o = new OnlineMapsJSONObject();
         Type type = obj.GetType();
-        FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
+        IEnumerable<FieldInfo> fields = OnlineMapsReflectionHelper.GetFields(type, BindingFlags.Instance | BindingFlags.Public);
         foreach (FieldInfo field in fields) o.Add(field.Name, Serialize(field.GetValue(obj)));
         return o;        
     }

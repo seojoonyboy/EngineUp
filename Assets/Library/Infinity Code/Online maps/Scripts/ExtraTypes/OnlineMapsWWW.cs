@@ -30,7 +30,6 @@ public class OnlineMapsWWW
     private byte[] _bytes;
     private string _error;
     private bool _isDone;
-    private string _text;
     private string _url;
     private string responseHeadersString;
     private string _id;
@@ -57,7 +56,7 @@ public class OnlineMapsWWW
         get
         {
             if (type == RequestType.www) return www.bytesDownloaded;
-            return (_bytes != null) ? _bytes.Length: 0;
+            return _bytes != null ? _bytes.Length: 0;
         }
     }
 
@@ -148,7 +147,7 @@ public class OnlineMapsWWW
     public OnlineMapsWWW(string url, RequestType type, string reqID)
     {
         this.type = type;
-        this._url = url;
+        _url = url;
         _id = reqID;
         if (type == RequestType.www)
         {

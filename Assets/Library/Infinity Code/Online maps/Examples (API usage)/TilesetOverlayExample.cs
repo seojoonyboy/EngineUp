@@ -1,6 +1,7 @@
 ﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
+using System;
 using UnityEngine;
 
 namespace InfinityCode.OnlineMapsExamples
@@ -56,7 +57,7 @@ namespace InfinityCode.OnlineMapsExamples
             // Clear overlay mesh
             overlayMesh.Clear(true);
 
-            // Init verticles and normals
+            // Init vertices and normals
             float y = bounds.max.y + 0.5f;
             overlayMesh.vertices = new[]
             {
@@ -111,7 +112,7 @@ namespace InfinityCode.OnlineMapsExamples
 
         private void Update()
         {
-            if (material.color.a != alpha)
+            if (Math.Abs(material.color.a - alpha) > float.Epsilon)
             {
                 Color color = material.color;
                 color.a = alpha;

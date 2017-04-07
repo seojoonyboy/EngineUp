@@ -11,10 +11,42 @@ using UnityEngine;
 /// </summary>
 public class OnlineMapsDrawingLine : OnlineMapsDrawingElement
 {
+    private static List<Vector3> vertices;
+    private static List<Vector3> normals;
+    private static List<int> triangles;
+    private static List<Vector2> uv;
+
+    private Color _color = Color.black;
+    private Texture2D _texture;
+    private float _width = 1;
+    private IEnumerable _points;
+
     /// <summary>
     /// Color of the line.
     /// </summary>
-    public Color color = Color.black;
+    public Color color
+    {
+        get { return _color; }
+        set
+        {
+            _color = value;
+            OnlineMaps.instance.Redraw();
+        }
+    }
+
+    /// <summary>
+    /// Texture of line.\n
+    /// Uses only in tileset.
+    /// </summary>
+    public Texture2D texture
+    {
+        get { return _texture; }
+        set
+        {
+            _texture = value;
+            OnlineMaps.instance.Redraw();
+        }
+    }
 
     /// <summary>
     /// IEnumerable of points of the line. Geographic coordinates.\n
@@ -32,18 +64,25 @@ public class OnlineMapsDrawingLine : OnlineMapsDrawingElement
         }
     }
 
-    /// <summary>
-    /// Texture of line.\n
-    /// Uses only in tileset.
-    /// </summary>
-    public Texture2D texture;
+    [Obsolete("Renamed. Use width.")]
+    public float weight
+    {
+        get { return width; }
+        set { width = value; }
+    }
 
     /// <summary>
-    /// Weight of the line.
+    /// Width of the line.
     /// </summary>
-    public float weight = 1;
-
-    private IEnumerable _points;
+    public float width
+    {
+        get { return _width; }
+        set
+        {
+            _width = value;
+            OnlineMaps.instance.Redraw();
+        }
+    }
 
     /// <summary>
     /// Creates a new line.
@@ -90,17 +129,17 @@ public class OnlineMapsDrawingLine : OnlineMapsDrawingElement
     /// If values float or double, the value should go in pairs(longitude, latitude).
     /// </param>
     /// <param name="color">Color of the line.</param>
-    /// <param name="weight">Weight of the line.</param>
-    public OnlineMapsDrawingLine(IEnumerable points, Color color, float weight) : this(points, color)
+    /// <param name="width">Width of the line.</param>
+    public OnlineMapsDrawingLine(IEnumerable points, Color color, float width) : this(points, color)
     {
-        this.weight = weight;
+        this.width = width;
     }
 
     public override void Draw(Color32[] buffer, OnlineMapsVector2i bufferPosition, int bufferWidth, int bufferHeight, int zoom, bool invertY = false)
     {
         if (!visible) return;
 
-        DrawLineToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, color, weight, false, invertY);
+        DrawLineToBuffer(buffer, bufferPosition, bufferWidth, bufferHeight, zoom, points, color, width, false, invertY);
     }
 
     public override void DrawOnTileset(OnlineMapsTileSetControl control, int index)
@@ -115,16 +154,20 @@ public class OnlineMapsDrawingLine : OnlineMapsDrawingElement
 
         InitMesh(control, "Line", color, default(Color), texture);
 
-        List<Vector3> verticles;
-        List<Vector3> normals;
-        List<int> triangles;
-        List<Vector2> uv;
-        InitLineMesh(points, control, out verticles, out normals, out triangles, out uv, weight);
+        InitLineMesh(points, control, ref vertices, ref normals, ref triangles, ref uv, width);
 
         mesh.Clear();
-        mesh.vertices = verticles.ToArray();
+
+#if UNITY_4_6 || UNITY_4_7 || UNITY_5_0 || UNITY_5_1
+        mesh.vertices = vertices.ToArray();
         mesh.normals = normals.ToArray();
         mesh.uv = uv.ToArray();
+#else
+        mesh.SetVertices(vertices);
+        mesh.SetNormals(normals);
+        mesh.SetUVs(0, uv);
+#endif
+
         mesh.SetTriangles(triangles.ToArray(), 0);
 
         UpdateMaterialsQuote(control, index);
@@ -151,10 +194,9 @@ public class OnlineMapsDrawingLine : OnlineMapsDrawingElement
         object v1 = null;
         object v2 = null;
         object v3 = null;
-        object v4 = null;
         int i = 0;
 
-        float sqrW = weight * weight;
+        float sqrW = width * width;
 
         foreach (object p in points)
         {
@@ -165,7 +207,7 @@ public class OnlineMapsDrawingLine : OnlineMapsDrawingElement
                 else if (p is double) valueType = 2;
             }
 
-            v4 = v3;
+            object v4 = v3;
             v3 = v2;
             v2 = v1;
             v1 = p;

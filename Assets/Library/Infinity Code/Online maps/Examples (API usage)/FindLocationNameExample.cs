@@ -23,7 +23,7 @@ namespace InfinityCode.OnlineMapsExamples
             Vector2 mouseCoords = OnlineMapsControlBase.instance.GetCoords();
 
             // Try find location name by coordinates.
-            OnlineMapsGoogleGeocoding query = OnlineMapsGoogleGeocoding.Find(null, mouseCoords.y + "," + mouseCoords.x);
+            OnlineMapsGoogleGeocoding query = OnlineMapsGoogleGeocoding.Find(mouseCoords);
             query.OnComplete += OnQueryComplete;
         }
 

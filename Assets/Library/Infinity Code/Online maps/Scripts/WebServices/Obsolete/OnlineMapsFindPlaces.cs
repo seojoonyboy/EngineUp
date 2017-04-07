@@ -3,6 +3,9 @@
 
 using System;
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGooglePlaces.
+/// </summary>
 [Obsolete("OnlineMapsFindPlaces is obsolete. Use OnlineMapsGooglePlaces.")]
 public class OnlineMapsFindPlaces:OnlineMapsGooglePlaces
 {
@@ -13,6 +16,9 @@ public class OnlineMapsFindPlaces:OnlineMapsGooglePlaces
     }
 }
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGooglePlacesResult.
+/// </summary>
 [Obsolete("OnlineMapsFindPlacesResult is obsolete. Use OnlineMapsGooglePlacesResult.")]
 public class OnlineMapsFindPlacesResult : OnlineMapsGooglePlacesResult
 {
@@ -26,6 +32,9 @@ public class OnlineMapsFindPlacesResult : OnlineMapsGooglePlacesResult
     }
 }
 
+/// <summary>
+/// This class is obsolete. Use OnlineMapsGooglePlacesResult.Photo.
+/// </summary>
 [Obsolete("OnlineMapsFindPlacesResultPhoto is obsolete. Use OnlineMapsGooglePlacesResult.Photo.")]
 public class OnlineMapsFindPlacesResultPhoto : OnlineMapsGooglePlacesResult.Photo
 {

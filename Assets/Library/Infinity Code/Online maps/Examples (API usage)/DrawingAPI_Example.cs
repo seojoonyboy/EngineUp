@@ -41,7 +41,7 @@ namespace InfinityCode.OnlineMapsExamples
             map.AddDrawingElement(new OnlineMapsDrawingPoly(poly, Color.red, 1, new Color(1, 1, 1, 0.5f)));
 
             // Draw filled rectangle
-            // (position, size, borderColor, borderWeight, backgroundColor)
+            // (position, size, borderColor, borderWidth, backgroundColor)
             map.AddDrawingElement(new OnlineMapsDrawingRect(new Vector2(2, 2), new Vector2(1, 1), Color.green, 1,
                 Color.blue));
         }

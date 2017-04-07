@@ -9,6 +9,7 @@ namespace InfinityCode.OnlineMapsExamples
     /// <summary>
     /// Example of how to get the elevations in the area using Bing Maps Elevation API.
     /// </summary>
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/BingMapsElevationsExample")]
     public class BingMapsElevationsExample : MonoBehaviour
     {
         /// <summary>

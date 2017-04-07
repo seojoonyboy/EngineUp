@@ -42,16 +42,17 @@ public class OnlineMapsJSLoaderEditor:Editor
             File.WriteAllText(filename, text, Encoding.UTF8);
         }
 
-        string original = null;
 #if UNITY_WEBPLAYER
+        string original = null;
+
         original = FindAsset("_OnlineMapsWebplayer");
-#endif
 
         if (original != null)
         {
             string dest = new FileInfo(filename).DirectoryName + "/OnlineMaps.js";
             File.Copy(original, dest, true);
         }
+#endif
 
         EditorUtility.DisplayDialog("Success", "Patching of HTML is finished.", "OK");
     }

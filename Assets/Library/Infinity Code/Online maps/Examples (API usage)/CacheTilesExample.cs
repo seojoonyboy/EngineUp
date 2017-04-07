@@ -1,7 +1,7 @@
 ﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
-#if !UNITY_WEBPLAYER
+#if !UNITY_WEBPLAYER && (!UNITY_WP_8_1 || UNITY_EDITOR)
 
 using System.IO;
 using UnityEngine;
@@ -56,6 +56,7 @@ namespace InfinityCode.OnlineMapsExamples
                 {
                     tile.ApplyTexture(tileTexture);
                     OnlineMaps.instance.buffer.ApplyTile(tile);
+                    OnlineMapsUtils.DestroyImmediate(tileTexture);
                 }
                 else
                 {
@@ -96,7 +97,8 @@ namespace InfinityCode.OnlineMapsExamples
             OnlineMapsTile.OnTileDownloaded += OnTileDownloaded;
 
             // Intercepts requests to the download of the tile.
-            OnlineMaps.instance.OnStartDownloadTile += OnStartDownloadTile;
+            if (OnlineMapsCache.instance != null) OnlineMapsCache.instance.OnStartDownloadTile += OnStartDownloadTile;
+            else OnlineMaps.instance.OnStartDownloadTile += OnStartDownloadTile;
         }
     }
 }

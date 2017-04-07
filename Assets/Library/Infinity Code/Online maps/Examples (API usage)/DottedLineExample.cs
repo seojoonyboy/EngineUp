@@ -1,6 +1,7 @@
 ﻿/*     INFINITY CODE 2013-2017      */
 /*   http://www.infinity-code.com   */
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -68,7 +69,7 @@ namespace InfinityCode.OnlineMapsExamples
         private void Update()
         {
             // If size changed, then update line.
-            if (size != _size) UpdateLine();
+            if (Math.Abs(size - _size) > float.Epsilon) UpdateLine();
         }
 
         private void UpdateLine()
@@ -99,7 +100,7 @@ namespace InfinityCode.OnlineMapsExamples
                     // Calculate offset
                     Vector3 off = new Vector3(Mathf.Cos(a) * size, 0, Mathf.Sin(a) * size);
 
-                    // Init verticles, normals and triangles.
+                    // Init vertices, normals and triangles.
                     int vCount = vertices.Count;
 
                     vertices.Add(lastPosition + off);

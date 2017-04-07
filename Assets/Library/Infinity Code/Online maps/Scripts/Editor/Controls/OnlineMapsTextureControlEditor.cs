@@ -152,9 +152,9 @@ public class OnlineMapsTextureControlEditor : Editor
                 }
                 else
                 {
-                    GameObject prefab = pDefault3DMarker.objectReferenceValue != null ? pDefault3DMarker.objectReferenceValue as GameObject : GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    GameObject prefab = pDefault3DMarker.objectReferenceValue != null ? pDefault3DMarker.objectReferenceValue as GameObject : null;
                     control.AddMarker3D(OnlineMaps.instance.position, prefab);
-                    if (pDefault3DMarker.objectReferenceValue == null) OnlineMapsUtils.DestroyImmediate(prefab);
+                    //if (pDefault3DMarker.objectReferenceValue == null) OnlineMapsUtils.DestroyImmediate(prefab);
                 }
                 dirty = true;
             }

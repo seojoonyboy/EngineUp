@@ -18,7 +18,8 @@ namespace InfinityCode.OnlineMapsExamples
             map = OnlineMaps.instance;
 
             // Subscribe to the tile download event.
-            map.OnStartDownloadTile += OnStartDownloadTile;
+            if (OnlineMapsCache.instance != null) OnlineMapsCache.instance.OnStartDownloadTile += OnStartDownloadTile;
+            else map.OnStartDownloadTile += OnStartDownloadTile;
         }
 
         private void OnStartDownloadTile(OnlineMapsTile tile)
@@ -35,6 +36,9 @@ namespace InfinityCode.OnlineMapsExamples
 
                 // Send tile to buffer
                 map.buffer.ApplyTile(tile);
+
+                // Destroy the texture, because it is no longer needed.
+                OnlineMapsUtils.DestroyImmediate(tileTexture);
             }
             else
             {

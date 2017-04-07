@@ -8,6 +8,7 @@ namespace InfinityCode.OnlineMapsExamples
     /// <summary>
     /// Search for a POIs, by using QQ search
     /// </summary>
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/QQSearchExample")]
     public class QQSearchExample : MonoBehaviour
     {
         /// <summary>

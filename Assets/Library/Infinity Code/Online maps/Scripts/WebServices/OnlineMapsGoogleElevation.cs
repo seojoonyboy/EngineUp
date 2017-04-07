@@ -22,11 +22,7 @@ public class OnlineMapsGoogleElevation:OnlineMapsGoogleAPIQuery
     {
         _status = OnlineMapsQueryStatus.downloading;
         StringBuilder url = new StringBuilder("https://maps.googleapis.com/maps/api/elevation/xml?sensor=false&locations=").Append(location.y).Append(",").Append(location.x);
-        if (!string.IsNullOrEmpty(key)) url.Append("&key=").Append(key);
-        if (!string.IsNullOrEmpty(client)) url.Append("&client=").Append(client);
-        if (!string.IsNullOrEmpty(signature)) url.Append("&signature=").Append(signature);
-        www = OnlineMapsUtils.GetWWW(url);
-        www.OnComplete += OnRequestComplete;
+        Download(url, key, client, signature);
     }
 
     protected OnlineMapsGoogleElevation(Vector2[] locations, string key, string client, string signature)
@@ -40,11 +36,7 @@ public class OnlineMapsGoogleElevation:OnlineMapsGoogleAPIQuery
             if (i < locations.Length - 1) url.Append("|");
         }
 
-        if (!string.IsNullOrEmpty(key)) url.Append("&key=").Append(key);
-        if (!string.IsNullOrEmpty(client)) url.Append("&client=").Append(client);
-        if (!string.IsNullOrEmpty(signature)) url.Append("&signature=").Append(signature);
-        www = OnlineMapsUtils.GetWWW(url);
-        www.OnComplete += OnRequestComplete;
+        Download(url, key, client, signature);
     }
 
     private OnlineMapsGoogleElevation(Vector2[] path, int samples, string key, string client, string signature)
@@ -61,6 +53,11 @@ public class OnlineMapsGoogleElevation:OnlineMapsGoogleAPIQuery
 
         url.Append("&samples=").Append(samples);
 
+        Download(url, key, client, signature);
+    }
+
+    private void Download(StringBuilder url, string key, string client, string signature)
+    {
         if (!string.IsNullOrEmpty(key)) url.Append("&key=").Append(key);
         if (!string.IsNullOrEmpty(client)) url.Append("&client=").Append(client);
         if (!string.IsNullOrEmpty(signature)) url.Append("&signature=").Append(signature);

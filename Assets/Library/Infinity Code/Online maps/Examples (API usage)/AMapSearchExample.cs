@@ -8,6 +8,7 @@ namespace InfinityCode.OnlineMapsExamples
     /// <summary>
     /// Search for a POIs, by using AMap search
     /// </summary>
+    [AddComponentMenu("Infinity Code/Online Maps/Examples (API Usage)/AMapSearchExample")]
     public class AMapSearchExample : MonoBehaviour
     {
         /// <summary>
