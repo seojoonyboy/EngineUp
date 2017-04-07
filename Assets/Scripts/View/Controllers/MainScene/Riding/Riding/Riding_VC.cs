@@ -99,7 +99,7 @@ public class Riding_VC : MonoBehaviour {
     private void sliderRefresh(double dist) {
         float _dist = (float)dist;
         if(_dist < sliderMaxValue) {
-            slider.value = _dist;
+            slider.value = _dist / sliderMaxValue;
         }
         else {
             float remainder = (_dist % sliderMaxValue) / sliderMaxValue;
