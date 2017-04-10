@@ -52,7 +52,7 @@ public class Result_VC : MonoBehaviour {
 
     void OnDisable() {
         map.GetComponent<OnlineMaps>().RemoveAllDrawingElements();
-        map.SetActive(true);
+        map.SetActive(false);
         //임시로 직접 접근 (수정 필요)
         Debug.Log("filteredCoordsLists 비우기");
         ridingStore.filteredCoordsLists.Clear();

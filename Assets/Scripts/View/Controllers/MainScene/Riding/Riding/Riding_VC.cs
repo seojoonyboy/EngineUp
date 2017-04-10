@@ -39,6 +39,8 @@ public class Riding_VC : MonoBehaviour {
 
     public UISlider slider;
     public int sliderMaxValue;
+
+    private int boxNum = 0;
     void Start() {
         gameManager = GameManager.Instance;
         //gosReceiver = Instantiate(gpsPref);
@@ -77,6 +79,8 @@ public class Riding_VC : MonoBehaviour {
     //모달 활성화
     public void onRidingEndButton() {
         exitModal.SetActive(true);
+        exitModal.transform.Find("Modal/Description").GetComponent<UILabel>().text = "지금 종료하시면 \n총 " + boxNum + "개의 상자를 얻을 수 있습니다.";
+        exitModal.transform.Find("Modal/BoxIcon/Label").GetComponent<UILabel>().text = "x " + boxNum;
         //라이딩 일시정지
         Time.timeScale = 0;
     }
@@ -94,6 +98,7 @@ public class Riding_VC : MonoBehaviour {
         maxLabel.text = (Math.Round(maxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
         uphillDistanceLabel.text = (Math.Round(uphillDist, 2, MidpointRounding.AwayFromZero)).ToString();
         boxLabel.text = "X " + boxNum;
+        this.boxNum = boxNum;
     }
 
     private void sliderRefresh(double dist) {
