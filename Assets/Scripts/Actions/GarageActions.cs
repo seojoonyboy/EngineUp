@@ -19,5 +19,4 @@ public class getCharacters_act : NetworkAction { }
 public class garage_unlock_char : equip_act { }
 
 //박스 관련
-public class garage_getBox_act : equip_act { }
 public class garage_box_open : NetworkAction { }

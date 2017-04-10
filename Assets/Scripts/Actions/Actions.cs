@@ -10,7 +10,7 @@ public enum ActionTypes {
     GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DESTROY, MY_GROUP_PANEL,
     GPS_SEND,
     GARAGE_CHAR_INIT, GARAGE_ITEM_INIT, GARAGE_ITEM_EQUIP, GARAGE_ITEM_UNEQUIP, GARAGE_LOCK, GARAGE_SELL, 
-    BOX_INIT, BOX_OPEN, CHAR_OPEN,
+    BOX_OPEN, CHAR_OPEN,
     MYINFO
 }
 
@@ -135,9 +135,6 @@ public static class ActionCreator{
             break;
         case ActionTypes.GARAGE_SELL:
             _return = new garage_sell_act();
-            break;
-        case ActionTypes.BOX_INIT:
-            _return = new garage_getBox_act();
             break;
         case ActionTypes.BOX_OPEN:
             _return = new garage_box_open();

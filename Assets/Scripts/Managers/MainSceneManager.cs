@@ -26,6 +26,7 @@ public class MainSceneManager : fbl_SceneManager {
         groupViewCtrler.locationStore = gm.locationStore;
         statViewCtrler.userStore = gm.userStore;
         garageViewCtrler.userStore = gm.userStore;
+        boxViewCtrler.userStore = gm.userStore;
 
         gm.friendsStore.addListener(friendViewCtrler.OnFriendsStoreListener);
         gm.ridingStore.addListener(resultViewCtrler.onRidingListener);
@@ -38,7 +39,8 @@ public class MainSceneManager : fbl_SceneManager {
         gm.charInvenStore.addListener(garageViewCtrler.onCharStoreListener);
         gm.userStore.addListener(garageViewCtrler.onUserStoreListener);
 
-        gm.boxInvenStore.addListener(boxViewCtrler.onStoreListener);
+        gm.boxInvenStore.addListener(boxViewCtrler.onBoxStoreListener);
+        gm.userStore.addListener(boxViewCtrler.onUserStoreListener);
     }
 
     public void offModal() {

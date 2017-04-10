@@ -13,44 +13,17 @@ public class Box_Inventory : AjwStore {
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
+    public boxOpenCallback[] openedItem;
+
     public ActionTypes eventType;
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
-            case ActionTypes.BOX_INIT:
-                getBoxes(action as garage_getBox_act);
-                break;
             case ActionTypes.BOX_OPEN:
                 open(action as garage_box_open);
                 break;
         }
         eventType = action.type;
-    }
-
-    //내 박스 목록 불러오기
-    private void getBoxes(garage_getBox_act payload) {
-        switch (payload.status) {
-            case NetworkAction.statusTypes.REQUEST:
-                storeStatus = storeStatus.WAITING_REQ;
-                var strBuilder = GameManager.Instance.sb;
-                strBuilder.Remove(0, strBuilder.Length);
-                strBuilder.Append(networkManager.baseUrl)
-                    .Append("inventory/characters");
-                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
-                break;
-            case NetworkAction.statusTypes.SUCCESS:
-                storeStatus = storeStatus.NORMAL;
-                message = "박스를 성공적으로 불러왔습니다.";
-                callbackGetchar callback = callbackGetchar.fromJSON(payload.response.data);
-                _emitChange();
-                break;
-            case NetworkAction.statusTypes.FAIL:
-                storeStatus = storeStatus.ERROR;
-                Debug.Log(payload.response.data);
-                message = "박스를 불러오는 과정에서 문제가 발생하였습니다.";
-                _emitChange();
-                break;
-        }
     }
 
     //박스 오픈
@@ -61,21 +34,51 @@ public class Box_Inventory : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("inventory/characters");
-                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                    .Append("inventory/open_box");
+                networkManager.request("POST", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                message = "박스를 성공적으로 불러왔습니다.";
-                callbackGetchar callback = callbackGetchar.fromJSON(payload.response.data);
+                message = "박스를 성공적으로 오픈하였습니다.";
+                Debug.Log(payload.response.data);
+                openedItem = JsonHelper.getJsonArray<boxOpenCallback>(payload.response.data);
+
+                MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+                dispatcher.dispatch(act);
+
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 Debug.Log(payload.response.data);
-                message = "박스를 불러오는 과정에서 문제가 발생하였습니다.";
+                message = "박스를 오픈하는 과정에서 문제가 발생하였습니다.";
                 _emitChange();
                 break;
         }
+    }
+
+    [System.Serializable]
+    public class boxOpenCallback {
+        public string type;
+        public subBoxOpen_Item item;
+        public subBoxOpen_Char character;
+    }
+
+    [System.Serializable]
+    public class subBoxOpen_Item {
+        public int id;
+        public string name;
+        public string desc;
+        //public int grade;
+        //public int gear;
+        //public string parts;
+        //public int limit_rank;
+    }
+
+    [System.Serializable]
+    public class subBoxOpen_Char {
+        public int id;
+        public string name;
+        public string desc;
     }
 }

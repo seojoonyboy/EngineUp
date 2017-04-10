@@ -23,6 +23,8 @@ public class User : AjwStore {
     public represent_character myCharacters;
 
     NetworkManager networkManager = NetworkManager.Instance;
+
+    private GameManager gm = GameManager.Instance;
     // end of prop
     public User(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher){}
 
