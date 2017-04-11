@@ -267,6 +267,7 @@ public class UserData {
     public int gears;
     public int boxes;
     public represent_character represent_character;
+    public status status;
 
     public static UserData fromJSON(string json){
         return JsonUtility.FromJson<UserData>(json);

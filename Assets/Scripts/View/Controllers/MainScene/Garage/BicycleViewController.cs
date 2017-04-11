@@ -25,7 +25,8 @@ public class BicycleViewController : MonoBehaviour {
     public GameObject 
         sellingModal,
         lockingModal,
-        detailModal;
+        detailModal,
+        notifyModal;
 
     public UIGrid[] 
         framePageGrids,
@@ -43,6 +44,8 @@ public class BicycleViewController : MonoBehaviour {
     List<int> lockIdList = new List<int>();
     List<int> unlockList = new List<int>();
     List<int> sellList = new List<int>();
+
+    public GarageViewController controller;
 
     void OnEnable() {
         gm = GameManager.Instance;
@@ -184,12 +187,21 @@ public class BicycleViewController : MonoBehaviour {
         if(selectedItem == null) {
             return;
         }
-        equip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_EQUIP) as equip_act;
-        act._type = equip_act.type.ITEM;
+
+        //아이템을 장착할 수 있는 등급인지
+        int myRank = controller.userStore.myData.status.rank;
         Info info = selectedItem.GetComponent<Info>();
         int index = info.id;
-        act.id = index;
-        gm.gameDispatcher.dispatch(act);
+        int itemRank = info.limit_rank;
+        if (myRank >= itemRank) {
+            equip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_EQUIP) as equip_act;
+            act._type = equip_act.type.ITEM;
+            act.id = index;
+            gm.gameDispatcher.dispatch(act);
+        }
+        else {
+            notifyModal.SetActive(true);
+        }
     }
 
     //아이템 해제
@@ -235,6 +247,7 @@ public class BicycleViewController : MonoBehaviour {
                 info.name = items[cnt - 1].item.name;
                 info.desc = items[cnt - 1].item.desc;
                 info.imageId = items[cnt - 1].item.id;
+                info.limit_rank = items[cnt - 1].item.limit_rank;
 
                 if (items[cnt - 1].is_equiped == "true") {
                     info.is_equiped = true;
@@ -495,6 +508,10 @@ public class BicycleViewController : MonoBehaviour {
         isLockMode = false;
         test2.SetActive(false);
         itemInitAct();
+    }
+
+    public void offNotfiyModal() {
+        notifyModal.SetActive(false);
     }
 
     private void clearList() {
