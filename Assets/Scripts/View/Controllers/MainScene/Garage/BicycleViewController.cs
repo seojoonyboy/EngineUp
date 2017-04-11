@@ -43,7 +43,7 @@ public class BicycleViewController : MonoBehaviour {
 
     List<int> lockIdList = new List<int>();
     List<int> unlockList = new List<int>();
-    List<int> sellList = new List<int>();
+    List<Info> sellList = new List<Info>();
 
     public GarageViewController controller;
 
@@ -119,7 +119,7 @@ public class BicycleViewController : MonoBehaviour {
 
             if(tmp.activeSelf) {
                 obj.tag = "selected";
-                sellList.Add(info.id);
+                sellList.Add(info);
             }
             else {
                 obj.tag = "unselected";
@@ -201,6 +201,7 @@ public class BicycleViewController : MonoBehaviour {
         }
         else {
             notifyModal.SetActive(true);
+            notifyModal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "등급이 낮아 아이템을 장착할 수 없습니다.";
         }
     }
 
@@ -248,6 +249,7 @@ public class BicycleViewController : MonoBehaviour {
                 info.desc = items[cnt - 1].item.desc;
                 info.imageId = items[cnt - 1].item.id;
                 info.limit_rank = items[cnt - 1].item.limit_rank;
+                info.gear = items[cnt - 1].item.gear;
 
                 if (items[cnt - 1].is_equiped == "true") {
                     info.is_equiped = true;
@@ -472,6 +474,7 @@ public class BicycleViewController : MonoBehaviour {
 
     public void selling() {
         garage_sell_act act = ActionCreator.createAction(ActionTypes.GARAGE_SELL) as garage_sell_act;
+        int gears = 0;
         //단일 판매
         Debug.Log(isSingleSellOrLock);
         if (isSingleSellOrLock) {
@@ -483,15 +486,19 @@ public class BicycleViewController : MonoBehaviour {
             }
             act.id = info.id;
             gm.gameDispatcher.dispatch(act);
+            gears += info.gear;
         }
         //다중 판매
         else {
-            foreach (int id in sellList) {
-                act.id = id;
+            foreach (Info info in sellList) {
+                act.id = info.id;
                 gm.gameDispatcher.dispatch(act);
+                gears += info.gear;
             }
         }
         isSingleSellOrLock = false;
+        notifyModal.SetActive(true);
+        notifyModal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "총 " + gears + "개의 기어를 획득하였습니다.";
     }
 
     public void offSellingModal() {
