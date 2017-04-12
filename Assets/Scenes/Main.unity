@@ -4635,6 +4635,7 @@ GameObject:
   m_Component:
   - component: {fileID: 102512103}
   - component: {fileID: 102512104}
+  - component: {fileID: 102512105}
   m_Layer: 5
   m_Name: Grid
   m_TagString: Untagged
@@ -4679,6 +4680,25 @@ MonoBehaviour:
   hideInactive: 0
   keepWithinPanel: 0
   sorted: 0
+--- !u!114 &102512105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 102512102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c81d413df27ea047ae116d466e5e0c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target:
+  - {fileID: 1399773693}
+  - {fileID: 378383259}
+  - {fileID: 416240835}
+  buttons:
+  - {fileID: 934409182}
+  - {fileID: 1147221888}
+  - {fileID: 1814063818}
 --- !u!1 &105120866
 GameObject:
   m_ObjectHideFlags: 0
@@ -7854,7 +7874,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 14.712644
+  aspectRatio: 6.206897
   mType: 2
   mFillDirection: 4
   mFillAmount: 1
@@ -15316,6 +15336,7 @@ GameObject:
   - component: {fileID: 378383260}
   - component: {fileID: 378383261}
   - component: {fileID: 378383262}
+  - component: {fileID: 378383263}
   m_Layer: 5
   m_Name: FriendsPanel
   m_TagString: Untagged
@@ -15340,7 +15361,7 @@ Transform:
   - {fileID: 2102420664}
   - {fileID: 249503587}
   m_Father: {fileID: 512075517}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &378383261
 MonoBehaviour:
@@ -15412,6 +15433,24 @@ MonoBehaviour:
   myFriendEmptyLabel: {fileID: 806166819}
   sendFriendEmptyLabel: {fileID: 1658883524}
   receiveFriendEmptyLabel: {fileID: 458392157}
+--- !u!114 &378383263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 378383259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808954e7ffe79764ba07e981e27b72ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active:
+  - {fileID: 1945535138}
+  - {fileID: 430353145}
+  deactive:
+  - {fileID: 1510283106}
+  - {fileID: 1848537296}
+  isFirstActive: 1
 --- !u!1 &379476811
 GameObject:
   m_ObjectHideFlags: 0
@@ -17192,6 +17231,7 @@ GameObject:
   - component: {fileID: 416240836}
   - component: {fileID: 416240838}
   - component: {fileID: 416240837}
+  - component: {fileID: 416240839}
   m_Layer: 5
   m_Name: GroupPanel
   m_TagString: Untagged
@@ -17217,7 +17257,7 @@ Transform:
   - {fileID: 813883934}
   - {fileID: 377569863}
   m_Father: {fileID: 512075517}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &416240837
 MonoBehaviour:
@@ -17297,6 +17337,24 @@ MonoBehaviour:
   mSortingLayerName: 
   mClipOffset: {x: 0, y: 0}
   useSortingOrder: 0
+--- !u!114 &416240839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 416240835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808954e7ffe79764ba07e981e27b72ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active:
+  - {fileID: 76853615}
+  - {fileID: 922455548}
+  deactive:
+  - {fileID: 217135771}
+  - {fileID: 97527503}
+  isFirstActive: 0
 --- !u!1 &416766504
 GameObject:
   m_ObjectHideFlags: 0
@@ -18861,7 +18919,7 @@ Transform:
   m_Children:
   - {fileID: 1450199969}
   m_Father: {fileID: 512075517}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &439589634
 MonoBehaviour:
@@ -21136,7 +21194,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 9.856
+  aspectRatio: 3.936
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -22568,12 +22626,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 904394575}
+  - {fileID: 1454148230}
   - {fileID: 1399773694}
   - {fileID: 378383260}
-  - {fileID: 1905330587}
-  - {fileID: 1454148230}
-  - {fileID: 439589633}
   - {fileID: 416240836}
+  - {fileID: 1905330587}
+  - {fileID: 439589633}
   - {fileID: 1197775477}
   m_Father: {fileID: 1030472141}
   m_RootOrder: 4
@@ -41431,8 +41489,6 @@ GameObject:
   - component: {fileID: 934409187}
   - component: {fileID: 934409186}
   - component: {fileID: 934409185}
-  - component: {fileID: 934409183}
-  - component: {fileID: 934409184}
   m_Layer: 5
   m_Name: FeedButton
   m_TagString: Untagged
@@ -41440,52 +41496,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &934409183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 934409182}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 446d504799d99174383957fca80713c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  group: 1
-  activeSprite: {fileID: 0}
-  invertSpriteState: 0
-  activeAnimation: {fileID: 0}
-  animator: {fileID: 0}
-  tween: {fileID: 0}
-  startsActive: 0
-  instantTween: 0
-  optionCanBeNone: 0
-  onChange: []
-  checkSprite: {fileID: 0}
-  checkAnimation: {fileID: 0}
-  eventReceiver: {fileID: 0}
-  functionName: OnActivate
-  startsChecked: 0
---- !u!114 &934409184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 934409182}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5f48ecc218d2db49baa9ac1bfe73ba9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activate:
-  - {fileID: 1399773693}
-  - {fileID: 722689670}
-  - {fileID: 686557562}
-  deactivate:
-  - {fileID: 489746257}
-  - {fileID: 1602560851}
-  target: {fileID: 0}
-  inverse: 0
 --- !u!65 &934409185
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -41524,7 +41534,13 @@ MonoBehaviour:
   pressedSprite2D: {fileID: 0}
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
-  onClick: []
+  onClick:
+  - mTarget: {fileID: 102512105}
+    mMethodName: onClick
+    mParameters:
+    - obj: {fileID: 1399773693}
+      field: 
+    oneShot: 0
 --- !u!114 &934409187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51048,8 +51064,6 @@ GameObject:
   - component: {fileID: 1147221893}
   - component: {fileID: 1147221892}
   - component: {fileID: 1147221891}
-  - component: {fileID: 1147221889}
-  - component: {fileID: 1147221890}
   m_Layer: 5
   m_Name: FriendsButton
   m_TagString: Untagged
@@ -51057,52 +51071,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1147221889
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1147221888}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 446d504799d99174383957fca80713c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  group: 1
-  activeSprite: {fileID: 0}
-  invertSpriteState: 0
-  activeAnimation: {fileID: 0}
-  animator: {fileID: 0}
-  tween: {fileID: 0}
-  startsActive: 1
-  instantTween: 0
-  optionCanBeNone: 0
-  onChange: []
-  checkSprite: {fileID: 0}
-  checkAnimation: {fileID: 0}
-  eventReceiver: {fileID: 0}
-  functionName: OnActivate
-  startsChecked: 0
---- !u!114 &1147221890
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1147221888}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5f48ecc218d2db49baa9ac1bfe73ba9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activate:
-  - {fileID: 378383259}
-  - {fileID: 1945535138}
-  - {fileID: 430353145}
-  deactivate:
-  - {fileID: 1510283106}
-  - {fileID: 1848537296}
-  target: {fileID: 0}
-  inverse: 0
 --- !u!65 &1147221891
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -51141,7 +51109,13 @@ MonoBehaviour:
   pressedSprite2D: {fileID: 0}
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
-  onClick: []
+  onClick:
+  - mTarget: {fileID: 102512105}
+    mMethodName: onClick
+    mParameters:
+    - obj: {fileID: 378383259}
+      field: 
+    oneShot: 0
 --- !u!114 &1147221893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62609,6 +62583,7 @@ GameObject:
   - component: {fileID: 1399773694}
   - component: {fileID: 1399773695}
   - component: {fileID: 1399773696}
+  - component: {fileID: 1399773697}
   m_Layer: 5
   m_Name: FeedPanel
   m_TagString: Untagged
@@ -62629,7 +62604,7 @@ Transform:
   - {fileID: 1294642088}
   - {fileID: 929191421}
   m_Father: {fileID: 512075517}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1399773695
 MonoBehaviour:
@@ -62693,6 +62668,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   childNum: 5
   container: {fileID: 1000013891046012, guid: bb8b00bbc5f9d8c45abb2adfc660c222, type: 2}
+--- !u!114 &1399773697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1399773693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808954e7ffe79764ba07e981e27b72ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active:
+  - {fileID: 722689670}
+  - {fileID: 686557562}
+  deactive:
+  - {fileID: 489746257}
+  - {fileID: 1602560851}
+  isFirstActive: 0
 --- !u!1 &1399797575
 GameObject:
   m_ObjectHideFlags: 0
@@ -64404,7 +64397,7 @@ Transform:
   m_Children:
   - {fileID: 1333963765}
   m_Father: {fileID: 512075517}
-  m_RootOrder: 4
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1454148231
 MonoBehaviour:
@@ -76845,8 +76838,6 @@ GameObject:
   - component: {fileID: 1814063823}
   - component: {fileID: 1814063822}
   - component: {fileID: 1814063821}
-  - component: {fileID: 1814063819}
-  - component: {fileID: 1814063820}
   m_Layer: 5
   m_Name: GroupButton
   m_TagString: Untagged
@@ -76854,52 +76845,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1814063819
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1814063818}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 446d504799d99174383957fca80713c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  group: 1
-  activeSprite: {fileID: 0}
-  invertSpriteState: 0
-  activeAnimation: {fileID: 0}
-  animator: {fileID: 0}
-  tween: {fileID: 0}
-  startsActive: 0
-  instantTween: 0
-  optionCanBeNone: 0
-  onChange: []
-  checkSprite: {fileID: 0}
-  checkAnimation: {fileID: 0}
-  eventReceiver: {fileID: 0}
-  functionName: OnActivate
-  startsChecked: 0
---- !u!114 &1814063820
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1814063818}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5f48ecc218d2db49baa9ac1bfe73ba9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activate:
-  - {fileID: 416240835}
-  - {fileID: 76853615}
-  - {fileID: 922455548}
-  deactivate:
-  - {fileID: 217135771}
-  - {fileID: 97527503}
-  target: {fileID: 0}
-  inverse: 0
 --- !u!65 &1814063821
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -76938,7 +76883,13 @@ MonoBehaviour:
   pressedSprite2D: {fileID: 0}
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
-  onClick: []
+  onClick:
+  - mTarget: {fileID: 102512105}
+    mMethodName: onClick
+    mParameters:
+    - obj: {fileID: 416240835}
+      field: 
+    oneShot: 0
 --- !u!114 &1814063823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81347,7 +81298,7 @@ Transform:
   - {fileID: 587025905}
   - {fileID: 1993660482}
   m_Father: {fileID: 512075517}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1905330588
 MonoBehaviour:
@@ -84139,7 +84090,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 66.375
+  aspectRatio: 20.1875
   mType: 1
   mFillDirection: 4
   mFillAmount: 1

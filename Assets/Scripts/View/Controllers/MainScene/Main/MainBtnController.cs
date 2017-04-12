@@ -32,6 +32,8 @@ public class MainBtnController : MonoBehaviour {
 
     public void offCommunityPanel() {
         communityPanel.SetActive(false);
+        UIToggle toggle = UIToggle.GetActiveToggle(2);
+        toggle.value = false;
     }
 
     public void onAvatar() {
