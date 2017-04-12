@@ -62,5 +62,7 @@ public class GarageViewController : MonoBehaviour {
 
     public void offPanel() {
         gameObject.SetActive(false);
+        UIToggle toggle = UIToggle.GetActiveToggle(2);
+        toggle.value = false;
     }
 }
