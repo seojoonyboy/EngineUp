@@ -19,6 +19,9 @@ public class fbl_Toggle : MonoBehaviour {
                 for (int j = 0; j < toggleObj.active.Length; j++) {
                     set(toggleObj.active[j], true);
                 }
+                for (int j = 0; j < toggleObj.deactive.Length; j++) {
+                    set(toggleObj.deactive[j], false);
+                }
             }
             else {
                 set(target[i], false);
