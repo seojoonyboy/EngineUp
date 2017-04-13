@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 
 public class StatViewController : MonoBehaviour {
-    public UILabel nickNameLabel;
+    public UILabel 
+        nickNameLabel,
+        mainLvLabel;
     public Riding ridingStore;
     public User userStore;
 
@@ -12,23 +14,30 @@ public class StatViewController : MonoBehaviour {
         monthlyRidings;
 
     private GameManager gm;
-
+    
+    public UISlider mainSlider;
+    public int mainSliderOffset = 1;
     void Awake() {
         gm = GameManager.Instance;
     }
 
     void OnEnable() {
         initialize();
-
     }
 
     public void onUserListener() {
         nickNameLabel.text = userStore.nickName;
+
+        mainLvLabel.text = "Lv " + userStore.myData.status.rank.ToString();
+
+        int exp = userStore.myData.status.exp;
+        mainSlider.value = exp / mainSliderOffset;
+        mainSlider.transform.Find("Val").GetComponent<UILabel>().text = exp + " / 100 Km";
         initialize();
     }
 
     void Start() {
-        nickNameLabel.text = GameManager.Instance.userStore.nickName;
+        userStore = GameManager.Instance.userStore;
     }
 
     public void offPanel() {
