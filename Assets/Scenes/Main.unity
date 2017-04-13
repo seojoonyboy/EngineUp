@@ -8415,7 +8415,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 14.712644
+  aspectRatio: 6.206897
   mType: 2
   mFillDirection: 4
   mFillAmount: 1
@@ -16585,7 +16585,7 @@ GameObject:
   - component: {fileID: 379680442}
   - component: {fileID: 379680443}
   m_Layer: 5
-  m_Name: Riding
+  m_Name: RidingCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18925,9 +18925,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 425382262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edb13d6c6a6278243931a6c11bd0466b, type: 3}
+  m_Script: {fileID: 11500000, guid: a99d764e4c1e04d4790d61b1656c68a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nickNameLabel: {fileID: 1783753967}
+  stats:
+  - {fileID: 1445976857}
+  - {fileID: 1000221162}
+  - {fileID: 495144274}
+  - {fileID: 1991462792}
+  profiles:
+  - {fileID: 2074560886}
+  - {fileID: 1327027057}
+  - {fileID: 152240974}
+  totalRidings:
+  - {fileID: 2084720095}
+  - {fileID: 1654722952}
+  - {fileID: 1950269287}
+  - {fileID: 1156609007}
+  - {fileID: 454081956}
+  monthlyRidings:
+  - {fileID: 379680443}
+  - {fileID: 1233176498}
+  - {fileID: 1511018330}
+  - {fileID: 1582790682}
+  - {fileID: 378093313}
 --- !u!114 &425382265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22487,7 +22509,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 9.856
+  aspectRatio: 3.936
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -46196,7 +46218,6 @@ GameObject:
   - component: {fileID: 978275567}
   - component: {fileID: 978275568}
   - component: {fileID: 978275569}
-  - component: {fileID: 978275570}
   m_Layer: 5
   m_Name: MainPanel
   m_TagString: Untagged
@@ -46323,18 +46344,6 @@ MonoBehaviour:
   - {fileID: 19772499}
   - {fileID: 1313274150}
   - {fileID: 481420205}
---- !u!114 &978275570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 978275564}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a99d764e4c1e04d4790d61b1656c68a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nickNameLabel: {fileID: 1783753967}
 --- !u!1 &981309731
 GameObject:
   m_ObjectHideFlags: 0
@@ -46414,7 +46423,7 @@ MonoBehaviour:
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 3
-  mClipRange: {x: 0, y: -781, z: 1096, w: 1598}
+  mClipRange: {x: 0, y: -862, z: 1096, w: 1760}
   mClipSoftness: {x: 4, y: 4}
   mDepth: 6
   mSortingOrder: 0
@@ -60085,7 +60094,11 @@ MonoBehaviour:
   pressedSprite2D: {fileID: 0}
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
-  onClick: []
+  onClick:
+  - mTarget: {fileID: 425382264}
+    mMethodName: offPanel
+    mParameters: []
+    oneShot: 0
 --- !u!65 &1276912011
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -71031,7 +71044,7 @@ MonoBehaviour:
   ridingViewCtrler: {fileID: 645750110}
   friendViewCtrler: {fileID: 378383262}
   groupViewCtrler: {fileID: 416240837}
-  statViewCtrler: {fileID: 978275570}
+  statViewCtrler: {fileID: 425382264}
   boxViewCtrler: {fileID: 210341325}
   charViewCtrler: {fileID: 508020537}
   bicycleViewCtrler: {fileID: 167112403}
@@ -93189,7 +93202,7 @@ GameObject:
   - component: {fileID: 2084720094}
   - component: {fileID: 2084720095}
   m_Layer: 5
-  m_Name: Riding
+  m_Name: RidingCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
