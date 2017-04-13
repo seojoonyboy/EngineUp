@@ -27,6 +27,7 @@ public class GarageViewController : MonoBehaviour {
                 character_inventory charInfo = userStore.myData.represent_character.character_inventory;
                 charController.setMainChar(charInfo.id);
                 charController.setSideBar(charInfo.id);
+                charController.lvLabel.text = charInfo.lv.ToString();
             }
         }
     }

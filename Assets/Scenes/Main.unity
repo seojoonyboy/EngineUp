@@ -2454,6 +2454,7 @@ GameObject:
   m_Component:
   - component: {fileID: 51890999}
   - component: {fileID: 51891000}
+  - component: {fileID: 51891001}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -2508,7 +2509,7 @@ MonoBehaviour:
   mHeight: 1923
   mDepth: 4
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.5626625
@@ -2528,6 +2529,18 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: defautPanelBg
   mFillCenter: 1
+--- !u!65 &51891001
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 51890998}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1082, y: 1923, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &52393677
 GameObject:
   m_ObjectHideFlags: 0
@@ -7458,7 +7471,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3016
+  startingRenderQueue: 3019
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -7512,7 +7525,7 @@ MonoBehaviour:
   scrollview: {fileID: 1450719739}
   equipedItemIndex: 000000000000000000000000
   atlas: {fileID: 114209369144659982, guid: 0e401decb4263894ebc7043bc91fb0a5, type: 2}
-  controller: {fileID: 0}
+  lvLavel: {fileID: 1865286251}
 --- !u!1 &170952452
 GameObject:
   m_ObjectHideFlags: 0
@@ -8415,7 +8428,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 6.206897
+  aspectRatio: 14.712644
   mType: 2
   mFillDirection: 4
   mFillAmount: 1
@@ -8985,6 +8998,103 @@ MonoBehaviour:
   loadingModal: {fileID: 510683686}
   notifyModal: {fileID: 522951276}
   boxOpenModal: {fileID: 610355996}
+--- !u!1 &211971526
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 211971527}
+  - component: {fileID: 211971528}
+  m_Layer: 5
+  m_Name: limitLv
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &211971527
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 211971526}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2, y: -352, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 555445427}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &211971528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 211971526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d0b5f3bbe925a408bd595c79d0bf63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftAnchor:
+    target: {fileID: 555445427}
+    relative: 0
+    absolute: 88
+  rightAnchor:
+    target: {fileID: 555445427}
+    relative: 1
+    absolute: -84
+  bottomAnchor:
+    target: {fileID: 555445427}
+    relative: 0
+    absolute: 200
+  topAnchor:
+    target: {fileID: 1481919113}
+    relative: 0
+    absolute: -93
+  updateAnchors: 1
+  mColor: {r: 0, g: 0, b: 0, a: 1}
+  mPivot: 4
+  mWidth: 618
+  mHeight: 138
+  mDepth: 4
+  mMat: {fileID: 0}
+  autoResizeBoxCollider: 0
+  hideIfOffScreen: 0
+  keepAspectRatio: 0
+  aspectRatio: 4.478261
+  keepCrispWhenShrunk: 1
+  mTrueTypeFont: {fileID: 0}
+  mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
+  mText: "\uC81C\uD55C \uB808\uBCA8"
+  mFontSize: 40
+  mFontStyle: 0
+  mAlignment: 0
+  mEncoding: 1
+  mMaxLineCount: 0
+  mEffectStyle: 0
+  mEffectColor: {r: 0, g: 0, b: 0, a: 1}
+  mSymbols: 1
+  mEffectDistance: {x: 1, y: 1}
+  mOverflow: 0
+  mApplyGradient: 0
+  mGradientTop: {r: 1, g: 1, b: 1, a: 1}
+  mGradientBottom: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  mSpacingX: 0
+  mSpacingY: 13
+  mUseFloatSpacing: 0
+  mFloatSpacingX: 0
+  mFloatSpacingY: 0
+  mOverflowEllipsis: 0
+  mOverflowWidth: 0
+  mModifier: 0
+  mShrinkToFit: 0
+  mMaxLineWidth: 0
+  mMaxLineHeight: 0
+  mLineWidth: 0
+  mMultiline: 1
 --- !u!1 &214708562
 GameObject:
   m_ObjectHideFlags: 0
@@ -22509,7 +22619,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 3.936
+  aspectRatio: 9.856
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -26532,6 +26642,7 @@ Transform:
   - {fileID: 436586512}
   - {fileID: 1282108142}
   - {fileID: 83604021}
+  - {fileID: 211971527}
   m_Father: {fileID: 718076405}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -33476,7 +33587,7 @@ GameObject:
   - component: {fileID: 704587539}
   - component: {fileID: 704587540}
   m_Layer: 5
-  m_Name: Sprite
+  m_Name: Lv
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34350,7 +34461,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3035
+  startingRenderQueue: 3036
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -40516,7 +40627,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3029
+  startingRenderQueue: 3033
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -67510,7 +67621,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3034
+  startingRenderQueue: 3035
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 3
@@ -80504,7 +80615,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 4.478261
+  aspectRatio: 15.217391
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
@@ -88864,7 +88975,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 20.1875
+  aspectRatio: 66.375
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -89730,6 +89841,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2005108346}
   - component: {fileID: 2005108347}
+  - component: {fileID: 2005108348}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -89786,10 +89898,10 @@ MonoBehaviour:
   mHeight: 1923
   mDepth: 0
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1.3416537
+  aspectRatio: 0.5709828
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -89806,6 +89918,18 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: defautPanelBg
   mFillCenter: 1
+--- !u!65 &2005108348
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2005108345}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1098, y: 1923, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2006864071
 GameObject:
   m_ObjectHideFlags: 0
@@ -92007,6 +92131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2054490827}
   - component: {fileID: 2054490828}
+  - component: {fileID: 2054490829}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -92068,7 +92193,7 @@ MonoBehaviour:
   mHeight: 1923
   mDepth: 0
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.5709828
@@ -92088,6 +92213,18 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: defautPanelBg
   mFillCenter: 1
+--- !u!65 &2054490829
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2054490826}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1098, y: 1923, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2054602340
 GameObject:
   m_ObjectHideFlags: 0

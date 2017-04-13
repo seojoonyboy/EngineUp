@@ -59,6 +59,7 @@ public class CharacterViewControlller : MonoBehaviour {
                 character_inventory charInfo = userStore.myData.represent_character.character_inventory;
                 setMainChar(charInfo.id);
                 setSideBar(charInfo.id);
+                lvLabel.text = "Lv. " + charInfo.lv.ToString();
             }
         }
     }
@@ -74,6 +75,7 @@ public class CharacterViewControlller : MonoBehaviour {
         
         //setSlot();
         setButton(info);
+        lvLabel.text = "Lv. " + info.lv.ToString();
         //Debug.Log(index);
     }
 

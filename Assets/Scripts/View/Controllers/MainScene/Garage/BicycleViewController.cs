@@ -6,7 +6,7 @@ public class BicycleViewController : MonoBehaviour {
     private GameManager gm;
     public BicycleItem_Inventory bicycleItemStore;
     public Char_Inventory charItemStore;
-    private User userStore;
+    public User userStore;
 
     //판매 버튼 클릭시
     private bool 
@@ -49,11 +49,10 @@ public class BicycleViewController : MonoBehaviour {
     List<int> unlockList = new List<int>();
     List<Info> sellList = new List<Info>();
 
-    public GarageViewController controller;
+    public UILabel lvLavel;
 
     void Awake() {
         gm = GameManager.Instance;
-        userStore = gm.userStore;
     }
 
     public void onBicycleItemStoreListener() {
@@ -80,6 +79,11 @@ public class BicycleViewController : MonoBehaviour {
 
     public void onCharStoreListener() {
         
+    }
+
+    public void onUserStoreListener() {
+        ActionTypes userStoreEventType = userStore.eventType;
+        lvLavel.text = "Lv. " + userStore.myData.status.rank.ToString();
     }
 
     void OnEnable() {
@@ -197,6 +201,7 @@ public class BicycleViewController : MonoBehaviour {
 
         modal.transform.Find("Name").GetComponent<UILabel>().text = info.name;
         modal.transform.Find("Desc").GetComponent<UILabel>().text = info.desc;
+        modal.transform.Find("limitLv").GetComponent<UILabel>().text = "제한 레벨 : " + info.limit_rank;
         UISprite img = modal.transform.Find("Image").GetComponent<UISprite>();
         img.atlas = atlas;
         img.spriteName = info.id.ToString();

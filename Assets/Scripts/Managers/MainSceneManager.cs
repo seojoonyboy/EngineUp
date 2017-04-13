@@ -29,6 +29,7 @@ public class MainSceneManager : fbl_SceneManager {
         statViewCtrler.userStore = gm.userStore;
         boxViewCtrler.userStore = gm.userStore;
         charViewCtrler.userStore = gm.userStore;
+        bicycleViewCtrler.userStore = gm.userStore;
 
         bicycleViewCtrler.bicycleItemStore = gm.bicycleInventStore;
         bicycleViewCtrler.charItemStore = gm.charInvenStore;
@@ -48,6 +49,7 @@ public class MainSceneManager : fbl_SceneManager {
         
         gm.charInvenStore.addListener(charViewCtrler.onCharInvenStore);
         gm.userStore.addListener(charViewCtrler.onUserListener);
+        gm.userStore.addListener(bicycleViewCtrler.onUserStoreListener);
     }
 
     public void offModal() {
