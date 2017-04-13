@@ -9,7 +9,8 @@ public enum MAIN_BUTTON {
     SHOP,
     RIDING,
     BATTLE,
-    OPTION
+    OPTION,
+    MYHOME
 };
 
 public class MainButtonListener : MonoBehaviour {
@@ -18,7 +19,7 @@ public class MainButtonListener : MonoBehaviour {
         addMainBtnEvent(0,MAIN_BUTTON.RIDING);
         addMainBtnEvent(1, MAIN_BUTTON.COMMUNITY);
         addMainBtnEvent(2, MAIN_BUTTON.OPTION);
-        addMainBtnEvent(3, MAIN_BUTTON.GARAGE);
+        addMainBtnEvent(3, MAIN_BUTTON.MYHOME);
     }
 
     private void addMainBtnEvent(int index,MAIN_BUTTON type) {

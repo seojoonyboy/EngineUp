@@ -5,7 +5,7 @@ using UnityEngine;
 public class CharacterViewControlller : MonoBehaviour {
     GameManager gm;
     Char_Inventory charInvenStore;
-    User userStore;
+    public User userStore;
     //character_inventory[] characters;
 
     public GameObject
@@ -36,12 +36,31 @@ public class CharacterViewControlller : MonoBehaviour {
     void Awake() {
         gm = GameManager.Instance;
         charInvenStore = gm.charInvenStore;
-        userStore = gm.userStore;
     }
 
     void Start() {
         getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
         gm.gameDispatcher.dispatch(act);
+    }
+
+    public void onCharInvenStore() {
+        ActionTypes charStoreEventType = charInvenStore.eventType;
+
+        if (charStoreEventType == ActionTypes.GARAGE_CHAR_INIT) {
+            makeList();
+        }
+    }
+
+    public void onUserListener() {
+        ActionTypes userStoreEventType = userStore.eventType;
+
+        if (userStoreEventType == ActionTypes.MYINFO) {
+            if (userStore.storeStatus == storeStatus.NORMAL) {
+                character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+                setMainChar(charInfo.id);
+                setSideBar(charInfo.id);
+            }
+        }
     }
 
     //내 캐릭터중 하나 선택시
@@ -213,5 +232,9 @@ public class CharacterViewControlller : MonoBehaviour {
         public string name;
         public string desc;
         public int cost;
+    }
+
+    public void offPanel() {
+        gameObject.SetActive(false);
     }
 }

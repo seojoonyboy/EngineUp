@@ -81,6 +81,9 @@ public class Char_Inventory : AjwStore {
 
     //캐릭터 장착
     private void equip(equip_act payload) {
+        if (payload._type != equip_act.type.CHAR) {
+            return;
+        }
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
@@ -100,7 +103,6 @@ public class Char_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
-                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
         }

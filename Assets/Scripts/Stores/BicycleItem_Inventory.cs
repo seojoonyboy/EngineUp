@@ -104,7 +104,6 @@ public class BicycleItem_Inventory : AjwStore {
     //아이템 장착
     private void equip(equip_act payload) {
         if(payload._type != equip_act.type.ITEM) {
-            payload.status = NetworkAction.statusTypes.FAIL;
             return;
         }
         switch (payload.status) {
@@ -116,6 +115,7 @@ public class BicycleItem_Inventory : AjwStore {
                     .Append(payload.id)
                     .Append("/equip");
                 WWWForm form = new WWWForm();
+                Debug.Log("Id : " + payload.id);
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:

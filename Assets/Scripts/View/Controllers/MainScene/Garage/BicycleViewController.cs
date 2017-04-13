@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class BicycleViewController : MonoBehaviour {
     private GameManager gm;
+    public BicycleItem_Inventory bicycleItemStore;
+    public Char_Inventory charItemStore;
+    private User userStore;
+
     //판매 버튼 클릭시
     private bool 
         isSellMode = false,
@@ -47,8 +51,38 @@ public class BicycleViewController : MonoBehaviour {
 
     public GarageViewController controller;
 
-    void OnEnable() {
+    void Awake() {
         gm = GameManager.Instance;
+        userStore = gm.userStore;
+    }
+
+    public void onBicycleItemStoreListener() {
+        ActionTypes bicycleItemStoreEventType = bicycleItemStore.eventType;
+
+        if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
+            if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+                makeList();
+            }
+        }
+
+        else if (bicycleItemStoreEventType == ActionTypes.GARAGE_SELL) {
+            if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+                makeList();
+            }
+        }
+
+        else if(bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_EQUIP) {
+            if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+                makeList();
+            }
+        }
+    }
+
+    public void onCharStoreListener() {
+        
+    }
+
+    void OnEnable() {
         itemInitAct();
     }
 
@@ -189,7 +223,7 @@ public class BicycleViewController : MonoBehaviour {
         }
 
         //아이템을 장착할 수 있는 등급인지
-        int myRank = controller.userStore.myData.status.rank;
+        int myRank = userStore.myData.status.rank;
         Info info = selectedItem.GetComponent<Info>();
         int index = info.id;
         int itemRank = info.limit_rank;
@@ -550,5 +584,9 @@ public class BicycleViewController : MonoBehaviour {
         public int gear;
         public string parts;
         public int limit_rank;
+    }
+
+    public void offPanel() {
+        gameObject.SetActive(false);
     }
 }

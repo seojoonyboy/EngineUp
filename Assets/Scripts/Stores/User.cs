@@ -239,6 +239,8 @@ public class User : AjwStore {
                 myInfo(action as MyInfo);
                 break;
             case ActionTypes.GAME_START:
+                MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+                dispatcher.dispatch(act);
                 _emitChange();
                 break;
         }

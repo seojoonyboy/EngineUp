@@ -6,8 +6,10 @@ public class MainSceneManager : fbl_SceneManager {
     public FriendsViewController friendViewCtrler;
     public GroupViewController groupViewCtrler;
     public StatViewController statViewCtrler;
-    public GarageViewController garageViewCtrler;
     public BoxViewController boxViewCtrler;
+    public CharacterViewControlller charViewCtrler;
+    public BicycleViewController bicycleViewCtrler;
+    public HistoryViewController historyViewCtrler;
 
     private GameManager gm;
     public GameObject modal;
@@ -25,8 +27,11 @@ public class MainSceneManager : fbl_SceneManager {
         groupViewCtrler.groupStore = gm.groupStore;
         groupViewCtrler.locationStore = gm.locationStore;
         statViewCtrler.userStore = gm.userStore;
-        garageViewCtrler.userStore = gm.userStore;
         boxViewCtrler.userStore = gm.userStore;
+        charViewCtrler.userStore = gm.userStore;
+
+        bicycleViewCtrler.bicycleItemStore = gm.bicycleInventStore;
+        bicycleViewCtrler.charItemStore = gm.charInvenStore;
 
         gm.friendsStore.addListener(friendViewCtrler.OnFriendsStoreListener);
         gm.ridingStore.addListener(resultViewCtrler.onRidingListener);
@@ -35,12 +40,14 @@ public class MainSceneManager : fbl_SceneManager {
         gm.locationStore.addListener(groupViewCtrler.onGroupStoreListener);
         gm.userStore.addListener(statViewCtrler.onUserListener);
 
-        gm.bicycleInventStore.addListener(garageViewCtrler.onBicycleStoreListener);
-        gm.charInvenStore.addListener(garageViewCtrler.onCharStoreListener);
-        gm.userStore.addListener(garageViewCtrler.onUserStoreListener);
-
         gm.boxInvenStore.addListener(boxViewCtrler.onBoxStoreListener);
         gm.userStore.addListener(boxViewCtrler.onUserStoreListener);
+
+        gm.charInvenStore.addListener(bicycleViewCtrler.onCharStoreListener);
+        gm.bicycleInventStore.addListener(bicycleViewCtrler.onBicycleItemStoreListener);
+        
+        gm.charInvenStore.addListener(charViewCtrler.onCharInvenStore);
+        gm.userStore.addListener(charViewCtrler.onUserListener);
     }
 
     public void offModal() {

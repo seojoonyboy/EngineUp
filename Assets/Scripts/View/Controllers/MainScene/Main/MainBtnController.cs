@@ -7,7 +7,8 @@ public class MainBtnController : MonoBehaviour {
         communityPanel,
         optionPanel,
         avatar,
-        garagePanel;
+        garagePanel,
+        myhomePanel;
 
     public void onMainBtnEvent(MAIN_BUTTON type) {
         switch(type) {
@@ -26,6 +27,9 @@ public class MainBtnController : MonoBehaviour {
                 break;
             case MAIN_BUTTON.GARAGE:
                 garagePanel.SetActive(true);
+                break;
+            case MAIN_BUTTON.MYHOME:
+                myhomePanel.SetActive(true);
                 break;
         }
     }
