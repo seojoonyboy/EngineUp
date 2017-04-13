@@ -81,13 +81,21 @@ public class CharacterViewControlller : MonoBehaviour {
         //mainStageChar.GetComponent<Animator>().runtimeAnimatorController = animatorArr[0];
         UISprite sprite = mainStageChar.GetComponent<UISprite>();
         sprite.atlas = atlasArr[index - 1];
-        sprite.spriteName = index.ToString();
+        sprite.spriteName = index + "-1-main";
+        sprite.MakePixelPerfect();
+        sprite.gameObject.transform.localScale = new Vector3(0.5f, 0.5f);
     }
 
     public void setSideBar(int index) {
         UISprite sprite = sideBarGrid.transform.Find("Lv1Container/Sprite").GetComponent<UISprite>();
         sprite.atlas = atlasArr[index - 1];
-        sprite.spriteName = index.ToString();
+        sprite.spriteName = index + "-1";
+
+        sprite = sideBarGrid.transform.Find("Lv10Container/Sprite").GetComponent<UISprite>();
+        sprite.spriteName = index + "-2";
+
+        sprite = sideBarGrid.transform.Find("Lv20Container/Sprite").GetComponent<UISprite>();
+        sprite.spriteName = index + "-3";
     }
 
     //캐릭터 장착하기
@@ -183,7 +191,7 @@ public class CharacterViewControlller : MonoBehaviour {
             UISprite sprite = item.transform.Find("Portrait").GetComponent<UISprite>();
             int atlasIndex = info.characterId;
             sprite.atlas = atlasArr[atlasIndex - 1];
-            sprite.spriteName = atlasIndex.ToString();
+            sprite.spriteName = atlasIndex + "-1";
 
             UIDragScrollView dScrollView = item.AddComponent<UIDragScrollView>();
             dScrollView.scrollView = itemGrid.transform.parent.GetComponent<UIScrollView>();
