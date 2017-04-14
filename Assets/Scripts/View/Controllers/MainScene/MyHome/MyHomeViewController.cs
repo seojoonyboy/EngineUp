@@ -22,4 +22,10 @@ public class MyHomeViewController : MonoBehaviour {
                 break;
         }
     }
+
+    public void offPanel() {
+        UIToggle toggle = UIToggle.GetActiveToggle(2);
+        toggle.value = false;
+        gameObject.SetActive(false);
+    }
 }
