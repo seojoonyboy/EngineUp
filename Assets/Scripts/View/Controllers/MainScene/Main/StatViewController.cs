@@ -33,7 +33,11 @@ public class StatViewController : MonoBehaviour {
         int exp = userStore.myData.status.exp;
         mainSlider.value = exp / mainSliderOffset;
         mainSlider.transform.Find("Val").GetComponent<UILabel>().text = exp + " / 100 Km";
-        initialize();
+        if(userStore.eventType == ActionTypes.MYINFO) {
+            if(userStore.storeStatus == storeStatus.NORMAL) {
+                initialize();
+            }
+        }
     }
 
     void Start() {
