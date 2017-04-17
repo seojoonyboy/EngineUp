@@ -33,8 +33,14 @@ public class Box_Inventory : AjwStore {
                 storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
-                strBuilder.Append(networkManager.baseUrl)
+                if (payload.num == 0) {
+                    strBuilder.Append(networkManager.baseUrl)
                     .Append("inventory/open_box");
+                }
+                else if(payload.num == 10) {
+                    strBuilder.Append(networkManager.baseUrl)
+                    .Append("inventory/open_box/10");
+                }
                 networkManager.request("POST", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:

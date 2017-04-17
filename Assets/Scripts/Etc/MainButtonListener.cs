@@ -4,14 +4,14 @@ using System.Collections;
 public enum MAIN_BUTTON {
     HOME,
     GARAGE,
-    AVATAR,
     COMMUNITY,
     SHOP,
     RIDING,
     BATTLE,
     OPTION,
     MYHOME,
-    MYINFO
+    MYINFO,
+    BOX
 };
 
 public class MainButtonListener : MonoBehaviour {
@@ -22,6 +22,7 @@ public class MainButtonListener : MonoBehaviour {
         addMainBtnEvent(2, MAIN_BUTTON.OPTION);
         addMainBtnEvent(3, MAIN_BUTTON.MYHOME);
         addMainBtnEvent(4, MAIN_BUTTON.MYINFO);
+        addMainBtnEvent(5, MAIN_BUTTON.BOX);
     }
 
     private void addMainBtnEvent(int index,MAIN_BUTTON type) {

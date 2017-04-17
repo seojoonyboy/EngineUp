@@ -8,20 +8,19 @@ public class MainBtnController : MonoBehaviour {
         optionPanel,
         avatar,
         myhomePanel,
-        myInfoPanel;
+        myInfoPanel,
+        boxPanel;
 
     public void onMainBtnEvent(MAIN_BUTTON type) {
         switch(type) {
             case MAIN_BUTTON.RIDING:
                 ridingPanel.SetActive(true);
                 break;
-
             case MAIN_BUTTON.COMMUNITY:
                 communityPanel.SetActive(true);
                 GetMyFriendListAction initAct = ActionCreator.createAction(ActionTypes.GET_MY_FRIEND_LIST) as GetMyFriendListAction;
                 GameManager.Instance.gameDispatcher.dispatch(initAct);
                 break;
-
             case MAIN_BUTTON.OPTION:
                 optionPanel.SetActive(true);
                 break;
@@ -30,6 +29,9 @@ public class MainBtnController : MonoBehaviour {
                 break;
             case MAIN_BUTTON.MYINFO:
                 myInfoPanel.SetActive(true);
+                break;
+            case MAIN_BUTTON.BOX:
+                boxPanel.SetActive(true);
                 break;
         }
     }
