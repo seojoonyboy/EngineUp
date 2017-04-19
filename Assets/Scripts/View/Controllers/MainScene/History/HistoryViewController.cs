@@ -37,6 +37,17 @@ public class HistoryViewController : MonoBehaviour {
         getRidingDataSets();
     }
 
+    void OnDisable() {
+        foreach(Transform obj in scrollView.transform) {
+            Destroy(obj.gameObject);
+        }
+        innerItem = null;
+        item = null;
+        preItem = null;
+        preDate = null;
+        isFirstGetRidingData = true;
+    }
+
     public void ridingStoreListener() {
         ActionTypes storeEventType = ridingStore.eventType;
 
@@ -67,6 +78,7 @@ public class HistoryViewController : MonoBehaviour {
             //Debug.Log("Time : " + tmp[1]);
             
             if (preDate != tmp[0]) {
+                //Debug.Log("날짜가 다름");
                 //이전과 다른 날짜인 경우
                 //새로운 컨테이너를 생성
                 item = Instantiate(container);
@@ -97,6 +109,7 @@ public class HistoryViewController : MonoBehaviour {
             }
 
             else {
+                //Debug.Log("날짜가 같음");
                 //이전과 날짜가 같은 경우
                 //하위 컨테이너로 붙인다.
                 innerItem = Instantiate(innerContainer);

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class HistoryDetailViewController : MonoBehaviour {
     public BoxCollider[] collider;
@@ -45,6 +46,7 @@ public class HistoryDetailViewController : MonoBehaviour {
     }
 
     public void setMap(RidingDetails data) {
+        map.SetActive(true);
         OnlineMaps _map = map.GetComponent<OnlineMaps>();
         
         preMapScale = _map.tilesetSize;
@@ -54,19 +56,17 @@ public class HistoryDetailViewController : MonoBehaviour {
             _map.position = new Vector2(127.74437f, 37.87998f);
         }
         else {
-            _map.position = new Vector2(coords[0].altitude, coords[0].latitude);
+            _map.position = new Vector2(coords[0].latitude, coords[0].longitude);
             List<Vector2> list = new List<Vector2>();
 
             for(int i=0; i<coords.Length; i++) {
-                Vector2 coord = new Vector2(coords[i].altitude, coords[i].latitude);
+                Vector2 coord = new Vector2(coords[i].latitude, coords[i].longitude);
                 list.Add(coord);
             }
-            _line = new OnlineMapsDrawingLine(list, Color.red, 3.0f);
+            _line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
             _map.AddDrawingElement(_line);
         }
         _map.zoom = 18;
-
-        map.SetActive(true);
 
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
     }
@@ -85,11 +85,11 @@ public class HistoryDetailViewController : MonoBehaviour {
     }
 
     public void setInfo(RidingDetails data) {
-        dist.text = data.distance + " KM";
-        avgSpeed.text = data.avgSpeed + " KM/h";
-        uphill.text = data.uphillDistance + " M";
-        time.text = data.runningTime;
-        maxSpeed.text = data.maxSpeed + " KM/h";
+        dist.text = (Math.Round(data.distance, 2, MidpointRounding.AwayFromZero)) + " KM";
+        avgSpeed.text = (Math.Round(data.avgSpeed, 2, MidpointRounding.AwayFromZero)) + " KM/h";
+        uphill.text = (Math.Round(data.uphillDistance, 2, MidpointRounding.AwayFromZero)) + " M";
+        time.text = data.runningTime.Split('.')[0];
+        maxSpeed.text = (Math.Round(data.maxSpeed, 2, MidpointRounding.AwayFromZero)) + " KM/h";
         boxNum.text = "x " + data.get_boxes;
     }
 
@@ -107,10 +107,10 @@ public class HistoryDetailViewController : MonoBehaviour {
         if (_line != null) {
             int level = OnlineMaps.instance.zoom;
             if (level > 10) {
-                _line.weight = 0.5f;
+                _line.weight = 1f;
             }
             else {
-                _line.weight = 1f;
+                _line.weight = 3f;
             }
         }
     }
