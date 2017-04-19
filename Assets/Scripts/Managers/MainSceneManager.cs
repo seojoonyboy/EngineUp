@@ -50,6 +50,8 @@ public class MainSceneManager : fbl_SceneManager {
         gm.charInvenStore.addListener(charViewCtrler.onCharInvenStore);
         gm.userStore.addListener(charViewCtrler.onUserListener);
         gm.userStore.addListener(bicycleViewCtrler.onUserStoreListener);
+
+        gm.ridingStore.addListener(historyViewCtrler.ridingStoreListener);
     }
 
     public void offModal() {

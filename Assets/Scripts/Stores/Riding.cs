@@ -27,6 +27,12 @@ public class Riding : AjwStore{
 
     public ArrayList coordList;
     public ArrayList filteredCoordsLists = new ArrayList();
+
+    public RidingRecords[] ridingRecords;
+    public RidingDetails ridingDetails;
+
+    public string postsCallbackHeader;
+
     public Riding(QueueDispatcher<Actions> _dispatcher):base(_dispatcher){
         postBuffer = new coordData[10];
         postBufferCounter = 0;
@@ -159,6 +165,64 @@ public class Riding : AjwStore{
         }
     }
 
+    //라이딩 기록 목록 불러오기
+    //pagination included
+    void getRecords(GetRidingRecords payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl).Append("ridings");
+                if(!payload.isFirst) {
+                    if(postsCallbackHeader.Contains("next")) {
+                        int startIndex = postsCallbackHeader.IndexOf('?');
+                        int endIndex = postsCallbackHeader.IndexOf('>');
+                        string str = postsCallbackHeader.Substring(startIndex, endIndex - startIndex);
+                        strBuilder.Append(str);
+                    }
+                }
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                postsCallbackHeader = payload.response.header;
+                ridingRecords = JsonHelper.getJsonArray<RidingRecords>(payload.response.data);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
+        }
+    }
+
+    void getRidingHistoryDetails(GetRidingRecords payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder
+                    .Append(networkManager.baseUrl)
+                    .Append("ridings/")
+                    .Append(payload.id);
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                ridingDetails = RidingDetails.fromJSON(payload.response.data);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
+        }
+    }
+
     void _initRiding(){
         totalDist = 0;
         curSpeed = 0;
@@ -193,6 +257,12 @@ public class Riding : AjwStore{
             GPSSendAction _sendAct = action as GPSSendAction;
             _gpsSend(_sendAct);
             break;
+        case ActionTypes.GET_RIDING_RECORDS:
+            getRecords(action as GetRidingRecords);
+            break;
+        case ActionTypes.RIDING_DETAILS:
+            getRidingHistoryDetails(action as GetRidingRecords);
+            break;
         }
         eventType = action.type;
     }
@@ -210,6 +280,21 @@ public class RidingData {
 
     public static RidingData fromJSON(string json){
         return JsonUtility.FromJson<RidingData>(json);
+    }
+}
+
+[System.Serializable]
+public class RidingRecords : RidingData {
+    public string createDate;
+}
+
+[System.Serializable]
+public class RidingDetails : RidingData {
+    public innerRidingDetails[] coords;
+    public string createDate;
+
+    public static RidingDetails fromJSON(string json) {
+        return JsonUtility.FromJson<RidingDetails>(json);
     }
 }
 
@@ -240,4 +325,10 @@ public class filteredCoords {
     public string timestamp = null;
     public float horizontalAccuracy = 0;
     public float verticalAccuracy = 0;
+}
+
+[System.Serializable]
+public class innerRidingDetails : filteredCoords {
+    public string isPaused;
+    public string createDate;
 }

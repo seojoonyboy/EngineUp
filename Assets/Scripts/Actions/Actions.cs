@@ -11,7 +11,7 @@ public enum ActionTypes {
     GPS_SEND,
     GARAGE_CHAR_INIT, GARAGE_ITEM_INIT, GARAGE_ITEM_EQUIP, GARAGE_ITEM_UNEQUIP, GARAGE_LOCK, GARAGE_SELL, 
     BOX_OPEN, CHAR_OPEN,
-    MYINFO
+    MYINFO, GET_RIDING_RECORDS, RIDING_DETAILS
 }
 
 public class Actions{
@@ -142,6 +142,12 @@ public static class ActionCreator{
         case ActionTypes.CHAR_OPEN:
             _return = new garage_unlock_char();
             break;
+        case ActionTypes.GET_RIDING_RECORDS:
+            _return = new GetRidingRecords();
+            break;
+        case ActionTypes.RIDING_DETAILS:
+            _return = new GetRidingRecords();
+            break;
         }
          _return.type = _type;
         return _return;
@@ -197,6 +203,13 @@ public class RidingEndAction : Actions {}
 public class RidingResultAction : Actions {
     public string nickname;
     public StringBuilder data = new StringBuilder();
+}
+
+public class GetRidingRecords : NetworkAction {
+    public bool isFirst = false;
+
+    //상세보기에서 필요
+    public int id;
 }
 
 public class CommunityInitAction : NetworkAction {
