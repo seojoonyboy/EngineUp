@@ -99,8 +99,8 @@ public class HistoryDetailViewController : MonoBehaviour {
 
     public void setDate(string time) {
         string[] split = time.Split('T');
-
-        date.text = split[0];
+        string[] _date = split[0].Split('-');
+        date.text = _date[0] + " . " + _date[1] + " . " + _date[2];
     }
 
     private void zooming() {

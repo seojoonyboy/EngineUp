@@ -181,6 +181,10 @@ public class Riding : AjwStore{
                         string str = postsCallbackHeader.Substring(startIndex, endIndex - startIndex);
                         strBuilder.Append(str);
                     }
+                    else {
+                        Debug.Log("다음 글 없음");
+                        return;
+                    }
                 }
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
@@ -188,6 +192,7 @@ public class Riding : AjwStore{
                 storeStatus = storeStatus.NORMAL;
                 postsCallbackHeader = payload.response.header;
                 ridingRecords = JsonHelper.getJsonArray<RidingRecords>(payload.response.data);
+                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:

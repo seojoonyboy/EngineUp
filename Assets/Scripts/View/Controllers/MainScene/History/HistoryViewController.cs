@@ -17,6 +17,14 @@ public class HistoryViewController : MonoBehaviour {
     private User userStore;
 
     public HistoryDetailViewController subController;
+    public GameObject containerFirstTarget;
+    private bool isFirstGetRidingData = true;
+
+    private GameObject
+            innerItem = null,
+            item = null,
+            preItem = null;
+    private string preDate = null;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -26,9 +34,7 @@ public class HistoryViewController : MonoBehaviour {
 
     void OnEnable() {
         //makeList();
-        GetRidingRecords act = ActionCreator.createAction(ActionTypes.GET_RIDING_RECORDS) as GetRidingRecords;
-        act.isFirst = true;
-        gm.gameDispatcher.dispatch(act);
+        getRidingDataSets();
     }
 
     public void ridingStoreListener() {
@@ -52,14 +58,9 @@ public class HistoryViewController : MonoBehaviour {
 
     public void makeList() {
         var data = ridingStore.ridingRecords;
-        string preDate = null;
-        GameObject
-            innerItem = null,
-            item = null,
-            preItem = null;
         for (int i=0; i<data.Length; i++) {
             string[] tmp = data[i].createDate.Split('T');
-            string date = tmp[0];
+            string[] date = tmp[0].Split('-');
             string time = tmp[1];
 
             //Debug.Log("Date : " + tmp[0]);
@@ -70,12 +71,20 @@ public class HistoryViewController : MonoBehaviour {
                 //새로운 컨테이너를 생성
                 item = Instantiate(container);
 
-                item.transform.Find("Header/Label").GetComponent<UILabel>().text = tmp[0];
+                item.transform.Find("Header/Label").GetComponent<UILabel>().text = date[0] + " . " + date[1] + " . " + date[2];
                 GameObject inner = item.transform.Find("Grid/HistoryInnerContainer").gameObject;
 
-                setInfo(inner, data[i].runningTime, gm.userStore.nickName, data[i].get_boxes, data[i].distance.ToString(), data[i].id);
+                setInfo(inner, data[i].runningTime, gm.userStore.nickName, data[i].get_boxes, data[i].distance, data[i].id);
+
+                if(preItem == null) {
+                    UIAnchor anchor = item.AddComponent<UIAnchor>();
+                    anchor.container = containerFirstTarget;
+                    anchor.runOnlyOnce = true;
+                    anchor.side = UIAnchor.Side.Bottom;
+                    anchor.pixelOffset = new Vector2(0, -250.0f);
+                }
                 
-                if (preItem != null) {
+                else {
                     UIGrid grid = preItem.transform.Find("Grid").GetComponent<UIGrid>();
                     grid.repositionNow = true;
                     grid.Reposition();
@@ -91,11 +100,12 @@ public class HistoryViewController : MonoBehaviour {
                 //이전과 날짜가 같은 경우
                 //하위 컨테이너로 붙인다.
                 innerItem = Instantiate(innerContainer);
+
                 innerItem.transform.SetParent(item.transform.Find("Grid").transform);
                 innerItem.transform.localScale = Vector3.one;
                 innerItem.transform.localPosition = Vector3.zero;
 
-                setInfo(innerItem, data[i].runningTime, gm.userStore.nickName, data[i].get_boxes, data[i].distance.ToString(), data[i].id);
+                setInfo(innerItem, data[i].runningTime, gm.userStore.nickName, data[i].get_boxes, data[i].distance, data[i].id);
             }
 
             item.transform.SetParent(scrollView.transform);
@@ -106,6 +116,9 @@ public class HistoryViewController : MonoBehaviour {
             preDate = tmp[0];
             preItem = item;
         }
+        UIGrid _grid = item.transform.Find("Grid").GetComponent<UIGrid>();
+        _grid.repositionNow = true;
+        _grid.Reposition();
     }
 
     public void offPanel() {
@@ -128,11 +141,12 @@ public class HistoryViewController : MonoBehaviour {
         return param;
     }
 
-    private void setInfo(GameObject obj, string runningTime, string nickName, int boxNum, string totalDist, int id) {
-        obj.transform.Find("Time").GetComponent<UILabel>().text = runningTime;
+    private void setInfo(GameObject obj, string runningTime, string nickName, int boxNum, float totalDist, int id) {
+        string[] splited = runningTime.Split('.');
+        obj.transform.Find("Time").GetComponent<UILabel>().text = splited[0];
         obj.transform.Find("Nickname").GetComponent<UILabel>().text = nickName + "님의 라이딩";
         obj.transform.Find("BoxNum").GetComponent<UILabel>().text = " x" + boxNum;
-        obj.transform.Find("TotalDist").GetComponent<UILabel>().text = totalDist + " km";
+        obj.transform.Find("TotalDist").GetComponent<UILabel>().text = (Math.Round(totalDist, 2, MidpointRounding.AwayFromZero)) + " km";
 
         obj.AddComponent<ButtonIndex>().index = id;
 
@@ -142,5 +156,15 @@ public class HistoryViewController : MonoBehaviour {
         eventBtn.parameters[0] = MakeParameter(obj.gameObject, typeof(GameObject));
 
         EventDelegate.Add(detailButton.GetComponent<UIButton>().onClick, eventBtn);
+    }
+
+    //이전 라이딩 기록 추가로 불러옴
+    public void getRidingDataSets() {
+        GetRidingRecords act = ActionCreator.createAction(ActionTypes.GET_RIDING_RECORDS) as GetRidingRecords;
+        if(isFirstGetRidingData) {
+            act.isFirst = true;
+        }
+        gm.gameDispatcher.dispatch(act);
+        isFirstGetRidingData = false;
     }
 }
