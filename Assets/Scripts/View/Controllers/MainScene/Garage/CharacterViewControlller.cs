@@ -57,8 +57,8 @@ public class CharacterViewControlller : MonoBehaviour {
         if (userStoreEventType == ActionTypes.MYINFO) {
             if (userStore.storeStatus == storeStatus.NORMAL) {
                 character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                setMainChar(charInfo.id);
-                setSideBar(charInfo.id);
+                setMainChar(charInfo.character);
+                setSideBar(charInfo.character);
                 lvLabel.text = "Lv. " + charInfo.lv.ToString();
             }
         }
@@ -82,6 +82,7 @@ public class CharacterViewControlller : MonoBehaviour {
     public void setMainChar(int index) {
         //mainStageChar.GetComponent<Animator>().runtimeAnimatorController = animatorArr[0];
         UISprite sprite = mainStageChar.GetComponent<UISprite>();
+        Debug.Log("index : " + index);
         sprite.atlas = atlasArr[index - 1];
         sprite.spriteName = index + "-1-main";
         sprite.MakePixelPerfect();
@@ -136,9 +137,7 @@ public class CharacterViewControlller : MonoBehaviour {
                     Debug.Log("조각이 충분합니다.");
                 }
             }
-
         }
-
     }
 
     //캐릭터 해금하기
@@ -182,12 +181,8 @@ public class CharacterViewControlller : MonoBehaviour {
                 item.transform.Find("DeactiveContainer/puzzles").GetComponent<UILabel>().text = info.paid + " / " + sbInfo.cost.ToString();
             }
 
-            if(info.id == repCharIndex) {
-                selectedChar = item;
-                if (info.has_character == "true") {
-                    equipButton.SetActive(true);
-                    item.transform.Find("DeactiveContainer").gameObject.SetActive(false);
-                }
+            if(info.has_character == "true") {
+                item.transform.Find("DeactiveContainer").gameObject.SetActive(false);
             }
 
             UISprite sprite = item.transform.Find("Portrait").GetComponent<UISprite>();
