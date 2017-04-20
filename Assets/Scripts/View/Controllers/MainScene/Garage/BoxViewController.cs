@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BoxViewController : MonoBehaviour {
-    public UILabel numOfBoxLabel;
+    public UILabel 
+        numOfBoxLabel,
+        singleModalBoxNum,
+        multiModalBoxNum;
 
     private GameManager gm;
     private Box_Inventory boxStore;
@@ -29,7 +32,10 @@ public class BoxViewController : MonoBehaviour {
     public void onUserStoreListener() {
         if(userStore.eventType == ActionTypes.MYINFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
-                numOfBoxLabel.text = userStore.myData.boxes.ToString();
+                string boxNum = userStore.myData.boxes.ToString();
+                numOfBoxLabel.text = boxNum;
+                singleModalBoxNum.text = "x " + boxNum;
+                multiModalBoxNum.text = "x " + boxNum;
                 Debug.Log("박스 갯수 갱신");
             }
         }
@@ -131,6 +137,7 @@ public class BoxViewController : MonoBehaviour {
     IEnumerator openEffect(List<Transform> list, int itemCount, Box_Inventory.boxOpenCallback[] items, GameObject modal) {
         int cnt = 0;
         modal.transform.Find("ConfirmButton").gameObject.GetComponent<UIButton>().enabled = false;
+        modal.transform.Find("CancelButton").gameObject.GetComponent<UIButton>().enabled = false;
         foreach (Transform item in list) {
             if (cnt < itemCount) {
                 //effect
@@ -154,5 +161,6 @@ public class BoxViewController : MonoBehaviour {
             yield return new WaitForSeconds(1.0f);
         }
         modal.transform.Find("ConfirmButton").gameObject.GetComponent<UIButton>().enabled = true;
+        modal.transform.Find("CancelButton").gameObject.GetComponent<UIButton>().enabled = true;
     }
 }

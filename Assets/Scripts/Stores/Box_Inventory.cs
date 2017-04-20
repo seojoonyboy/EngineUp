@@ -33,7 +33,7 @@ public class Box_Inventory : AjwStore {
                 storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
-                if (payload.num == 0) {
+                if (payload.num == 1) {
                     strBuilder.Append(networkManager.baseUrl)
                     .Append("inventory/open_box");
                 }
