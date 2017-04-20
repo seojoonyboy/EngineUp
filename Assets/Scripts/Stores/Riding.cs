@@ -175,7 +175,7 @@ public class Riding : AjwStore{
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl).Append("ridings");
                 if(!payload.isFirst) {
-                    if(postsCallbackHeader.Contains("next")) {
+                    if(postsCallbackHeader != null && postsCallbackHeader.Contains("next")) {
                         int startIndex = postsCallbackHeader.IndexOf('?');
                         int endIndex = postsCallbackHeader.IndexOf('>');
                         string str = postsCallbackHeader.Substring(startIndex, endIndex - startIndex);
