@@ -40,7 +40,7 @@ public class BicycleViewController : MonoBehaviour {
     public int pagePerSlotCount;
 
     public UILabel[] spects;
-    public UIScrollView scrollview;
+    public UIScrollView[] scrollview;
 
     public int[] equipedItemIndex;
     public UIAtlas atlas;
@@ -282,6 +282,7 @@ public class BicycleViewController : MonoBehaviour {
                 item.GetComponent<ButtonIndex>().index = cnt - 1;
 
                 Info info = item.AddComponent<Info>();
+                item.AddComponent<UIDragScrollView>().scrollView = scrollview[0];
                 info.id = items[cnt - 1].id;
                 info.parts = items[cnt - 1].item.parts;
                 info.name = items[cnt - 1].item.name;
@@ -340,6 +341,7 @@ public class BicycleViewController : MonoBehaviour {
                 item.GetComponent<ButtonIndex>().index = cnt - 1;
 
                 Info info = item.AddComponent<Info>();
+                item.AddComponent<UIDragScrollView>().scrollView = scrollview[1];
                 info.id = items[cnt - 1].id;
                 info.parts = items[cnt - 1].item.parts;
                 info.name = items[cnt - 1].item.name;
@@ -395,6 +397,7 @@ public class BicycleViewController : MonoBehaviour {
                 item.GetComponent<ButtonIndex>().index = cnt - 1;
 
                 Info info = item.AddComponent<Info>();
+                item.AddComponent<UIDragScrollView>().scrollView = scrollview[2];
                 info.id = items[cnt - 1].id;
                 info.parts = items[cnt - 1].item.parts;
                 info.name = items[cnt - 1].item.name;
