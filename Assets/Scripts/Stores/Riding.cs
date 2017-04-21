@@ -20,7 +20,7 @@ public class Riding : AjwStore{
     public float avgSpeed;
     public float maxSpeed = 0;
     public float uphillDistance;
-    public string totalTime;
+    public string totalTime = "00:00:00";
     public int boxes = 0;
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();

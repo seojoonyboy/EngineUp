@@ -30,6 +30,8 @@ public class MainSceneManager : fbl_SceneManager {
         boxViewCtrler.userStore = gm.userStore;
         charViewCtrler.userStore = gm.userStore;
         bicycleViewCtrler.userStore = gm.userStore;
+        historyViewCtrler.userStore = gm.userStore;
+        historyViewCtrler.ridingStore = gm.ridingStore;
 
         bicycleViewCtrler.bicycleItemStore = gm.bicycleInventStore;
         bicycleViewCtrler.charItemStore = gm.charInvenStore;

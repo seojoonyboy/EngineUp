@@ -13,8 +13,8 @@ public class HistoryViewController : MonoBehaviour {
 
     public int containerHeight = 400;
     private GameManager gm;
-    private Riding ridingStore;
-    private User userStore;
+    public Riding ridingStore;
+    public User userStore;
 
     public HistoryDetailViewController subController;
     public GameObject containerFirstTarget;
@@ -26,15 +26,13 @@ public class HistoryViewController : MonoBehaviour {
             preItem = null;
     private string preDate = null;
 
-    void Awake() {
-        gm = GameManager.Instance;
-        ridingStore = gm.ridingStore;
-        userStore = gm.userStore;
-    }
-
     void OnEnable() {
         //makeList();
         getRidingDataSets();
+    }
+
+    void Awake() {
+        gm = GameManager.Instance;
     }
 
     void OnDisable() {
@@ -49,15 +47,13 @@ public class HistoryViewController : MonoBehaviour {
     }
 
     public void ridingStoreListener() {
-        ActionTypes storeEventType = ridingStore.eventType;
-
-        if(storeEventType == ActionTypes.GET_RIDING_RECORDS) {
+        if(ridingStore.eventType == ActionTypes.GET_RIDING_RECORDS) {
             if(ridingStore.storeStatus == storeStatus.NORMAL) {
                 makeList();
             }
         }
 
-        if(storeEventType == ActionTypes.RIDING_DETAILS) {
+        if(ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
             if(ridingStore.storeStatus == storeStatus.NORMAL) {
                 subController.setInfo(ridingStore.ridingDetails);
                 subController.setMap(ridingStore.ridingDetails);

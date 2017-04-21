@@ -130,6 +130,10 @@ public class Result_VC : MonoBehaviour {
                 OnlineMaps.instance.position = lastVal;
             }
         }
+        else {
+            OnlineMaps.instance.position = new Vector2(127.74437f, 37.87998f);
+            OnlineMaps.instance.zoom = 18;
+        }
     }
 
     void test() {
