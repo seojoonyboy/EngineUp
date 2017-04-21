@@ -35,9 +35,13 @@ public class CharacterViewControlller : MonoBehaviour {
         charInvenStore = gm.charInvenStore;
     }
 
-    void Start() {
+    void OnEnable() {
         getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
         gm.gameDispatcher.dispatch(act);
+    }
+
+    void OnDisable() {
+        selectedChar = null;
     }
 
     public void onCharInvenStore() {
@@ -49,7 +53,6 @@ public class CharacterViewControlller : MonoBehaviour {
                 int index = 0;
                 if (selectedChar != null) {
                     index = selectedChar.GetComponent<Info>().characterId;
-                    
                 }
                 else {
                     character_inventory charInfo = userStore.myData.represent_character.character_inventory;
@@ -73,6 +76,7 @@ public class CharacterViewControlller : MonoBehaviour {
                 character_inventory charInfo = userStore.myData.represent_character.character_inventory;
                 setMainChar(charInfo.character);
                 setSideBar(charInfo.character);
+
                 lvLabel.text = "Lv. " + charInfo.lv.ToString();
                 equipButton.value = true;
             }

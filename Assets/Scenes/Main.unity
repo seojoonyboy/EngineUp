@@ -11703,7 +11703,7 @@ MonoBehaviour:
   mColor: {r: 0, g: 0, b: 0, a: 1}
   mPivot: 4
   mWidth: 850
-  mHeight: 41
+  mHeight: 40
   mDepth: 9
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
@@ -84125,6 +84125,7 @@ GameObject:
   - component: {fileID: 1698934116}
   - component: {fileID: 1698934115}
   - component: {fileID: 1698934114}
+  - component: {fileID: 1698934118}
   m_Layer: 5
   m_Name: CheckBox
   m_TagString: Untagged
@@ -84167,11 +84168,7 @@ MonoBehaviour:
   startsActive: 0
   instantTween: 0
   optionCanBeNone: 1
-  onChange:
-  - mTarget: {fileID: 508020537}
-    mMethodName: equipCharButton
-    mParameters: []
-    oneShot: 0
+  onChange: []
   checkSprite: {fileID: 0}
   checkAnimation: {fileID: 0}
   eventReceiver: {fileID: 0}
@@ -84259,6 +84256,35 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_equip_button
   mFillCenter: 1
+--- !u!114 &1698934118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1698934112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tweenTarget: {fileID: 1698934112}
+  hover: {r: 0.88235295, g: 0.78431374, b: 0.5882353, a: 1}
+  pressed: {r: 0.7176471, g: 0.6392157, b: 0.48235294, a: 1}
+  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  duration: 0.2
+  dragHighlight: 0
+  hoverSprite: 
+  pressedSprite: 
+  disabledSprite: 
+  hoverSprite2D: {fileID: 0}
+  pressedSprite2D: {fileID: 0}
+  disabledSprite2D: {fileID: 0}
+  pixelSnap: 0
+  onClick:
+  - mTarget: {fileID: 508020537}
+    mMethodName: equipCharButton
+    mParameters: []
+    oneShot: 0
 --- !u!1 &1699632140
 GameObject:
   m_ObjectHideFlags: 0
@@ -97136,7 +97162,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 66.375
+  aspectRatio: 20.1875
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
