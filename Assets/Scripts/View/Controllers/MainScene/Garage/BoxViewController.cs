@@ -163,4 +163,10 @@ public class BoxViewController : MonoBehaviour {
         modal.transform.Find("ConfirmButton").gameObject.GetComponent<UIButton>().enabled = true;
         modal.transform.Find("CancelButton").gameObject.GetComponent<UIButton>().enabled = true;
     }
+
+    public void offPanel() {
+        gameObject.SetActive(false);
+        UIToggle toggle = UIToggle.GetActiveToggle(2);
+        toggle.value = false;
+    }
 }
