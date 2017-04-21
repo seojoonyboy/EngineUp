@@ -43,10 +43,10 @@ public class Result_VC : MonoBehaviour {
         int level = OnlineMaps.instance.zoom;
         Debug.Log("zoom Level : " + level);
         if(level > 10) {
-            _line.weight = 0.5f;
+            _line.weight = 1.0f;
         }
-        else {
-            _line.weight = 1f;
+        if(level < 5) {
+            _line.weight = 3.0f;
         }
     }
 
@@ -75,7 +75,7 @@ public class Result_VC : MonoBehaviour {
         }
         if (ridingStore.eventType == ActionTypes.RIDING_END) {
             gameObject.SetActive(true);
-            //setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance, ridingStore.boxes);
+            setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance, ridingStore.boxes);
 
             MyInfo infoRefresh = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
             gm.gameDispatcher.dispatch(infoRefresh);
@@ -116,7 +116,7 @@ public class Result_VC : MonoBehaviour {
                 list.Add(val);
                 //Debug.Log("X : " + val.x + ", Y : " + val.y);
                 }
-            OnlineMaps.instance.AddDrawingElement(new OnlineMapsDrawingLine(list, Color.red, 3.0f));
+            OnlineMaps.instance.AddDrawingElement(new OnlineMapsDrawingLine(list, Color.red, 2.0f));
             //OnlineMaps.instance.on
         }
         //지도 위치 수정
@@ -128,6 +128,7 @@ public class Result_VC : MonoBehaviour {
                 float lastLon = lastData[0].longitude;
                 Vector2 lastVal = new Vector2(lastLat, lastLon);
                 OnlineMaps.instance.position = lastVal;
+                OnlineMaps.instance.zoom = 18;
             }
         }
         else {

@@ -182,12 +182,6 @@ public class StartLoadingSceneManager : fbl_SceneManager {
                 charBtn.transform.Find("Label").GetComponent<UILabel>().text = userStore.basicCharacters[1].name;
                 charBtn.GetComponent<ButtonIndex>().index = userStore.basicCharacters[1].id;
             }
-
-            else if(userStore.storeStatus == storeStatus.ERROR) {
-                Debug.Log("불러오는 과정에서 오류 발생. 캐릭터 정보 불러오기 재시도");
-                GetDefaultCharInfo getCharAct = ActionCreator.createAction(ActionTypes.GET_DEFAULT_CHAR_INFO) as GetDefaultCharInfo;
-                gm.gameDispatcher.dispatch(getCharAct);
-            }
         }
 
         if (userStore.eventType  == ActionTypes.GAME_START) {
