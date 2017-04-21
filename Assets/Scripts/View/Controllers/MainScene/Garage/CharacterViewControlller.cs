@@ -16,13 +16,7 @@ public class CharacterViewControlller : MonoBehaviour {
         itemPref,
         selectedChar;
 
-    public GameObject
-        disabledUnlockButton,
-        unlockButton,
-        equipButton;
-
-    public GameObject
-        descModal;
+    public UIToggle equipButton;
 
     public UIAtlas[] atlasArr;
     public RuntimeAnimatorController[] animatorArr;
@@ -31,7 +25,10 @@ public class CharacterViewControlller : MonoBehaviour {
         itemGrid,
         sideBarGrid;
 
-    public UILabel lvLabel;
+    public UILabel 
+        lvLabel,
+        charName,
+        desc;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -47,7 +44,24 @@ public class CharacterViewControlller : MonoBehaviour {
         ActionTypes charStoreEventType = charInvenStore.eventType;
 
         if (charStoreEventType == ActionTypes.GARAGE_CHAR_INIT) {
-            makeList();
+            if (charInvenStore.storeStatus == storeStatus.NORMAL) {
+                makeList();
+                int index = 0;
+                if (selectedChar != null) {
+                    index = selectedChar.GetComponent<Info>().characterId;
+                    
+                }
+                else {
+                    character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+                    index = charInfo.character;
+                }
+
+                if (charInvenStore.all_characters.ContainsKey(index).Equals(true)) {
+                    all_characters tmp = charInvenStore.all_characters[index];
+                    desc.text = tmp.desc;
+                    charName.text = tmp.name;
+                }
+            }
         }
     }
 
@@ -60,6 +74,7 @@ public class CharacterViewControlller : MonoBehaviour {
                 setMainChar(charInfo.character);
                 setSideBar(charInfo.character);
                 lvLabel.text = "Lv. " + charInfo.lv.ToString();
+                equipButton.value = true;
             }
         }
     }
@@ -69,20 +84,36 @@ public class CharacterViewControlller : MonoBehaviour {
         selectedChar = obj;
 
         Info info = obj.GetComponent<Info>();
+        sbInfo sbInfo = obj.GetComponent<sbInfo>();
         Debug.Log("ID : " + info.id);
         setMainChar(info.characterId);
         setSideBar(info.characterId);
+        setEquipButton(info.characterId);
+        setDesc(sbInfo.desc);
         
-        //setSlot();
-        setButton(info);
         lvLabel.text = "Lv. " + info.lv.ToString();
         //Debug.Log(index);
+        charName.text = sbInfo.name;
+    }
+
+    public void setEquipButton(int index) {
+        character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+        if (index == charInfo.character) {
+            equipButton.value = true;
+        }
+        else {
+            equipButton.value = false;
+        }
+    }
+
+    public void setDesc(string data) {
+        desc.text = data;
     }
 
     public void setMainChar(int index) {
         //mainStageChar.GetComponent<Animator>().runtimeAnimatorController = animatorArr[0];
         UISprite sprite = mainStageChar.GetComponent<UISprite>();
-        Debug.Log("index : " + index);
+        //Debug.Log("index : " + index);
         sprite.atlas = atlasArr[index - 1];
         sprite.spriteName = index + "-1-main";
         sprite.MakePixelPerfect();
@@ -103,10 +134,14 @@ public class CharacterViewControlller : MonoBehaviour {
 
     //캐릭터 장착하기
     public void equipCharButton() {
-        equip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_EQUIP) as equip_act;
-        act._type = equip_act.type.CHAR;
-        act.id = selectedChar.GetComponent<Info>().id;
-        gm.gameDispatcher.dispatch(act);
+        if(selectedChar != null) {
+            if(equipButton.value) {
+                equip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_EQUIP) as equip_act;
+                act._type = equip_act.type.CHAR;
+                act.id = selectedChar.GetComponent<Info>().id;
+                gm.gameDispatcher.dispatch(act);
+            }
+        }
     }
 
     //해제되지 않은 캐릭터 처리
@@ -114,41 +149,11 @@ public class CharacterViewControlller : MonoBehaviour {
         
     }
 
-    //해금 가능 조건인지 판단
-    private void setButton(Info info) {
-        //이미 해금이 되어있는 경우
-        if (info.has_character == "true") {
-            equipButton.SetActive(true);
-            unlockButton.SetActive(false);
-        }
-        else if(info.has_character == "false") {
-            equipButton.SetActive(false);
-            unlockButton.SetActive(true);
-            if (charInvenStore.all_characters.ContainsKey(info.characterId).Equals(true)) {
-                all_characters tmp = charInvenStore.all_characters[info.characterId];
-                //해금이 불가능한 경우 (조각이 부족한 경우)
-                if(info.paid < tmp.cost) {
-                    unlockButton.GetComponent<UIButton>().isEnabled = false;
-                    Debug.Log("조각이 불충분합니다.");
-                }
-                //해금이 가능한 경우 (조각이 모두 있는 경우)
-                else if (info.paid >= tmp.cost) {
-                    unlockButton.GetComponent<UIButton>().isEnabled = true;
-                    Debug.Log("조각이 충분합니다.");
-                }
-            }
-        }
-    }
-
     //캐릭터 해금하기
     public void unlockChar() {
         garage_unlock_char act = ActionCreator.createAction(ActionTypes.CHAR_OPEN) as garage_unlock_char;
         act.id = selectedChar.GetComponent<Info>().id;
         gm.gameDispatcher.dispatch(act);
-    }
-
-    public void offCharDesc() {
-        descModal.SetActive(false);
     }
 
     public void makeList() {
@@ -210,19 +215,6 @@ public class CharacterViewControlller : MonoBehaviour {
     private void init() {
         itemGrid.repositionNow = true;
         itemGrid.Reposition();
-    }
-
-    public void onDetailModal() {
-        descModal.SetActive(true);
-        Info info = selectedChar.GetComponent<Info>();
-        GameObject modal = descModal.transform.Find("Modal").gameObject;
-        UILabel nameLabel = modal.transform.Find("Name").GetComponent<UILabel>();
-        UILabel descLabel = modal.transform.Find("Desc").GetComponent<UILabel>();
-
-        int index = info.id;
-        sbInfo sbinfo = selectedChar.GetComponent<sbInfo>();
-        nameLabel.text = "이름 : " + sbinfo.name;
-        descLabel.text = "설명 : " + sbinfo.desc;
     }
 
     private class Info : MonoBehaviour {
