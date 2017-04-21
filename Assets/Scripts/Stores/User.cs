@@ -133,6 +133,9 @@ public class User : AjwStore {
                         else if(str.Contains("more")) {
                             msg.Append("\n 8글자 이내에만 허용됩니다.");
                         }
+                        if(str.Contains("unique")) {
+                            msg.Append("\n 중복되는 닉네임입니다.");
+                        }
                     }
                 }
                 message = msg.ToString();
