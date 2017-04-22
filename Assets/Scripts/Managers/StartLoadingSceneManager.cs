@@ -181,6 +181,8 @@ public class StartLoadingSceneManager : fbl_SceneManager {
                 charBtn = charselectModal.transform.Find("Grid/Woman").gameObject;
                 charBtn.transform.Find("Label").GetComponent<UILabel>().text = userStore.basicCharacters[1].name;
                 charBtn.GetComponent<ButtonIndex>().index = userStore.basicCharacters[1].id;
+
+                charIndex = userStore.basicCharacters[0].id;
             }
         }
 
