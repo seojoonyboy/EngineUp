@@ -107,6 +107,7 @@ public class User : AjwStore {
                 this.nickName = callbackData.user.nickName;
                 userTokenId = callbackData.key;
                 userId = callbackData.user.id;
+                myCharacters = callbackData.user.represent_character;
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
                 dispatcher.dispatch(startAct);
                 break;
