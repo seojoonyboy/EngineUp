@@ -137,6 +137,9 @@ public class User : AjwStore {
                         if(str.Contains("unique")) {
                             msg.Append("\n 중복되는 닉네임입니다.");
                         }
+                        if(str.Contains("least")) {
+                            msg.Append("\n 2글자 이상을 입력해주세요.");
+                        }
                     }
                 }
                 message = msg.ToString();
