@@ -16,7 +16,7 @@ public class CharacterViewControlller : MonoBehaviour {
         itemPref,
         selectedChar;
 
-    public UIToggle equipButton;
+    public GameObject equipButton;
 
     public UIAtlas[] atlasArr;
     public RuntimeAnimatorController[] animatorArr;
@@ -76,9 +76,9 @@ public class CharacterViewControlller : MonoBehaviour {
                 character_inventory charInfo = userStore.myData.represent_character.character_inventory;
                 setMainChar(charInfo.character);
                 setSideBar(charInfo.character);
-
+                equipButton.SetActive(true);
+                equipButton.transform.Find("Box/Check").gameObject.SetActive(true);
                 lvLabel.text = "Lv. " + charInfo.lv.ToString();
-                equipButton.value = true;
             }
         }
     }
@@ -92,7 +92,7 @@ public class CharacterViewControlller : MonoBehaviour {
         Debug.Log("ID : " + info.id);
         setMainChar(info.characterId);
         setSideBar(info.characterId);
-        setEquipButton(info.characterId);
+        setEquipButton(info.characterId, info.has_character);
         setDesc(sbInfo.desc);
         
         lvLabel.text = "Lv. " + info.lv.ToString();
@@ -100,13 +100,19 @@ public class CharacterViewControlller : MonoBehaviour {
         charName.text = sbInfo.name;
     }
 
-    public void setEquipButton(int index) {
-        character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-        if (index == charInfo.character) {
-            equipButton.value = true;
+    public void setEquipButton(int index, string hasChar) {
+        if (hasChar == "true") {
+            equipButton.SetActive(true);
+            character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+            if (index == charInfo.character) {
+                equipButton.transform.Find("Box/Check").gameObject.SetActive(true);
+            }
+            else {
+                equipButton.transform.Find("Box/Check").gameObject.SetActive(false);
+            }
         }
         else {
-            equipButton.value = false;
+            equipButton.SetActive(false);
         }
     }
 
@@ -130,22 +136,22 @@ public class CharacterViewControlller : MonoBehaviour {
         sprite.spriteName = index + "-1";
 
         sprite = sideBarGrid.transform.Find("Lv10Container/Sprite").GetComponent<UISprite>();
+        sprite.atlas = atlasArr[index - 1];
         sprite.spriteName = index + "-2";
 
         sprite = sideBarGrid.transform.Find("Lv20Container/Sprite").GetComponent<UISprite>();
+        sprite.atlas = atlasArr[index - 1];
         sprite.spriteName = index + "-3";
     }
 
     //캐릭터 장착하기
     public void equipCharButton() {
-        if(selectedChar != null) {
-            if(equipButton.value) {
-                equip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_EQUIP) as equip_act;
-                act._type = equip_act.type.CHAR;
-                act.id = selectedChar.GetComponent<Info>().id;
-                gm.gameDispatcher.dispatch(act);
-            }
-        }
+        equip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_EQUIP) as equip_act;
+        act._type = equip_act.type.CHAR;
+        act.id = selectedChar.GetComponent<Info>().id;
+        gm.gameDispatcher.dispatch(act);
+
+        equipButton.transform.Find("Box/Check").gameObject.SetActive(true);
     }
 
     //해제되지 않은 캐릭터 처리
@@ -155,6 +161,9 @@ public class CharacterViewControlller : MonoBehaviour {
 
     //캐릭터 해금하기
     public void unlockChar() {
+        if(selectedChar == null) {
+            return;
+        }
         garage_unlock_char act = ActionCreator.createAction(ActionTypes.CHAR_OPEN) as garage_unlock_char;
         act.id = selectedChar.GetComponent<Info>().id;
         gm.gameDispatcher.dispatch(act);
