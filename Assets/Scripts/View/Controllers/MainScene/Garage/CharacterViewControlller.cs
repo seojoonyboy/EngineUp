@@ -144,6 +144,14 @@ public class CharacterViewControlller : MonoBehaviour {
         sprite.spriteName = index + "-3";
     }
 
+    public void sideBarClicked(GameObject obj) {
+        GameObject _sprite = obj.transform.Find("Sprite").gameObject;
+
+        string name = _sprite.GetComponent<UISprite>().spriteName;
+        UISprite sprite = mainStageChar.GetComponent<UISprite>();
+        sprite.spriteName = name + "-main";
+    }
+
     //캐릭터 장착하기
     public void equipCharButton() {
         equip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_EQUIP) as equip_act;
