@@ -74,7 +74,7 @@ public class CharacterViewControlller : MonoBehaviour {
         if (userStoreEventType == ActionTypes.MYINFO) {
             if (userStore.storeStatus == storeStatus.NORMAL) {
                 character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                setMainChar(charInfo.character);
+                setMainChar(charInfo.character, charInfo.lv);
                 setSideBar(charInfo.character);
                 equipButton.SetActive(true);
                 equipButton.transform.Find("Box/Check").gameObject.SetActive(true);
@@ -90,7 +90,7 @@ public class CharacterViewControlller : MonoBehaviour {
         Info info = obj.GetComponent<Info>();
         sbInfo sbInfo = obj.GetComponent<sbInfo>();
         Debug.Log("ID : " + info.id);
-        setMainChar(info.characterId);
+        setMainChar(info.characterId, info.lv);
         setSideBar(info.characterId);
         setEquipButton(info.characterId, info.has_character);
         setDesc(sbInfo.desc);
@@ -120,12 +120,12 @@ public class CharacterViewControlller : MonoBehaviour {
         desc.text = data;
     }
 
-    public void setMainChar(int index) {
+    public void setMainChar(int index, int lv) {
         //mainStageChar.GetComponent<Animator>().runtimeAnimatorController = animatorArr[0];
         UISprite sprite = mainStageChar.GetComponent<UISprite>();
         //Debug.Log("index : " + index);
         sprite.atlas = atlasArr[index - 1];
-        sprite.spriteName = index + "-1-main";
+        sprite.spriteName = index + "-" + (lv + 1) + "-main";
         sprite.MakePixelPerfect();
         sprite.gameObject.transform.localScale = new Vector3(0.5f, 0.5f);
     }

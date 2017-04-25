@@ -25,7 +25,7 @@ public class GarageViewController : MonoBehaviour {
         if (userStoreEventType == ActionTypes.MYINFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
                 character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                charController.setMainChar(charInfo.id);
+                charController.setMainChar(charInfo.id, charInfo.lv);
                 charController.setSideBar(charInfo.id);
                 charController.lvLabel.text = charInfo.lv.ToString();
             }
