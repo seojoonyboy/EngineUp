@@ -248,7 +248,7 @@ public class User : AjwStore {
                 }
                 else if(payload.type == EditProfileAction.profileType.BICYCLE) {
                     string val = (string)payload.value;
-                    form.AddField("bicycles", val);
+                    form.AddField("bicycle", val);
                 }
                 else if(payload.type == EditProfileAction.profileType.WEIGHT) {
                     int val = Convert.ToInt32(payload.value);

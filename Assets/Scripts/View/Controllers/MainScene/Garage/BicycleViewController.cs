@@ -15,9 +15,6 @@ public class BicycleViewController : MonoBehaviour {
         isSingleSellOrLock = false;
 
     public GameObject 
-        test,
-        test2;
-    public GameObject 
         slotItem,
         sideBar,
         selectedItem;
@@ -118,7 +115,6 @@ public class BicycleViewController : MonoBehaviour {
             sellButton.transform.Find("Label").GetComponent<UILabel>().text = "최종 판매";
         }
         isSellMode = !isOn;
-        test.SetActive(isSellMode);
         sellButton.GetComponent<boolIndex>().isOn = isSellMode;
     }
 
@@ -140,7 +136,6 @@ public class BicycleViewController : MonoBehaviour {
             lockButton.transform.Find("Label").GetComponent<UILabel>().text = "최종 잠금";
         }
         isLockMode = !isOn;
-        test2.SetActive(isLockMode);
         lockButton.GetComponent<boolIndex>().isOn = isLockMode;
     }
 
@@ -292,6 +287,7 @@ public class BicycleViewController : MonoBehaviour {
                 info.gear = items[cnt - 1].item.gear;
 
                 if (items[cnt - 1].is_equiped == "true") {
+                    Debug.Log("FR Equiped");
                     info.is_equiped = true;
                     item.transform.Find("Equiped").gameObject.SetActive(true);
                     equipedItemIndex[1] = items[cnt - 1].item.id;
@@ -331,6 +327,7 @@ public class BicycleViewController : MonoBehaviour {
                 if (cnt > items.Length) {
                     break;
                 }
+
                 GameObject item = Instantiate(slotItem);
                 item.name = "item" + cnt;
 
@@ -347,8 +344,11 @@ public class BicycleViewController : MonoBehaviour {
                 info.name = items[cnt - 1].item.name;
                 info.desc = items[cnt - 1].item.desc;
                 info.imageId = items[cnt - 1].item.id;
+                info.limit_rank = items[cnt - 1].item.limit_rank;
+                info.gear = items[cnt - 1].item.gear;
 
                 if (items[cnt - 1].is_equiped == "true") {
+                    Debug.Log("WH Equiped");
                     info.is_equiped = true;
                     item.transform.Find("Equiped").gameObject.SetActive(true);
                     equipedItemIndex[0] = items[cnt - 1].item.id;
@@ -403,8 +403,11 @@ public class BicycleViewController : MonoBehaviour {
                 info.name = items[cnt - 1].item.name;
                 info.desc = items[cnt - 1].item.desc;
                 info.imageId = items[cnt - 1].item.id;
+                info.limit_rank = items[cnt - 1].item.limit_rank;
+                info.gear = items[cnt - 1].item.gear;
 
                 if (items[cnt - 1].is_equiped == "true") {
+                    Debug.Log("EG Equiped");
                     info.is_equiped = true;
                     item.transform.Find("Equiped").gameObject.SetActive(true);
                     equipedItemIndex[2] = items[cnt - 1].item.id;
@@ -547,7 +550,6 @@ public class BicycleViewController : MonoBehaviour {
         sellingModal.SetActive(false);
         sellButton.GetComponent<boolIndex>().isOn = false;
         isSellMode = false;
-        test.SetActive(false);
         itemInitAct();
     }
 
@@ -555,7 +557,6 @@ public class BicycleViewController : MonoBehaviour {
         lockingModal.SetActive(false);
         lockButton.GetComponent<boolIndex>().isOn = false;
         isLockMode = false;
-        test2.SetActive(false);
         itemInitAct();
     }
 
