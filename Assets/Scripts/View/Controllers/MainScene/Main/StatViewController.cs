@@ -3,7 +3,8 @@
 public class StatViewController : MonoBehaviour {
     public UILabel 
         nickNameLabel,
-        mainLvLabel;
+        mainLvLabel,
+        mainTitleLabel;
 
     public Riding ridingStore;
     public User userStore;
@@ -54,6 +55,7 @@ public class StatViewController : MonoBehaviour {
         if(userStore.eventType == ActionTypes.MYINFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
                 initialize();
+                mainTitleLabel.text = userStore.userTitle;
             }
         }
 

@@ -18,6 +18,7 @@ public class User : AjwStore {
     public string facebookToken;
 
     public int userId;
+    public string userTitle;
 
     public character[] basicCharacters;
     public represent_character myCharacters;
@@ -52,6 +53,7 @@ public class User : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 setMessage(2);
                 myData = UserData.fromJSON(payload.response.data);
+                setUserTitle(myData.status.rank);
                 Debug.Log(payload.response.data);
                 _emitChange();
                 break;
@@ -363,6 +365,37 @@ public class User : AjwStore {
             case 3 :
                 message = "서버 요청간에 문제가 발생하였습니다.";
                 break;
+        }
+    }
+
+    //유저 호칭 설정
+    private void setUserTitle(int lv) {
+        if(lv == 0) {
+            userTitle = "초보자";
+        }
+        else if(lv >= 1 && lv <= 9) {
+            userTitle = "동호회급";
+        }
+        else if(lv >= 10 && lv <= 19) {
+            userTitle = "클럽급";
+        }
+        else if(lv >= 20 && lv <= 29) {
+            userTitle = "지역대표급";
+        }
+        else if (lv >= 30 && lv <= 44) {
+            userTitle = "국가대표급";
+        }
+        else if (lv >= 45 && lv <= 59) {
+            userTitle = "UCI 컨티낸탈급";
+        }
+        else if (lv >= 60 && lv <= 74) {
+            userTitle = "UCI 프로 컨티낸탈급";
+        }
+        else if (lv >= 75 && lv <= 99) {
+            userTitle = "지역대표급";
+        }
+        else if(lv >= 100) {
+            userTitle = "지존급";
         }
     }
 }
