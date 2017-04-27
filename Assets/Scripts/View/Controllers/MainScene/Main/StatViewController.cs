@@ -189,13 +189,13 @@ public class StatViewController : MonoBehaviour {
             case 0:
                 unit.text = "Kg";
                 targetObj.GetComponent<InputIndex>().type = "weight";
-                input.value = obj.transform.parent.Find("WeightValue").GetComponent<UILabel>().text;
+                input.value = userStore.myData.weight;
                 break;
             //키 입력
             case 1:
                 unit.text = "Cm";
                 targetObj.GetComponent<InputIndex>().type = "height";
-                input.value = obj.transform.parent.Find("HeightValue").GetComponent<UILabel>().text;
+                input.value = userStore.myData.height;
                 break;
         }
     }
@@ -266,6 +266,11 @@ public class StatViewController : MonoBehaviour {
             case 1:
                 GetBicycleTypes bicycleType = ActionCreator.createAction(ActionTypes.USER_BICYCLETYPES) as GetBicycleTypes;
                 gm.gameDispatcher.dispatch(bicycleType);
+                break;
+            //WH 버튼
+            case 3:
+                editModals[index].transform.Find("HeightValue").GetComponent<UILabel>().text = userStore.myData.height;
+                editModals[index].transform.Find("WeightValue").GetComponent<UILabel>().text = userStore.myData.weight;
                 break;
             case 5:
                 editModals[0].SetActive(false);
