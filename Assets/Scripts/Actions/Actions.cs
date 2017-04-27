@@ -11,7 +11,9 @@ public enum ActionTypes {
     GPS_SEND,
     GARAGE_CHAR_INIT, GARAGE_ITEM_INIT, GARAGE_ITEM_EQUIP, GARAGE_ITEM_UNEQUIP, GARAGE_LOCK, GARAGE_SELL, 
     BOX_OPEN, CHAR_OPEN,
-    MYINFO, GET_RIDING_RECORDS, RIDING_DETAILS
+    MYINFO, GET_RIDING_RECORDS, RIDING_DETAILS,
+    EDIT_PROFILE,
+    COUNTRIES, USER_BICYCLETYPES
 }
 
 public class Actions{
@@ -148,6 +150,15 @@ public static class ActionCreator{
         case ActionTypes.RIDING_DETAILS:
             _return = new GetRidingRecords();
             break;
+        case ActionTypes.EDIT_PROFILE:
+            _return = new EditProfileAction();
+            break;
+        case ActionTypes.COUNTRIES:
+            _return = new GetCountryData();
+            break;
+        case ActionTypes.USER_BICYCLETYPES:
+            _return = new GetBicycleTypes();
+            break;
         }
          _return.type = _type;
         return _return;
@@ -161,6 +172,12 @@ public class SignupAction : NetworkAction {
     public string token = null;
     public string nickName;
     public int charIndex;
+}
+
+public class EditProfileAction : NetworkAction {
+    public enum profileType { COUNTRY, DISTRICT, BICYCLE, BIRTHDAY, WEIGHT, HEIGHT, GENDER}
+    public profileType type;
+    public object value;
 }
 
 public class SigninAction : SignupAction { }
@@ -251,5 +268,9 @@ public class GetDistrictsData : NetworkAction {
 public class GetCityData : NetworkAction {
     public int id;
 }
+
+public class GetCountryData : NetworkAction { }
+
+public class GetBicycleTypes : NetworkAction { }
 
 public class MyInfo : NetworkAction { }

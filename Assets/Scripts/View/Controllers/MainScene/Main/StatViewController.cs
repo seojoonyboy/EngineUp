@@ -4,25 +4,40 @@ public class StatViewController : MonoBehaviour {
     public UILabel 
         nickNameLabel,
         mainLvLabel;
+
     public Riding ridingStore;
     public User userStore;
+    public Locations locationStore;
 
     public UILabel[] 
         stats,
-        profiles,
+        myInfoes,
         totalRidings,
-        monthlyRidings;
+        monthlyRidings,
+        profiles;
 
     private GameManager gm;
     
     public UISlider mainSlider;
     public int mainSliderOffset = 1;
+
+    public GameObject 
+        districtPref,
+        bicyclePref;
+
+    public UIGrid 
+        districtGrid,
+        bicycleTypeGrid;
+
+    public GameObject[] editModals;
+    
     void Awake() {
         gm = GameManager.Instance;
     }
 
     void OnEnable() {
-        initialize();
+        MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+        gm.gameDispatcher.dispatch(act);
     }
 
     public void onUserListener() {
@@ -38,10 +53,20 @@ public class StatViewController : MonoBehaviour {
                 initialize();
             }
         }
+
+        if(userStore.eventType == ActionTypes.USER_BICYCLETYPES) {
+            if(userStore.storeStatus == storeStatus.NORMAL) {
+                makeBicycleTypeList();
+            }
+        }
     }
 
-    void Start() {
-        userStore = GameManager.Instance.userStore;
+    public void onLocationStore() {
+        if(locationStore.eventType == ActionTypes.GET_DISTRICT_DATA) {
+            if(locationStore.storeStatus == storeStatus.NORMAL) {
+                makeDistrictsList();
+            }
+        }
     }
 
     public void offPanel() {
@@ -49,18 +74,66 @@ public class StatViewController : MonoBehaviour {
     }
 
     private void initialize() {
+        setMyInfo();
         setProfile();
-        setStats();
         setTotalRidingRecord();
         setMonthlyRidingRecord();
     }
 
-    private void setProfile() {
+    private void makeBicycleTypeList() {
+        bicycleTypeGrid.transform.DestroyChildren();
+        for(int i = 0; i < userStore.userBicycleTypes.Length; i++) {
+            GameObject item = Instantiate(bicyclePref);
+
+            item.transform.SetParent(bicycleTypeGrid.transform);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localScale = Vector3.one;
+
+            item.transform.Find("Label").GetComponent<UILabel>().text = userStore.userBicycleTypes[i].name;
+            bicycleTypeGrid.GetComponent<UIGrid>().repositionNow = true;
+            bicycleTypeGrid.GetComponent<UIGrid>().Reposition();
+
+            EventDelegate.Parameter param = new EventDelegate.Parameter();
+            param.obj = item;
+            param.field = "index";
+
+            EventDelegate submitEvent = new EventDelegate(this, "onSubmit");
+            submitEvent.parameters[0] = param;
+
+            EventDelegate.Add(item.GetComponent<UIButton>().onClick, submitEvent);
+        }
+    }
+
+    private void makeDistrictsList() {
+        districtGrid.transform.DestroyChildren();
+        for (int i = 0; i < locationStore.districts.Length; i++) {
+            GameObject item = Instantiate(districtPref);
+
+            item.transform.SetParent(districtGrid.transform);
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localScale = Vector3.one;
+
+            item.transform.Find("Label").GetComponent<UILabel>().text = locationStore.districts[i].name;
+            districtGrid.GetComponent<UIGrid>().repositionNow = true;
+            districtGrid.GetComponent<UIGrid>().Reposition();
+
+            EventDelegate.Parameter param = new EventDelegate.Parameter();
+            param.obj = item;
+            param.field = "index";
+
+            EventDelegate submitEvent = new EventDelegate(this, "onSubmit");
+            submitEvent.parameters[0] = param;
+
+            EventDelegate.Add(item.GetComponent<UIButton>().onClick, submitEvent);
+        }
+    }
+
+    private void setMyInfo() {
         UserData data = userStore.myData;
-        profiles[0].text = data.nickName;
+        myInfoes[0].text = data.nickName;
 
         status statData = data.status;
-        profiles[1].text = statData.rank.ToString();
+        myInfoes[1].text = statData.rank.ToString();
         //그룹
 
         stats[0].text = statData.strength.ToString();
@@ -69,9 +142,31 @@ public class StatViewController : MonoBehaviour {
         stats[3].text = statData.regeneration.ToString();
     }
 
-    private void setStats() {
-        
+    private void setProfile() {
+        UserData data = userStore.myData;
+        if(!string.IsNullOrEmpty(data.country) || !string.IsNullOrEmpty(data.district)) {
+            profiles[0].text = data.country + " / " + data.district;
+        }
+        if(!string.IsNullOrEmpty(data.bicycle)) {
+            profiles[1].text = data.bicycle;
+        }
+        if(!string.IsNullOrEmpty(data.birthday)) {
+            profiles[2].text = data.birthday;
+        }
+        if(!string.IsNullOrEmpty(data.weight) || !string.IsNullOrEmpty(data.height)) {
+            profiles[3].text = data.weight + " Kg / " + data.height + " Cm";
+        }
+        if(!string.IsNullOrEmpty(data.gender)) {
+            if(data.gender == "W") {
+                profiles[4].text = "여";
+            }
+            else if(data.gender == "M") {
+                profiles[4].text = "남";
+            }
+        }
     }
+
+
 
     private void setTotalRidingRecord() {
         
@@ -79,5 +174,134 @@ public class StatViewController : MonoBehaviour {
 
     private void setMonthlyRidingRecord() {
         
+    }
+
+    public void WHInput(GameObject obj) {
+        int index = obj.GetComponent<ButtonIndex>().index;
+
+        GameObject targetObj = obj.transform.parent.Find("Input").gameObject;
+        targetObj.SetActive(true);
+        UIInput input = targetObj.GetComponent<UIInput>();
+        input.isSelected = true;
+        UILabel unit = targetObj.transform.Find("Label/Unit").GetComponent<UILabel>();
+        switch (index) {
+            //몸무게 입력
+            case 0:
+                unit.text = "Kg";
+                targetObj.GetComponent<InputIndex>().type = "weight";
+                input.value = obj.transform.parent.Find("WeightValue").GetComponent<UILabel>().text;
+                break;
+            //키 입력
+            case 1:
+                unit.text = "Cm";
+                targetObj.GetComponent<InputIndex>().type = "height";
+                input.value = obj.transform.parent.Find("HeightValue").GetComponent<UILabel>().text;
+                break;
+        }
+    }
+
+    //최종 수정(선택)완료시
+    public void onSubmit(GameObject obj) {
+        
+        string type = obj.GetComponent<InputIndex>().type;
+
+        EditProfileAction profileEditAct = ActionCreator.createAction(ActionTypes.EDIT_PROFILE) as EditProfileAction;
+        object value = null;
+        switch (type) {
+            case "country":
+                profileEditAct.type = EditProfileAction.profileType.COUNTRY;
+                
+                break;
+            case "district":
+                profileEditAct.type = EditProfileAction.profileType.DISTRICT;
+                GameObject parent = obj.transform.parent.parent.parent.gameObject;
+                parent.SetActive(false);
+                parent.transform.parent.gameObject.SetActive(false);
+                value = obj.transform.Find("Label").GetComponent<UILabel>().text;
+                Debug.Log(value);
+                break;
+            case "Birthday":
+                profileEditAct.type = EditProfileAction.profileType.BIRTHDAY;
+                break;
+            case "weight":
+                obj.SetActive(false);
+                value = obj.GetComponent<UIInput>().value;
+                obj.transform.parent.Find("WeightValue").GetComponent<UILabel>().text = (string)value;
+                profileEditAct.type = EditProfileAction.profileType.WEIGHT;
+                break;
+            case "height":
+                obj.SetActive(false);
+                value = obj.GetComponent<UIInput>().value;
+                obj.transform.parent.Find("HeightValue").GetComponent<UILabel>().text = (string)value;
+                profileEditAct.type = EditProfileAction.profileType.HEIGHT;
+                break;
+            case "woman":
+                profileEditAct.type = EditProfileAction.profileType.GENDER;
+                value = obj.GetComponent<InputIndex>().type;
+                break;
+            case "man":
+                profileEditAct.type = EditProfileAction.profileType.GENDER;
+                value = obj.GetComponent<InputIndex>().type;
+                break;
+            case "bicycle":
+                GameObject bicycle_parent = obj.transform.parent.parent.gameObject;
+                bicycle_parent.SetActive(false);
+                bicycle_parent.transform.parent.gameObject.SetActive(false);
+                profileEditAct.type = EditProfileAction.profileType.BICYCLE;
+                value = obj.transform.Find("Label").GetComponent<UILabel>().text;
+                Debug.Log(value);
+                break;
+        }
+        profileEditAct.value = value;
+        gm.gameDispatcher.dispatch(profileEditAct);
+    }
+
+    //지역, 자전거종류, 생년월일, 몸무게 / 키, 성별 입력(수정)
+    public void onProfileEdit(GameObject obj) {
+        int index = obj.GetComponent<ButtonIndex>().index;
+        editModals[index].transform.parent.gameObject.SetActive(true);
+        editModals[index].SetActive(true);
+        //지역 상세 선택
+        switch(index) {
+            case 1:
+                GetBicycleTypes bicycleType = ActionCreator.createAction(ActionTypes.USER_BICYCLETYPES) as GetBicycleTypes;
+                gm.gameDispatcher.dispatch(bicycleType);
+                break;
+            case 5:
+                editModals[0].SetActive(false);
+                GetDistrictsData data = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
+                gm.gameDispatcher.dispatch(data);
+                break;
+        }
+    }
+
+    public void offProfileEdit(GameObject obj) {
+        int index = obj.GetComponent<ButtonIndex>().index;
+        editModals[index].transform.parent.gameObject.SetActive(false);
+        editModals[index].SetActive(false);
+    }
+
+    public void offInput(GameObject obj) {
+        obj.SetActive(true);
+    }
+
+    [System.Serializable]
+    class bicyleType {
+        public string id;
+        public string name;
+
+        public static bicyleType fromJSON(string json) {
+            return JsonUtility.FromJson<bicyleType>(json);
+        }
+    }
+
+    [System.Serializable]
+    class district {
+        public string id;
+        public string name;
+
+        public static district fromJSON(string json) {
+            return JsonUtility.FromJson<district>(json);
+        }
     }
 }

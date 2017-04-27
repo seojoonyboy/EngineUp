@@ -32,10 +32,14 @@ public class GroupAddViewController : MonoBehaviour {
     }
 
     public void provinceSelected() {
-        GetCityData getCityDataAct = ActionCreator.createAction(ActionTypes.GET_CITY_DATA) as GetCityData;
-        int index = provinceMenu.items.IndexOf(provinceMenu.value) + 1;
-        getCityDataAct.id = index;
-        gm.gameDispatcher.dispatch(getCityDataAct);
+        if(gameObject.activeSelf) {
+            if (!string.IsNullOrEmpty(provinceMenu.value)) {
+                GetCityData getCityDataAct = ActionCreator.createAction(ActionTypes.GET_CITY_DATA) as GetCityData;
+                int index = provinceMenu.items.IndexOf(provinceMenu.value) + 1;
+                getCityDataAct.id = index;
+                gm.gameDispatcher.dispatch(getCityDataAct);
+            }
+        }
     }
 
     public void setCityList() {

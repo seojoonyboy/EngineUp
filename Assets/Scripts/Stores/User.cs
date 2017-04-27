@@ -21,6 +21,7 @@ public class User : AjwStore {
 
     public character[] basicCharacters;
     public represent_character myCharacters;
+    public UserbicycleType[] userBicycleTypes;
 
     NetworkManager networkManager = NetworkManager.Instance;
 
@@ -197,7 +198,7 @@ public class User : AjwStore {
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 message = "User 정보가 없습니다. 회원가입으로 넘어갑니다.";
-                Debug.Log("User 정보 없음.");
+                Debug.Log(act.response.data);
                 _emitChange();
                 break;
         }
@@ -232,6 +233,90 @@ public class User : AjwStore {
         }
     }
 
+    private void editProfile(EditProfileAction payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("me");
+                WWWForm form = new WWWForm();
+                if (payload.type == EditProfileAction.profileType.DISTRICT) {
+                    string val = (string)payload.value;
+                    form.AddField("district", val);
+                    form.AddField("country", "대한민국");
+                }
+                else if(payload.type == EditProfileAction.profileType.BICYCLE) {
+                    string val = (string)payload.value;
+                    form.AddField("bicycles", val);
+                }
+                else if(payload.type == EditProfileAction.profileType.WEIGHT) {
+                    int val = Convert.ToInt32(payload.value);
+                    form.AddField("weight", val);
+                }
+                else if(payload.type == EditProfileAction.profileType.HEIGHT) {
+                    int val = Convert.ToInt32(payload.value);
+                    form.AddField("height", val);
+                }
+                else if(payload.type == EditProfileAction.profileType.GENDER) {
+                    string val = null;
+                    if((string)payload.value == "woman") {
+                        val = "W";
+                    }
+                    else if((string)payload.value == "man") {
+                        val = "M";
+                    }
+                    form.AddField("gender", val);
+                }
+                networkManager.request("PUT", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                storeStatus = storeStatus.WAITING_REQ;
+                setMessage(1);
+                
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+                dispatcher.dispatch(act);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+
+                message = "캐릭터 정보를 불러오는데 문제가 발생하였습니다.";
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
+        }
+    }
+
+    private void getBicycleTypes(GetBicycleTypes payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+
+                storeStatus = storeStatus.WAITING_REQ;
+                setMessage(1);
+
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("bicycles");
+
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload), false);
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                Debug.Log(payload.response.data);
+                userBicycleTypes = JsonHelper.getJsonArray<UserbicycleType>(payload.response.data);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                Debug.Log(payload.response.data);
+                storeStatus = storeStatus.ERROR;
+                _emitChange();
+                break;
+        }
+    }
+
     protected override void _onDispatch(Actions action){
         switch(action.type){
             case ActionTypes.SIGNUP:
@@ -250,6 +335,13 @@ public class User : AjwStore {
                 MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
                 dispatcher.dispatch(act);
                 _emitChange();
+                break;
+            case ActionTypes.EDIT_PROFILE:
+                Debug.Log("?!");
+                editProfile(action as EditProfileAction);
+                break;
+            case ActionTypes.USER_BICYCLETYPES:
+                getBicycleTypes(action as GetBicycleTypes);
                 break;
         }
         eventType = action.type;
@@ -278,6 +370,13 @@ public class UserData {
     public int boxes;
     public represent_character represent_character;
     public status status;
+    public string country;
+    public string district;
+    public string bicycle;
+    public string birthday;
+    public string weight;
+    public string height;
+    public string gender;
 
     public static UserData fromJSON(string json){
         return JsonUtility.FromJson<UserData>(json);
@@ -343,4 +442,10 @@ public class status {
     public int speed;
     public int endurance;
     public int regeneration;
+}
+
+[System.Serializable]
+public class UserbicycleType {
+    public int id;
+    public string name;
 }

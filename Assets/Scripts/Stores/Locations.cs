@@ -3,6 +3,11 @@ using UnityEngine;
 using System.Collections;
 
 public class Locations : AjwStore {
+    //store status
+    public storeStatus storeStatus = storeStatus.NORMAL;
+    //store message
+    public string message;
+
     public Locations(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher) { }
 
     NetworkManager networkManager = NetworkManager.Instance;
@@ -31,18 +36,23 @@ public class Locations : AjwStore {
     private void getDistrictsData(GetDistrictsData payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("districts");
+                    .Append("countries/1/districts");
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+
                 //Debug.Log(payload.response.data);
                 districts = JsonHelper.getJsonArray<District>(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+
                 Debug.Log(payload.response.data);
                 break;
         }
@@ -51,6 +61,8 @@ public class Locations : AjwStore {
     private void getCityData(GetCityData payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -59,12 +71,16 @@ public class Locations : AjwStore {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+
                 Debug.Log(payload.response.data);
                 cities = City.fromJSON(payload.response.data);
                 borough = cities.cities;
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                
                 Debug.Log(payload.response.data);
                 break;
         }
