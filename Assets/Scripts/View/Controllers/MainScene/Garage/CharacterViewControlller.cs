@@ -204,7 +204,7 @@ public class CharacterViewControlller : MonoBehaviour {
                 sbInfo.desc = tmp.desc;
                 sbInfo.cost = tmp.cost;
 
-                item.transform.Find("DeactiveContainer/puzzles").GetComponent<UILabel>().text = info.paid + " / " + sbInfo.cost.ToString();
+                item.transform.Find("Puzzles/Value").GetComponent<UILabel>().text = info.paid + " / " + sbInfo.cost.ToString();
             }
 
             if(info.has_character == "true") {

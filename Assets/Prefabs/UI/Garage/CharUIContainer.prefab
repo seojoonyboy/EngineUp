@@ -27,6 +27,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1050440594362850
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4003357540800230}
+  - component: {fileID: 114514412327385480}
+  m_Layer: 5
+  m_Name: Puzzles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1197349113202622
 GameObject:
   m_ObjectHideFlags: 0
@@ -53,7 +69,7 @@ GameObject:
   - component: {fileID: 4612136051922880}
   - component: {fileID: 114803432597711674}
   m_Layer: 5
-  m_Name: puzzles
+  m_Name: Value
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -71,6 +87,7 @@ GameObject:
   - component: {fileID: 114399854339387346}
   - component: {fileID: 65741768917744054}
   - component: {fileID: 114226717978105144}
+  - component: {fileID: 114379084710445856}
   m_Layer: 5
   m_Name: CharUIContainer
   m_TagString: Untagged
@@ -110,18 +127,33 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &4003357540800230
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1050440594362850}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.0127869, y: -163, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4612136051922880}
+  m_Father: {fileID: 4064197293608566}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4064197293608566
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1377473472427684}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 600, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4744247640746760}
   - {fileID: 4799009388013542}
+  - {fileID: 4003357540800230}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -132,7 +164,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1463641916449356}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 108, y: 102, z: 0}
+  m_LocalPosition: {x: 105, y: 94, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4744247640746760}
@@ -144,12 +176,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1312396516652704}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -103, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 4744247640746760}
-  m_RootOrder: 2
+  m_Father: {fileID: 4003357540800230}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4744247640746760
 Transform:
@@ -163,7 +195,6 @@ Transform:
   m_Children:
   - {fileID: 4927350200254266}
   - {fileID: 4098545838888564}
-  - {fileID: 4612136051922880}
   m_Father: {fileID: 4064197293608566}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -203,7 +234,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 280, y: 280, z: 0}
+  m_Size: {x: 264, y: 262, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114225168764105912
 MonoBehaviour:
@@ -235,14 +266,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 280
-  mHeight: 280
+  mWidth: 264
+  mHeight: 262
   mDepth: 10
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1
+  aspectRatio: 1.0076336
 --- !u!114 &114226717978105144
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -268,6 +299,19 @@ MonoBehaviour:
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
   onClick: []
+--- !u!114 &114379084710445856
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1377473472427684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02842fa4878db54f9587ff4de7d9f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollView: {fileID: 0}
+  draggablePanel: {fileID: 0}
 --- !u!114 &114399854339387346
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -311,14 +355,68 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 280
-  mHeight: 280
+  mWidth: 264
+  mHeight: 262
   mDepth: 8
   mMat: {fileID: 0}
   autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1
+  aspectRatio: 1.0076336
+--- !u!114 &114514412327385480
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1050440594362850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b3dc54f924693f41b5cbecb267e647a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftAnchor:
+    target: {fileID: 0}
+    relative: 0
+    absolute: 0
+  rightAnchor:
+    target: {fileID: 0}
+    relative: 1
+    absolute: 0
+  bottomAnchor:
+    target: {fileID: 0}
+    relative: 0
+    absolute: 0
+  topAnchor:
+    target: {fileID: 0}
+    relative: 1
+    absolute: 0
+  updateAnchors: 1
+  mColor: {r: 1, g: 1, b: 1, a: 1}
+  mPivot: 4
+  mWidth: 262
+  mHeight: 52
+  mDepth: 14
+  mMat: {fileID: 0}
+  autoResizeBoxCollider: 0
+  hideIfOffScreen: 0
+  keepAspectRatio: 0
+  aspectRatio: 5.0384617
+  mType: 1
+  mFillDirection: 4
+  mFillAmount: 1
+  mInvert: 0
+  mFlip: 0
+  mApplyGradient: 0
+  mGradientTop: {r: 1, g: 1, b: 1, a: 1}
+  mGradientBottom: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  centerType: 1
+  leftType: 1
+  rightType: 1
+  bottomType: 1
+  topType: 1
+  mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
+  mSpriteName: garage_piecebar
+  mFillCenter: 1
 --- !u!114 &114518396353036688
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -333,19 +431,19 @@ MonoBehaviour:
   leftAnchor:
     target: {fileID: 4744247640746760}
     relative: 1
-    absolute: -50
+    absolute: -45
   rightAnchor:
     target: {fileID: 4744247640746760}
     relative: 1
-    absolute: -14
+    absolute: -9
   bottomAnchor:
     target: {fileID: 4744247640746760}
     relative: 1
-    absolute: -61
+    absolute: -59
   topAnchor:
     target: {fileID: 4744247640746760}
     relative: 1
-    absolute: -16
+    absolute: -14
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
@@ -403,14 +501,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0.31617647, g: 0.31617647, b: 0.31617647, a: 0.741}
   mPivot: 4
-  mWidth: 280
-  mHeight: 280
+  mWidth: 264
+  mHeight: 262
   mDepth: 12
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1
+  aspectRatio: 1.0076336
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -439,36 +537,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leftAnchor:
-    target: {fileID: 0}
+    target: {fileID: 4003357540800230}
     relative: 0
-    absolute: 0
+    absolute: 36
   rightAnchor:
-    target: {fileID: 0}
+    target: {fileID: 4003357540800230}
     relative: 1
-    absolute: 0
+    absolute: -36
   bottomAnchor:
-    target: {fileID: 0}
+    target: {fileID: 4003357540800230}
     relative: 0
-    absolute: 0
+    absolute: 10
   topAnchor:
-    target: {fileID: 0}
+    target: {fileID: 4003357540800230}
     relative: 1
-    absolute: 0
+    absolute: -10
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
   mWidth: 190
-  mHeight: 40
-  mDepth: 14
+  mHeight: 32
+  mDepth: 15
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 4.75
+  aspectRatio: 5.9375
   keepCrispWhenShrunk: 1
   mTrueTypeFont: {fileID: 0}
   mFont: {fileID: 114000011092689454, guid: 389e6b28ca6e817498e03b80cf62c54e, type: 2}
-  mText: 15/20
+  mText: 19 / 20
   mFontSize: 40
   mFontStyle: 0
   mAlignment: 0
@@ -525,14 +623,14 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 280
-  mHeight: 280
+  mWidth: 264
+  mHeight: 262
   mDepth: 9
   mMat: {fileID: 0}
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1
+  aspectRatio: 1.0076336
   mType: 1
   mFillDirection: 4
   mFillAmount: 1
@@ -546,6 +644,6 @@ MonoBehaviour:
   rightType: 1
   bottomType: 1
   topType: 1
-  mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
-  mSpriteName: garage_bottomcharacter1
+  mAtlas: {fileID: 114525005889641754, guid: a5f8ffb5519c9564a8020efdbc6f5eef, type: 2}
+  mSpriteName: 4-1
   mFillCenter: 1
