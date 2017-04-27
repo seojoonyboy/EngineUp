@@ -414,6 +414,8 @@ public class UserData {
     public string weight;
     public string height;
     public string gender;
+    public record record;
+    public record_this_month record_this_month;
 
     public static UserData fromJSON(string json){
         return JsonUtility.FromJson<UserData>(json);
@@ -485,4 +487,21 @@ public class status {
 public class UserbicycleType {
     public int id;
     public string name;
+}
+
+[System.Serializable]
+public class record {
+    public int user;
+    public int count;
+    public string riding_time;
+    public int total_distance;
+    public int max_speed;
+    public int avg_speed;
+}
+
+[System.Serializable]
+public class record_this_month : record {
+    public int id;
+    public int year;
+    public int month;
 }

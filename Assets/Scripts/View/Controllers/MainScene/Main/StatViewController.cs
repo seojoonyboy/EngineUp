@@ -175,11 +175,25 @@ public class StatViewController : MonoBehaviour {
 
 
     private void setTotalRidingRecord() {
-        
+        UserData data = userStore.myData;
+        record rec = data.record;
+
+        totalRidings[0].text = rec.count + " 회";
+        totalRidings[1].text = rec.riding_time;
+        totalRidings[2].text = rec.total_distance + " Km";
+        totalRidings[3].text = rec.max_speed + " Km/h";
+        totalRidings[4].text = rec.avg_speed + " Km/h";
     }
 
     private void setMonthlyRidingRecord() {
-        
+        UserData data = userStore.myData;
+        record rec = data.record_this_month;
+
+        monthlyRidings[0].text = rec.count + " 회";
+        monthlyRidings[1].text = rec.riding_time;
+        monthlyRidings[2].text = rec.total_distance + " Km";
+        monthlyRidings[3].text = rec.max_speed + " Km/h";
+        monthlyRidings[4].text = rec.avg_speed + " Km/h";
     }
 
     public void WHInput(GameObject obj) {
