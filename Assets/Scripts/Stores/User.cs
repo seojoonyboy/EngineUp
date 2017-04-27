@@ -268,6 +268,10 @@ public class User : AjwStore {
                     }
                     form.AddField("gender", val);
                 }
+                else if(payload.type == EditProfileAction.profileType.BIRTHDAY) {
+                    string val = (string)payload.value;
+                    form.AddField("birthday", val);
+                }
                 networkManager.request("PUT", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 storeStatus = storeStatus.WAITING_REQ;
                 setMessage(1);

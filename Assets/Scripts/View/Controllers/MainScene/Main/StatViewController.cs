@@ -23,13 +23,16 @@ public class StatViewController : MonoBehaviour {
 
     public GameObject 
         districtPref,
-        bicyclePref;
+        bicyclePref,
+        callenderPref;
 
     public UIGrid 
         districtGrid,
         bicycleTypeGrid;
 
     public GameObject[] editModals;
+
+    public Transform canvas;
     
     void Awake() {
         gm = GameManager.Instance;
@@ -267,7 +270,13 @@ public class StatViewController : MonoBehaviour {
                 GetBicycleTypes bicycleType = ActionCreator.createAction(ActionTypes.USER_BICYCLETYPES) as GetBicycleTypes;
                 gm.gameDispatcher.dispatch(bicycleType);
                 break;
-            //WH 버튼
+            //생년월일
+            case 2:
+                GameObject calender = Instantiate(callenderPref);
+                calender.transform.SetParent(canvas);
+                calender.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 340f);
+                break;
+            //WH
             case 3:
                 editModals[index].transform.Find("HeightValue").GetComponent<UILabel>().text = userStore.myData.height;
                 editModals[index].transform.Find("WeightValue").GetComponent<UILabel>().text = userStore.myData.weight;
@@ -288,6 +297,21 @@ public class StatViewController : MonoBehaviour {
 
     public void offInput(GameObject obj) {
         obj.SetActive(true);
+    }
+
+    public void calenderSelEnd(string result) {
+        string[] date = result.Split(' ')[0].Split('/');
+        Debug.Log(date[0]);
+        Debug.Log(date[1]);
+        Debug.Log(date[2]);
+        editModals[2].SetActive(false);
+        editModals[2].transform.parent.gameObject.SetActive(false);
+
+        string value = date[2] + "-" + date[0] + "-" + date[1];
+        EditProfileAction profileEditAct = ActionCreator.createAction(ActionTypes.EDIT_PROFILE) as EditProfileAction;
+        profileEditAct.type = EditProfileAction.profileType.BIRTHDAY;
+        profileEditAct.value = value;
+        gm.gameDispatcher.dispatch(profileEditAct);
     }
 
     [System.Serializable]
