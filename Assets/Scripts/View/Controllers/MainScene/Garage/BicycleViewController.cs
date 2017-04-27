@@ -21,7 +21,8 @@ public class BicycleViewController : MonoBehaviour {
 
     public GameObject
         sellButton,
-        lockButton;
+        lockButton,
+        bicycle;
 
     public GameObject 
         sellingModal,
@@ -40,7 +41,9 @@ public class BicycleViewController : MonoBehaviour {
     public UIScrollView[] scrollview;
 
     public int[] equipedItemIndex;
-    public UIAtlas atlas;
+    public UIAtlas 
+        atlas,
+        bicycleAtlas;
 
     List<int> lockIdList = new List<int>();
     List<int> unlockList = new List<int>();
@@ -56,12 +59,6 @@ public class BicycleViewController : MonoBehaviour {
         ActionTypes bicycleItemStoreEventType = bicycleItemStore.eventType;
 
         if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
-            if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                makeList();
-            }
-        }
-
-        else if (bicycleItemStoreEventType == ActionTypes.GARAGE_SELL) {
             if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
                 makeList();
             }
@@ -291,6 +288,10 @@ public class BicycleViewController : MonoBehaviour {
                     info.is_equiped = true;
                     item.transform.Find("Equiped").gameObject.SetActive(true);
                     equipedItemIndex[1] = items[cnt - 1].item.id;
+
+                    sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
+                    sprite.atlas = bicycleAtlas;
+                    sprite.spriteName = info.imageId.ToString();
                 }
                 else {
                     info.is_equiped = false;
@@ -352,6 +353,10 @@ public class BicycleViewController : MonoBehaviour {
                     info.is_equiped = true;
                     item.transform.Find("Equiped").gameObject.SetActive(true);
                     equipedItemIndex[0] = items[cnt - 1].item.id;
+
+                    sprite = bicycle.transform.Find("Wheel").GetComponent<UISprite>();
+                    sprite.atlas = bicycleAtlas;
+                    sprite.spriteName = info.imageId.ToString();
                 }
                 else {
                     info.is_equiped = false;
@@ -411,6 +416,10 @@ public class BicycleViewController : MonoBehaviour {
                     info.is_equiped = true;
                     item.transform.Find("Equiped").gameObject.SetActive(true);
                     equipedItemIndex[2] = items[cnt - 1].item.id;
+
+                    sprite = bicycle.transform.Find("Engine").GetComponent<UISprite>();
+                    sprite.atlas = bicycleAtlas;
+                    sprite.spriteName = info.imageId.ToString();
                 }
                 else {
                     info.is_equiped = false;
