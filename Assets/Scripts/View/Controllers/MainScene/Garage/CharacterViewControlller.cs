@@ -125,7 +125,7 @@ public class CharacterViewControlller : MonoBehaviour {
         UISprite sprite = mainStageChar.GetComponent<UISprite>();
         //Debug.Log("index : " + index);
         sprite.atlas = atlasArr[index - 1];
-        sprite.spriteName = index + "-" + (lv + 1) + "-main";
+        sprite.spriteName = index + "-" + lv + "-main";
         sprite.MakePixelPerfect();
         sprite.gameObject.transform.localScale = new Vector3(0.5f, 0.5f);
     }
@@ -195,6 +195,7 @@ public class CharacterViewControlller : MonoBehaviour {
             info.characterId = myChars[i].character;
             info.has_character = myChars[i].has_character;
             info.paid = myChars[i].paid;
+            info.lv = myChars[i].lv;
 
             if (charInvenStore.all_characters.ContainsKey(info.characterId).Equals(true)) {
                 all_characters tmp = charInvenStore.all_characters[info.characterId];
