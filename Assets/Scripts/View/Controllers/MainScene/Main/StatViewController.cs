@@ -139,8 +139,9 @@ public class StatViewController : MonoBehaviour {
 
         status statData = data.status;
         myInfoes[1].text = statData.rank.ToString();
-        //그룹
+        myInfoes[2].text = userStore.userTitle;
 
+        //그룹
         stats[0].text = statData.strength.ToString();
         stats[1].text = statData.speed.ToString();
         stats[2].text = statData.endurance.ToString();
