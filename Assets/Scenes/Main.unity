@@ -1454,6 +1454,7 @@ GameObject:
   m_Component:
   - component: {fileID: 21991961}
   - component: {fileID: 21991962}
+  - component: {fileID: 21991963}
   m_Layer: 5
   m_Name: InfoPanel
   m_TagString: Untagged
@@ -1513,7 +1514,7 @@ MonoBehaviour:
   mHeight: 578
   mDepth: 3
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 1.9065744
@@ -1533,6 +1534,18 @@ MonoBehaviour:
   mAtlas: {fileID: 0}
   mSpriteName: Dark
   mFillCenter: 1
+--- !u!65 &21991963
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 21991960}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1102, y: 578, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &22285436
 GameObject:
   m_ObjectHideFlags: 0
@@ -18857,6 +18870,7 @@ GameObject:
   - component: {fileID: 377838446}
   - component: {fileID: 377838447}
   - component: {fileID: 377838448}
+  - component: {fileID: 377838449}
   m_Layer: 5
   m_Name: BottomPanel
   m_TagString: Untagged
@@ -18912,7 +18926,7 @@ MonoBehaviour:
   mHeight: 198
   mDepth: 3
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 5.5353537
@@ -18953,6 +18967,18 @@ MonoBehaviour:
   hideInactive: 0
   keepWithinPanel: 0
   sorted: 0
+--- !u!65 &377838449
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 377838445}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1096, y: 198, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &378093311
 GameObject:
   m_ObjectHideFlags: 0
@@ -20906,7 +20932,7 @@ MonoBehaviour:
   mHeight: 1920
   mDepth: 0
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.5708333
@@ -47516,6 +47542,7 @@ GameObject:
   m_Component:
   - component: {fileID: 870180610}
   - component: {fileID: 870180611}
+  - component: {fileID: 870180612}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -47571,7 +47598,7 @@ MonoBehaviour:
   mHeight: 174
   mDepth: 0
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 3.3505747
@@ -47591,6 +47618,18 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: top_back
   mFillCenter: 1
+--- !u!65 &870180612
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 870180609}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 583, y: 174, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &872920068
 GameObject:
   m_ObjectHideFlags: 0
@@ -61655,7 +61694,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3026
+  startingRenderQueue: 3028
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -73333,7 +73372,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 88, y: 74, z: 0}
+  m_Size: {x: 150, y: 150, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1350602999
 MonoBehaviour:
@@ -94811,6 +94850,7 @@ MonoBehaviour:
   - {fileID: 2027363740}
   - {fileID: 1204027921}
   - {fileID: 1050617969}
+  - {fileID: 481420206}
   map: {fileID: 943713070}
   id: 0
   dist: {fileID: 1813631446}
@@ -94859,7 +94899,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3028
+  startingRenderQueue: 3030
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -105154,6 +105194,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2045262314}
   - component: {fileID: 2045262315}
+  - component: {fileID: 2045262316}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -105214,7 +105255,7 @@ MonoBehaviour:
   mHeight: 1746
   mDepth: 4
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.6242841
@@ -105234,6 +105275,18 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: defautPanelBg
   mFillCenter: 1
+--- !u!65 &2045262316
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2045262313}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1090, y: 1746, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2047662760
 GameObject:
   m_ObjectHideFlags: 0

@@ -48,9 +48,7 @@ public class HistoryDetailViewController : MonoBehaviour {
     public void setMap(RidingDetails data) {
         map.SetActive(true);
         OnlineMaps _map = map.GetComponent<OnlineMaps>();
-        
-        preMapScale = _map.tilesetSize;
-        _map.tilesetSize = new Vector2(540, 600);
+        map.transform.localScale = new Vector3(1.5f, 1.0f, 1.5f);
         innerRidingDetails[] coords = data.coords;
         if(coords.Length == 0) {
             _map.position = new Vector2(127.74437f, 37.87998f);
@@ -77,7 +75,7 @@ public class HistoryDetailViewController : MonoBehaviour {
 
     public void offPanel() {
         OnlineMaps _map = map.GetComponent<OnlineMaps>();
-        _map.tilesetSize = preMapScale;
+        map.transform.localScale = Vector3.one;
         _map.RemoveAllDrawingElements();
 
         gameObject.SetActive(false);
