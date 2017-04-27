@@ -9,7 +9,8 @@ public class MainBtnController : MonoBehaviour {
         avatar,
         myhomePanel,
         myInfoPanel,
-        boxPanel;
+        boxPanel,
+        notifyModal;
 
     public void onMainBtnEvent(MAIN_BUTTON type) {
         switch(type) {
@@ -17,9 +18,10 @@ public class MainBtnController : MonoBehaviour {
                 ridingPanel.SetActive(true);
                 break;
             case MAIN_BUTTON.COMMUNITY:
-                communityPanel.SetActive(true);
-                GetMyFriendListAction initAct = ActionCreator.createAction(ActionTypes.GET_MY_FRIEND_LIST) as GetMyFriendListAction;
-                GameManager.Instance.gameDispatcher.dispatch(initAct);
+                notifyModal.SetActive(true);
+                //communityPanel.SetActive(true);
+                //GetMyFriendListAction initAct = ActionCreator.createAction(ActionTypes.GET_MY_FRIEND_LIST) as GetMyFriendListAction;
+                //GameManager.Instance.gameDispatcher.dispatch(initAct);
                 break;
             case MAIN_BUTTON.OPTION:
                 optionPanel.SetActive(true);
@@ -32,6 +34,9 @@ public class MainBtnController : MonoBehaviour {
                 break;
             case MAIN_BUTTON.BOX:
                 boxPanel.SetActive(true);
+                break;
+            case MAIN_BUTTON.SHOP:
+                notifyModal.SetActive(true);
                 break;
         }
     }
@@ -49,5 +54,9 @@ public class MainBtnController : MonoBehaviour {
     public void offToggleGroup() {
         UIToggle toggle = UIToggle.GetActiveToggle(2);
         toggle.value = false;
+    }
+
+    public void offNotifyModal() {
+        notifyModal.SetActive(false);
     }
 }

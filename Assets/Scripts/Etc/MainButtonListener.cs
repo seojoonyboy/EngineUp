@@ -23,6 +23,7 @@ public class MainButtonListener : MonoBehaviour {
         addMainBtnEvent(3, MAIN_BUTTON.MYHOME);
         addMainBtnEvent(4, MAIN_BUTTON.MYINFO);
         addMainBtnEvent(5, MAIN_BUTTON.BOX);
+        addMainBtnEvent(6, MAIN_BUTTON.SHOP);
     }
 
     private void addMainBtnEvent(int index,MAIN_BUTTON type) {
