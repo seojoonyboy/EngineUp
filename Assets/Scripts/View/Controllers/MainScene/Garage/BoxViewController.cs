@@ -63,9 +63,14 @@ public class BoxViewController : MonoBehaviour {
                     GameObject modal = boxOpenModal.transform.Find("SingleModal").gameObject;
                     modal.SetActive(true);
                     UILabel name = modal.transform.Find("Name").GetComponent<UILabel>();
+                    UISprite sprite = modal.transform.Find("Icon").GetComponent<UISprite>();
+
                     var openedItem = boxStore.openedItem;
                     string type = openedItem[0].type;
                     if (type == "item") {
+                        string spriteName = openedItem[0].item.id + "-1";
+                        sprite.atlas = bicycleAtlas;
+                        sprite.spriteName = spriteName;
                         name.text = openedItem[0].item.name;
                     }
                     else if (type == "character") {
