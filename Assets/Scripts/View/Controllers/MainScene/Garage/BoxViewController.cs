@@ -19,6 +19,10 @@ public class BoxViewController : MonoBehaviour {
 
     public GameObject _openEffect;
 
+    public UIAtlas 
+        bicycleAtlas,
+        charAtlas;
+
     void Awake() {
         gm = GameManager.Instance;
         boxStore = gm.boxInvenStore;
@@ -150,10 +154,17 @@ public class BoxViewController : MonoBehaviour {
                 //setUI
                 string type = items[cnt].type;
                 UILabel label = item.Find("Name").GetComponent<UILabel>();
+                UISprite sprite = item.Find("Image").GetComponent<UISprite>();
+                
                 if (type == "item") {
+                    sprite.atlas = bicycleAtlas;
+                    string spriteName = items[cnt].item.id + "-1";
+                    sprite.spriteName = spriteName;
+
                     label.text = items[cnt].item.name;
                 }
                 else if (type == "character") {
+                    sprite.atlas = charAtlas;
                     label.text = items[cnt].character.name;
                 }
                 cnt++;
