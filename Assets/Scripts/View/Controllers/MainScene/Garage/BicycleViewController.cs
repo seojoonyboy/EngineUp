@@ -197,8 +197,9 @@ public class BicycleViewController : MonoBehaviour {
         modal.transform.Find("Desc").GetComponent<UILabel>().text = info.desc;
         modal.transform.Find("limitLv").GetComponent<UILabel>().text = "제한 레벨 : " + info.limit_rank;
         UISprite img = modal.transform.Find("Image").GetComponent<UISprite>();
-        img.atlas = atlas;
-        img.spriteName = info.id.ToString();
+        img.atlas = bicycleAtlas;
+        string spriteName = info.imageId + "-1";
+        img.spriteName = spriteName;
         img.MakePixelPerfect();
 
         //현재 장착중인 아이템인 경우
@@ -315,9 +316,10 @@ public class BicycleViewController : MonoBehaviour {
                 EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
 
                 sprite = item.GetComponent<UISprite>();
-                sprite.atlas = atlas;
+                sprite.atlas = bicycleAtlas;
                 //image의 id값
-                sprite.spriteName = items[cnt - 1].item.id.ToString();
+                string spriteName = items[cnt - 1].item.id + "-1";
+                sprite.spriteName = spriteName;
             }
         }
 
@@ -380,8 +382,9 @@ public class BicycleViewController : MonoBehaviour {
                 EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
 
                 sprite = item.GetComponent<UISprite>();
-                sprite.atlas = atlas;
-                sprite.spriteName = items[cnt - 1].item.id.ToString();
+                sprite.atlas = bicycleAtlas;
+                string spriteName = items[cnt - 1].item.id + "-1";
+                sprite.spriteName = spriteName;
             }
         }
 
@@ -443,8 +446,9 @@ public class BicycleViewController : MonoBehaviour {
                 EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
 
                 sprite = item.GetComponent<UISprite>();
-                sprite.atlas = atlas;
-                sprite.spriteName = items[cnt - 1].item.id.ToString();
+                sprite.atlas = bicycleAtlas;
+                string spriteName = items[cnt - 1].item.id + "-1";
+                sprite.spriteName = spriteName;
             }
         }
 
@@ -464,13 +468,14 @@ public class BicycleViewController : MonoBehaviour {
                     sideBar.transform.Find("EngineSlot/Item/Label").gameObject.SetActive(false);
                     break;
             }
-            sprite.atlas = atlas;
+            sprite.atlas = bicycleAtlas;
             if (equipedItemIndex[i] == -1) {
                 sprite.spriteName = "default";
             }
             else {
                 int index = equipedItemIndex[i];
-                sprite.spriteName = index.ToString();
+                string spriteName = index + "-1";
+                sprite.spriteName = spriteName;
             }
         }
     }
