@@ -30,6 +30,8 @@ public class CharacterViewControlller : MonoBehaviour {
         charName,
         desc;
 
+    public UISlider friendlySlider;
+
     void Awake() {
         gm = GameManager.Instance;
         charInvenStore = gm.charInvenStore;
@@ -73,12 +75,20 @@ public class CharacterViewControlller : MonoBehaviour {
 
         if (userStoreEventType == ActionTypes.MYINFO) {
             if (userStore.storeStatus == storeStatus.NORMAL) {
-                character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                setMainChar(charInfo.character, charInfo.lv);
-                setSideBar(charInfo.character);
-                equipButton.SetActive(true);
-                equipButton.transform.Find("Box/Check").gameObject.SetActive(true);
-                lvLabel.text = "Lv. " + charInfo.lv.ToString();
+                if(gameObject.activeSelf) {
+                    character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+                    setMainChar(charInfo.character, charInfo.lv);
+                    setSideBar(charInfo.character);
+
+                    if (charInvenStore.all_characters.ContainsKey(charInfo.character).Equals(true)) {
+                        all_characters tmp = charInvenStore.all_characters[charInfo.character];
+                        setFriendlySlider(charInfo.lv, tmp.lvup_exps, charInfo.exp);
+                    }
+
+                    equipButton.SetActive(true);
+                    equipButton.transform.Find("Box/Check").gameObject.SetActive(true);
+                    lvLabel.text = "Lv " + charInfo.lv.ToString();
+                }
             }
         }
     }
@@ -98,6 +108,7 @@ public class CharacterViewControlller : MonoBehaviour {
         lvLabel.text = "Lv. " + info.lv.ToString();
         //Debug.Log(index);
         charName.text = sbInfo.name;
+        setFriendlySlider(info.lv, sbInfo.lvup_exps, info.exp);
     }
 
     public void setEquipButton(int index, string hasChar) {
@@ -118,6 +129,19 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void setDesc(string data) {
         desc.text = data;
+    }
+
+    public void setFriendlySlider(int lv, int[] lvUp_exp, int exp) {
+        float offset = 0;
+        switch(lv) {
+            case 1:
+                offset = 1 / lvUp_exp[0];
+                break;
+            case 2:
+                offset = 1 / lvUp_exp[1];
+                break;
+        }
+        friendlySlider.value = exp * offset;
     }
 
     public void setMainChar(int index, int lv) {
@@ -196,6 +220,7 @@ public class CharacterViewControlller : MonoBehaviour {
             info.has_character = myChars[i].has_character;
             info.paid = myChars[i].paid;
             info.lv = myChars[i].lv;
+            info.exp = myChars[i].exp;
 
             if (charInvenStore.all_characters.ContainsKey(info.characterId).Equals(true)) {
                 all_characters tmp = charInvenStore.all_characters[info.characterId];
@@ -204,6 +229,7 @@ public class CharacterViewControlller : MonoBehaviour {
                 sbInfo.name = tmp.name;
                 sbInfo.desc = tmp.desc;
                 sbInfo.cost = tmp.cost;
+                sbInfo.lvup_exps = tmp.lvup_exps;
 
                 item.transform.Find("Puzzles/Value").GetComponent<UILabel>().text = info.paid + " / " + sbInfo.cost.ToString();
             }
@@ -243,6 +269,7 @@ public class CharacterViewControlller : MonoBehaviour {
         public int id;
         public int paid;
         public int lv;
+        public int exp;
         public int characterId;
         public string has_character;
     }
@@ -251,6 +278,7 @@ public class CharacterViewControlller : MonoBehaviour {
         public string name;
         public string desc;
         public int cost;
+        public int[] lvup_exps;
     }
 
     public void offPanel() {
