@@ -462,6 +462,7 @@ public class represent_character {
 public class character {
     public int id;
     public string name;
+    public string desc;
     public int cost;
     public lvup_exps[] lvup_exps;
 }

@@ -173,16 +173,24 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
         if(userStore.eventType == ActionTypes.GET_DEFAULT_CHAR_INFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
-                charselectModal.transform.Find("LoadingPanel").gameObject.SetActive(false);
+                //charselectModal.transform.Find("LoadingPanel").gameObject.SetActive(false);
+                charselectModal.transform.Find("LeftHeader/Label").GetComponent<UILabel>().text = "회사원 " + userStore.basicCharacters[0].name;
+                charselectModal.transform.Find("RightHeader/Label").GetComponent<UILabel>().text = "회사원 " + userStore.basicCharacters[1].name;
+
                 GameObject charBtn = charselectModal.transform.Find("Grid/Man").gameObject;
-                charBtn.transform.Find("Label").GetComponent<UILabel>().text = userStore.basicCharacters[0].name;
                 charBtn.GetComponent<ButtonIndex>().index = userStore.basicCharacters[0].id;
 
                 charBtn = charselectModal.transform.Find("Grid/Woman").gameObject;
-                charBtn.transform.Find("Label").GetComponent<UILabel>().text = userStore.basicCharacters[1].name;
                 charBtn.GetComponent<ButtonIndex>().index = userStore.basicCharacters[1].id;
 
                 charIndex = userStore.basicCharacters[0].id;
+
+                UILabel label = charselectModal.transform.Find("Desc/Description").GetComponent<UILabel>();
+                label.text = userStore.basicCharacters[0].desc;
+
+                UILabel header = charselectModal.transform.Find("Desc/Header").GetComponent<UILabel>();
+                header.text = userStore.basicCharacters[0].name + "의 이야기";
+                //charselectModal.transform.Find("Desc/Description").GetComponent<UILabel>().text = 
             }
         }
 
@@ -208,5 +216,15 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
     public void setCharIndex(GameObject obj) {
         charIndex = obj.GetComponent<ButtonIndex>().index;
+        UILabel label = charselectModal.transform.Find("Desc/Description").GetComponent<UILabel>();
+        UILabel header = charselectModal.transform.Find("Desc/Header").GetComponent<UILabel>();
+        if (charIndex == 1) {
+            label.text = userStore.basicCharacters[0].desc;
+            header.text = userStore.basicCharacters[0].name + "의 이야기";
+        }
+        else if(charIndex == 2) {
+            label.text = userStore.basicCharacters[1].desc;
+            header.text = userStore.basicCharacters[1].name + "의 이야기";
+        }
     }
 }

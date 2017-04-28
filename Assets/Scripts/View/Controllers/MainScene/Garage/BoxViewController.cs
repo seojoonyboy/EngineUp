@@ -145,8 +145,8 @@ public class BoxViewController : MonoBehaviour {
 
     IEnumerator openEffect(List<Transform> list, int itemCount, Box_Inventory.boxOpenCallback[] items, GameObject modal) {
         int cnt = 0;
-        modal.transform.Find("ConfirmButton").gameObject.GetComponent<UIButton>().enabled = false;
-        modal.transform.Find("CancelButton").gameObject.GetComponent<UIButton>().enabled = false;
+        modal.transform.Find("Buttons/ConfirmButton").gameObject.GetComponent<UIButton>().enabled = false;
+        modal.transform.Find("Buttons/CancelButton").gameObject.GetComponent<UIButton>().enabled = false;
         foreach (Transform item in list) {
             if (cnt < itemCount) {
                 //effect
@@ -176,8 +176,8 @@ public class BoxViewController : MonoBehaviour {
             }
             yield return new WaitForSeconds(1.0f);
         }
-        modal.transform.Find("ConfirmButton").gameObject.GetComponent<UIButton>().enabled = true;
-        modal.transform.Find("CancelButton").gameObject.GetComponent<UIButton>().enabled = true;
+        modal.transform.Find("Buttons/ConfirmButton").gameObject.GetComponent<UIButton>().enabled = true;
+        modal.transform.Find("Buttons/CancelButton").gameObject.GetComponent<UIButton>().enabled = true;
     }
 
     public void offPanel() {
