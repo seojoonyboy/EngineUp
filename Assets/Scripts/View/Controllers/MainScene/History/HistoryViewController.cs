@@ -125,9 +125,12 @@ public class HistoryViewController : MonoBehaviour {
             preDate = tmp[0];
             preItem = item;
         }
-        UIGrid _grid = item.transform.Find("Grid").GetComponent<UIGrid>();
-        _grid.repositionNow = true;
-        _grid.Reposition();
+
+        if(item != null) {
+            UIGrid _grid = item.transform.Find("Grid").GetComponent<UIGrid>();
+            _grid.repositionNow = true;
+            _grid.Reposition();
+        }
     }
 
     public void offPanel() {
