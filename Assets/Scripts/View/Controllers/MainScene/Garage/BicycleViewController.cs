@@ -60,7 +60,9 @@ public class BicycleViewController : MonoBehaviour {
 
         if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
             if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                makeList();
+                if(gameObject.activeSelf) {
+                    makeList();
+                }
             }
         }
 
