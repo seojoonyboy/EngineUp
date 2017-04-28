@@ -74,6 +74,9 @@ public class BoxViewController : MonoBehaviour {
                         name.text = openedItem[0].item.name;
                     }
                     else if (type == "character") {
+                        string spriteName = openedItem[0].character.id.ToString();
+                        sprite.atlas = charAtlas;
+                        sprite.spriteName = spriteName;
                         name.text = openedItem[0].character.name;
                     }
                 }
@@ -86,6 +89,7 @@ public class BoxViewController : MonoBehaviour {
 
                     foreach(Transform item in list) {
                         item.Find("Name").GetComponent<UILabel>().text = "";
+                        item.Find("Image").GetComponent<UISprite>().spriteName = "-1";
                     }
 
                     StartCoroutine(openEffect(list, itemCount, items, modal));
@@ -170,6 +174,8 @@ public class BoxViewController : MonoBehaviour {
                 }
                 else if (type == "character") {
                     sprite.atlas = charAtlas;
+                    string spriteName = items[cnt].character.id.ToString();
+                    sprite.spriteName = spriteName;
                     label.text = items[cnt].character.name;
                 }
                 cnt++;
