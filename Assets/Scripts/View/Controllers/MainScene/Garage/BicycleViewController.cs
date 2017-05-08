@@ -22,18 +22,14 @@ public class BicycleViewController : MonoBehaviour {
     public GameObject
         sellButton,
         lockButton,
-        bicycle;
+        bicycle,
+        itemGrid;
 
     public GameObject 
         sellingModal,
         lockingModal,
         detailModal,
         notifyModal;
-
-    public UIGrid[] 
-        framePageGrids,
-        wheelPageGrids,
-        enginePageGrids;
 
     public int pagePerSlotCount;
 
@@ -62,7 +58,7 @@ public class BicycleViewController : MonoBehaviour {
             if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
                 if(gameObject.activeSelf) {
                     makeList();
-                    if(equipedItemIndex[0] == -1 && equipedItemIndex[1] == -1 && equipedItemIndex[2] == -1) {
+                    if (equipedItemIndex[0] == -1 && equipedItemIndex[1] == -1 && equipedItemIndex[2] == -1) {
                         UISprite sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
                         sprite.atlas = bicycleAtlas;
                         sprite.spriteName = "3";
@@ -82,6 +78,10 @@ public class BicycleViewController : MonoBehaviour {
                 makeList();
             }
         }
+
+        else if(bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
+            makeList();
+        }
     }
 
     public void onCharStoreListener() {
@@ -98,7 +98,9 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     void Start() {
-        
+        for(int i=0; i<scrollview.Length; i++) {
+            scrollview[i].transform.Find("Grid").GetComponent<UICenterOnChild>().nextPageThreshold = 4;
+        }
     }
 
     void OnDisable() {
@@ -266,251 +268,221 @@ public class BicycleViewController : MonoBehaviour {
 
     public void makeList() {
         removeList();
-        //slot 생성
-        BicycleItem[] items;
-        init();
-        UISprite sprite = null;
-        //프레임 리스트 생성
+        ArrayList FI = bicycleItemStore.frameItems;
+        ArrayList WI = bicycleItemStore.wheelItems;
+        ArrayList EI = bicycleItemStore.engineItems;
+
+        int frameItemCnt = FI.Count;
+        int wheelItemCnt = WI.Count;
+        int engineItemCnt = EI.Count;
+
+        float num = (float)frameItemCnt / pagePerSlotCount;
+        int GN = (int)Mathf.Ceil(num);
         int cnt = 0;
-        items = gm.bicycleInventStore.frameItems.ToArray(typeof(BicycleItem)) as BicycleItem[];
-        for (int i = 0; i < framePageGrids.Length; i++) {
-            for (int j = 0; j < pagePerSlotCount; j++) {
-                cnt++;
-                if (cnt > items.Length) {
-                    break;
-                }
-                GameObject item = Instantiate(slotItem);
-                item.name = "item" + cnt;
-                Transform parent = framePageGrids[i].GetChild(j).transform;
-                item.transform.SetParent(parent);
-                item.transform.localScale = Vector3.one;
-                item.transform.localPosition = Vector3.zero;
-                item.GetComponent<ButtonIndex>().index = cnt - 1;
+        for(int i = 0; i < GN; i++) {
+            GameObject grid = Instantiate(itemGrid);
+            grid.transform.SetParent(scrollview[0].transform.Find("Grid").transform);
 
-                Info info = item.AddComponent<Info>();
-                item.AddComponent<UIDragScrollView>().scrollView = scrollview[0];
-                info.id = items[cnt - 1].id;
-                info.parts = items[cnt - 1].item.parts;
-                info.name = items[cnt - 1].item.name;
-                info.desc = items[cnt - 1].item.desc;
-                info.imageId = items[cnt - 1].item.id;
-                info.limit_rank = items[cnt - 1].item.limit_rank;
-                info.gear = items[cnt - 1].item.gear;
+            grid.transform.localScale = Vector3.one;
+            grid.transform.localPosition = Vector3.zero;
 
-                if (items[cnt - 1].is_equiped == "true") {
-                    Debug.Log("FR Equiped");
-                    info.is_equiped = true;
-                    item.transform.Find("Equiped").gameObject.SetActive(true);
-                    equipedItemIndex[1] = items[cnt - 1].item.id;
+            UIGrid uiGrid = grid.GetComponent<UIGrid>();
+            
+            for(int j = 0; j < pagePerSlotCount; j++) {
+                if(cnt < frameItemCnt) {
+                    Transform slot = uiGrid.GetChild(j).transform;
+                    GameObject item = Instantiate(slotItem);
 
-                    sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
+                    item.transform.SetParent(slot);
+                    item.transform.localPosition = Vector3.zero;
+                    item.transform.localScale = Vector3.one;
+
+                    item.AddComponent<UIDragScrollView>().scrollView = scrollview[0];
+
+                    Info info = item.AddComponent<Info>();
+                    BicycleItem data = (BicycleItem)FI[cnt];
+                    Item data_item = data.item;
+                    info.id = data.id;
+                    info.desc = data_item.desc;
+                    info.name = data_item.name;
+                    info.grade = data_item.grade;
+                    info.limit_rank = data_item.limit_rank;
+                    info.parts = data_item.parts;
+                    info.gear = data_item.gear;
+                    info.imageId = data_item.id;
+
+                    if (data.is_equiped == "true") {
+                        info.is_equiped = true;
+                        equipedItemIndex[0] = info.imageId;
+                    }
+
+                    if (data.is_locked == "true") {
+                        info.is_locked = true;
+                    }
+
+                    EventDelegate.Parameter parm = new EventDelegate.Parameter();
+                    EventDelegate onClick = new EventDelegate(this, "selected");
+                    parm.obj = item;
+                    onClick.parameters[0] = parm;
+                    EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
+
+                    UISprite sprite = item.GetComponent<UISprite>();
                     sprite.atlas = bicycleAtlas;
-                    sprite.spriteName = info.imageId.ToString();
-                }
-                else {
-                    info.is_equiped = false;
-                }
+                    string spriteName = info.imageId + "-1";
+                    sprite.spriteName = spriteName;
 
-                if(items[cnt - 1].is_locked == "true") {
-                    info.is_locked = true;
-                    item.transform.Find("LockIcon").gameObject.SetActive(true);
-                    item.transform.Find("TypeTag").gameObject.tag = "locked";
+                    cnt++;
                 }
-                else {
-                    info.is_locked = false;
-                }
-
-                EventDelegate.Parameter param = new EventDelegate.Parameter();
-                EventDelegate onClick = new EventDelegate(this, "selected");
-                param.obj = item;
-                onClick.parameters[0] = param;
-                EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
-
-                sprite = item.GetComponent<UISprite>();
-                sprite.atlas = bicycleAtlas;
-                //image의 id값
-                string spriteName = items[cnt - 1].item.id + "-1";
-                sprite.spriteName = spriteName;
             }
         }
 
-        //바퀴 리스트 생성
         cnt = 0;
-        items = gm.bicycleInventStore.wheelItems.ToArray(typeof(BicycleItem)) as BicycleItem[];
-        for (int i = 0; i < wheelPageGrids.Length; i++) {
+        num = (float)wheelItemCnt / pagePerSlotCount;
+        GN = (int)Mathf.Ceil(num);
+        for (int i = 0; i < GN; i++) {
+            GameObject grid = Instantiate(itemGrid);
+            grid.transform.SetParent(scrollview[1].transform.Find("Grid").transform);
+
+            grid.transform.localScale = Vector3.one;
+            grid.transform.localPosition = Vector3.zero;
+
+            UIGrid uiGrid = grid.GetComponent<UIGrid>();
+
             for (int j = 0; j < pagePerSlotCount; j++) {
-                cnt++;
-                if (cnt > items.Length) {
-                    break;
-                }
+                if(cnt < wheelItemCnt) {
+                    Transform slot = uiGrid.GetChild(j).transform;
+                    GameObject item = Instantiate(slotItem);
 
-                GameObject item = Instantiate(slotItem);
-                item.name = "item" + cnt;
+                    item.transform.SetParent(slot);
+                    item.transform.localPosition = Vector3.zero;
+                    item.transform.localScale = Vector3.one;
 
-                Transform parent = wheelPageGrids[i].GetChild(j).transform;
-                item.transform.SetParent(parent);
-                item.transform.localScale = Vector3.one;
-                item.transform.localPosition = Vector3.zero;
-                item.GetComponent<ButtonIndex>().index = cnt - 1;
+                    item.AddComponent<UIDragScrollView>().scrollView = scrollview[1];
 
-                Info info = item.AddComponent<Info>();
-                item.AddComponent<UIDragScrollView>().scrollView = scrollview[1];
-                info.id = items[cnt - 1].id;
-                info.parts = items[cnt - 1].item.parts;
-                info.name = items[cnt - 1].item.name;
-                info.desc = items[cnt - 1].item.desc;
-                info.imageId = items[cnt - 1].item.id;
-                info.limit_rank = items[cnt - 1].item.limit_rank;
-                info.gear = items[cnt - 1].item.gear;
+                    Info info = item.AddComponent<Info>();
+                    BicycleItem data = (BicycleItem)WI[cnt];
+                    Item data_item = data.item;
+                    info.id = data.id;
+                    info.desc = data_item.desc;
+                    info.name = data_item.name;
+                    info.grade = data_item.grade;
+                    info.limit_rank = data_item.limit_rank;
+                    info.parts = data_item.parts;
+                    info.gear = data_item.gear;
+                    info.imageId = data_item.id;
 
-                if (items[cnt - 1].is_equiped == "true") {
-                    Debug.Log("WH Equiped");
-                    info.is_equiped = true;
-                    item.transform.Find("Equiped").gameObject.SetActive(true);
-                    equipedItemIndex[0] = items[cnt - 1].item.id;
+                    if (data.is_equiped == "true") {
+                        info.is_equiped = true;
+                        equipedItemIndex[1] = info.imageId;
+                    }
 
-                    sprite = bicycle.transform.Find("Wheel").GetComponent<UISprite>();
+                    if (data.is_locked == "true") {
+                        info.is_locked = true;
+                    }
+
+                    EventDelegate.Parameter parm = new EventDelegate.Parameter();
+                    EventDelegate onClick = new EventDelegate(this, "selected");
+                    parm.obj = item;
+                    onClick.parameters[0] = parm;
+                    EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
+
+                    UISprite sprite = item.GetComponent<UISprite>();
                     sprite.atlas = bicycleAtlas;
-                    sprite.spriteName = info.imageId.ToString();
-                }
-                else {
-                    info.is_equiped = false;
-                }
+                    string spriteName = info.imageId + "-1";
+                    sprite.spriteName = spriteName;
 
-                if (items[cnt - 1].is_locked == "true") {
-                    info.is_locked = true;
-                    item.transform.Find("LockIcon").gameObject.SetActive(true);
-                    item.transform.Find("TypeTag").gameObject.tag = "locked";
+                    cnt++;
                 }
-                else {
-                    info.is_locked = false;
-                }
-
-                EventDelegate.Parameter param = new EventDelegate.Parameter();
-                EventDelegate onClick = new EventDelegate(this, "selected");
-                param.obj = item;
-                onClick.parameters[0] = param;
-                EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
-
-                sprite = item.GetComponent<UISprite>();
-                sprite.atlas = bicycleAtlas;
-                string spriteName = items[cnt - 1].item.id + "-1";
-                sprite.spriteName = spriteName;
             }
         }
 
-        //구동계 리스트 생성
         cnt = 0;
-        items = gm.bicycleInventStore.engineItems.ToArray(typeof(BicycleItem)) as BicycleItem[];
-        for (int i = 0; i < enginePageGrids.Length; i++) {
+        num = (float)engineItemCnt / pagePerSlotCount;
+        GN = (int)Mathf.Ceil(num);
+        for (int i = 0; i < GN; i++) {
+            GameObject grid = Instantiate(itemGrid);
+            grid.transform.SetParent(scrollview[2].transform.Find("Grid").transform);
+
+            grid.transform.localScale = Vector3.one;
+            grid.transform.localPosition = Vector3.zero;
+
+            UIGrid uiGrid = grid.GetComponent<UIGrid>();
+
             for (int j = 0; j < pagePerSlotCount; j++) {
-                cnt++;
-                if (cnt > items.Length) {
-                    break;
-                }
-                GameObject item = Instantiate(slotItem);
-                item.name = "item" + cnt;
+                if(cnt < engineItemCnt) {
+                    Transform slot = uiGrid.GetChild(j).transform;
+                    GameObject item = Instantiate(slotItem);
 
-                Transform parent = enginePageGrids[i].GetChild(j).transform;
-                item.transform.SetParent(parent);
-                item.transform.localScale = Vector3.one;
-                item.transform.localPosition = Vector3.zero;
-                item.GetComponent<ButtonIndex>().index = cnt - 1;
+                    item.transform.SetParent(slot);
+                    item.transform.localPosition = Vector3.zero;
+                    item.transform.localScale = Vector3.one;
 
-                Info info = item.AddComponent<Info>();
-                item.AddComponent<UIDragScrollView>().scrollView = scrollview[2];
-                info.id = items[cnt - 1].id;
-                info.parts = items[cnt - 1].item.parts;
-                info.name = items[cnt - 1].item.name;
-                info.desc = items[cnt - 1].item.desc;
-                info.imageId = items[cnt - 1].item.id;
-                info.limit_rank = items[cnt - 1].item.limit_rank;
-                info.gear = items[cnt - 1].item.gear;
+                    item.AddComponent<UIDragScrollView>().scrollView = scrollview[2];
 
-                if (items[cnt - 1].is_equiped == "true") {
-                    Debug.Log("EG Equiped");
-                    info.is_equiped = true;
-                    item.transform.Find("Equiped").gameObject.SetActive(true);
-                    equipedItemIndex[2] = items[cnt - 1].item.id;
+                    Info info = item.AddComponent<Info>();
+                    BicycleItem data = (BicycleItem)EI[cnt];
+                    Item data_item = data.item;
+                    info.id = data.id;
+                    info.desc = data_item.desc;
+                    info.name = data_item.name;
+                    info.grade = data_item.grade;
+                    info.limit_rank = data_item.limit_rank;
+                    info.parts = data_item.parts;
+                    info.gear = data_item.gear;
+                    info.imageId = data_item.id;
 
-                    sprite = bicycle.transform.Find("Engine").GetComponent<UISprite>();
+                    if (data.is_equiped == "true") {
+                        info.is_equiped = true;
+                        equipedItemIndex[2] = info.imageId;
+                    }
+
+                    if (data.is_locked == "true") {
+                        info.is_locked = true;
+                    }
+
+                    EventDelegate.Parameter parm = new EventDelegate.Parameter();
+                    EventDelegate onClick = new EventDelegate(this, "selected");
+                    parm.obj = item;
+                    onClick.parameters[0] = parm;
+                    EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
+
+                    UISprite sprite = item.GetComponent<UISprite>();
                     sprite.atlas = bicycleAtlas;
-                    sprite.spriteName = info.imageId.ToString();
-                }
-                else {
-                    info.is_equiped = false;
-                }
+                    string spriteName = info.imageId + "-1";
+                    sprite.spriteName = spriteName;
 
-                if (items[cnt - 1].is_locked == "true") {
-                    info.is_locked = true;
-                    item.transform.Find("LockIcon").gameObject.SetActive(true);
-                    item.transform.Find("TypeTag").gameObject.tag = "locked";
+                    cnt++;
                 }
-                else {
-                    info.is_locked = false;
-                }
-
-                EventDelegate.Parameter param = new EventDelegate.Parameter();
-                EventDelegate onClick = new EventDelegate(this, "selected");
-                param.obj = item;
-                onClick.parameters[0] = param;
-                EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
-
-                sprite = item.GetComponent<UISprite>();
-                sprite.atlas = bicycleAtlas;
-                string spriteName = items[cnt - 1].item.id + "-1";
-                sprite.spriteName = spriteName;
             }
         }
+        initGrid();
 
-        //SideBar 갱신
-        for (int i=0; i < equipedItemIndex.Length; i++) {
-            switch (i) {
-                case 0:
-                    sprite = sideBar.transform.Find("FrameSlot/Item").GetComponent<UISprite>();
-                    sideBar.transform.Find("FrameSlot/Item/Label").gameObject.SetActive(false);
-                    break;
-                case 1:
-                    sprite = sideBar.transform.Find("WheelSlot/Item").GetComponent<UISprite>();
-                    sideBar.transform.Find("WheelSlot/Item/Label").gameObject.SetActive(false);
-                    break;
-                case 2:
-                    sprite = sideBar.transform.Find("EngineSlot/Item").GetComponent<UISprite>();
-                    sideBar.transform.Find("EngineSlot/Item/Label").gameObject.SetActive(false);
-                    break;
-            }
-            sprite.atlas = bicycleAtlas;
-            if (equipedItemIndex[i] == -1) {
-                sprite.spriteName = "default";
-            }
-            else {
-                int index = equipedItemIndex[i];
-                string spriteName = index + "-1";
-                sprite.spriteName = spriteName;
-            }
-        }
+        UISprite sideSprite = sideBar.transform.Find("WheelSlot/Item").GetComponent<UISprite>();
+        sideSprite.atlas = bicycleAtlas;
+        sideSprite.spriteName = bicycleItemStore.equipedItemIndex[0] + "-1";
+
+        sideSprite = sideBar.transform.Find("FrameSlot/Item").GetComponent<UISprite>();
+        sideSprite.atlas = bicycleAtlas;
+        sideSprite.spriteName = bicycleItemStore.equipedItemIndex[1] + "-1";
+
+        sideSprite = sideBar.transform.Find("EngineSlot/Item").GetComponent<UISprite>();
+        sideSprite.atlas = bicycleAtlas;
+        sideSprite.spriteName = bicycleItemStore.equipedItemIndex[2] + "-1";
     }
 
     private void removeList() {
-        for(int i=0; i< framePageGrids.Length; i++) {
-            foreach(Transform slot in framePageGrids[i].transform) {
-                slot.DestroyChildren();
-            }
-        }
-        for (int i = 0; i < wheelPageGrids.Length; i++) {
-            foreach (Transform slot in wheelPageGrids[i].transform) {
-                slot.DestroyChildren();
-            }
-        }
-        for (int i = 0; i < enginePageGrids.Length; i++) {
-            foreach (Transform slot in enginePageGrids[i].transform) {
-                slot.DestroyChildren();
-            }
+        for(int i=0; i<scrollview.Length; i++) {
+            Transform grid = scrollview[i].transform.Find("Grid").transform;
+            grid.DestroyChildren();
         }
     }
 
     private void initGrid() {
-        
+        for(int i=0; i<scrollview.Length; i++) {
+            UIGrid grid = scrollview[i].transform.Find("Grid").GetComponent<UIGrid>();
+            grid.repositionNow = true;
+            grid.Reposition();
+        }
     }
 
     private void init() {
@@ -602,10 +574,30 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     private void itemInitAct() {
-        Debug.Log("Init");
         getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
         act._type = equip_act.type.ITEM;
         gm.gameDispatcher.dispatch(act);
+    }
+
+    public void onFilterButton(GameObject obj) {
+        GameObject menu = obj.transform.Find("DropMenu").gameObject;
+        menu.SetActive(!menu.activeSelf);
+    }
+
+    public void filterSelected(GameObject obj) {
+        int index = obj.GetComponent<ButtonIndex>().index;
+        PlayerPrefs.SetInt("Filter", index);
+        itemSort act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_SORT) as itemSort;
+        switch (index) {
+            case 0:
+                act._type = itemSort.type.NAME;
+                break;
+            case 1:
+                act._type = itemSort.type.GRADE;
+                break;
+        }
+        gm.gameDispatcher.dispatch(act);
+        obj.transform.parent.parent.parent.gameObject.SetActive(false);
     }
 
     private class Info : MonoBehaviour {

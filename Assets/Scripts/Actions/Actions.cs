@@ -9,7 +9,7 @@ public enum ActionTypes {
     GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ADD, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT, GROUP_POSTS, GROUP_ADD_POST, GROUP_DEL_POST, GROUP_MODIFY_POST,
     GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DESTROY, MY_GROUP_PANEL,
     GPS_SEND,
-    GARAGE_CHAR_INIT, GARAGE_ITEM_INIT, GARAGE_ITEM_EQUIP, GARAGE_ITEM_UNEQUIP, GARAGE_LOCK, GARAGE_SELL, 
+    GARAGE_CHAR_INIT, GARAGE_ITEM_INIT, GARAGE_ITEM_EQUIP, GARAGE_ITEM_UNEQUIP, GARAGE_LOCK, GARAGE_SELL, GARAGE_ITEM_SORT, 
     BOX_OPEN, CHAR_OPEN,
     MYINFO, GET_RIDING_RECORDS, RIDING_DETAILS,
     EDIT_PROFILE,
@@ -131,6 +131,9 @@ public static class ActionCreator{
             break;
         case ActionTypes.GARAGE_ITEM_UNEQUIP:
             _return = new unequip_act();
+            break;
+        case ActionTypes.GARAGE_ITEM_SORT:
+            _return = new itemSort();
             break;
         case ActionTypes.GARAGE_LOCK:
             _return = new garage_lock_act();

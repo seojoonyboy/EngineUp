@@ -22,3 +22,8 @@ public class garage_unlock_char : equip_act { }
 public class garage_box_open : NetworkAction {
     public int num = -1;
 }
+
+public class itemSort : Actions { 
+    public enum type { NAME, GRADE, DATE }
+    public type _type;
+}

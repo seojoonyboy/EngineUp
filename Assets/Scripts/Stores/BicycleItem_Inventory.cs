@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
+using System;
 
 public class BicycleItem_Inventory : AjwStore {
     //store status
@@ -27,6 +28,7 @@ public class BicycleItem_Inventory : AjwStore {
         wheelItems = new ArrayList(),
         frameItems = new ArrayList(),
         engineItems = new ArrayList();
+    public int[] equipedItemIndex = new int[3];
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
@@ -47,6 +49,9 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case ActionTypes.GARAGE_SELL:
                 sell(action as garage_sell_act);
+                break;
+            case ActionTypes.GARAGE_ITEM_SORT:
+                itemSort(action as itemSort);
                 break;
         }
         eventType = action.type;
@@ -73,6 +78,10 @@ public class BicycleItem_Inventory : AjwStore {
                 frameItems.Clear();
                 engineItems.Clear();
 
+                equipedItemIndex[0] = -1;
+                equipedItemIndex[1] = -1;
+                equipedItemIndex[2] = -1;
+
                 itemCategorization(allItems);
                 _emitChange();
                 break;
@@ -91,14 +100,52 @@ public class BicycleItem_Inventory : AjwStore {
             Item _item = item[i].item;
             if (_item.parts == "WH") {
                 wheelItems.Add(item[i]);
+                if(item[i].is_equiped == "true") {
+                    equipedItemIndex[0] = item[i].item.id;
+                }
             }
             else if (_item.parts == "FR") {
                 frameItems.Add(item[i]);
+                if (item[i].is_equiped == "true") {
+                    equipedItemIndex[1] = item[i].item.id;
+                }
             }
             else if (_item.parts == "DS") {
                 engineItems.Add(item[i]);
+                if (item[i].is_equiped == "true") {
+                    equipedItemIndex[2] = item[i].item.id;
+                }
             }
         }
+        int filterIndex = PlayerPrefs.GetInt("Filter");
+
+        if(filterIndex == 0) {
+            wheelItems.Sort(new SortByName());
+            frameItems.Sort(new SortByName());
+            engineItems.Sort(new SortByName());
+        }
+        else if (filterIndex == 1) {
+            wheelItems.Sort(new SortByGrade());
+            frameItems.Sort(new SortByGrade());
+            engineItems.Sort(new SortByGrade());
+        }
+    }
+
+    //아이템 정렬
+    private void itemSort(itemSort act) {
+        switch(act._type) {
+            case global::itemSort.type.NAME:
+                wheelItems.Sort(new SortByName());
+                frameItems.Sort(new SortByName());
+                engineItems.Sort(new SortByName());
+                break;
+            case global::itemSort.type.GRADE:
+                wheelItems.Sort(new SortByGrade());
+                frameItems.Sort(new SortByGrade());
+                engineItems.Sort(new SortByGrade());
+                break;
+        }
+        _emitChange();
     }
 
     //아이템 장착
@@ -115,12 +162,10 @@ public class BicycleItem_Inventory : AjwStore {
                     .Append(payload.id)
                     .Append("/equip");
                 WWWForm form = new WWWForm();
-                Debug.Log("Id : " + payload.id);
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                Debug.Log("아이템 장착 완료");
                 getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
                 act._type = equip_act.type.ITEM;
                 dispatcher.dispatch(act);
@@ -227,6 +272,30 @@ public class BicycleItem_Inventory : AjwStore {
                 storeStatus = storeStatus.ERROR;
                 _emitChange();
                 break;
+        }
+    }
+
+    private class SortByGrade : IComparer, IComparer<BicycleItem> {
+        public int Compare(BicycleItem x, BicycleItem y) {
+            //throw new NotImplementedException();
+            return x.item.grade.CompareTo(y.item.grade);
+        }
+
+        public int Compare(object x, object y) {
+            //throw new NotImplementedException();
+            return Compare((BicycleItem)x, (BicycleItem)y);
+        }
+    }
+
+    private class SortByName : IComparer, IComparer<BicycleItem> {
+        public int Compare(BicycleItem x, BicycleItem y) {
+            //throw new NotImplementedException();
+            return x.item.name.CompareTo(y.item.name);
+        }
+
+        public int Compare(object x, object y) {
+            //throw new NotImplementedException();
+            return Compare((BicycleItem)x, (BicycleItem)y);
         }
     }
 }
