@@ -133,6 +133,7 @@ public class BicycleItem_Inventory : AjwStore {
 
     //아이템 정렬
     private void itemSort(itemSort act) {
+        int index = PlayerPrefs.GetInt("Filter");
         switch(act._type) {
             case global::itemSort.type.NAME:
                 wheelItems.Sort(new SortByName());

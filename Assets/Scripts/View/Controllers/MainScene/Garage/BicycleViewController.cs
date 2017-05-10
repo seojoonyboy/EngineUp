@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -57,7 +58,6 @@ public class BicycleViewController : MonoBehaviour {
         if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
             if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
                 if(gameObject.activeSelf) {
-                    makeList();
                     if (equipedItemIndex[0] == -1 && equipedItemIndex[1] == -1 && equipedItemIndex[2] == -1) {
                         UISprite sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
                         sprite.atlas = bicycleAtlas;
@@ -577,6 +577,10 @@ public class BicycleViewController : MonoBehaviour {
         getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
         act._type = equip_act.type.ITEM;
         gm.gameDispatcher.dispatch(act);
+
+        int index = PlayerPrefs.GetInt("Filter");
+
+        filterSelected(index);
     }
 
     public void onFilterButton(GameObject obj) {
@@ -584,20 +588,30 @@ public class BicycleViewController : MonoBehaviour {
         menu.SetActive(!menu.activeSelf);
     }
 
-    public void filterSelected(GameObject obj) {
-        int index = obj.GetComponent<ButtonIndex>().index;
+    public void filterSelected(object obj) {
+        int index = 0;
+        Type type = obj.GetType();
+
+        if(type == typeof(int)) {
+            index = (int)obj;
+        }
+        else if(type == typeof(GameObject)) {
+            index = ((GameObject)obj).GetComponent<ButtonIndex>().index;
+            ((GameObject)obj).transform.parent.parent.parent.gameObject.SetActive(false);
+        }
         PlayerPrefs.SetInt("Filter", index);
         itemSort act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_SORT) as itemSort;
         switch (index) {
-            case 0:
+            case 1:
+                Debug.Log("이름순 정렬");
                 act._type = itemSort.type.NAME;
                 break;
-            case 1:
+            case 2:
+                Debug.Log("등급순 정렬");
                 act._type = itemSort.type.GRADE;
                 break;
         }
         gm.gameDispatcher.dispatch(act);
-        obj.transform.parent.parent.parent.gameObject.SetActive(false);
     }
 
     private class Info : MonoBehaviour {
