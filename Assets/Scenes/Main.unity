@@ -9405,7 +9405,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 6.206897
+  aspectRatio: 14.712644
   mType: 2
   mFillDirection: 4
   mFillAmount: 1
@@ -23544,7 +23544,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 462523484}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 188.6, y: 0, z: 0}
+  m_LocalPosition: {x: 188.6, y: -0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1450557120}
@@ -50269,6 +50269,8 @@ GameObject:
   m_Component:
   - component: {fileID: 959550926}
   - component: {fileID: 959550927}
+  - component: {fileID: 959550929}
+  - component: {fileID: 959550928}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -50327,7 +50329,7 @@ MonoBehaviour:
   mHeight: 174
   mDepth: 4
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.9770115
@@ -50347,6 +50349,49 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &959550928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 959550925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tweenTarget: {fileID: 959550925}
+  hover: {r: 0.88235295, g: 0.78431374, b: 0.5882353, a: 1}
+  pressed: {r: 0.7176471, g: 0.6392157, b: 0.48235294, a: 1}
+  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  duration: 0.2
+  dragHighlight: 0
+  hoverSprite: 
+  pressedSprite: 
+  disabledSprite: 
+  hoverSprite2D: {fileID: 0}
+  pressedSprite2D: {fileID: 0}
+  disabledSprite2D: {fileID: 0}
+  pixelSnap: 0
+  onClick:
+  - mTarget: {fileID: 167112403}
+    mMethodName: selectedSiderBar
+    mParameters:
+    - obj: {fileID: 959550925}
+      field: 
+    oneShot: 0
+--- !u!65 &959550929
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 959550925}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 170, y: 174, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &960669767
 GameObject:
   m_ObjectHideFlags: 0
@@ -76776,6 +76821,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1493013530}
   - component: {fileID: 1493013531}
+  - component: {fileID: 1493013533}
+  - component: {fileID: 1493013532}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -76834,7 +76881,7 @@ MonoBehaviour:
   mHeight: 174
   mDepth: 4
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.9770115
@@ -76854,6 +76901,49 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!65 &1493013532
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1493013529}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 170, y: 174, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1493013533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1493013529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tweenTarget: {fileID: 1493013529}
+  hover: {r: 0.88235295, g: 0.78431374, b: 0.5882353, a: 1}
+  pressed: {r: 0.7176471, g: 0.6392157, b: 0.48235294, a: 1}
+  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  duration: 0.2
+  dragHighlight: 0
+  hoverSprite: 
+  pressedSprite: 
+  disabledSprite: 
+  hoverSprite2D: {fileID: 0}
+  pressedSprite2D: {fileID: 0}
+  disabledSprite2D: {fileID: 0}
+  pixelSnap: 0
+  onClick:
+  - mTarget: {fileID: 167112403}
+    mMethodName: selectedSiderBar
+    mParameters:
+    - obj: {fileID: 1493013529}
+      field: 
+    oneShot: 0
 --- !u!1 &1496535203
 GameObject:
   m_ObjectHideFlags: 0
@@ -94499,6 +94589,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1914967440}
   - component: {fileID: 1914967441}
+  - component: {fileID: 1914967442}
+  - component: {fileID: 1914967443}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -94557,7 +94649,7 @@ MonoBehaviour:
   mHeight: 174
   mDepth: 4
   mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
+  autoResizeBoxCollider: 1
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 0.9770115
@@ -94577,6 +94669,49 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: garage_bicycle_item
   mFillCenter: 1
+--- !u!114 &1914967442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1914967439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tweenTarget: {fileID: 1914967439}
+  hover: {r: 0.88235295, g: 0.78431374, b: 0.5882353, a: 1}
+  pressed: {r: 0.7176471, g: 0.6392157, b: 0.48235294, a: 1}
+  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  duration: 0.2
+  dragHighlight: 0
+  hoverSprite: 
+  pressedSprite: 
+  disabledSprite: 
+  hoverSprite2D: {fileID: 0}
+  pressedSprite2D: {fileID: 0}
+  disabledSprite2D: {fileID: 0}
+  pixelSnap: 0
+  onClick:
+  - mTarget: {fileID: 167112403}
+    mMethodName: selectedSiderBar
+    mParameters:
+    - obj: {fileID: 1914967439}
+      field: 
+    oneShot: 0
+--- !u!65 &1914967443
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1914967439}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 170, y: 174, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1918772764
 GameObject:
   m_ObjectHideFlags: 0

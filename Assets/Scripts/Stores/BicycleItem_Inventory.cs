@@ -28,7 +28,7 @@ public class BicycleItem_Inventory : AjwStore {
         wheelItems = new ArrayList(),
         frameItems = new ArrayList(),
         engineItems = new ArrayList();
-    public int[] equipedItemIndex = new int[3];
+    public BicycleItem[] equipedItemIndex = new BicycleItem[3];
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
@@ -78,9 +78,9 @@ public class BicycleItem_Inventory : AjwStore {
                 frameItems.Clear();
                 engineItems.Clear();
 
-                equipedItemIndex[0] = -1;
-                equipedItemIndex[1] = -1;
-                equipedItemIndex[2] = -1;
+                equipedItemIndex[0] = new BicycleItem();
+                equipedItemIndex[1] = new BicycleItem();
+                equipedItemIndex[2] = new BicycleItem();
 
                 itemCategorization(allItems);
                 _emitChange();
@@ -101,30 +101,30 @@ public class BicycleItem_Inventory : AjwStore {
             if (_item.parts == "WH") {
                 wheelItems.Add(item[i]);
                 if(item[i].is_equiped == "true") {
-                    equipedItemIndex[0] = item[i].item.id;
+                    equipedItemIndex[0] = item[i];
                 }
             }
             else if (_item.parts == "FR") {
                 frameItems.Add(item[i]);
                 if (item[i].is_equiped == "true") {
-                    equipedItemIndex[1] = item[i].item.id;
+                    equipedItemIndex[1] = item[i];
                 }
             }
             else if (_item.parts == "DS") {
                 engineItems.Add(item[i]);
                 if (item[i].is_equiped == "true") {
-                    equipedItemIndex[2] = item[i].item.id;
+                    equipedItemIndex[2] = item[i];
                 }
             }
         }
         int filterIndex = PlayerPrefs.GetInt("Filter");
 
-        if(filterIndex == 0) {
+        if(filterIndex == 1) {
             wheelItems.Sort(new SortByName());
             frameItems.Sort(new SortByName());
             engineItems.Sort(new SortByName());
         }
-        else if (filterIndex == 1) {
+        else if (filterIndex == 2) {
             wheelItems.Sort(new SortByGrade());
             frameItems.Sort(new SortByGrade());
             engineItems.Sort(new SortByGrade());
