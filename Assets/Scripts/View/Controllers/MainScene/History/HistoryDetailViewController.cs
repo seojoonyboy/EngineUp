@@ -92,7 +92,7 @@ public class HistoryDetailViewController : MonoBehaviour {
         uphill.text = (Math.Round(data.uphillDistance, 2, MidpointRounding.AwayFromZero)) + " M";
         time.text = data.runningTime.Split('.')[0];
         maxSpeed.text = (Math.Round(data.maxSpeed, 2, MidpointRounding.AwayFromZero)) + " KM/h";
-        boxNum.text = data.get_boxes;
+        boxNum.text = data.get_boxes.ToString();
     }
 
     public void setNickName(string data) {
