@@ -73,15 +73,8 @@ public class BicycleItem_Inventory : AjwStore {
                 message = "아이템을 성공적으로 불러왔습니다.";
                 Debug.Log(payload.response.data);
                 allItems = JsonHelper.getJsonArray<BicycleItem>(payload.response.data);
-
-                wheelItems.Clear();
-                frameItems.Clear();
-                engineItems.Clear();
-
-                equipedItemIndex[0] = new BicycleItem();
-                equipedItemIndex[1] = new BicycleItem();
-                equipedItemIndex[2] = new BicycleItem();
-
+                
+                init();
                 itemCategorization(allItems);
                 _emitChange();
                 break;
@@ -298,6 +291,16 @@ public class BicycleItem_Inventory : AjwStore {
             //throw new NotImplementedException();
             return Compare((BicycleItem)x, (BicycleItem)y);
         }
+    }
+
+    private void init() {
+        wheelItems.Clear();
+        frameItems.Clear();
+        engineItems.Clear();
+
+        equipedItemIndex[0] = null;
+        equipedItemIndex[1] = null;
+        equipedItemIndex[2] = null;
     }
 }
 

@@ -176,7 +176,7 @@ public class BicycleViewController : MonoBehaviour {
             }
         }
         else if(isLockMode == false && isSellMode == false) {
-            //Debug.Log(obj.GetComponent<ButtonIndex>().index);
+            Debug.Log(obj.GetComponent<ButtonIndex>().index);
             selectedItem = obj;
             onDetailModal();
         }
@@ -217,7 +217,7 @@ public class BicycleViewController : MonoBehaviour {
         string spriteName = info.imageId + "-1";
         img.spriteName = spriteName;
         img.MakePixelPerfect();
-
+        Debug.Log(info.is_equiped);
         //현재 장착중인 아이템인 경우
         //모달 내 해제하기 버튼 활성화
         if (info.is_equiped) {
@@ -465,45 +465,61 @@ public class BicycleViewController : MonoBehaviour {
     private void setSideBar() {
         GameObject sideSlot = sideBar.transform.Find("WheelSlot/Item").gameObject;
         Info sideBarInfo = sideSlot.AddComponent<Info>();
-        sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[0].item.id;
-        sideBarInfo.desc = bicycleItemStore.equipedItemIndex[0].item.desc;
-        sideBarInfo.name = bicycleItemStore.equipedItemIndex[0].item.name;
-        sideBarInfo.limit_rank = bicycleItemStore.equipedItemIndex[0].item.limit_rank;
-        sideBarInfo.gear = bicycleItemStore.equipedItemIndex[0].item.gear;
-        sideBarInfo.id = bicycleItemStore.equipedItemIndex[0].id;
-        sideBarInfo.is_equiped = true;
+        UISprite sideSprite;
+        if (bicycleItemStore.equipedItemIndex[0] != null) {
+            sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[0].item.id;
+            sideBarInfo.desc = bicycleItemStore.equipedItemIndex[0].item.desc;
+            sideBarInfo.name = bicycleItemStore.equipedItemIndex[0].item.name;
+            sideBarInfo.limit_rank = bicycleItemStore.equipedItemIndex[0].item.limit_rank;
+            sideBarInfo.gear = bicycleItemStore.equipedItemIndex[0].item.gear;
+            sideBarInfo.id = bicycleItemStore.equipedItemIndex[0].id;
+            sideBarInfo.is_equiped = true;
 
-        UISprite sideSprite = sideSlot.GetComponent<UISprite>();
-        sideSprite.atlas = bicycleAtlas;
-        sideSprite.spriteName = sideBarInfo.imageId + "-1";
+            sideSprite = sideSlot.GetComponent<UISprite>();
+            sideSprite.atlas = bicycleAtlas;
+            sideSprite.spriteName = sideBarInfo.imageId + "-1";
+        } 
+        else {
+            sideSlot.GetComponent<UISprite>().spriteName = "-1";
+        }
 
         sideSlot = sideBar.transform.Find("FrameSlot/Item").gameObject;
         sideBarInfo = sideSlot.AddComponent<Info>();
-        sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[1].item.id;
-        sideBarInfo.desc = bicycleItemStore.equipedItemIndex[1].item.desc;
-        sideBarInfo.name = bicycleItemStore.equipedItemIndex[1].item.name;
-        sideBarInfo.limit_rank = bicycleItemStore.equipedItemIndex[1].item.limit_rank;
-        sideBarInfo.gear = bicycleItemStore.equipedItemIndex[1].item.gear;
-        sideBarInfo.id = bicycleItemStore.equipedItemIndex[1].id;
-        sideBarInfo.is_equiped = true;
+        if(bicycleItemStore.equipedItemIndex[1] != null) {
+            sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[1].item.id;
+            sideBarInfo.desc = bicycleItemStore.equipedItemIndex[1].item.desc;
+            sideBarInfo.name = bicycleItemStore.equipedItemIndex[1].item.name;
+            sideBarInfo.limit_rank = bicycleItemStore.equipedItemIndex[1].item.limit_rank;
+            sideBarInfo.gear = bicycleItemStore.equipedItemIndex[1].item.gear;
+            sideBarInfo.id = bicycleItemStore.equipedItemIndex[1].id;
+            sideBarInfo.is_equiped = true;
 
-        sideSprite = sideSlot.GetComponent<UISprite>();
-        sideSprite.atlas = bicycleAtlas;
-        sideSprite.spriteName = bicycleItemStore.equipedItemIndex[1].item.id + "-1";
+            sideSprite = sideSlot.GetComponent<UISprite>();
+            sideSprite.atlas = bicycleAtlas;
+            sideSprite.spriteName = bicycleItemStore.equipedItemIndex[1].item.id + "-1";
+        }
+        else {
+            sideSlot.GetComponent<UISprite>().spriteName = "-1";
+        }
 
         sideSlot = sideBar.transform.Find("EngineSlot/Item").gameObject;
         sideBarInfo = sideSlot.AddComponent<Info>();
-        sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[2].item.id;
-        sideBarInfo.desc = bicycleItemStore.equipedItemIndex[2].item.desc;
-        sideBarInfo.name = bicycleItemStore.equipedItemIndex[2].item.name;
-        sideBarInfo.limit_rank = bicycleItemStore.equipedItemIndex[2].item.limit_rank;
-        sideBarInfo.gear = bicycleItemStore.equipedItemIndex[2].item.gear;
-        sideBarInfo.id = bicycleItemStore.equipedItemIndex[2].id;
-        sideBarInfo.is_equiped = true;
+        if(bicycleItemStore.engineItems[2] != null) {
+            sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[2].item.id;
+            sideBarInfo.desc = bicycleItemStore.equipedItemIndex[2].item.desc;
+            sideBarInfo.name = bicycleItemStore.equipedItemIndex[2].item.name;
+            sideBarInfo.limit_rank = bicycleItemStore.equipedItemIndex[2].item.limit_rank;
+            sideBarInfo.gear = bicycleItemStore.equipedItemIndex[2].item.gear;
+            sideBarInfo.id = bicycleItemStore.equipedItemIndex[2].id;
+            sideBarInfo.is_equiped = true;
 
-        sideSprite = sideSlot.GetComponent<UISprite>();
-        sideSprite.atlas = bicycleAtlas;
-        sideSprite.spriteName = bicycleItemStore.equipedItemIndex[2].item.id + "-1";
+            sideSprite = sideSlot.GetComponent<UISprite>();
+            sideSprite.atlas = bicycleAtlas;
+            sideSprite.spriteName = bicycleItemStore.equipedItemIndex[2].item.id + "-1";
+        }
+        else {
+            sideSlot.GetComponent<UISprite>().spriteName = "-1";
+        }
     }
 
     private void removeList() {
