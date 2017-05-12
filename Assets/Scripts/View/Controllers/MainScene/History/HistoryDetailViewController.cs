@@ -10,6 +10,7 @@ public class HistoryDetailViewController : MonoBehaviour {
     public int id;
     private GameManager gm;
     private Riding ridingStore;
+    private Vector3 preMapPos;
 
     public UILabel
         dist,
@@ -48,7 +49,9 @@ public class HistoryDetailViewController : MonoBehaviour {
     public void setMap(RidingDetails data) {
         map.SetActive(true);
         OnlineMaps _map = map.GetComponent<OnlineMaps>();
-        map.transform.localScale = new Vector3(1.5f, 1.0f, 1.5f);
+        map.transform.localScale = new Vector3(1.31f, 1.0f, 1.31f);
+        preMapPos = map.transform.localPosition;
+        map.transform.localPosition = new Vector3(-1953f, 380f, -1127f);
         innerRidingDetails[] coords = data.coords;
         if(coords.Length == 0) {
             _map.position = new Vector2(127.74437f, 37.87998f);
@@ -76,6 +79,7 @@ public class HistoryDetailViewController : MonoBehaviour {
     public void offPanel() {
         OnlineMaps _map = map.GetComponent<OnlineMaps>();
         map.transform.localScale = Vector3.one;
+        map.transform.localPosition = preMapPos;
         _map.RemoveAllDrawingElements();
 
         gameObject.SetActive(false);
