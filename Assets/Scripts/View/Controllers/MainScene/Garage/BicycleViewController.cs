@@ -57,19 +57,6 @@ public class BicycleViewController : MonoBehaviour {
 
         if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
             if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                if(gameObject.activeSelf) {
-                    if (equipedItemIndex[0] == -1 && equipedItemIndex[1] == -1 && equipedItemIndex[2] == -1) {
-                        UISprite sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
-                        sprite.atlas = bicycleAtlas;
-                        sprite.spriteName = "3";
-
-                        sprite = bicycle.transform.Find("Wheel").GetComponent<UISprite>();
-                        sprite.spriteName = "6";
-
-                        sprite = bicycle.transform.Find("Engine").GetComponent<UISprite>();
-                        sprite.spriteName = "9";
-                    }
-                }
                 //sidebar 갱신
                 setSideBar();
             }
