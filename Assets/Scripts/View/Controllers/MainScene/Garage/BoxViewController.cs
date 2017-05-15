@@ -17,11 +17,14 @@ public class BoxViewController : MonoBehaviour {
         notifyModal,
         boxOpenModal;
 
-    public GameObject _openEffect;
+    public GameObject 
+        _openEffect,
+        multiOpenTable;
 
     public UIAtlas 
         bicycleAtlas,
-        charAtlas;
+        charAtlas,
+        uiAtlas;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -40,7 +43,6 @@ public class BoxViewController : MonoBehaviour {
                 numOfBoxLabel.text = boxNum;
                 singleModalBoxNum.text = "x " + boxNum;
                 multiModalBoxNum.text = "x " + boxNum;
-                Debug.Log("박스 갯수 갱신");
             }
         }
     }
@@ -85,11 +87,17 @@ public class BoxViewController : MonoBehaviour {
                     GameObject modal = boxOpenModal.transform.Find("MultipleModal").gameObject;
                     modal.SetActive(true);
                     UITable table = modal.transform.Find("Table").GetComponent<UITable>();
+
+                    table.repositionNow = true;
+                    table.Reposition();
+
                     List<Transform> list = table.GetChildList();
 
                     foreach(Transform item in list) {
                         item.Find("Name").GetComponent<UILabel>().text = "";
-                        item.Find("Image").GetComponent<UISprite>().spriteName = "-1";
+                        UISprite img = item.Find("Image").GetComponent<UISprite>();
+                        img.atlas = uiAtlas;
+                        img.spriteName = "boxOpen_slot_multi";
                     }
 
                     StartCoroutine(openEffect(list, itemCount, items, modal));
@@ -156,10 +164,9 @@ public class BoxViewController : MonoBehaviour {
                 //effect
                 GameObject effect = Instantiate(_openEffect);
                 effect.transform.SetParent(item.transform);
-                effect.transform.localPosition = new Vector3(0, 48, 0);
+                effect.transform.localPosition = new Vector3(0f, 55f, 0f);
                 effect.transform.localScale = Vector3.one;
 
-                item.gameObject.SetActive(true);
                 //setUI
                 string type = items[cnt].type;
                 UILabel label = item.Find("Name").GetComponent<UILabel>();
@@ -180,6 +187,7 @@ public class BoxViewController : MonoBehaviour {
                 }
                 cnt++;
             }
+
             yield return new WaitForSeconds(1.0f);
         }
         modal.transform.Find("Buttons/ConfirmButton").gameObject.GetComponent<UIButton>().enabled = true;
