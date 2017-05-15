@@ -504,7 +504,7 @@ public class BicycleViewController : MonoBehaviour {
 
         sideSlot = sideBar.transform.Find("EngineSlot/Item").gameObject;
         sideBarInfo = sideSlot.AddComponent<Info>();
-        if(bicycleItemStore.engineItems[2] != null) {
+        if(bicycleItemStore.equipedItemIndex[2] != null) {
             sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[2].item.id;
             sideBarInfo.desc = bicycleItemStore.equipedItemIndex[2].item.desc;
             sideBarInfo.name = bicycleItemStore.equipedItemIndex[2].item.name;
