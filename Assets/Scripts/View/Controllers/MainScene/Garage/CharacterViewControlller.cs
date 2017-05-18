@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class CharacterViewControlller : MonoBehaviour {
     //character_inventory[] characters;
 
     public GameObject
-        mainStageChar,
+        mainStage,
         lv1Slot,
         lv10Slot,
         lv20Slot,
@@ -29,9 +30,11 @@ public class CharacterViewControlller : MonoBehaviour {
         lvLabel,
         charName,
         desc;
+    public CharPrefArr[] Characters;
 
     public UISlider friendlySlider;
 
+    private GameObject prevMainChar;
     void Awake() {
         gm = GameManager.Instance;
         charInvenStore = gm.charInvenStore;
@@ -145,13 +148,19 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     public void setMainChar(int index, int lv) {
-        //mainStageChar.GetComponent<Animator>().runtimeAnimatorController = animatorArr[0];
-        UISprite sprite = mainStageChar.GetComponent<UISprite>();
-        //Debug.Log("index : " + index);
-        sprite.atlas = atlasArr[index - 1];
-        sprite.spriteName = index + "-" + lv + "-main";
-        sprite.MakePixelPerfect();
-        sprite.gameObject.transform.localScale = new Vector3(0.5f, 0.5f);
+        Debug.Log("Index : " + index + ", LV : " + lv);
+        if(prevMainChar != null) {
+            Destroy(prevMainChar);
+        }
+
+        int arrIndex = index - 1;
+        int arrSubIndex = lv - 1;
+        GameObject charPref = Instantiate(Characters[arrIndex].Pref[arrSubIndex]);
+        prevMainChar = charPref;
+        charPref.transform.SetParent(mainStage.transform);
+        charPref.transform.localPosition = new Vector3(0f, -36f, 0f);
+        charPref.transform.localScale = Vector3.one;
+        charPref.name = "Character";
     }
 
     public void setSideBar(int index) {
@@ -172,8 +181,8 @@ public class CharacterViewControlller : MonoBehaviour {
         GameObject _sprite = obj.transform.Find("Sprite").gameObject;
 
         string name = _sprite.GetComponent<UISprite>().spriteName;
-        UISprite sprite = mainStageChar.GetComponent<UISprite>();
-        sprite.spriteName = name + "-main";
+        string[] str = name.Split('-');
+        setMainChar(Int32.Parse(str[0]), Int32.Parse(str[1]));
     }
 
     //캐릭터 장착하기
@@ -283,5 +292,10 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void offPanel() {
         gameObject.SetActive(false);
+    }
+
+    [System.Serializable]
+    public class CharPrefArr {
+        public GameObject[] Pref;
     }
 }
