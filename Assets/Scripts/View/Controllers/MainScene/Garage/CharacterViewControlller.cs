@@ -22,7 +22,6 @@ public class CharacterViewControlller : MonoBehaviour {
     public GameObject equipButton;
 
     public UIAtlas[] atlasArr;
-    public RuntimeAnimatorController[] animatorArr;
 
     public UIGrid
         itemGrid,
