@@ -15,7 +15,9 @@ public class CharacterViewControlller : MonoBehaviour {
         lv10Slot,
         lv20Slot,
         itemPref,
-        selectedChar;
+        selectedChar,
+        IllustPanel,
+        DescPanel;
 
     public GameObject equipButton;
 
@@ -28,8 +30,7 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public UILabel 
         lvLabel,
-        charName,
-        desc;
+        charName;
     public CharPrefArr[] Characters;
 
     public UISlider friendlySlider;
@@ -54,21 +55,9 @@ public class CharacterViewControlller : MonoBehaviour {
 
         if (charStoreEventType == ActionTypes.GARAGE_CHAR_INIT) {
             if (charInvenStore.storeStatus == storeStatus.NORMAL) {
-                makeList();
-                int index = 0;
-                if (selectedChar != null) {
-                    index = selectedChar.GetComponent<Info>().characterId;
-                }
-                else {
-                    character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                    index = charInfo.character;
-                }
-
-                if (charInvenStore.all_characters.ContainsKey(index).Equals(true)) {
-                    all_characters tmp = charInvenStore.all_characters[index];
-                    desc.text = tmp.desc;
-                    charName.text = tmp.name;
-                }
+                character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+                int equpedCharIndex = charInfo.character;
+                makeList(equpedCharIndex);
             }
         }
     }
@@ -106,10 +95,8 @@ public class CharacterViewControlller : MonoBehaviour {
         setMainChar(info.characterId, info.lv);
         setSideBar(info.characterId);
         setEquipButton(info.characterId, info.has_character);
-        setDesc(sbInfo.desc);
         
         lvLabel.text = "Lv. " + info.lv.ToString();
-        //Debug.Log(index);
         charName.text = sbInfo.name;
         setFriendlySlider(info.lv, sbInfo.lvup_exps, info.exp);
     }
@@ -128,10 +115,6 @@ public class CharacterViewControlller : MonoBehaviour {
         else {
             equipButton.SetActive(false);
         }
-    }
-
-    public void setDesc(string data) {
-        desc.text = data;
     }
 
     public void setFriendlySlider(int lv, int[] lvUp_exp, int exp) {
@@ -195,27 +178,12 @@ public class CharacterViewControlller : MonoBehaviour {
         equipButton.transform.Find("Box/Check").gameObject.SetActive(true);
     }
 
-    //해제되지 않은 캐릭터 처리
-    private void setLocked() {
-        
-    }
-
-    //캐릭터 해금하기
-    public void unlockChar() {
-        if(selectedChar == null) {
-            return;
-        }
-        garage_unlock_char act = ActionCreator.createAction(ActionTypes.CHAR_OPEN) as garage_unlock_char;
-        act.id = selectedChar.GetComponent<Info>().id;
-        gm.gameDispatcher.dispatch(act);
-    }
-
-    public void makeList() {
+    public void makeList(int equipedCharIndex = -1) {
         removeList();
         //내 캐릭터 리스트 생성
         character_inventory[] myChars = charInvenStore.my_characters;
         int repCharIndex = charInvenStore.representChar.character_inventory.id;
-        //character_inventory[] allChars = charInvenStore.all_characters;
+
         for (int i=0; i< myChars.Length; i++) {
             GameObject item = Instantiate(itemPref);
             item.transform.SetParent(itemGrid.transform);
@@ -230,6 +198,11 @@ public class CharacterViewControlller : MonoBehaviour {
             info.paid = myChars[i].paid;
             info.lv = myChars[i].lv;
             info.exp = myChars[i].exp;
+
+            //대표 캐릭터인 경우
+            if(info.characterId == equipedCharIndex) {
+                selectedChar = item;
+            }
 
             if (charInvenStore.all_characters.ContainsKey(info.characterId).Equals(true)) {
                 all_characters tmp = charInvenStore.all_characters[info.characterId];
@@ -292,6 +265,30 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void offPanel() {
         gameObject.SetActive(false);
+    }
+
+    public void onIllustPanel() {
+        IllustPanel.SetActive(true);
+    }
+
+    public void offIllustPanel() {
+        IllustPanel.SetActive(false);
+    }
+
+    public void onDescPanel() {
+        DescPanel.SetActive(true);
+
+        GameObject _desc = DescPanel.transform.Find("InnerBackground").gameObject;
+        UILabel header = _desc.transform.Find("Header").GetComponent<UILabel>();
+        UILabel desc = _desc.transform.Find("Desc").GetComponent<UILabel>();
+
+        sbInfo info = selectedChar.GetComponent<sbInfo>();
+        header.text = info.name;
+        desc.text = info.desc;
+    }
+
+    public void offDescPanel() {
+        DescPanel.SetActive(false);
     }
 
     [System.Serializable]
