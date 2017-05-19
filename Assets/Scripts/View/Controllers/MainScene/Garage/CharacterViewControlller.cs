@@ -20,6 +20,7 @@ public class CharacterViewControlller : MonoBehaviour {
         DescPanel;
 
     public GameObject equipButton;
+    public UILabel[] stats;
 
     public UIAtlas[] atlasArr;
 
@@ -281,9 +282,15 @@ public class CharacterViewControlller : MonoBehaviour {
         UILabel header = _desc.transform.Find("Header").GetComponent<UILabel>();
         UILabel desc = _desc.transform.Find("Desc").GetComponent<UILabel>();
 
-        sbInfo info = selectedChar.GetComponent<sbInfo>();
-        header.text = info.name;
-        desc.text = info.desc;
+        sbInfo sbInfo = selectedChar.GetComponent<sbInfo>();
+        header.text = sbInfo.name;
+        desc.text = sbInfo.desc;
+
+        Info info = selectedChar.GetComponent<Info>();
+        int imageIndex = info.characterId - 1;
+        UISprite sprite = _desc.transform.Find("Portrait").GetComponent<UISprite>();
+        sprite.atlas = atlasArr[imageIndex];
+        sprite.spriteName = info.characterId + "-" + info.lv;
     }
 
     public void offDescPanel() {
