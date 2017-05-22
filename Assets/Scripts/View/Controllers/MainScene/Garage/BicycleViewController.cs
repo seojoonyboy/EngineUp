@@ -137,6 +137,7 @@ public class BicycleViewController : MonoBehaviour {
     public void selected(GameObject obj) {
         Info info = obj.GetComponent<Info>();
         //판매모드인 경우
+        sellList.Clear();
         if (isSellMode) {
             if(obj.transform.Find("TypeTag").tag == "locked") {
                 return;
@@ -148,6 +149,7 @@ public class BicycleViewController : MonoBehaviour {
             if(tmp.activeSelf) {
                 obj.tag = "selected";
                 sellList.Add(info);
+                Debug.Log(info.id);
             }
             else {
                 obj.tag = "unselected";
@@ -464,7 +466,10 @@ public class BicycleViewController : MonoBehaviour {
 
     private void setSideBar() {
         GameObject sideSlot = sideBar.transform.Find("WheelSlot/Item").gameObject;
-        Info sideBarInfo = sideSlot.AddComponent<Info>();
+        Info sideBarInfo = sideSlot.GetComponent<Info>();
+        if(sideBarInfo == null) {
+            sideBarInfo = sideSlot.AddComponent<Info>();
+        }
         UISprite sideSprite;
         if (bicycleItemStore.equipedItemIndex[0] != null) {
             sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[0].item.id;
@@ -484,8 +489,12 @@ public class BicycleViewController : MonoBehaviour {
         }
 
         sideSlot = sideBar.transform.Find("FrameSlot/Item").gameObject;
-        sideBarInfo = sideSlot.AddComponent<Info>();
-        if(bicycleItemStore.equipedItemIndex[1] != null) {
+        sideBarInfo = sideSlot.GetComponent<Info>();
+        if (sideBarInfo == null) {
+            sideBarInfo = sideSlot.AddComponent<Info>();
+        }
+
+        if (bicycleItemStore.equipedItemIndex[1] != null) {
             sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[1].item.id;
             sideBarInfo.desc = bicycleItemStore.equipedItemIndex[1].item.desc;
             sideBarInfo.name = bicycleItemStore.equipedItemIndex[1].item.name;
@@ -503,8 +512,12 @@ public class BicycleViewController : MonoBehaviour {
         }
 
         sideSlot = sideBar.transform.Find("EngineSlot/Item").gameObject;
-        sideBarInfo = sideSlot.AddComponent<Info>();
-        if(bicycleItemStore.equipedItemIndex[2] != null) {
+        sideBarInfo = sideSlot.GetComponent<Info>();
+        if (sideBarInfo == null) {
+            sideBarInfo = sideSlot.AddComponent<Info>();
+        }
+
+        if (bicycleItemStore.equipedItemIndex[2] != null) {
             sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[2].item.id;
             sideBarInfo.desc = bicycleItemStore.equipedItemIndex[2].item.desc;
             sideBarInfo.name = bicycleItemStore.equipedItemIndex[2].item.name;
@@ -572,25 +585,10 @@ public class BicycleViewController : MonoBehaviour {
         garage_sell_act act = ActionCreator.createAction(ActionTypes.GARAGE_SELL) as garage_sell_act;
         int gears = 0;
         //단일 판매
-        Debug.Log(isSingleSellOrLock);
-        if (isSingleSellOrLock) {
-            Debug.Log("단일 판매");
-            Info info = selectedItem.GetComponent<Info>();
-            if (info.is_locked) {
-                //잠금이 되어 있어 팔지 못함 Modal 표시
-                return;
-            }
+        foreach (Info info in sellList) {
             act.id = info.id;
             gm.gameDispatcher.dispatch(act);
             gears += info.gear;
-        }
-        //다중 판매
-        else {
-            foreach (Info info in sellList) {
-                act.id = info.id;
-                gm.gameDispatcher.dispatch(act);
-                gears += info.gear;
-            }
         }
         isSingleSellOrLock = false;
         notifyModal.SetActive(true);

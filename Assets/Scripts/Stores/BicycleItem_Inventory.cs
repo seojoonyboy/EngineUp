@@ -71,7 +71,6 @@ public class BicycleItem_Inventory : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 message = "아이템을 성공적으로 불러왔습니다.";
-                Debug.Log(payload.response.data);
                 allItems = JsonHelper.getJsonArray<BicycleItem>(payload.response.data);
                 
                 init();
@@ -80,7 +79,6 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
-                Debug.Log(payload.response.data);
                 message = "아이템 목록을 불러오는 과정에서 문제가 발생하였습니다.";
                 _emitChange();
                 break;
@@ -110,30 +108,21 @@ public class BicycleItem_Inventory : AjwStore {
                 }
             }
         }
-        int filterIndex = PlayerPrefs.GetInt("Filter");
-
-        if(filterIndex == 1) {
-            wheelItems.Sort(new SortByName());
-            frameItems.Sort(new SortByName());
-            engineItems.Sort(new SortByName());
-        }
-        else if (filterIndex == 2) {
-            wheelItems.Sort(new SortByGrade());
-            frameItems.Sort(new SortByGrade());
-            engineItems.Sort(new SortByGrade());
-        }
+        itemSort act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_SORT) as itemSort;
+        dispatcher.dispatch(act);
     }
 
     //아이템 정렬
     private void itemSort(itemSort act) {
         int index = PlayerPrefs.GetInt("Filter");
-        switch(act._type) {
-            case global::itemSort.type.NAME:
+        //Debug.Log("Sorting index : " + index);
+        switch (index) {
+            case 1:
                 wheelItems.Sort(new SortByName());
                 frameItems.Sort(new SortByName());
                 engineItems.Sort(new SortByName());
                 break;
-            case global::itemSort.type.GRADE:
+            case 2:
                 wheelItems.Sort(new SortByGrade());
                 frameItems.Sort(new SortByGrade());
                 engineItems.Sort(new SortByGrade());
@@ -272,12 +261,26 @@ public class BicycleItem_Inventory : AjwStore {
     private class SortByGrade : IComparer, IComparer<BicycleItem> {
         public int Compare(BicycleItem x, BicycleItem y) {
             //throw new NotImplementedException();
-            return x.item.grade.CompareTo(y.item.grade);
+            int xGrade = x.item.grade;
+            int yGrade = y.item.grade;
+
+            if(xGrade == yGrade) {
+                return x.id.CompareTo(y.id);
+            }
+            else {
+                return xGrade.CompareTo(yGrade);
+            }
         }
 
         public int Compare(object x, object y) {
             //throw new NotImplementedException();
-            return Compare((BicycleItem)x, (BicycleItem)y);
+            BicycleItem _x = x as BicycleItem;
+            BicycleItem _y = y as BicycleItem;
+
+            if(_x.id == _y.id) {
+                return _x.id.CompareTo(_y.id);
+            }
+            return Compare(_x, _y);
         }
     }
 
