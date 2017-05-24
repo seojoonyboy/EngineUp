@@ -228,6 +228,31 @@ public class Riding : AjwStore{
         }
     }
 
+    void removeRecords(RidingRecordsRmv payload) {
+        switch (payload.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder
+                    .Append(networkManager.baseUrl)
+                    .Append("ridings/all");
+                networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                ridingDetails = RidingDetails.fromJSON(payload.response.data);
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                Debug.Log(payload.response.data);
+                _emitChange();
+                break;
+        }
+    }
+
     void _initRiding(){
         totalDist = 0;
         curSpeed = 0;
@@ -267,6 +292,9 @@ public class Riding : AjwStore{
             break;
         case ActionTypes.RIDING_DETAILS:
             getRidingHistoryDetails(action as GetRidingRecords);
+            break;
+        case ActionTypes.RIDING_RECORDS_REMOVE:
+            removeRecords(action as RidingRecordsRmv);
             break;
         }
         eventType = action.type;

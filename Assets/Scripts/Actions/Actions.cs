@@ -11,7 +11,7 @@ public enum ActionTypes {
     GPS_SEND,
     GARAGE_CHAR_INIT, GARAGE_ITEM_INIT, GARAGE_ITEM_EQUIP, GARAGE_ITEM_UNEQUIP, GARAGE_LOCK, GARAGE_SELL, GARAGE_ITEM_SORT, 
     BOX_OPEN, CHAR_OPEN,
-    MYINFO, GET_RIDING_RECORDS, RIDING_DETAILS,
+    MYINFO, GET_RIDING_RECORDS, RIDING_DETAILS, RIDING_RECORDS_REMOVE,
     EDIT_PROFILE,
     COUNTRIES, USER_BICYCLETYPES
 }
@@ -150,6 +150,9 @@ public static class ActionCreator{
         case ActionTypes.GET_RIDING_RECORDS:
             _return = new GetRidingRecords();
             break;
+        case ActionTypes.RIDING_RECORDS_REMOVE:
+            _return = new RidingRecordsRmv();
+            break;
         case ActionTypes.RIDING_DETAILS:
             _return = new GetRidingRecords();
             break;
@@ -231,6 +234,8 @@ public class GetRidingRecords : NetworkAction {
     //상세보기에서 필요
     public int id;
 }
+
+public class RidingRecordsRmv : NetworkAction { }
 
 public class CommunityInitAction : NetworkAction {
 }

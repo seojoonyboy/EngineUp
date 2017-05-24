@@ -10,6 +10,7 @@ public class MainSceneManager : fbl_SceneManager {
     public CharacterViewControlller charViewCtrler;
     public BicycleViewController bicycleViewCtrler;
     public HistoryViewController historyViewCtrler;
+    public OptionController optionCtrler;
 
     private GameManager gm;
     public GameObject modal;
@@ -57,6 +58,8 @@ public class MainSceneManager : fbl_SceneManager {
         gm.userStore.addListener(bicycleViewCtrler.onUserStoreListener);
 
         gm.ridingStore.addListener(historyViewCtrler.ridingStoreListener);
+
+        gm.ridingStore.addListener(optionCtrler.onRidingListener);
     }
 
     public void offModal() {
