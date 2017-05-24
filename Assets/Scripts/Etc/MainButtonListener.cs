@@ -24,6 +24,7 @@ public class MainButtonListener : MonoBehaviour {
         addMainBtnEvent(4, MAIN_BUTTON.MYINFO);
         addMainBtnEvent(5, MAIN_BUTTON.BOX);
         addMainBtnEvent(6, MAIN_BUTTON.SHOP);
+        addMainBtnEvent(7, MAIN_BUTTON.OPTION);
     }
 
     private void addMainBtnEvent(int index,MAIN_BUTTON type) {
