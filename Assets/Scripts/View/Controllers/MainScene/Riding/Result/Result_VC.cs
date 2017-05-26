@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class Result_VC : MonoBehaviour {
     public UILabel
@@ -9,12 +10,17 @@ public class Result_VC : MonoBehaviour {
         totalTime,
         avgSpeed,
         maxSpeed,
-        uphillDistanceLabel,
-        boxLabel;
+        uphillDistanceLabel;
+
+    public Text boxText;
 
     public Riding ridingStore;
-    public GameObject map;
+    public GameObject 
+        map,
+        mapHeader;
     OnlineMapsDrawingLine line;
+
+    public Collider[] colliders;
 
     private GameManager gm;
     void Awake() {
@@ -23,18 +29,22 @@ public class Result_VC : MonoBehaviour {
 
     void OnEnable() {
         map.SetActive(true);
+        mapHeader.SetActive(true);
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
 
         _drawLine();
+
+        foreach(Collider coll in colliders) {
+            coll.enabled = false;
+        }
     }
 
     void zooming() {
         if(line == null) {
             return;
         }
-        Debug.Log("Zooming");
         int level = OnlineMaps.instance.zoom;
-        Debug.Log("zoom Level : " + level);
+        //Debug.Log("zoom Level : " + level);
         if(level > 10) {
             line.weight = 1.0f;
         }
@@ -54,6 +64,12 @@ public class Result_VC : MonoBehaviour {
         uphillDistanceLabel.text = "0";
         totalTime.text = null;
         gameObject.SetActive(false);
+        mapHeader.SetActive(false);
+
+        foreach (Collider coll in colliders) {
+            coll.enabled = true;
+        }
+
     }
 
     public void onRidingListener() {
@@ -83,7 +99,7 @@ public class Result_VC : MonoBehaviour {
         maxSpeed.text = (Math.Round(mMaxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
         uphillDistanceLabel.text = (Math.Round(uphillDist, 2, MidpointRounding.AwayFromZero)).ToString();
 
-        boxLabel.text = "상자 " + boxNum + "개를 획득하셨습니다.";
+        boxText.text = "상자 " + boxNum + "개를 획득하셨습니다.";
     }
 
     public void offResultPanel() {

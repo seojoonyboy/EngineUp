@@ -55,6 +55,7 @@ public class HistoryViewController : MonoBehaviour {
 
         if(ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
             if(ridingStore.storeStatus == storeStatus.NORMAL) {
+                subController.mapHeader.SetActive(true);
                 subController.setInfo(ridingStore.ridingDetails);
                 subController.setMap(ridingStore.ridingDetails);
                 subController.setDate(ridingStore.ridingDetails.createDate);

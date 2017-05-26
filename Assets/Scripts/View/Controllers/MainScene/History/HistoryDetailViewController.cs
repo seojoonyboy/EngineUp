@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class HistoryDetailViewController : MonoBehaviour {
     public BoxCollider[] collider;
@@ -12,16 +13,15 @@ public class HistoryDetailViewController : MonoBehaviour {
     private Riding ridingStore;
     private Vector3 preMapPos;
 
+    public GameObject mapHeader;
     public UILabel
         dist,
         avgSpeed,
         uphill,
         time,
         maxSpeed,
-        boxNum,
-        nickName,
-        date;
-
+        boxNum;
+    public Text nickName, date;
     OnlineMapsDrawingLine _line;
 
     void Awake() {
@@ -44,6 +44,7 @@ public class HistoryDetailViewController : MonoBehaviour {
         foreach(Collider col in collider) {
             col.enabled = true;
         }
+        mapHeader.SetActive(false);
     }
 
     public void setMap(RidingDetails data) {
