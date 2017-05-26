@@ -14,47 +14,38 @@ public class Result_VC : MonoBehaviour {
 
     public Riding ridingStore;
     public GameObject map;
+    OnlineMapsDrawingLine line;
 
     private GameManager gm;
-    OnlineMapsDrawingLine _line;
     void Awake() {
         gm = GameManager.Instance;
     }
 
     void OnEnable() {
         map.SetActive(true);
-        List<Vector2> line = new List<Vector2>
-        {
-            //Geographic coordinates
-            new Vector2(3, 3),
-            new Vector2(5, 3),
-            new Vector2(4, 4),
-            new Vector2(9.3f, 6.5f)
-        };
-        _line = new OnlineMapsDrawingLine(line, Color.green, 1f);
-        OnlineMaps.instance.AddDrawingElement(_line);
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
 
-        StartCoroutine("drawLine");
+        _drawLine();
     }
 
     void zooming() {
+        if(line == null) {
+            return;
+        }
         Debug.Log("Zooming");
         int level = OnlineMaps.instance.zoom;
         Debug.Log("zoom Level : " + level);
         if(level > 10) {
-            _line.weight = 1.0f;
+            line.weight = 1.0f;
         }
         if(level < 5) {
-            _line.weight = 3.0f;
+            line.weight = 3.0f;
         }
     }
 
     void OnDisable() {
         map.GetComponent<OnlineMaps>().RemoveAllDrawingElements();
         map.SetActive(false);
-        //임시로 직접 접근 (수정 필요)
-        Debug.Log("filteredCoordsLists 비우기");
         ridingStore.filteredCoordsLists.Clear();
 
         totalDist.text = "0";
@@ -99,12 +90,7 @@ public class Result_VC : MonoBehaviour {
         OnDisable();
     }
 
-    IEnumerator drawLine() {
-        //딜레이를 주지 않으면 Map을 찾지 못하는 현상이 일어남.....ㅜㅜ
-        yield return new WaitForSeconds(1.0f);
-        //Vector2 tmp = new Vector2(127.7446f, 37.8704f);
-        //OnlineMaps.instance.AddMarker(tmp);
-        //Debug.Log("Count : " + ridingStore.filteredCoordsLists.Count);
+    void _drawLine() {
         foreach (filteredCoords[] data in ridingStore.filteredCoordsLists) {
             List<Vector2> list = new List<Vector2>();
             for (int i = 0; i < data.Length; i++) {
@@ -112,18 +98,23 @@ public class Result_VC : MonoBehaviour {
                 float lat = data[i].latitude;
                 float lon = data[i].longitude;
                 Vector2 val = new Vector2(lat, lon);
-                //OnlineMaps.instance.AddMarker(val);
                 list.Add(val);
-                //Debug.Log("X : " + val.x + ", Y : " + val.y);
-                }
-            OnlineMaps.instance.AddDrawingElement(new OnlineMapsDrawingLine(list, Color.red, 2.0f));
-            //OnlineMaps.instance.on
+            }
+            line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
+            OnlineMaps.instance.AddDrawingElement(line);
         }
+        List<Vector2> tmp = new List<Vector2> {
+            new Vector2(3, 3),
+            new Vector2(5, 3)
+        };
+        OnlineMapsDrawingLine _tmp = new OnlineMapsDrawingLine(tmp, Color.gray, 3.0f);
+        OnlineMaps.instance.AddDrawingElement(_tmp);
+
         //지도 위치 수정
-        if(ridingStore.filteredCoordsLists.Count != 0) {
+        if (ridingStore.filteredCoordsLists.Count != 0) {
             filteredCoords[] lastData = (filteredCoords[])ridingStore.filteredCoordsLists[ridingStore.filteredCoordsLists.Count - 1];
             Debug.Log(lastData.Length);
-            if(lastData.Length != 0) {
+            if (lastData.Length != 0) {
                 float lastLat = lastData[0].latitude;
                 float lastLon = lastData[0].longitude;
                 Vector2 lastVal = new Vector2(lastLat, lastLon);
@@ -135,15 +126,5 @@ public class Result_VC : MonoBehaviour {
             OnlineMaps.instance.position = new Vector2(127.74437f, 37.87998f);
             OnlineMaps.instance.zoom = 18;
         }
-    }
-
-    void test() {
-        List<Vector2> list = new List<Vector2> {
-            new Vector2(3, 3),
-            new Vector2(5, 3),
-            new Vector2(4, 4),
-            new Vector2(9.3f, 6.5f)
-        };
-        //map.GetComponent<OnlineMaps>().AddDrawingElement(new OnlineMapsDrawingLine(list, Color.red, 3f));
     }
 }
