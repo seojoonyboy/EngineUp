@@ -90,7 +90,7 @@ public class HistoryViewController : MonoBehaviour {
                     anchor.container = containerFirstTarget;
                     anchor.runOnlyOnce = true;
                     anchor.side = UIAnchor.Side.Bottom;
-                    anchor.pixelOffset = new Vector2(0, -250.0f);
+                    anchor.pixelOffset = new Vector2(0, -245.0f);
                 }
                 
                 else {
