@@ -23,12 +23,15 @@ public class Result_VC : MonoBehaviour {
     public Collider[] colliders;
 
     private GameManager gm;
+    private Vector3 preMapScale;
     void Awake() {
         gm = GameManager.Instance;
     }
 
     void OnEnable() {
         map.SetActive(true);
+        preMapScale = map.transform.localScale;
+        map.transform.localScale = new Vector3(1.13f, 1.0f, 1.13f);
         mapHeader.SetActive(true);
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
 
@@ -56,6 +59,7 @@ public class Result_VC : MonoBehaviour {
     void OnDisable() {
         map.GetComponent<OnlineMaps>().RemoveAllDrawingElements();
         map.SetActive(false);
+        map.transform.localScale = preMapScale;
         ridingStore.filteredCoordsLists.Clear();
 
         totalDist.text = "0";

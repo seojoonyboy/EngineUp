@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class HistoryDetailViewController : MonoBehaviour {
     public BoxCollider[] collider;
     public GameObject map;
-    private Vector2 preMapScale;
+    private Vector3 preMapScale;
     public int id;
     private GameManager gm;
     private Riding ridingStore;
@@ -50,9 +50,10 @@ public class HistoryDetailViewController : MonoBehaviour {
     public void setMap(RidingDetails data) {
         map.SetActive(true);
         OnlineMaps _map = map.GetComponent<OnlineMaps>();
-        map.transform.localScale = new Vector3(1.31f, 1.0f, 1.31f);
+        preMapScale = map.transform.localScale;
+        map.transform.localScale = new Vector3(1.45f, 1.0f, 1.45f);
         preMapPos = map.transform.localPosition;
-        map.transform.localPosition = new Vector3(-1953f, 380f, -1127f);
+        map.transform.localPosition = new Vector3(-1953f, 380f, -1178f);
         innerRidingDetails[] coords = data.coords;
         if(coords.Length == 0) {
             _map.position = new Vector2(127.74437f, 37.87998f);
