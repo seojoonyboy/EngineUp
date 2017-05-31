@@ -17,8 +17,10 @@ public class TutotrialManager : MonoBehaviour {
         myCharacter,
         talkContainer,
         container,
-        background;
+        background,
+        fading;
     public Riding_VC ridingController;
+    public MyHomeViewController myhomeController;
     Tutorial[] text;
     int count = 0;
     bool 
@@ -38,125 +40,181 @@ public class TutotrialManager : MonoBehaviour {
     void setFirstState() {
         header.text = text[count].id.ToString();
         context.text = text[count].context;
-        addEffect(count);
     }
 
-    public void nextPage() {
+    public void panelClicked() {
+        Debug.Log("Count : " + count);
         if (count > text.Length - 1) { return; }
         if (!isFirstClick) {
             isFirstClick = true;
             typingEffect.Finish();
             return;
         }
+        effectInit();
+        switch (count) {
+            case 0:
+            case 1:
+                nextPage();
+                break;
+            case 2:
+                PARTNER.SetActive(true);
+                nextPage();
+                break;
+            case 3:
+            case 4:
+            case 5:
+                nextPage();
+                break;
+            case 6:
+                nextPage();
+                shakeEffect();
+                break;
+            case 7:
+                nextPage();
+                NPC.SetActive(true);
+                break;
+            case 8:
+            case 9:
+                nextPage();
+                break;
+            case 10:
+                onEffect(count);
+                break;
+            case 11:
+                onEffect(count);
+                break;
+            case 12:
+                nextPage();
+                break;
+            case 13:
+                onEffect(count);
+                break;
+            case 14:
+                nextPage();
+                break;
+            case 15:
+                ridingResume();
+                onEffect(count);
+                break;
+            case 16:
+            case 17:
+            case 18:
+                onEffect(count);
+                break;
+            case 19:
+            case 20:
+                nextPage();
+                break;
+            case 21:
+                onEffect(count);
+                break;
+            case 22:
+            case 23:
+                nextPage();
+                break;
+            case 24:
+                onEffect(count);
+                break;
+            case 25:
+            case 26:
+            case 27:
+            case 28:
+                nextPage();
+                break;
+            case 29:
+                onEffect(count);
+                break;
+            case 30:
+            case 31:
+                nextPage();
+                break;
+            case 32:
+                onEffect(count);
+                break;
+            case 33:
+            case 34:
+                nextPage();
+                break;
+            case 35:
+                onEffect(count);
+                break;
+        }
+    }
 
+    public void nextPage() {
+        Debug.Log("다음 페이지로");
+        talkContainer.SetActive(true);
+        count++;
         header.text = text[count].id.ToString();
         context.text = text[count].context;
 
         typingEffect.ResetToBeginning();
-
-        addEffect(count);
+        isFirstClick = false;
     }
 
     void typingFinished() {
         isFirstClick = true;
     }
 
-    void addEffect(int index) {
-        Debug.Log("Count : " + count);
-        effectInit();
-        canNextPage = true;
-        switch (index) {
-            case 1:
-                PARTNER.SetActive(true);
-                break;
-            case 2:
-                myCharacter.SetActive(true);
-                break;
-            case 3:
-                PARTNER.SetActive(true);
-                break;
-            case 4:
-                myCharacter.SetActive(true);
-                break;
-            case 7:
-                shakeEffect();
-                effects[0].SetActive(true);
-                break;
-            case 8:
-                NPC.SetActive(true);
-                effects[0].SetActive(false);
+    void onEffect(int index) {
+        talkContainer.SetActive(false);
+        switch(index) {
+            case 10:
+                StartCoroutine(activateButton(0));
                 break;
             case 11:
-                canNextPage = false;
-
-                talkContainer.SetActive(false);
-                if(isFirstDeactTalkBalloon) {
-                    StartCoroutine(activateButton(0));
-                    isFirstDeactTalkBalloon = false;
-                }
-                else {
-                    count++;
-                    StartCoroutine(activateButton(1));
-                    buttons[1].SetActive(false);
-                }
+                StartCoroutine(activateButton(1));
                 break;
-            case 12:
-                isFirstDeactTalkBalloon = true;
-                buttons[1].SetActive(false);
-
-                talkContainer.SetActive(true);
-                typingEffect.ResetToBeginning();
-
-                header.text = text[count].id.ToString();
-                context.text = text[count].context;
-                break;
-            case 14:
-                gameObject.SetActive(false);
-
-                //라이딩 시작
+            case 13:
+                background.SetActive(false);
                 clonedPanels[0].SetActive(false);
                 ridingController.onRidingStartButton(true);
                 break;
-            case 16:
-                ridingResume();
+            case 15:
                 StartCoroutine(activateButton(2));
-                canNextPage = false;
-                talkContainer.SetActive(false);
+                break;
+            case 16:
+                StartCoroutine(activateButton(4));
+                break;
+            case 17:
+                StartCoroutine(activateButton(5));
                 break;
             case 18:
-                StartCoroutine(activateButton(4));
-                canNextPage = false;
-                talkContainer.SetActive(false);
+                StartCoroutine(activateButton(6));
+                break;
+            case 21:
+                StartCoroutine(activateButton(7));
+                break;
+            case 24:
+                StartCoroutine(activateButton(8));
+                break;
+            case 29:
+            case 32:
+                fading.SetActive(true);
+                fading.GetComponent<Animator>().Play("FadeInOut");
+                Invoke("nextPage", 2.0f);
+                Invoke("offFading", 2.0f);
+                break;
+            case 35:
+                fading.SetActive(true);
+                fading.GetComponent<Animator>().Play("FadeOut");
+                Invoke("offFading", 2.0f);
+                Invoke("tutorialEnd", 2.0f);
                 break;
         }
-
-        if(canNextPage) {
-            count++;
-        }
     }
 
-    public void onTalkBalloon() {
-        talkContainer.SetActive(true);
-        typingEffect.ResetToBeginning();
-    }
-
-    public void countIncrease() {
-        count++;
-    }
-
-    void boolInit() {
-        canNextPage = true;
+    void offFading() {
+        fading.SetActive(false);
     }
 
     void effectInit() {
         NPC.SetActive(false);
         PARTNER.SetActive(false);
         myCharacter.SetActive(false);
-        isFirstClick = false;
     }
 
     void shakeEffect() {
-        Debug.Log("Shaking");
         container.GetComponent<Animator>().Play("Shaking");
     }
 
@@ -169,6 +227,11 @@ public class TutotrialManager : MonoBehaviour {
     public void onClonedPanel(GameObject obj) {
         int index = obj.GetComponent<ButtonIndex>().index;
         clonedPanels[index].SetActive(true);
+        switch(index) {
+            case 0:
+                buttons[1].SetActive(false);
+                break;
+        }
     }
 
     //실제 Panel 활성화
@@ -187,13 +250,17 @@ public class TutotrialManager : MonoBehaviour {
         buttons[index].SetActive(false);
     }
 
+    public void onMyhome() {
+        background.SetActive(false);
+        myhomeController.gameObject.SetActive(true);
+
+        object[] parms = new object[2] { background, true };
+        StartCoroutine(fadeIn(parms));
+    }
+
     public void ridingPaused() {
-        gameObject.SetActive(true);
-
-        typingEffect.ResetToBeginning();
-
-        header.text = text[count].id.ToString();
-        context.text = text[count].context;
+        background.SetActive(true);
+        nextPage();
     }
 
     public void ridingResume() {
@@ -207,24 +274,22 @@ public class TutotrialManager : MonoBehaviour {
         buttons[2].SetActive(false);
     }
 
-    //모달 내, 라이딩 최종 종료버튼 클릭시
-    public void ridingEnd() {
-        talkContainer.SetActive(true);
-
-        typingEffect.ResetToBeginning();
-
-        header.text = text[count].id.ToString();
-        context.text = text[count].context;
-
-        buttons[3].SetActive(false);
-
-        count++;
-        addEffect(count);
-    }
-
     //라이딩 결과화면 종료
     public void resultExit() {
-        buttons[4].SetActive(false);
+        background.SetActive(false);
+        object[] parms = new object[2] { background, true };
+        StartCoroutine(fadeIn(parms));
+    }
+
+    //서재로 가기 버튼 클릭
+    public void onLibrary() {
+        buttons[6].SetActive(false);
+        nextPage();
+    }
+
+    //서재에서 메인화면으로 가기 버튼 클릭
+    public void offLibrary() {
+        buttons[7].SetActive(false);
 
         background.SetActive(false);
         object[] parms = new object[2] { background, true };
@@ -254,17 +319,17 @@ public class TutotrialManager : MonoBehaviour {
         }
 
         if(needTalkBalloon) {
-            talkContainer.SetActive(true);
-            header.text = text[17].id.ToString();
-            context.text = text[17].context;
-
-            typingEffect.ResetToBeginning();
+            nextPage();
         }
         target.SetActive(true);
     }
 
     public void resetCount() {
         count = 0;
+    }
+
+    void tutorialEnd() {
+        gameObject.SetActive(false);
     }
 }
 
