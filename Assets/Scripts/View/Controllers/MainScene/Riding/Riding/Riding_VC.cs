@@ -7,6 +7,7 @@ using System.Collections;
 
 public class Riding_VC : MonoBehaviour {
     public MainBtnController mainBtnCtrler;
+    public TutotrialManager tutManager;
     public GameObject 
         gpsPref,
         pauseModal,
@@ -59,7 +60,7 @@ public class Riding_VC : MonoBehaviour {
         beforeStartModal_AnimContainer.SetActive(false);
         StartPanel.SetActive(true);
 
-        mainBtnCtrler.offToggleGroup();
+        //mainBtnCtrler.offToggleGroup();
     }
 
     //라이딩 시작 취소 버튼 클릭시
@@ -68,11 +69,25 @@ public class Riding_VC : MonoBehaviour {
     }
 
     //라이딩 시작 버튼 클릭시
-    public void onRidingStartButton() {
+    public void onRidingStartButton(bool isTutorial = false) {
         offBeforeStartModal();
         beforeStartModal_AnimContainer.SetActive(true);
         //초기 위칫값을 지정한다. (받은 값들의 평균)
         gpsReceiver = Instantiate(gpsPref);
+        if(isTutorial) {
+            StartCoroutine(freeze(5.0f));
+        }
+    }
+
+    IEnumerator freeze(float interval) {
+        float val = interval;
+        while(val >= 0.0f) {
+            val -= 1.0f;
+            yield return new WaitForSeconds(1.0f);
+        }
+        pauseButtonPressed();
+        tutManager.ridingPaused();
+        Debug.Log("Freezing");
     }
 
     //라이딩 종료 버튼 눌렀을 때
@@ -114,7 +129,7 @@ public class Riding_VC : MonoBehaviour {
 
     //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
     public void ridingEnd() {
-        offToggleGroup();
+        //offToggleGroup();
         gameObject.SetActive(false);
         exitModal.SetActive(false);
 
@@ -128,7 +143,7 @@ public class Riding_VC : MonoBehaviour {
 
     //종료 모달에서 취소 버튼을 눌렀을 때
     public void onCancelExitButton() {
-        offToggleGroup();
+        //offToggleGroup();
         Time.timeScale = 1;
         exitModal.SetActive(false);
     }
@@ -150,11 +165,12 @@ public class Riding_VC : MonoBehaviour {
         //gpsReceiver = Instantiate(gpsPref);
     }
 
-    public void pauseButtonPressed() {
+    public void pauseButtonPressed(bool isTutorial = false) {
         //이미 일시정지 버튼을 누른 상태인 경우
         if (isPausePressed) {
             isPausePressed = false;
             Time.timeScale = 1;
+            Debug.Log("RESUME");
         }
         else {
             GetGPSDataAction stopAct = (GetGPSDataAction)ActionCreator.createAction(ActionTypes.GET_GPS_DATA);
@@ -165,8 +181,11 @@ public class Riding_VC : MonoBehaviour {
             gameManager.gameDispatcher.dispatch(stopAct);
             isPausePressed = true;
             Time.timeScale = 0;
+            Debug.Log("PAUSED");
         }
-        pauseModal.SetActive(isPausePressed);
+        if(!isTutorial) {
+            pauseModal.SetActive(isPausePressed);
+        }
     }
 
     public void onRidingListener() {
