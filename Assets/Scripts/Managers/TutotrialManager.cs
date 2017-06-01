@@ -191,15 +191,12 @@ public class TutotrialManager : MonoBehaviour {
             case 29:
             case 32:
                 fading.SetActive(true);
-                fading.GetComponent<Animator>().Play("FadeInOut");
-                Invoke("nextPage", 2.0f);
-                Invoke("offFading", 2.0f);
+                StartCoroutine(FadeInOut(true));
                 break;
             case 35:
                 fading.SetActive(true);
-                fading.GetComponent<Animator>().Play("FadeOut");
-                Invoke("offFading", 2.0f);
-                Invoke("tutorialEnd", 2.0f);
+                StartCoroutine(FadeOut(false));
+                Invoke("tutorialEnd", 3.0f);
                 break;
         }
     }
@@ -253,9 +250,8 @@ public class TutotrialManager : MonoBehaviour {
     public void onMyhome() {
         background.SetActive(false);
         myhomeController.gameObject.SetActive(true);
-
-        object[] parms = new object[2] { background, true };
-        StartCoroutine(fadeIn(parms));
+        Invoke("onBackground", 2.0f);
+        Invoke("nextPageWithInterval", 2.5f);
     }
 
     public void ridingPaused() {
@@ -277,8 +273,8 @@ public class TutotrialManager : MonoBehaviour {
     //라이딩 결과화면 종료
     public void resultExit() {
         background.SetActive(false);
-        object[] parms = new object[2] { background, true };
-        StartCoroutine(fadeIn(parms));
+        StartCoroutine(FadeInOut(true));
+        Invoke("onBackground", 2.0f);
     }
 
     //서재로 가기 버튼 클릭
@@ -290,38 +286,8 @@ public class TutotrialManager : MonoBehaviour {
     //서재에서 메인화면으로 가기 버튼 클릭
     public void offLibrary() {
         buttons[7].SetActive(false);
-
-        background.SetActive(false);
-        object[] parms = new object[2] { background, true };
-        StartCoroutine(fadeIn(parms));
-    }
-
-    IEnumerator fadeOut(object[] parms) {
-        bool autoFadeIn = (bool)parms[0];
-        GameObject target = (GameObject)parms[1];
-
-        float interval = 2.0f;
-        while(interval >= 0.0f) {
-            yield return new WaitForSeconds(1.0f);
-            interval -= 1;
-        }
-        target.SetActive(false);
-    }
-
-    IEnumerator fadeIn(object[] parms) {
-        GameObject target = (GameObject)parms[0];
-        bool needTalkBalloon = (bool)parms[1];
-        
-        float interval = 2.0f;
-        while (interval >= 0.0f) {
-            yield return new WaitForSeconds(1.0f);
-            interval -= 1;
-        }
-
-        if(needTalkBalloon) {
-            nextPage();
-        }
-        target.SetActive(true);
+        StartCoroutine(FadeInOut(true));
+        Invoke("onBackground", 2.0f);
     }
 
     public void resetCount() {
@@ -331,6 +297,49 @@ public class TutotrialManager : MonoBehaviour {
     void tutorialEnd() {
         gameObject.SetActive(false);
         PlayerPrefs.SetInt("isFirstPlay", 1);
+    }
+
+    IEnumerator FadeOut(bool needNextPange = false) {
+        fading.GetComponent<UISprite>().alpha = 0;
+        TweenAlpha.Begin(fading, 2.0f, 1.0f);
+        yield return new WaitForSeconds(2.0f);
+        fading.SetActive(false);
+
+        if (needNextPange) {
+            nextPage();
+        }
+    }
+
+    IEnumerator FadeIn(bool needNextPange = false) {
+        fading.GetComponent<UISprite>().alpha = 1;
+        TweenAlpha.Begin(fading, 2.0f, 0.0f);
+        yield return new WaitForSeconds(2.0f);
+        fading.SetActive(false);
+
+        if (needNextPange) {
+            nextPage();
+        }
+    }
+
+    IEnumerator FadeInOut(bool needNextPange = false) {
+        fading.GetComponent<UISprite>().alpha = 0;
+        TweenAlpha.Begin(fading, 2.0f, 1.0f);
+        yield return new WaitForSeconds(2.0f);
+        TweenAlpha.Begin(fading, 2.0f, 0.0f);
+        yield return new WaitForSeconds(2.0f);
+        fading.SetActive(false);
+
+        if (needNextPange) {
+            nextPage();
+        }
+    }
+
+    void onBackground() {
+        background.SetActive(true);
+    }
+
+    void nextPageWithInterval() {
+        nextPage();
     }
 }
 
