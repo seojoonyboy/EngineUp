@@ -330,6 +330,7 @@ public class TutotrialManager : MonoBehaviour {
 
     void tutorialEnd() {
         gameObject.SetActive(false);
+        PlayerPrefs.SetInt("isFirstPlay", 1);
     }
 }
 

@@ -9,7 +9,9 @@ public class MainViewController : MonoBehaviour {
     private BicycleItem_Inventory bi;
     public UIAtlas[] atlasArr;
     public UIAtlas bicycleAtlas;
-    public GameObject bicycle;
+    public GameObject 
+        bicycle,
+        tutorial;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -24,6 +26,12 @@ public class MainViewController : MonoBehaviour {
         getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
         act._type = equip_act.type.ITEM;
         gm.gameDispatcher.dispatch(act);
+
+        //튜토리얼 진행 여부 확인
+        int isFirstPlay = PlayerPrefs.GetInt("isFirstPlay");
+        if(isFirstPlay != 1) {
+            tutorial.SetActive(true);
+        }
     }
 
     public void onUserListener() {
