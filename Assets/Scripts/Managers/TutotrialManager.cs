@@ -8,9 +8,7 @@ public class TutotrialManager : MonoBehaviour {
         buttons,
         clonedPanels,
         realPanels;
-    public UILabel
-        header, 
-        context;
+    public UILabel context;
     public GameObject
         PARTNER,
         NPC,
@@ -38,7 +36,6 @@ public class TutotrialManager : MonoBehaviour {
     }
 
     void setFirstState() {
-        header.text = text[count].id.ToString();
         context.text = text[count].context;
     }
 
@@ -145,7 +142,6 @@ public class TutotrialManager : MonoBehaviour {
         Debug.Log("다음 페이지로");
         talkContainer.SetActive(true);
         count++;
-        header.text = text[count].id.ToString();
         context.text = text[count].context;
 
         typingEffect.ResetToBeginning();
