@@ -89,11 +89,11 @@ public class HistoryDetailViewController : MonoBehaviour {
     }
 
     public void setInfo(RidingDetails data) {
-        dist.text = (Math.Round(data.distance, 2, MidpointRounding.AwayFromZero)) + " KM";
-        avgSpeed.text = (Math.Round(data.avgSpeed, 2, MidpointRounding.AwayFromZero)) + " KM/h";
-        uphill.text = (Math.Round(data.uphillDistance, 2, MidpointRounding.AwayFromZero)) + " M";
+        dist.text = (Math.Round(data.distance, 2, MidpointRounding.AwayFromZero)).ToString();
+        avgSpeed.text = (Math.Round(data.avgSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
+        uphill.text = (Math.Round(data.uphillDistance, 2, MidpointRounding.AwayFromZero)).ToString();
         time.text = data.runningTime.Split('.')[0];
-        maxSpeed.text = (Math.Round(data.maxSpeed, 2, MidpointRounding.AwayFromZero)) + " KM/h";
+        maxSpeed.text = (Math.Round(data.maxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
         boxNum.text = data.get_boxes.ToString();
     }
 
