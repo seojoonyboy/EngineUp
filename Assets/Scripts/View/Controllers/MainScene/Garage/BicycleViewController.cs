@@ -137,7 +137,6 @@ public class BicycleViewController : MonoBehaviour {
     public void selected(GameObject obj) {
         Info info = obj.GetComponent<Info>();
         //판매모드인 경우
-        sellList.Clear();
         if (isSellMode) {
             if(obj.transform.Find("TypeTag").tag == "locked") {
                 return;
@@ -583,14 +582,23 @@ public class BicycleViewController : MonoBehaviour {
         garage_sell_act act = ActionCreator.createAction(ActionTypes.GARAGE_SELL) as garage_sell_act;
         int gears = 0;
         //단일 판매
-        foreach (Info info in sellList) {
+        if(sellList.Count == 0) {
+            Info info = selectedItem.GetComponent<Info>();
             act.id = info.id;
+            gears = info.gear;
             gm.gameDispatcher.dispatch(act);
-            gears += info.gear;
+        }
+        else {
+            foreach (Info info in sellList) {
+                act.id = info.id;
+                gm.gameDispatcher.dispatch(act);
+                gears += info.gear;
+            }
         }
         isSingleSellOrLock = false;
         notifyModal.SetActive(true);
         notifyModal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "총 " + gears + "개의 기어를 획득하였습니다.";
+        sellList.Clear();
     }
 
     public void offSellingModal() {
