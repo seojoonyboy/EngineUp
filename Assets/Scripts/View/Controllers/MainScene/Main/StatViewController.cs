@@ -25,7 +25,8 @@ public class StatViewController : MonoBehaviour {
     public GameObject 
         districtPref,
         bicyclePref,
-        callenderPref;
+        callenderPref,
+        inputObj;
 
     public UIGrid 
         districtGrid,
@@ -34,7 +35,7 @@ public class StatViewController : MonoBehaviour {
     public GameObject[] editModals;
 
     public Transform canvas;
-    
+    bool isSelWHNow = false;
     void Awake() {
         gm = GameManager.Instance;
     }
@@ -42,6 +43,15 @@ public class StatViewController : MonoBehaviour {
     void OnEnable() {
         MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
         gm.gameDispatcher.dispatch(act);
+    }
+
+    void Update() {
+        if(Input.GetKeyDown(KeyCode.Escape)) {
+            if(isSelWHNow) {
+                onSubmit(inputObj);
+                Debug.Log("모바일 뒤로가기 버튼 클릭");
+            }
+        }
     }
 
     public void onUserListener() {
@@ -199,22 +209,23 @@ public class StatViewController : MonoBehaviour {
     public void WHInput(GameObject obj) {
         int index = obj.GetComponent<ButtonIndex>().index;
 
-        GameObject targetObj = obj.transform.parent.Find("Input").gameObject;
-        targetObj.SetActive(true);
-        UIInput input = targetObj.GetComponent<UIInput>();
+        inputObj.SetActive(true);
+        isSelWHNow = true;
+
+        UIInput input = inputObj.GetComponent<UIInput>();
         input.isSelected = true;
-        UILabel unit = targetObj.transform.Find("Label/Unit").GetComponent<UILabel>();
+        UILabel unit = inputObj.transform.Find("Label/Unit").GetComponent<UILabel>();
         switch (index) {
             //몸무게 입력
             case 0:
                 unit.text = "Kg";
-                targetObj.GetComponent<InputIndex>().type = "weight";
+                inputObj.GetComponent<InputIndex>().type = "weight";
                 input.value = userStore.myData.weight;
                 break;
             //키 입력
             case 1:
                 unit.text = "Cm";
-                targetObj.GetComponent<InputIndex>().type = "height";
+                inputObj.GetComponent<InputIndex>().type = "height";
                 input.value = userStore.myData.height;
                 break;
         }
@@ -314,6 +325,7 @@ public class StatViewController : MonoBehaviour {
 
     public void offInput(GameObject obj) {
         obj.SetActive(true);
+        isSelWHNow = false;
     }
 
     public void calenderSelEnd(string result) {
