@@ -232,14 +232,18 @@ public class BicycleItem_Inventory : AjwStore {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
-                strBuilder.Remove(0, strBuilder.Length);
-                strBuilder.Append(networkManager.baseUrl)
-                    .Append("inventory/items/")
-                    .Append(payload.id)
-                    .Append("/sell");
 
-                WWWForm form = new WWWForm();
-                networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                List<int> lists = payload.lists;
+                lists.ForEach(delegate (int id) {
+                    strBuilder.Remove(0, strBuilder.Length);
+                    strBuilder.Append(networkManager.baseUrl)
+                    .Append("inventory/items/")
+                    .Append(id)
+                    .Append("/sell");
+                    Debug.Log(strBuilder);
+                    WWWForm form = new WWWForm();
+                    networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                });
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;

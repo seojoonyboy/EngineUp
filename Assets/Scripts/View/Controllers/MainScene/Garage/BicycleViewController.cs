@@ -102,7 +102,6 @@ public class BicycleViewController : MonoBehaviour {
 
         if (isOn) {
             //최종 판매
-            Debug.Log("최종 판매");
             sellButton.transform.Find("Label").GetComponent<UILabel>().text = "판매";
             sellingModal.SetActive(true);
         }
@@ -149,7 +148,6 @@ public class BicycleViewController : MonoBehaviour {
             if(tmp.activeSelf) {
                 obj.tag = "selected";
                 sellList.Add(info);
-                Debug.Log(info.id);
             }
             else {
                 obj.tag = "unselected";
@@ -571,24 +569,28 @@ public class BicycleViewController : MonoBehaviour {
     public void selling() {
         garage_sell_act act = ActionCreator.createAction(ActionTypes.GARAGE_SELL) as garage_sell_act;
         int gears = 0;
-        //단일 판매
-        if(sellList.Count == 0) {
-            Info info = selectedItem.GetComponent<Info>();
-            act.id = info.id;
-            gears = info.gear;
-            gm.gameDispatcher.dispatch(act);
+        
+        List<int> idLists = new List<int>();
+        
+        foreach (Info info in sellList) {
+            idLists.Add(info.id);
+            gears += info.gear;
         }
-        else {
-            foreach (Info info in sellList) {
-                act.id = info.id;
-                gm.gameDispatcher.dispatch(act);
-                gears += info.gear;
-            }
-        }
+        act.lists = idLists;
+        gm.gameDispatcher.dispatch(act);
+
         isSingleSellOrLock = false;
         notifyModal.SetActive(true);
         notifyModal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "총 " + gears + "개의 기어를 획득하였습니다.";
         sellList.Clear();
+    }
+
+    public void singleSelling() {
+        sellList.Clear();
+
+        Info info = selectedItem.GetComponent<Info>();
+        sellList.Add(info);
+        selling();
     }
 
     public void offSellingModal() {
