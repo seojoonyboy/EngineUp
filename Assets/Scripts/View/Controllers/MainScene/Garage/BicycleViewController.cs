@@ -138,7 +138,8 @@ public class BicycleViewController : MonoBehaviour {
         Info info = obj.GetComponent<Info>();
         //판매모드인 경우
         if (isSellMode) {
-            if(obj.transform.Find("TypeTag").tag == "locked") {
+            if (obj.tag == "locked") { return; }
+            if (obj.transform.Find("TypeTag").tag == "locked") {
                 return;
             }
             
@@ -156,6 +157,7 @@ public class BicycleViewController : MonoBehaviour {
         }
         //잠금모드인 경우
         else if (isLockMode) {
+            if (obj.tag == "locked") { return; }
             GameObject tmp = obj.transform.Find("LockIcon").gameObject;
             tmp.SetActive(!tmp.activeSelf);
             if(tmp.activeSelf) {
@@ -177,28 +179,9 @@ public class BicycleViewController : MonoBehaviour {
             }
         }
         else if(isLockMode == false && isSellMode == false) {
-            Debug.Log(obj.GetComponent<ButtonIndex>().index);
             selectedItem = obj;
             onDetailModal();
         }
-    }
-
-    public void selectedSiderBar(GameObject obj) {
-        detailModal.SetActive(true);
-        GameObject modal = detailModal.transform.Find("Modal").gameObject;
-        Info info = obj.GetComponent<Info>();
-
-        modal.transform.Find("Name").GetComponent<UILabel>().text = info.name;
-        modal.transform.Find("Desc").GetComponent<UILabel>().text = info.desc;
-        modal.transform.Find("limitLv").GetComponent<UILabel>().text = "제한 레벨 : " + info.limit_rank;
-        UISprite img = modal.transform.Find("Image").GetComponent<UISprite>();
-        img.atlas = bicycleAtlas;
-        string spriteName = info.imageId + "-1";
-        img.spriteName = spriteName;
-
-        detailModal.transform.Find("Modal/PutOffButton").gameObject.SetActive(false);
-        detailModal.transform.Find("Modal/PutOnButton").gameObject.SetActive(false);
-        detailModal.transform.Find("Modal/SellingButton").gameObject.SetActive(false);
     }
 
     //아이템 상세보기 Modal
@@ -261,7 +244,6 @@ public class BicycleViewController : MonoBehaviour {
         }
 
         unequip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_UNEQUIP) as unequip_act;
-        int tmp = selectedItem.GetComponent<ButtonIndex>().index;
         Info info = selectedItem.GetComponent<Info>();
         int index = info.id;
         act.id = index;
@@ -300,18 +282,17 @@ public class BicycleViewController : MonoBehaviour {
                     item.transform.localScale = Vector3.one;
 
                     item.AddComponent<UIDragScrollView>().scrollView = scrollview[0];
-
                     Info info = item.AddComponent<Info>();
-                    BicycleItem data = (BicycleItem)FI[cnt];
-                    Item data_item = data.item;
+                    RespGetItems data = (RespGetItems)FI[cnt];
+                    RespItem _item = data.item;
                     info.id = data.id;
-                    info.desc = data_item.desc;
-                    info.name = data_item.name;
-                    info.grade = data_item.grade;
-                    info.limit_rank = data_item.limit_rank;
-                    info.parts = data_item.parts;
-                    info.gear = data_item.gear;
-                    info.imageId = data_item.id;
+                    info.desc = _item.desc;
+                    info.name = _item.name;
+                    info.grade = _item.grade;
+                    info.limit_rank = _item.limit_rank;
+                    info.parts = _item.parts;
+                    info.gear = _item.gear;
+                    info.imageId = _item.id;
 
                     if (data.is_equiped == "true") {
                         info.is_equiped = true;
@@ -362,8 +343,8 @@ public class BicycleViewController : MonoBehaviour {
                     item.AddComponent<UIDragScrollView>().scrollView = scrollview[1];
 
                     Info info = item.AddComponent<Info>();
-                    BicycleItem data = (BicycleItem)WI[cnt];
-                    Item data_item = data.item;
+                    RespGetItems data = (RespGetItems)WI[cnt];
+                    RespItem data_item = data.item;
                     info.id = data.id;
                     info.desc = data_item.desc;
                     info.name = data_item.name;
@@ -422,8 +403,8 @@ public class BicycleViewController : MonoBehaviour {
                     item.AddComponent<UIDragScrollView>().scrollView = scrollview[2];
 
                     Info info = item.AddComponent<Info>();
-                    BicycleItem data = (BicycleItem)EI[cnt];
-                    Item data_item = data.item;
+                    RespGetItems data = (RespGetItems)EI[cnt];
+                    RespItem data_item = data.item;
                     info.id = data.id;
                     info.desc = data_item.desc;
                     info.name = data_item.name;
@@ -468,13 +449,16 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo = sideSlot.AddComponent<Info>();
         }
         UISprite sideSprite;
-        if (bicycleItemStore.equipedItemIndex[0] != null) {
-            sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[0].item.id;
-            sideBarInfo.desc = bicycleItemStore.equipedItemIndex[0].item.desc;
-            sideBarInfo.name = bicycleItemStore.equipedItemIndex[0].item.name;
-            sideBarInfo.limit_rank = bicycleItemStore.equipedItemIndex[0].item.limit_rank;
-            sideBarInfo.gear = bicycleItemStore.equipedItemIndex[0].item.gear;
-            sideBarInfo.id = bicycleItemStore.equipedItemIndex[0].id;
+        RespGetItems equipedItem = bicycleItemStore.equipedItemIndex[0];
+        if (equipedItem != null) {
+            RespItem _item = equipedItem.item;
+            sideBarInfo.imageId = _item.id;
+            sideBarInfo.desc = _item.desc;
+            sideBarInfo.name = _item.name;
+            sideBarInfo.limit_rank = _item.limit_rank;
+            sideBarInfo.gear = _item.gear;
+
+            sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
             sideSprite = sideSlot.GetComponent<UISprite>();
@@ -491,18 +475,21 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo = sideSlot.AddComponent<Info>();
         }
 
-        if (bicycleItemStore.equipedItemIndex[1] != null) {
-            sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[1].item.id;
-            sideBarInfo.desc = bicycleItemStore.equipedItemIndex[1].item.desc;
-            sideBarInfo.name = bicycleItemStore.equipedItemIndex[1].item.name;
-            sideBarInfo.limit_rank = bicycleItemStore.equipedItemIndex[1].item.limit_rank;
-            sideBarInfo.gear = bicycleItemStore.equipedItemIndex[1].item.gear;
-            sideBarInfo.id = bicycleItemStore.equipedItemIndex[1].id;
+        equipedItem = bicycleItemStore.equipedItemIndex[1];
+        if (equipedItem != null) {
+            RespItem _item = equipedItem.item;
+            sideBarInfo.imageId = _item.id;
+            sideBarInfo.desc = _item.desc;
+            sideBarInfo.name = _item.name;
+            sideBarInfo.limit_rank = _item.limit_rank;
+            sideBarInfo.gear = _item.gear;
+
+            sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
             sideSprite = sideSlot.GetComponent<UISprite>();
             sideSprite.atlas = bicycleAtlas;
-            sideSprite.spriteName = bicycleItemStore.equipedItemIndex[1].item.id + "-1";
+            sideSprite.spriteName = sideBarInfo.imageId + "-1";
         }
         else {
             sideSlot.GetComponent<UISprite>().spriteName = "-1";
@@ -514,18 +501,21 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo = sideSlot.AddComponent<Info>();
         }
 
-        if (bicycleItemStore.equipedItemIndex[2] != null) {
-            sideBarInfo.imageId = bicycleItemStore.equipedItemIndex[2].item.id;
-            sideBarInfo.desc = bicycleItemStore.equipedItemIndex[2].item.desc;
-            sideBarInfo.name = bicycleItemStore.equipedItemIndex[2].item.name;
-            sideBarInfo.limit_rank = bicycleItemStore.equipedItemIndex[2].item.limit_rank;
-            sideBarInfo.gear = bicycleItemStore.equipedItemIndex[2].item.gear;
-            sideBarInfo.id = bicycleItemStore.equipedItemIndex[2].id;
+        equipedItem = bicycleItemStore.equipedItemIndex[2];
+        if (equipedItem != null) {
+            RespItem _item = equipedItem.item;
+            sideBarInfo.imageId = _item.id;
+            sideBarInfo.desc = _item.desc;
+            sideBarInfo.name = _item.name;
+            sideBarInfo.limit_rank = _item.limit_rank;
+            sideBarInfo.gear = _item.gear;
+
+            sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
             sideSprite = sideSlot.GetComponent<UISprite>();
             sideSprite.atlas = bicycleAtlas;
-            sideSprite.spriteName = bicycleItemStore.equipedItemIndex[2].item.id + "-1";
+            sideSprite.spriteName = sideBarInfo.imageId + "-1";
         }
         else {
             sideSlot.GetComponent<UISprite>().spriteName = "-1";

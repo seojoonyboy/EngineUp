@@ -51,8 +51,8 @@ public class MainViewController : MonoBehaviour {
     public void onBicycleInvenListener() {
         if(bi.eventType == ActionTypes.GARAGE_ITEM_INIT) {
             if(bi.storeStatus == storeStatus.NORMAL) {
-                BicycleItem[] items = bi.frameItems.ToArray(typeof(BicycleItem)) as BicycleItem[];
-                foreach (BicycleItem item in items){
+                RespGetItems[] items = bi.frameItems.ToArray(typeof(RespGetItems)) as RespGetItems[];
+                foreach (RespGetItems item in items){
                     if(item.is_equiped == "true") {
                         UISprite sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
                         sprite.atlas = bicycleAtlas;
@@ -60,8 +60,8 @@ public class MainViewController : MonoBehaviour {
                     }
                 }
 
-                items = bi.engineItems.ToArray(typeof(BicycleItem)) as BicycleItem[];
-                foreach (BicycleItem item in items) {
+                items = bi.engineItems.ToArray(typeof(RespGetItems)) as RespGetItems[];
+                foreach (RespGetItems item in items) {
                     if (item.is_equiped == "true") {
                         UISprite sprite = bicycle.transform.Find("Engine").GetComponent<UISprite>();
                         sprite.atlas = bicycleAtlas;
@@ -69,8 +69,8 @@ public class MainViewController : MonoBehaviour {
                     }
                 }
 
-                items = bi.wheelItems.ToArray(typeof(BicycleItem)) as BicycleItem[];
-                foreach (BicycleItem item in items) {
+                items = bi.wheelItems.ToArray(typeof(RespGetItems)) as RespGetItems[];
+                foreach (RespGetItems item in items) {
                     if (item.is_equiped == "true") {
                         UISprite sprite = bicycle.transform.Find("Wheel").GetComponent<UISprite>();
                         sprite.atlas = bicycleAtlas;

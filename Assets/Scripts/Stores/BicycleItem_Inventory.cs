@@ -23,12 +23,12 @@ public class BicycleItem_Inventory : AjwStore {
 
     public ActionTypes eventType;
 
-    public BicycleItem[] allItems;
+    public RespGetItems[] allItems;
     public ArrayList
         wheelItems = new ArrayList(),
         frameItems = new ArrayList(),
         engineItems = new ArrayList();
-    public BicycleItem[] equipedItemIndex = new BicycleItem[3];
+    public RespGetItems[] equipedItemIndex = new RespGetItems[3];
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
@@ -71,8 +71,7 @@ public class BicycleItem_Inventory : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 message = "아이템을 성공적으로 불러왔습니다.";
-                allItems = JsonHelper.getJsonArray<BicycleItem>(payload.response.data);
-                
+                allItems = JsonHelper.getJsonArray<RespGetItems>(payload.response.data);
                 init();
                 itemCategorization(allItems);
                 _emitChange();
@@ -86,9 +85,9 @@ public class BicycleItem_Inventory : AjwStore {
     }
 
     //자전거 아이템 종류별로 분류
-    private void itemCategorization(BicycleItem[] item) {
+    private void itemCategorization(RespGetItems[] item) {
         for (int i = 0; i < item.Length; i++) {
-            Item _item = item[i].item;
+            BicycleItem _item = item[i].item;
             if (_item.parts == "WH") {
                 wheelItems.Add(item[i]);
                 if(item[i].is_equiped == "true") {
@@ -258,8 +257,8 @@ public class BicycleItem_Inventory : AjwStore {
         }
     }
 
-    private class SortByGrade : IComparer, IComparer<BicycleItem> {
-        public int Compare(BicycleItem x, BicycleItem y) {
+    private class SortByGrade : IComparer, IComparer<RespGetItems> {
+        public int Compare(RespGetItems x, RespGetItems y) {
             //throw new NotImplementedException();
             int xGrade = x.item.grade;
             int yGrade = y.item.grade;
@@ -274,8 +273,8 @@ public class BicycleItem_Inventory : AjwStore {
 
         public int Compare(object x, object y) {
             //throw new NotImplementedException();
-            BicycleItem _x = x as BicycleItem;
-            BicycleItem _y = y as BicycleItem;
+            RespGetItems _x = x as RespGetItems;
+            RespGetItems _y = y as RespGetItems;
 
             if(_x.id == _y.id) {
                 return _x.id.CompareTo(_y.id);
@@ -284,15 +283,15 @@ public class BicycleItem_Inventory : AjwStore {
         }
     }
 
-    private class SortByName : IComparer, IComparer<BicycleItem> {
-        public int Compare(BicycleItem x, BicycleItem y) {
+    private class SortByName : IComparer, IComparer<RespGetItems> {
+        public int Compare(RespGetItems x, RespGetItems y) {
             //throw new NotImplementedException();
             return x.item.name.CompareTo(y.item.name);
         }
 
         public int Compare(object x, object y) {
             //throw new NotImplementedException();
-            return Compare((BicycleItem)x, (BicycleItem)y);
+            return Compare((RespGetItems)x, (RespGetItems)y);
         }
     }
 
@@ -308,24 +307,16 @@ public class BicycleItem_Inventory : AjwStore {
 }
 
 [System.Serializable]
-public class BicycleItem {
+public class RespGetItems {
     public int id;
-    public Item item;
+    public RespItem item;
     public string is_equiped;
     public string is_locked;
 
-    public static BicycleItem fromJSON(string json) {
-        return JsonUtility.FromJson<BicycleItem>(json);
+    public static RespGetItems fromJSON(string json) {
+        return JsonUtility.FromJson<RespGetItems>(json);
     }
 }
 
 [System.Serializable]
-public class Item {
-    public int id;
-    public string name;
-    public string desc;
-    public int grade;
-    public int gear;
-    public string parts;
-    public int limit_rank;
-}
+public class RespItem : BicycleItem { }
