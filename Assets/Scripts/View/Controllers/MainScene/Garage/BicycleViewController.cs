@@ -55,14 +55,7 @@ public class BicycleViewController : MonoBehaviour {
     public void onBicycleItemStoreListener() {
         ActionTypes bicycleItemStoreEventType = bicycleItemStore.eventType;
 
-        if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
-            if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                //sidebar 갱신
-                setSideBar();
-            }
-        }
-
-        else if(bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
+        if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
             makeList();
         }
     }
@@ -437,10 +430,47 @@ public class BicycleViewController : MonoBehaviour {
             }
         }
         initGrid();
+        setMainStageImage();
         setSideBar();
     }
 
+    private void setMainStageImage() {
+        UISprite sprite;
+
+        RespGetItems equipedItem = bicycleItemStore.equipedItemIndex[0];
+        sprite = bicycle.transform.Find("Wheel").GetComponent<UISprite>();
+        sprite.atlas = bicycleAtlas;
+        if (equipedItem != null) {
+            RespItem _item = equipedItem.item;
+            sprite.spriteName = _item.id.ToString();
+        }
+        else {
+            sprite.spriteName = "6";
+        }
+
+        equipedItem = bicycleItemStore.equipedItemIndex[1];
+        sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
+        if (equipedItem != null) {
+            RespItem _item = equipedItem.item;
+            sprite.spriteName = _item.id.ToString();
+        }
+        else {
+            sprite.spriteName = "3";
+        }
+
+        equipedItem = bicycleItemStore.equipedItemIndex[2];
+        sprite = bicycle.transform.Find("Engine").GetComponent<UISprite>();
+        if (equipedItem != null) {
+            RespItem _item = equipedItem.item;
+            sprite.spriteName = _item.id.ToString();
+        }
+        else {
+            sprite.spriteName = "9";
+        }
+    }
+
     private void setSideBar() {
+        Debug.Log("Set Side Bar");
         GameObject sideSlot = sideBar.transform.Find("WheelSlot/Item").gameObject;
         Info sideBarInfo = sideSlot.GetComponent<Info>();
         if(sideBarInfo == null) {
@@ -448,6 +478,7 @@ public class BicycleViewController : MonoBehaviour {
         }
         UISprite sideSprite;
         RespGetItems equipedItem = bicycleItemStore.equipedItemIndex[0];
+        sideSprite = sideSlot.GetComponent<UISprite>();
         if (equipedItem != null) {
             RespItem _item = equipedItem.item;
             sideBarInfo.imageId = _item.id;
@@ -458,13 +489,11 @@ public class BicycleViewController : MonoBehaviour {
 
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
-
-            sideSprite = sideSlot.GetComponent<UISprite>();
             sideSprite.atlas = bicycleAtlas;
             sideSprite.spriteName = sideBarInfo.imageId + "-1";
-        } 
+        }
         else {
-            sideSlot.GetComponent<UISprite>().spriteName = "-1";
+            sideSprite.spriteName = "-1";
         }
 
         sideSlot = sideBar.transform.Find("FrameSlot/Item").gameObject;
@@ -474,6 +503,7 @@ public class BicycleViewController : MonoBehaviour {
         }
 
         equipedItem = bicycleItemStore.equipedItemIndex[1];
+        sideSprite = sideSlot.GetComponent<UISprite>();
         if (equipedItem != null) {
             RespItem _item = equipedItem.item;
             sideBarInfo.imageId = _item.id;
@@ -485,12 +515,11 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
-            sideSprite = sideSlot.GetComponent<UISprite>();
             sideSprite.atlas = bicycleAtlas;
             sideSprite.spriteName = sideBarInfo.imageId + "-1";
         }
         else {
-            sideSlot.GetComponent<UISprite>().spriteName = "-1";
+            sideSprite.spriteName = "-1";
         }
 
         sideSlot = sideBar.transform.Find("EngineSlot/Item").gameObject;
@@ -500,6 +529,7 @@ public class BicycleViewController : MonoBehaviour {
         }
 
         equipedItem = bicycleItemStore.equipedItemIndex[2];
+        sideSprite = sideSlot.GetComponent<UISprite>();
         if (equipedItem != null) {
             RespItem _item = equipedItem.item;
             sideBarInfo.imageId = _item.id;
@@ -511,12 +541,11 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
-            sideSprite = sideSlot.GetComponent<UISprite>();
             sideSprite.atlas = bicycleAtlas;
             sideSprite.spriteName = sideBarInfo.imageId + "-1";
         }
         else {
-            sideSlot.GetComponent<UISprite>().spriteName = "-1";
+            sideSprite.spriteName = "-1";
         }
     }
 
