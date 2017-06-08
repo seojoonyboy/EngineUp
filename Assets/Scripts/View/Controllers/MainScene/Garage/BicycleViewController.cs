@@ -190,7 +190,6 @@ public class BicycleViewController : MonoBehaviour {
         img.atlas = bicycleAtlas;
         string spriteName = info.imageId + "-1";
         img.spriteName = spriteName;
-        Debug.Log(info.is_equiped);
         //현재 장착중인 아이템인 경우
         //모달 내 해제하기 버튼 활성화
         if (info.is_equiped) {
@@ -470,7 +469,6 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     private void setSideBar() {
-        Debug.Log("Set Side Bar");
         GameObject sideSlot = sideBar.transform.Find("WheelSlot/Item").gameObject;
         Info sideBarInfo = sideSlot.GetComponent<Info>();
         if(sideBarInfo == null) {

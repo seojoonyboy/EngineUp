@@ -54,7 +54,6 @@ public class User : AjwStore {
                 setMessage(2);
                 myData = UserData.fromJSON(payload.response.data);
                 setUserTitle(myData.status.rank);
-                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
