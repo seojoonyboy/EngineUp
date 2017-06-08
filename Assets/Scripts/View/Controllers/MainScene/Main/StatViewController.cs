@@ -20,7 +20,7 @@ public class StatViewController : MonoBehaviour {
     private GameManager gm;
     
     public UISlider mainSlider;
-    public int mainSliderOffset = 1;
+    public int mainSliderOffset = 100;
 
     public GameObject 
         districtPref,
@@ -55,17 +55,22 @@ public class StatViewController : MonoBehaviour {
     }
 
     public void onUserListener() {
+        mainTitleLabel.text = userStore.userTitle;
         nickNameLabel.text = userStore.nickName;
 
-        mainLvLabel.text = "Lv " + userStore.myData.status.rank.ToString();
-
-        int exp = userStore.myData.status.exp;
-        mainSlider.value = exp / mainSliderOffset;
-        mainSlider.transform.Find("Val").GetComponent<UILabel>().text = exp + " / 100 Km";
-        if(userStore.eventType == ActionTypes.MYINFO) {
+        if (userStore.eventType == ActionTypes.MYINFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
                 initialize();
-                mainTitleLabel.text = userStore.userTitle;
+                mainLvLabel.text = "Lv " + userStore.myData.status.rank.ToString();
+
+                int exp = userStore.myData.status.exp;
+                //레벨업 환산 후 남은 경험치
+                float extraExp = (float)(exp % mainSliderOffset);
+                //슬라이더가 실제적으로 입력되는 값
+                //slider 최댓값 100 기준
+                float sliderVal = extraExp / mainSliderOffset;
+                mainSlider.value = sliderVal;
+                mainSlider.transform.Find("Val").GetComponent<UILabel>().text = extraExp + " / " + mainSliderOffset + " Km";
             }
         }
 
