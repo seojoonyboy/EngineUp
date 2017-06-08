@@ -95,7 +95,6 @@ public class Riding_VC : MonoBehaviour {
     public void onRidingEndButton() {
         exitModal.SetActive(true);
         exitModal.transform.Find("Modal/Description").GetComponent<UILabel>().text = "지금 종료하시면 \n총 " + boxNum + "개의 상자를 얻을 수 있습니다.";
-        exitModal.transform.Find("Modal/BoxIcon/Label").GetComponent<UILabel>().text = "x " + boxNum;
         //라이딩 일시정지
         Time.timeScale = 0;
     }
