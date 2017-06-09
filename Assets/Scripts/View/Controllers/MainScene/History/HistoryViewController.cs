@@ -47,19 +47,21 @@ public class HistoryViewController : MonoBehaviour {
     }
 
     public void ridingStoreListener() {
-        if(ridingStore.eventType == ActionTypes.GET_RIDING_RECORDS) {
-            if(ridingStore.storeStatus == storeStatus.NORMAL) {
-                makeList();
+        if(gameObject.activeSelf) {
+            if (ridingStore.eventType == ActionTypes.GET_RIDING_RECORDS) {
+                if (ridingStore.storeStatus == storeStatus.NORMAL) {
+                    makeList();
+                }
             }
-        }
 
-        if(ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
-            if(ridingStore.storeStatus == storeStatus.NORMAL) {
-                subController.mapHeader.SetActive(true);
-                subController.setInfo(ridingStore.ridingDetails);
-                subController.setMap(ridingStore.ridingDetails);
-                subController.setDate(ridingStore.ridingDetails.createDate);
-                subController.setNickName(userStore.nickName);
+            if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
+                if (ridingStore.storeStatus == storeStatus.NORMAL) {
+                    subController.mapHeader.SetActive(true);
+                    subController.setInfo(ridingStore.ridingDetails);
+                    subController.setMap(ridingStore.ridingDetails);
+                    subController.setDate(ridingStore.ridingDetails.createDate);
+                    subController.setNickName(userStore.nickName);
+                }
             }
         }
     }

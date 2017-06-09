@@ -10,35 +10,72 @@ public class Result_VC : MonoBehaviour {
         totalTime,
         avgSpeed,
         maxSpeed,
-        uphillDistanceLabel;
-
-    public Text boxText;
+        uphillDistanceLabel,
+        boxNum;
 
     public Riding ridingStore;
-    public GameObject 
+    public GameObject
         map,
-        mapHeader;
+        mapPanel,
+        resultPanel;
+
     OnlineMapsDrawingLine line;
 
     public Collider[] colliders;
 
     private GameManager gm;
     private Vector3 preMapScale;
+
+    public GameObject 
+        mapViewBtn,
+        confirmBtn,
+        recordViewBtn;
+
+    public UISlider 
+        lvSlider,
+        friendlySlider;
+
     void Awake() {
         gm = GameManager.Instance;
+
+        UIEventListener.Get(mapViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
+        UIEventListener.Get(confirmBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
+        UIEventListener.Get(recordViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
     }
 
-    void OnEnable() {
-        map.SetActive(true);
-        preMapScale = map.transform.localScale;
-        map.transform.localScale = new Vector3(1.13f, 1.0f, 1.13f);
-        mapHeader.SetActive(true);
-        OnlineMapsControlBase.instance.OnMapZoom += zooming;
+    void btnListener(GameObject obj, bool state) {
+        //Debug.Log(state);
+        int index = obj.GetComponent<ButtonIndex>().index;
+        if(state) {
+            obj.transform.Find("ActiveImg").gameObject.SetActive(true);
+            obj.transform.Find("DeactiveImg").gameObject.SetActive(false);
+            obj.transform.Find("ActiveLabel").gameObject.SetActive(true);
+            obj.transform.Find("DeactiveLabel").gameObject.SetActive(false);
+        }
+        else {
+            obj.transform.Find("ActiveImg").gameObject.SetActive(false);
+            obj.transform.Find("DeactiveImg").gameObject.SetActive(true);
+            obj.transform.Find("ActiveLabel").gameObject.SetActive(false);
+            obj.transform.Find("DeactiveLabel").gameObject.SetActive(true);
 
-        _drawLine();
-
-        foreach(Collider coll in colliders) {
-            coll.enabled = false;
+            switch (index) {
+                //지도화면 보기 버튼
+                case 0:
+                    onMapPanel();
+                    mapViewBtn.SetActive(false);
+                    recordViewBtn.SetActive(true);
+                    break;
+                //확인 버튼
+                case 1:
+                    OnDisable();
+                    break;
+                //결과화면 보기 버튼
+                case 2:
+                    offMapPanel();
+                    mapViewBtn.SetActive(true);
+                    recordViewBtn.SetActive(false);
+                    break;
+            }
         }
     }
 
@@ -57,39 +94,37 @@ public class Result_VC : MonoBehaviour {
     }
 
     void OnDisable() {
-        map.GetComponent<OnlineMaps>().RemoveAllDrawingElements();
-        map.SetActive(false);
-        map.transform.localScale = preMapScale;
-        ridingStore.filteredCoordsLists.Clear();
-
         totalDist.text = "0";
         avgSpeed.text = "0";
         maxSpeed.text = "0";
         uphillDistanceLabel.text = "0";
         totalTime.text = null;
         gameObject.SetActive(false);
-        mapHeader.SetActive(false);
 
         foreach (Collider coll in colliders) {
             coll.enabled = true;
         }
 
+        mapViewBtn.SetActive(true);
+        recordViewBtn.SetActive(false);
     }
 
     public void onRidingListener() {
         //서버로 부터 callback으로 받은 필터적용된 위도 경도 값을 이용하여 라인을 그린다.
-        //라인 누적
-        if(ridingStore.eventType == ActionTypes.GPS_SEND) {
-            if(ridingStore.storeStatus == storeStatus.NORMAL) {
-                Debug.Log("리스트에 좌표 배열을 담습니다.");
-            }
-        }
         if (ridingStore.eventType == ActionTypes.RIDING_END) {
             gameObject.SetActive(true);
             setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance, ridingStore.boxes);
 
             MyInfo infoRefresh = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
             gm.gameDispatcher.dispatch(infoRefresh);
+        }
+
+        if(gameObject.activeSelf) {
+            if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
+                if (ridingStore.storeStatus == storeStatus.NORMAL) {
+                    _drawLine();
+                }
+            }
         }
     }
 
@@ -103,7 +138,7 @@ public class Result_VC : MonoBehaviour {
         maxSpeed.text = (Math.Round(mMaxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
         uphillDistanceLabel.text = (Math.Round(uphillDist, 2, MidpointRounding.AwayFromZero)).ToString();
 
-        boxText.text = "상자 " + boxNum + "개를 획득하셨습니다.";
+        this.boxNum.text = boxNum.ToString();
     }
 
     public void offResultPanel() {
@@ -111,40 +146,50 @@ public class Result_VC : MonoBehaviour {
     }
 
     void _drawLine() {
-        foreach (filteredCoords[] data in ridingStore.filteredCoordsLists) {
-            List<Vector2> list = new List<Vector2>();
-            for (int i = 0; i < data.Length; i++) {
-                Debug.Log("그리기위한 Filter된 CoordLists " + i + "번째 위도 : " + data[i].latitude + ", 경도 : " + data[i].longitude);
-                float lat = data[i].latitude;
-                float lon = data[i].longitude;
-                Vector2 val = new Vector2(lat, lon);
-                list.Add(val);
-            }
-            line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
-            OnlineMaps.instance.AddDrawingElement(line);
-        }
-        List<Vector2> tmp = new List<Vector2> {
-            new Vector2(3, 3),
-            new Vector2(5, 3)
-        };
-        OnlineMapsDrawingLine _tmp = new OnlineMapsDrawingLine(tmp, Color.gray, 3.0f);
-        OnlineMaps.instance.AddDrawingElement(_tmp);
+        OnlineMaps.instance.zoom = 18;
+        
+        RidingDetails details = ridingStore.ridingDetails;
+        innerRidingDetails[] coords = details.coords;
 
-        //지도 위치 수정
-        if (ridingStore.filteredCoordsLists.Count != 0) {
-            filteredCoords[] lastData = (filteredCoords[])ridingStore.filteredCoordsLists[ridingStore.filteredCoordsLists.Count - 1];
-            Debug.Log(lastData.Length);
-            if (lastData.Length != 0) {
-                float lastLat = lastData[0].latitude;
-                float lastLon = lastData[0].longitude;
-                Vector2 lastVal = new Vector2(lastLat, lastLon);
-                OnlineMaps.instance.position = lastVal;
-                OnlineMaps.instance.zoom = 18;
-            }
+        if(coords != null) {
+            float endLat = coords[coords.Length - 1].latitude;
+            float endLon = coords[coords.Length - 1].longitude;
+            Vector2 endPos = new Vector2(endLat, endLon);
+            OnlineMaps.instance.position = endPos;
         }
         else {
             OnlineMaps.instance.position = new Vector2(127.74437f, 37.87998f);
-            OnlineMaps.instance.zoom = 18;
         }
+
+        List<Vector2> list = new List<Vector2>();
+        foreach(innerRidingDetails coord in coords) {
+            float lat = coord.latitude;
+            float lon = coord.longitude;
+            Vector2 val = new Vector2(lat, lon);
+            list.Add(val);
+        }
+        line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
+        OnlineMaps.instance.AddDrawingElement(line);
+    }
+
+    public void onMapPanel() {
+        map.SetActive(true);
+        mapPanel.SetActive(true);
+
+        preMapScale = map.transform.localScale;
+        map.transform.localScale = new Vector3(2.025f, 1.0f, 2.025f);
+        map.transform.localPosition = new Vector3(-1953f, 380f, -1266f);
+        OnlineMapsControlBase.instance.OnMapZoom += zooming;
+
+        GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
+        act.id = ridingStore.ridingId;
+        gm.gameDispatcher.dispatch(act);
+    }
+
+    public void offMapPanel() {
+        map.SetActive(false);
+        mapPanel.SetActive(false);
+
+        map.transform.localScale = preMapScale;
     }
 }

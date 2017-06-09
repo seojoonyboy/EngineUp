@@ -14,7 +14,8 @@ public class Riding : AjwStore{
     coordData _preLocation = null;
     coordData[] postBuffer;
     int postBufferCounter;
-    int ridingId;
+    //라이딩시 server에 배정되는 id
+    public int ridingId;
     public float totalDist;
     public float curSpeed;
     public float avgSpeed;
@@ -84,6 +85,7 @@ public class Riding : AjwStore{
                 uphillDistance = ridingData.uphillDistance;
                 filteredCoordsLists.Add(ridingData.filteredCoords);
                 boxes = ridingData.get_boxes;
+                ridingId = ridingData.id;
 
                 _emitChange();
                 break;
@@ -108,7 +110,7 @@ public class Riding : AjwStore{
         if (!_filter(loc)) { return; } // 필터 적용
         postBuffer[postBufferCounter] = loc;
         postBufferCounter++;
-
+        Debug.Log(loc.latitude);
         //coordData data = new coordData(loc.longitude,loc.latitude);
         //coordList.Add(data);
 
@@ -218,6 +220,7 @@ public class Riding : AjwStore{
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 ridingDetails = RidingDetails.fromJSON(payload.response.data);
+                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
