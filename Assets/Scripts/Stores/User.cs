@@ -24,6 +24,8 @@ public class User : AjwStore {
     public represent_character myCharacters;
     public UserbicycleType[] userBicycleTypes;
 
+    public MyInfo.type MyInfoType;
+
     NetworkManager networkManager = NetworkManager.Instance;
 
     private GameManager gm = GameManager.Instance;
@@ -41,6 +43,7 @@ public class User : AjwStore {
             case NetworkAction.statusTypes.REQUEST:
                 storeStatus = storeStatus.WAITING_REQ;
                 setMessage(1);
+                MyInfoType = payload._type;
 
                 var strBuilder = GameManager.Instance.sb;
                 WWWForm form = new WWWForm();

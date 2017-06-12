@@ -281,4 +281,7 @@ public class GetCountryData : NetworkAction { }
 
 public class GetBicycleTypes : NetworkAction { }
 
-public class MyInfo : NetworkAction { }
+public class MyInfo : NetworkAction { 
+    public enum type { RIDING_START, RIDING_END, NORMAL }
+    public type _type = type.NORMAL;
+}

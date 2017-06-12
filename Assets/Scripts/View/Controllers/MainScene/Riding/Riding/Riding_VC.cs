@@ -77,6 +77,9 @@ public class Riding_VC : MonoBehaviour {
         if(isTutorial) {
             StartCoroutine(freeze(5.0f));
         }
+        MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+        act._type = MyInfo.type.RIDING_START;
+        gameManager.gameDispatcher.dispatch(act);
     }
 
     IEnumerator freeze(float interval) {

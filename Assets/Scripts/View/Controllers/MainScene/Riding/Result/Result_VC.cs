@@ -11,9 +11,19 @@ public class Result_VC : MonoBehaviour {
         avgSpeed,
         maxSpeed,
         uphillDistanceLabel,
-        boxNum;
+        boxNum,
+        preStrength,
+        incStrength,
+        preEndurance,
+        incEndurance,
+        preSpeed,
+        incSpeed,
+        preRecovery,
+        incRecovery;
 
     public Riding ridingStore;
+    public User userStore;
+
     public GameObject
         map,
         mapPanel,
@@ -35,12 +45,37 @@ public class Result_VC : MonoBehaviour {
         lvSlider,
         friendlySlider;
 
+    public UILabel
+        LvHeader,
+        FrHeader,
+        LvExp,
+        FrExp;
+
+    private UserData preData;
+    private Exp[] exps;
+
+    private static int 
+        maxLv = 99,
+        maxExp = 99000,
+        maxCharLv = 3;
+
+    public GameObject
+        StrIcon,
+        EndIcon,
+        SpeedIcon,
+        RecoIcon;
+
     void Awake() {
         gm = GameManager.Instance;
 
         UIEventListener.Get(mapViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
         UIEventListener.Get(confirmBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
         UIEventListener.Get(recordViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
+    }
+
+    void Start() {
+        TextAsset file = (TextAsset)Resources.Load("Exp");
+        exps = JsonHelper.getJsonArray<Exp>(file.text);
     }
 
     void btnListener(GameObject obj, bool state) {
@@ -107,6 +142,11 @@ public class Result_VC : MonoBehaviour {
 
         mapViewBtn.SetActive(true);
         recordViewBtn.SetActive(false);
+
+        StrIcon.SetActive(true);
+        EndIcon.SetActive(true);
+        SpeedIcon.SetActive(true);
+        RecoIcon.SetActive(true);
     }
 
     public void onRidingListener() {
@@ -116,6 +156,7 @@ public class Result_VC : MonoBehaviour {
             setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance, ridingStore.boxes);
 
             MyInfo infoRefresh = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+            infoRefresh._type = MyInfo.type.RIDING_END;
             gm.gameDispatcher.dispatch(infoRefresh);
         }
 
@@ -123,8 +164,136 @@ public class Result_VC : MonoBehaviour {
             if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
                 if (ridingStore.storeStatus == storeStatus.NORMAL) {
                     _drawLine();
+                    _drawMarker();
                 }
             }
+        }
+    }
+
+    public void onUserListener() {
+        if(userStore.eventType == ActionTypes.MYINFO) {
+            if(userStore.storeStatus == storeStatus.NORMAL) {
+                if(userStore.MyInfoType == MyInfo.type.RIDING_START) {
+                    preData = userStore.myData;
+                }
+                else if(userStore.MyInfoType == MyInfo.type.RIDING_END) {
+                    difference(userStore.myData);
+                }
+            }
+        }
+    }
+
+    void difference(UserData data) {
+        //레벨 증가량 계산
+        int preLv = preData.status.rank;
+        int currLv = data.status.rank;
+        float lvSliderOffset = exps[currLv].exp;
+        TweenSlider twSlider = lvSlider.GetComponent<TweenSlider>();
+
+        twSlider.GetComponent<UISlider>().value = (float)data.status.exp / lvSliderOffset;
+        //레벨 업
+        if (preLv != currLv) {
+            twSlider.from = 0;
+        }
+        else {
+            twSlider.from = preData.status.exp / lvSliderOffset;
+        }
+        twSlider.to = data.status.exp / lvSliderOffset;
+        twSlider.ResetToBeginning();
+
+        //친밀도 증가량 계산
+        twSlider = friendlySlider.GetComponent<TweenSlider>();
+        int currCharLv = data.represent_character.character_inventory.lv;
+        int currCharExp = data.represent_character.character_inventory.exp;
+        int[] maxExps = { 200, 500 };
+
+        int preCharLv = preData.represent_character.character_inventory.lv;
+        int preExp = preData.represent_character.character_inventory.exp;
+
+        float friendlyOffset = 0;
+        if (currCharLv == 1) {
+            friendlyOffset = maxExps[0];
+        }
+        else if (currCharLv == 2) {
+            friendlyOffset = maxExps[1];
+        }
+
+        twSlider.GetComponent<UISlider>().value = (float)currCharExp / friendlyOffset; 
+
+        //레벨업
+        if (preCharLv != currCharLv) {
+            twSlider.from = 0;
+        }
+        else {
+            twSlider.from = preExp / friendlyOffset;
+        }
+        twSlider.to = currCharExp / friendlyOffset;
+        twSlider.ResetToBeginning();
+
+        //능력치 증가량
+        //근력, 지구력, 스피드, 회복력
+        int _preStr = preData.status.strength;
+        int _preEndur = preData.status.endurance;
+        int _preSpeed = preData.status.speed;
+        int _preReco = preData.status.regeneration;
+
+        preStrength.text = _preStr.ToString();
+        preRecovery.text = _preReco.ToString();
+        preSpeed.text = _preSpeed.ToString();
+        preRecovery.text = _preReco.ToString();
+
+        var stat = data.status;
+        if(_preStr == stat.strength) {
+            incStrength.text = "";
+            StrIcon.SetActive(false);
+        }
+        else {
+            incStrength.text = "+ " + (stat.strength - _preStr);
+            Debug.Log("근력 증가");
+        }
+
+        if(_preReco == stat.regeneration) {
+            incRecovery.text = "";
+            RecoIcon.SetActive(false);
+        }
+        else {
+            incRecovery.text = "+ " + (stat.regeneration - _preReco);
+            Debug.Log("회복력 증가");
+        }
+
+        if(_preSpeed == stat.speed) {
+            incSpeed.text = "";
+            SpeedIcon.SetActive(false);
+        }
+        else {
+            incSpeed.text = "+ " + (stat.speed - _preSpeed);
+            Debug.Log("스피드 증가");
+        }
+
+        if(_preEndur == stat.endurance) {
+            incEndurance.text = "";
+            EndIcon.SetActive(false);
+        }
+        else {
+            incEndurance.text = "+ " + (stat.endurance - _preEndur);
+            Debug.Log("지구력 증가");
+        }
+
+        //레벨 및 경험치 라벨 설정
+        LvHeader.text = "레벨 " + currLv;
+        FrHeader.text = "친밀도 " + currCharLv;
+        if(currLv == maxLv && data.status.exp == maxExp) {
+            LvExp.text = "MAX";
+        }
+        else {
+            LvExp.text = data.status.exp + " / " + lvSliderOffset;
+        }
+
+        if(currLv == maxCharLv && currCharExp == maxExps[1]) {
+            FrExp.text = "MAX";
+        }
+        else {
+            FrExp.text = currCharExp + " / " + friendlyOffset;
         }
     }
 
@@ -172,6 +341,26 @@ public class Result_VC : MonoBehaviour {
         OnlineMaps.instance.AddDrawingElement(line);
     }
 
+    void _drawMarker() {
+        //OnlineMaps.instance.AddMarker()
+        RidingDetails details = ridingStore.ridingDetails;
+        innerRidingDetails[] coords = details.coords;
+
+        if (coords != null) {
+            //도착점 마커
+            float lat = coords[coords.Length - 1].latitude;
+            float lon = coords[coords.Length - 1].longitude;
+            Vector2 pos = new Vector2(lat, lon);
+            OnlineMaps.instance.AddMarker(pos);
+
+            //시작점 마커
+            lat = coords[0].latitude;
+            lon = coords[0].longitude;
+            pos = new Vector2(lat, lon);
+            OnlineMaps.instance.AddMarker(pos);
+        }
+    }
+
     public void onMapPanel() {
         map.SetActive(true);
         mapPanel.SetActive(true);
@@ -191,5 +380,15 @@ public class Result_VC : MonoBehaviour {
         mapPanel.SetActive(false);
 
         map.transform.localScale = preMapScale;
+    }
+}
+
+[System.Serializable]
+class Exp {
+    public int lv;
+    public int exp;
+
+    public static Exp fromJSON(string json) {
+        return JsonUtility.FromJson<Exp>(json);
     }
 }

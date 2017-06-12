@@ -22,6 +22,8 @@ public class MainSceneManager : fbl_SceneManager {
 
     void initialize() {
         resultViewCtrler.ridingStore = gm.ridingStore;
+        resultViewCtrler.userStore = gm.userStore;
+
         ridingViewCtrler.ridingStore = gm.ridingStore;
         ridingViewCtrler.userStore = gm.userStore;
         friendViewCtrler.friendsStore = gm.friendsStore;
@@ -56,6 +58,7 @@ public class MainSceneManager : fbl_SceneManager {
         gm.charInvenStore.addListener(charViewCtrler.onCharInvenStore);
         gm.userStore.addListener(charViewCtrler.onUserListener);
         gm.userStore.addListener(bicycleViewCtrler.onUserStoreListener);
+        gm.userStore.addListener(resultViewCtrler.onUserListener);
 
         gm.ridingStore.addListener(historyViewCtrler.ridingStoreListener);
 
