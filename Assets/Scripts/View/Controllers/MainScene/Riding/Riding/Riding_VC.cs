@@ -6,7 +6,6 @@ using System;
 using System.Collections;
 
 public class Riding_VC : MonoBehaviour {
-    public MainBtnController mainBtnCtrler;
     public TutotrialManager tutManager;
     public GameObject 
         gpsPref,

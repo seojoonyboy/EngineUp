@@ -1,52 +1,61 @@
-﻿using UnityEngine;
-using System;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class MainBtnController : MonoBehaviour {
-    public GameObject
-        ridingPanel,
-        communityPanel,
-        optionPanel,
-        avatar,
-        myhomePanel,
-        myInfoPanel,
-        boxPanel,
-        notifyModal;
+    public GameObject[] 
+        activeImages,
+        activeLabels,
+        deaciveImages,
+        deactiveLabels;
 
-    public void onMainBtnEvent(MAIN_BUTTON type) {
-        switch(type) {
-            case MAIN_BUTTON.RIDING:
-                ridingPanel.SetActive(true);
+    public GameObject[] panels;
+    public GameObject notifyModal;
+
+    public void buttonPressListener(GameObject obj) {
+        int index = obj.GetComponent<ButtonIndex>().index;
+        activeImages[index].SetActive(true);
+        activeLabels[index].SetActive(true);
+        deaciveImages[index].SetActive(false);
+        deactiveLabels[index].SetActive(false);
+    }
+
+    public void buttonReleaseListener(GameObject obj) {
+        var buttonIndex = obj.GetComponent<ButtonIndex>();
+        if (buttonIndex != null) {
+            int index = obj.GetComponent<ButtonIndex>().index;
+            activeImages[index].SetActive(false);
+            activeLabels[index].SetActive(false);
+            deaciveImages[index].SetActive(true);
+            deactiveLabels[index].SetActive(true);
+        }
+
+        var btnEnum = obj.GetComponent<MainButtonEnum>();
+        var type = btnEnum.buttonType;
+
+        switch (type) {
+            case MainButtonEnum.Type.MYHOME:
+                panels[0].SetActive(true);
                 break;
-            case MAIN_BUTTON.COMMUNITY:
+            case MainButtonEnum.Type.COMMUNITY:
                 notifyModal.SetActive(true);
-                //communityPanel.SetActive(true);
-                //GetMyFriendListAction initAct = ActionCreator.createAction(ActionTypes.GET_MY_FRIEND_LIST) as GetMyFriendListAction;
-                //GameManager.Instance.gameDispatcher.dispatch(initAct);
                 break;
-            case MAIN_BUTTON.OPTION:
-                optionPanel.SetActive(true);
+            case MainButtonEnum.Type.RIDING:
+                panels[2].SetActive(true);
                 break;
-            case MAIN_BUTTON.MYHOME:
-                myhomePanel.SetActive(true);
+            case MainButtonEnum.Type.BOX:
+                panels[3].SetActive(true);
                 break;
-            case MAIN_BUTTON.MYINFO:
-                myInfoPanel.SetActive(true);
-                break;
-            case MAIN_BUTTON.BOX:
-                boxPanel.SetActive(true);
-                break;
-            case MAIN_BUTTON.SHOP:
+            case MainButtonEnum.Type.STORE:
                 notifyModal.SetActive(true);
+                break;
+            case MainButtonEnum.Type.OPTION:
+                panels[5].SetActive(true);
+                break;
+            case MainButtonEnum.Type.MYINFO:
+                panels[4].SetActive(true);
                 break;
         }
-    }
-
-    public void offCommunityPanel() {
-        communityPanel.SetActive(false);
-    }
-
-    public void onAvatar() {
-        avatar.SetActive(true);
     }
 
     public void offNotifyModal() {

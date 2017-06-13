@@ -320,7 +320,7 @@ public class Result_VC : MonoBehaviour {
         RidingDetails details = ridingStore.ridingDetails;
         innerRidingDetails[] coords = details.coords;
 
-        if(coords != null) {
+        if(coords.Length > 0) {
             float endLat = coords[coords.Length - 1].latitude;
             float endLon = coords[coords.Length - 1].longitude;
             Vector2 endPos = new Vector2(endLat, endLon);
@@ -346,7 +346,7 @@ public class Result_VC : MonoBehaviour {
         RidingDetails details = ridingStore.ridingDetails;
         innerRidingDetails[] coords = details.coords;
 
-        if (coords != null) {
+        if (coords.Length > 0) {
             //도착점 마커
             float lat = coords[coords.Length - 1].latitude;
             float lon = coords[coords.Length - 1].longitude;
