@@ -44,6 +44,8 @@ public class HistoryViewController : MonoBehaviour {
         preItem = null;
         preDate = null;
         isFirstGetRidingData = true;
+
+
     }
 
     public void ridingStoreListener() {
@@ -165,12 +167,10 @@ public class HistoryViewController : MonoBehaviour {
 
         obj.AddComponent<ButtonIndex>().index = id;
 
-        GameObject detailButton = obj.transform.Find("DetailButton").gameObject;
-
         EventDelegate eventBtn = new EventDelegate(this, "onDetail");
         eventBtn.parameters[0] = MakeParameter(obj.gameObject, typeof(GameObject));
 
-        EventDelegate.Add(detailButton.GetComponent<UIButton>().onClick, eventBtn);
+        EventDelegate.Add(obj.GetComponent<UIButton>().onClick, eventBtn);
     }
 
     //이전 라이딩 기록 추가로 불러옴

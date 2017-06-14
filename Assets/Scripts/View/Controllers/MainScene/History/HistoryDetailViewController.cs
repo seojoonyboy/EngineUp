@@ -24,6 +24,8 @@ public class HistoryDetailViewController : MonoBehaviour {
     public Text nickName, date;
     OnlineMapsDrawingLine _line;
 
+    public HistoryViewController parentController;
+
     void Awake() {
         gm = GameManager.Instance;
         ridingStore = gm.ridingStore;
@@ -45,6 +47,8 @@ public class HistoryDetailViewController : MonoBehaviour {
             col.enabled = true;
         }
         mapHeader.SetActive(false);
+
+        parentController.gameObject.SetActive(true);
     }
 
     public void setMap(RidingDetails data) {
@@ -53,7 +57,7 @@ public class HistoryDetailViewController : MonoBehaviour {
         preMapScale = map.transform.localScale;
         map.transform.localScale = new Vector3(1.45f, 1.0f, 1.45f);
         preMapPos = map.transform.localPosition;
-        map.transform.localPosition = new Vector3(-1953f, 380f, -1178f);
+        map.transform.localPosition = new Vector3(-1953f, 380f, -1179f);
         innerRidingDetails[] coords = data.coords;
         if(coords.Length == 0) {
             _map.position = new Vector2(127.74437f, 37.87998f);
@@ -72,6 +76,8 @@ public class HistoryDetailViewController : MonoBehaviour {
         _map.zoom = 18;
 
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
+
+        parentController.gameObject.SetActive(false);
     }
 
     public void onPanel() {
