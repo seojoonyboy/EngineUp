@@ -78,7 +78,7 @@ public class CharacterViewControlller : MonoBehaviour {
                     }
 
                     equipButton.SetActive(true);
-                    equipButton.transform.Find("Box/Check").gameObject.SetActive(true);
+                    equipButton.transform.Find("Check").gameObject.SetActive(true);
                     lvLabel.text = "Lv " + charInfo.lv.ToString();
                 }
             }
@@ -106,10 +106,10 @@ public class CharacterViewControlller : MonoBehaviour {
             equipButton.SetActive(true);
             character_inventory charInfo = userStore.myData.represent_character.character_inventory;
             if (index == charInfo.character) {
-                equipButton.transform.Find("Box/Check").gameObject.SetActive(true);
+                equipButton.transform.Find("Check").gameObject.SetActive(true);
             }
             else {
-                equipButton.transform.Find("Box/Check").gameObject.SetActive(false);
+                equipButton.transform.Find("Check").gameObject.SetActive(false);
             }
         }
         else {
@@ -141,7 +141,7 @@ public class CharacterViewControlller : MonoBehaviour {
         GameObject charPref = Instantiate(Characters[arrIndex].Pref[arrSubIndex]);
         prevMainChar = charPref;
         charPref.transform.SetParent(mainStage.transform);
-        charPref.transform.localPosition = new Vector3(0f, -36f, 0f);
+        charPref.transform.localPosition = new Vector3(0f, 40f, 0f);
         charPref.transform.localScale = Vector3.one;
         charPref.name = "Character";
     }
@@ -175,7 +175,7 @@ public class CharacterViewControlller : MonoBehaviour {
         act.id = selectedChar.GetComponent<Info>().id;
         gm.gameDispatcher.dispatch(act);
 
-        equipButton.transform.Find("Box/Check").gameObject.SetActive(true);
+        equipButton.transform.Find("Check").gameObject.SetActive(true);
     }
 
     public void makeList(int equipedCharIndex = -1) {
@@ -223,7 +223,7 @@ public class CharacterViewControlller : MonoBehaviour {
             UISprite sprite = item.transform.Find("Portrait").GetComponent<UISprite>();
             int atlasIndex = info.characterId;
             sprite.atlas = atlasArr[atlasIndex - 1];
-            sprite.spriteName = atlasIndex + "-1";
+            sprite.spriteName = atlasIndex + "-1-slider";
 
             UIDragScrollView dScrollView = item.AddComponent<UIDragScrollView>();
             dScrollView.scrollView = itemGrid.transform.parent.GetComponent<UIScrollView>();
