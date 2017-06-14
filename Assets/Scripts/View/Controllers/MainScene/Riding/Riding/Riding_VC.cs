@@ -58,8 +58,6 @@ public class Riding_VC : MonoBehaviour {
         pauseModal.SetActive(isPausePressed);
         beforeStartModal_AnimContainer.SetActive(false);
         StartPanel.SetActive(true);
-
-        //mainBtnCtrler.offToggleGroup();
     }
 
     //라이딩 시작 취소 버튼 클릭시
@@ -130,8 +128,12 @@ public class Riding_VC : MonoBehaviour {
 
     //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
     public void ridingEnd() {
-        //offToggleGroup();
+        offToggleGroup();
         gameObject.SetActive(false);
+        
+        ridingPanel.SetActive(false);
+        StartPanel.SetActive(true);
+
         exitModal.SetActive(false);
 
         RidingEndAction action = (RidingEndAction)ActionCreator.createAction(ActionTypes.RIDING_END);
@@ -144,7 +146,7 @@ public class Riding_VC : MonoBehaviour {
 
     //종료 모달에서 취소 버튼을 눌렀을 때
     public void onCancelExitButton() {
-        //offToggleGroup();
+        offToggleGroup();
         Time.timeScale = 1;
         exitModal.SetActive(false);
     }

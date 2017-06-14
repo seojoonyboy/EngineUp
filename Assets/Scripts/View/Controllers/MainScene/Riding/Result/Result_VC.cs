@@ -67,7 +67,6 @@ public class Result_VC : MonoBehaviour {
 
     void Awake() {
         gm = GameManager.Instance;
-
         UIEventListener.Get(mapViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
         UIEventListener.Get(confirmBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
         UIEventListener.Get(recordViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
@@ -301,7 +300,9 @@ public class Result_VC : MonoBehaviour {
         totalDist.text = (Math.Round(mDist, 2, MidpointRounding.AwayFromZero)).ToString();
 
         //char delimeter = '.';
-        totalTime.text = mTime.ToString();
+        if(mTime != null) {
+            totalTime.text = mTime.ToString();
+        }
 
         avgSpeed.text = (Math.Round(mAvgSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
         maxSpeed.text = (Math.Round(mMaxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
@@ -312,6 +313,8 @@ public class Result_VC : MonoBehaviour {
 
     public void offResultPanel() {
         OnDisable();
+
+
     }
 
     void _drawLine() {
