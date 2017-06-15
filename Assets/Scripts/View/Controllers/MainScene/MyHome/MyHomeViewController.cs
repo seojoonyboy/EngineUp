@@ -63,6 +63,7 @@ public class MyHomeViewController : MonoBehaviour {
             //서재(기록실)
             case 1:
                 subPanels[2].SetActive(true);
+                subPanels[2].GetComponent<HistoryViewController>().tweenPos();
                 break;
             //파트너룸(캐릭터)
             case 2:

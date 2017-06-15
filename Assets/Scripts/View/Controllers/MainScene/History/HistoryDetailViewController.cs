@@ -26,20 +26,64 @@ public class HistoryDetailViewController : MonoBehaviour {
 
     public HistoryViewController parentController;
 
+    private TweenPosition tP;
+    private bool isReverse_tp;
+    public GameObject blockingCollPanel;
+
     void Awake() {
         gm = GameManager.Instance;
         ridingStore = gm.ridingStore;
+
+        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+    }
+
+    public void tweenPos() {
+        if (!isReverse_tp) {
+            tP.PlayForward();
+        }
+        else {
+            //swap
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
+    }
+
+    public void tpFinished() {
+        //패널 닫기시
+        if (isReverse_tp) {
+            Debug.Log("닫기");
+            gameObject.SetActive(false);
+        }
+        //패널 활성화시
+        else {
+            blockingCollPanel.SetActive(false);
+            tP.transform.Find("TopPanel").gameObject.SetActive(true);
+
+            foreach (Collider col in collider) {
+                col.enabled = false;
+            }
+
+            GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
+            act.id = id;
+            gm.gameDispatcher.dispatch(act);
+
+
+        }
+
+        isReverse_tp = true;
     }
 
     //지도 사용을 위해 다른 collider를 꺼준다.
     void OnEnable() {
-        foreach(Collider col in collider) {
-            col.enabled = false;
-        }
+        tweenPos();
 
-        GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
-        act.id = id;
-        gm.gameDispatcher.dispatch(act);
+        blockingCollPanel.SetActive(true);
+        isReverse_tp = false;
     }
 
     void OnDisable() {
@@ -48,7 +92,10 @@ public class HistoryDetailViewController : MonoBehaviour {
         }
         mapHeader.SetActive(false);
 
-        parentController.gameObject.SetActive(true);
+        //parentController.gameObject.SetActive(true);
+
+        tP.transform.Find("TopPanel").gameObject.SetActive(false);
+        tP.ResetToBeginning();
     }
 
     public void setMap(RidingDetails data) {
@@ -76,8 +123,6 @@ public class HistoryDetailViewController : MonoBehaviour {
         _map.zoom = 18;
 
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
-
-        parentController.gameObject.SetActive(false);
     }
 
     public void onPanel() {
@@ -90,7 +135,6 @@ public class HistoryDetailViewController : MonoBehaviour {
         map.transform.localPosition = preMapPos;
         _map.RemoveAllDrawingElements();
 
-        gameObject.SetActive(false);
         map.SetActive(false);
     }
 

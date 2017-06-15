@@ -24,7 +24,8 @@ public class BicycleViewController : MonoBehaviour {
         sellButton,
         lockButton,
         bicycle,
-        itemGrid;
+        itemGrid,
+        blockingCollPanel;
 
     public GameObject 
         sellingModal,
@@ -48,8 +49,12 @@ public class BicycleViewController : MonoBehaviour {
 
     public UILabel lvLavel;
 
+    private TweenPosition tP;
+    private bool isReverse_tp;
+
     void Awake() {
         gm = GameManager.Instance;
+        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
     }
 
     public void onBicycleItemStoreListener() {
@@ -71,12 +76,46 @@ public class BicycleViewController : MonoBehaviour {
 
     void OnEnable() {
         itemInitAct();
+
+        tweenPos();
+        blockingCollPanel.SetActive(true);
+        isReverse_tp = false;
+
+        tP.transform.Find("TopPanel").gameObject.SetActive(false);
+        tP.ResetToBeginning();
+    }
+
+    public void tweenPos() {
+        if (!isReverse_tp) {
+            tP.PlayForward();
+        }
+        else {
+            //swap
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
     }
 
     void Start() {
         for(int i=0; i<scrollview.Length; i++) {
             scrollview[i].transform.Find("Grid").GetComponent<UICenterOnChild>().nextPageThreshold = 4;
         }
+    }
+
+    public void tpFinished() {
+        tP.transform.Find("TopPanel").gameObject.SetActive(true);
+        blockingCollPanel.SetActive(false);
+
+        if (isReverse_tp) {
+            gameObject.SetActive(false);
+        }
+
+        isReverse_tp = true;
     }
 
     void OnDisable() {
