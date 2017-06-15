@@ -29,21 +29,20 @@ public class HistoryViewController : MonoBehaviour {
     private TweenPosition tP;
     private bool isReverse_tp;
     public GameObject blockingCollPanel;
-
     void Awake() {
         gm = GameManager.Instance;
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
     }
 
-    void OnEnable() {
+    public void onPanel() {
         tweenPos();
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
     }
 
-    void OnDisable() {
-        foreach(Transform obj in scrollView.transform) {
+    public void onBackButton() {
+        foreach (Transform obj in scrollView.transform) {
             Destroy(obj.gameObject);
         }
         innerItem = null;
@@ -77,6 +76,7 @@ public class HistoryViewController : MonoBehaviour {
             gameObject.SetActive(false);
         }
         else {
+            blockingCollPanel.SetActive(false);
             tP.transform.Find("TopPanel").gameObject.SetActive(true);
             getRidingDataSets();
         }
@@ -85,15 +85,15 @@ public class HistoryViewController : MonoBehaviour {
     }
 
     public void ridingStoreListener() {
-        if(gameObject.activeSelf) {
-            if (ridingStore.eventType == ActionTypes.GET_RIDING_RECORDS) {
-                if (ridingStore.storeStatus == storeStatus.NORMAL) {
-                    makeList();
-                }
+        if (ridingStore.eventType == ActionTypes.GET_RIDING_RECORDS) {
+            if (ridingStore.storeStatus == storeStatus.NORMAL) {
+                makeList();
             }
+        }
 
-            if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
-                if (ridingStore.storeStatus == storeStatus.NORMAL) {
+        if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
+            if (ridingStore.storeStatus == storeStatus.NORMAL) {
+                if(ridingStore.callRecType == GetRidingRecords.callType.HISTORY) {
                     subController.mapHeader.SetActive(true);
                     subController.setInfo(ridingStore.ridingDetails);
                     subController.setMap(ridingStore.ridingDetails);

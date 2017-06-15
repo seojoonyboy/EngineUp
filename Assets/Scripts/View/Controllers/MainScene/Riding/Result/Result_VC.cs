@@ -388,6 +388,7 @@ public class Result_VC : MonoBehaviour {
 
         GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
         act.id = ridingStore.ridingId;
+        act.type = GetRidingRecords.callType.RIDING_RESULT;
         gm.gameDispatcher.dispatch(act);
     }
 

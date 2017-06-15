@@ -50,6 +50,9 @@ public class HistoryDetailViewController : MonoBehaviour {
 
             tP.ResetToBeginning();
             tP.PlayForward();
+
+            parentController.gameObject.SetActive(true);
+            parentController.blockingCollPanel.SetActive(false);
         }
     }
 
@@ -61,6 +64,7 @@ public class HistoryDetailViewController : MonoBehaviour {
         }
         //패널 활성화시
         else {
+            Debug.Log("열기");
             blockingCollPanel.SetActive(false);
             tP.transform.Find("TopPanel").gameObject.SetActive(true);
 
@@ -70,9 +74,9 @@ public class HistoryDetailViewController : MonoBehaviour {
 
             GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
             act.id = id;
+            act.type = GetRidingRecords.callType.HISTORY;
             gm.gameDispatcher.dispatch(act);
-
-
+            parentController.offPanel();
         }
 
         isReverse_tp = true;

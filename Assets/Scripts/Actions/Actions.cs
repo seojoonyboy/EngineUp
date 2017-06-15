@@ -229,6 +229,10 @@ public class RidingResultAction : Actions {
 }
 
 public class GetRidingRecords : NetworkAction {
+    //서재에서. 라이딩 결과화면에서 사용 목적
+    public enum callType { HISTORY, RIDING_RESULT };
+    public callType type;
+
     public bool isFirst = false;
 
     //상세보기에서 필요

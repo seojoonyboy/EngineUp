@@ -33,6 +33,7 @@ public class Riding : AjwStore{
     public RidingDetails ridingDetails;
 
     public string postsCallbackHeader;
+    public GetRidingRecords.callType callRecType;
 
     public Riding(QueueDispatcher<Actions> _dispatcher):base(_dispatcher){
         postBuffer = new coordData[10];
@@ -166,6 +167,9 @@ public class Riding : AjwStore{
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 storeStatus = storeStatus.WAITING_REQ;
+
+                callRecType = payload.type;
+
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl).Append("ridings");
