@@ -7,9 +7,53 @@ public class OptionController : MonoBehaviour {
     Riding ridingStore;
     public GameObject[] modals;
 
-    void Start() {
+    private TweenPosition tP;
+    public GameObject blockingCollPanel;
+    private bool isReverse_tp;
+    void Awake() {
         gm = GameManager.Instance;
         ridingStore = gm.ridingStore;
+
+        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+    }
+
+    void OnEnable() {
+        tweenPos();
+
+        blockingCollPanel.SetActive(true);
+        isReverse_tp = false;
+    }
+
+    void OnDisable() {
+        tP.transform.Find("TopPanel").gameObject.SetActive(false);
+        tP.ResetToBeginning();
+    }
+
+    public void tweenPos() {
+        if (!isReverse_tp) {
+            tP.PlayForward();
+        }
+        else {
+            //swap
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
+    }
+
+    public void tPFinished() {
+        tP.transform.Find("TopPanel").gameObject.SetActive(true);
+        blockingCollPanel.SetActive(false);
+
+        if (isReverse_tp) {
+            gameObject.SetActive(false);
+        }
+
+        isReverse_tp = true;
     }
 
     public void offPanel() {

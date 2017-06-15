@@ -36,13 +36,20 @@ public class StatViewController : MonoBehaviour {
 
     public Transform canvas;
     bool isSelWHNow = false;
+
+    private TweenPosition tP;
+    public GameObject blockingCollPanel;
+    private bool isReverse_tp;
     void Awake() {
         gm = GameManager.Instance;
+        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
     }
 
     void OnEnable() {
-        MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
-        gm.gameDispatcher.dispatch(act);
+        tweenPos();
+
+        blockingCollPanel.SetActive(true);
+        isReverse_tp = false;
     }
 
     void Update() {
@@ -52,6 +59,45 @@ public class StatViewController : MonoBehaviour {
                 Debug.Log("모바일 뒤로가기 버튼 클릭");
             }
         }
+    }
+
+    public void tweenPos() {
+        if (!isReverse_tp) {
+            tP.PlayForward();
+        }
+        else {
+            //swap
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+
+            tP.ResetToBeginning();
+            tP.PlayForward();
+
+            tP.transform.Find("TopPanel").gameObject.SetActive(false);
+        }
+    }
+
+    public void tPFinished() {
+        blockingCollPanel.SetActive(false);
+
+        if (isReverse_tp) {
+            gameObject.SetActive(false);
+        }
+        else {
+            tP.transform.Find("TopPanel").gameObject.SetActive(true);
+
+            MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+            gm.gameDispatcher.dispatch(act);
+        }
+
+        isReverse_tp = true;
+    }
+
+    void OnDisable() {
+        tP.transform.Find("TopPanel").gameObject.SetActive(false);
+        tP.ResetToBeginning();
     }
 
     public void onUserListener() {
