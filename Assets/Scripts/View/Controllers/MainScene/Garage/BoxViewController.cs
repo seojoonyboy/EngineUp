@@ -10,6 +10,8 @@ public class BoxViewController : MonoBehaviour {
 
     private GameManager gm;
     private Box_Inventory boxStore;
+    private TweenPosition tP;
+
     public User userStore;
 
     public GameObject 
@@ -19,7 +21,8 @@ public class BoxViewController : MonoBehaviour {
 
     public GameObject 
         _openEffect,
-        multiOpenTable;
+        multiOpenTable,
+        blockingCollPanel;
 
     public UIAtlas 
         bicycleAtlas,
@@ -29,11 +32,18 @@ public class BoxViewController : MonoBehaviour {
     void Awake() {
         gm = GameManager.Instance;
         boxStore = gm.boxInvenStore;
+
+        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+        tP.eventReceiver = gameObject;
+        tP.callWhenFinished = "tPFinished";
     }
 
     void OnEnable() {
         MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
         gm.gameDispatcher.dispatch(act);
+
+        tP.PlayForward();
+        blockingCollPanel.SetActive(true);
     }
 
     public void onUserStoreListener() {
@@ -45,6 +55,11 @@ public class BoxViewController : MonoBehaviour {
                 multiModalBoxNum.text = "x " + boxNum;
             }
         }
+    }
+
+    void OnDisable() {
+        tP.transform.Find("TopPanel").gameObject.SetActive(false);
+        tP.ResetToBeginning();
     }
 
     public void onBoxStoreListener() {
@@ -196,5 +211,10 @@ public class BoxViewController : MonoBehaviour {
 
     public void offPanel() {
         gameObject.SetActive(false);
+    }
+
+    void tPFinished() {
+        tP.transform.Find("TopPanel").gameObject.SetActive(true);
+        blockingCollPanel.SetActive(false);
     }
 }

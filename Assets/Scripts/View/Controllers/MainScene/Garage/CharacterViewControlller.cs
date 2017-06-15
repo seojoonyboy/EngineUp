@@ -17,7 +17,8 @@ public class CharacterViewControlller : MonoBehaviour {
         itemPref,
         selectedChar,
         IllustPanel,
-        DescPanel;
+        DescPanel,
+        blockingCollPanel;
 
     public GameObject equipButton;
     public UILabel[] stats;
@@ -36,18 +37,59 @@ public class CharacterViewControlller : MonoBehaviour {
     public UISlider friendlySlider;
 
     private GameObject prevMainChar;
+
+    private TweenPosition tP;
+    private bool isReverse_tp;
+
     void Awake() {
         gm = GameManager.Instance;
         charInvenStore = gm.charInvenStore;
+
+        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
     }
 
     void OnEnable() {
+        tweenPos();
+
+        blockingCollPanel.SetActive(true);
+        isReverse_tp = false;
+
         getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
         gm.gameDispatcher.dispatch(act);
     }
 
     void OnDisable() {
         selectedChar = null;
+
+        tP.transform.Find("TopPanel").gameObject.SetActive(false);
+        tP.ResetToBeginning();
+    }
+
+    public void tweenPos() {
+        if (!isReverse_tp) {
+            tP.PlayForward();
+        }
+        else {
+            //swap
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
+    }
+
+    public void tpFinished() {
+        tP.transform.Find("TopPanel").gameObject.SetActive(true);
+        blockingCollPanel.SetActive(false);
+
+        if (isReverse_tp) {
+            gameObject.SetActive(false);
+        }
+
+        isReverse_tp = true;
     }
 
     public void onCharInvenStore() {
@@ -261,10 +303,6 @@ public class CharacterViewControlller : MonoBehaviour {
         public string desc;
         public int cost;
         public int[] lvup_exps;
-    }
-
-    public void offPanel() {
-        gameObject.SetActive(false);
     }
 
     public void onIllustPanel() {

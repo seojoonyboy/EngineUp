@@ -44,7 +44,6 @@ public class Riding : AjwStore{
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 storeStatus = storeStatus.WAITING_REQ;
-                Debug.Log("GPS 전송");
                 System.Text.StringBuilder _sb = GameManager.Instance.sb;
                 _sb.Remove(0, _sb.Length);
                 for (var i = 0; i < postBufferCounter; i++) {
@@ -69,8 +68,6 @@ public class Riding : AjwStore{
                     //f.AddField("isPaused", "true");
                     f.AddField("isPaused", 1);
                 }
-
-                Debug.Log("전송 CoordData : " + coordData);
                 networkManager.request("PUT", _sb.ToString(), f, ncExt.networkCallback(dispatcher, payload));
                 postBufferCounter = 0;
                 break;
@@ -153,15 +150,11 @@ public class Riding : AjwStore{
             break;
         case NetworkAction.statusTypes.SUCCESS:
             storeStatus = storeStatus.NORMAL;
-
-            Debug.Log("riding start success");
             RidingData ridingData = RidingData.fromJSON(act.response.data);
             ridingId = ridingData.id;
             break;
         case NetworkAction.statusTypes.FAIL:
             storeStatus = storeStatus.ERROR;
-
-            Debug.Log("riding start fail");
             Debug.Log(act.response.data);
             break;
         }

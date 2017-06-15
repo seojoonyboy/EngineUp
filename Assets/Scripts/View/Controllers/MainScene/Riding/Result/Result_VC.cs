@@ -65,6 +65,8 @@ public class Result_VC : MonoBehaviour {
         SpeedIcon,
         RecoIcon;
 
+    private TweenPosition tP;
+
     void Awake() {
         gm = GameManager.Instance;
         UIEventListener.Get(mapViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
@@ -75,6 +77,14 @@ public class Result_VC : MonoBehaviour {
     void Start() {
         TextAsset file = (TextAsset)Resources.Load("Exp");
         exps = JsonHelper.getJsonArray<Exp>(file.text);
+
+        tP = gameObject.transform.Find("Container").GetComponent<TweenPosition>();
+        tP.eventReceiver = gameObject;
+        tP.callWhenFinished = "offResultPanel";
+    }
+
+    void OnEnable() {
+        
     }
 
     void btnListener(GameObject obj, bool state) {
@@ -101,7 +111,7 @@ public class Result_VC : MonoBehaviour {
                     break;
                 //확인 버튼
                 case 1:
-                    OnDisable();
+                    tweenPos();
                     break;
                 //결과화면 보기 버튼
                 case 2:
@@ -311,10 +321,13 @@ public class Result_VC : MonoBehaviour {
         this.boxNum.text = boxNum.ToString();
     }
 
+    public void tweenPos() {
+        tP.PlayForward();
+    }
+
     public void offResultPanel() {
         OnDisable();
-
-
+        tP.ResetToBeginning();
     }
 
     void _drawLine() {

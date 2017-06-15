@@ -4,6 +4,54 @@ using UnityEngine;
 
 public class MyHomeViewController : MonoBehaviour {
     public GameObject[] subPanels;
+    private TweenPosition tP;
+
+    public GameObject blockingCollPanel;
+
+    private bool isReverse_tp;
+
+    void Awake() {
+        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+    }
+
+    void OnEnable() {
+        tweenPos();
+
+        blockingCollPanel.SetActive(true);
+        isReverse_tp = false;
+    }
+
+    void OnDisable() {
+        tP.transform.Find("TopPanel").gameObject.SetActive(false);
+        tP.ResetToBeginning();
+    }
+
+    public void tweenPos() {
+        if(!isReverse_tp) {
+            tP.PlayForward();
+        }
+        else {
+            //swap
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
+    }
+
+    public void tPFinished() {
+        tP.transform.Find("TopPanel").gameObject.SetActive(true);
+        blockingCollPanel.SetActive(false);
+
+        if(isReverse_tp) {
+            gameObject.SetActive(false);
+        }
+
+        isReverse_tp = true;
+    }
 
     public void onClick(GameObject obj) {
         int index = obj.GetComponent<ButtonIndex>().index;
@@ -21,9 +69,5 @@ public class MyHomeViewController : MonoBehaviour {
                 subPanels[0].SetActive(true);
                 break;
         }
-    }
-
-    public void offPanel() {
-        gameObject.SetActive(false);
     }
 }

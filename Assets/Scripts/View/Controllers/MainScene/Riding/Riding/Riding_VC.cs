@@ -16,7 +16,8 @@ public class Riding_VC : MonoBehaviour {
         beforeStartModal_AnimContainer,
         ridingPanel,
         pauseBtn,
-        exitBtn;
+        exitBtn,
+        blockingCollPanel;
 
     private GameObject gpsReceiver;
 
@@ -41,9 +42,16 @@ public class Riding_VC : MonoBehaviour {
     public int sliderMaxValue;
 
     private int boxNum = 0;
+
+    private TweenPosition tP;
     void Start() {
         gameManager = GameManager.Instance;
-        //gosReceiver = Instantiate(gpsPref);
+    }
+
+    void Awake() {
+        tP = StartPanel.transform.Find("Background").GetComponent<TweenPosition>();
+        tP.eventReceiver = gameObject;
+        tP.callWhenFinished = "tPFinished";
     }
 
     void OnEnable() {
@@ -51,13 +59,24 @@ public class Riding_VC : MonoBehaviour {
         distLabel.text = "0";
         maxLabel.text = "0";
         uphillDistanceLabel.text = "0";
+
+        blockingCollPanel.SetActive(true);
+        tP.PlayForward();
     }
 
     void OnDisable() {
         isPausePressed = false;
         pauseModal.SetActive(isPausePressed);
         beforeStartModal_AnimContainer.SetActive(false);
+
+        tP.ResetToBeginning();
+
         StartPanel.SetActive(true);
+        blockingCollPanel.SetActive(false);
+    }
+
+    void tPFinished() {
+        blockingCollPanel.SetActive(false);
     }
 
     //라이딩 시작 취소 버튼 클릭시
