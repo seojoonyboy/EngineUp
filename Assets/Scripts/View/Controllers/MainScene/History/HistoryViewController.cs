@@ -119,13 +119,15 @@ public class HistoryViewController : MonoBehaviour {
                 //이전과 다른 날짜인 경우
                 //새로운 컨테이너를 생성
                 item = Instantiate(container);
-
                 item.transform.Find("Header/Label").GetComponent<UILabel>().text = date[0] + " . " + date[1] + " . " + date[2];
                 GameObject inner = item.transform.Find("Grid/HistoryInnerContainer").gameObject;
 
                 setInfo(inner, data[i].runningTime, gm.userStore.nickName, data[i].get_boxes, data[i].distance, data[i].id);
+                
+                UIDragScrollView dS = inner.AddComponent<UIDragScrollView>();
+                dS.scrollView = scrollView;
 
-                if(preItem == null) {
+                if (preItem == null) {
                     UIAnchor anchor = item.AddComponent<UIAnchor>();
                     anchor.container = containerFirstTarget;
                     anchor.runOnlyOnce = true;
@@ -156,6 +158,9 @@ public class HistoryViewController : MonoBehaviour {
                 innerItem.transform.localPosition = Vector3.zero;
 
                 setInfo(innerItem, data[i].runningTime, gm.userStore.nickName, data[i].get_boxes, data[i].distance, data[i].id);
+
+                UIDragScrollView dS = innerItem.AddComponent<UIDragScrollView>();
+                dS.scrollView = scrollView;
             }
 
             item.transform.SetParent(scrollView.transform);
