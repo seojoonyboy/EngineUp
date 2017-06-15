@@ -28,22 +28,50 @@ public class BoxViewController : MonoBehaviour {
         bicycleAtlas,
         charAtlas,
         uiAtlas;
+    private bool isReverse_tp;
 
     void Awake() {
         gm = GameManager.Instance;
         boxStore = gm.boxInvenStore;
 
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
-        tP.eventReceiver = gameObject;
-        tP.callWhenFinished = "tPFinished";
     }
 
     void OnEnable() {
         MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
         gm.gameDispatcher.dispatch(act);
 
-        tP.PlayForward();
+        tweenPos();
+
         blockingCollPanel.SetActive(true);
+        isReverse_tp = false;
+    }
+
+    public void tweenPos() {
+        if (!isReverse_tp) {
+            tP.PlayForward();
+        }
+        else {
+            //swap
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
+    }
+
+    public void tPFinished() {
+        tP.transform.Find("TopPanel").gameObject.SetActive(true);
+        blockingCollPanel.SetActive(false);
+
+        if (isReverse_tp) {
+            gameObject.SetActive(false);
+        }
+
+        isReverse_tp = true;
     }
 
     public void onUserStoreListener() {
@@ -211,10 +239,5 @@ public class BoxViewController : MonoBehaviour {
 
     public void offPanel() {
         gameObject.SetActive(false);
-    }
-
-    void tPFinished() {
-        tP.transform.Find("TopPanel").gameObject.SetActive(true);
-        blockingCollPanel.SetActive(false);
     }
 }
