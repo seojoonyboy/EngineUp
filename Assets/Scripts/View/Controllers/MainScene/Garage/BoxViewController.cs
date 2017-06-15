@@ -60,15 +60,20 @@ public class BoxViewController : MonoBehaviour {
 
             tP.ResetToBeginning();
             tP.PlayForward();
+
+            tP.transform.Find("TopPanel").gameObject.SetActive(false);
         }
     }
 
     public void tPFinished() {
-        tP.transform.Find("TopPanel").gameObject.SetActive(true);
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
             gameObject.SetActive(false);
+        }
+
+        else {
+            tP.transform.Find("TopPanel").gameObject.SetActive(true);
         }
 
         isReverse_tp = true;
