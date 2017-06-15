@@ -104,6 +104,7 @@ public class HistoryDetailViewController : MonoBehaviour {
 
     public void setMap(RidingDetails data) {
         map.SetActive(true);
+        Debug.Log("?!");
         OnlineMaps _map = map.GetComponent<OnlineMaps>();
         preMapScale = map.transform.localScale;
         map.transform.localScale = new Vector3(1.45f, 1.0f, 1.45f);

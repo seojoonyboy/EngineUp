@@ -167,9 +167,6 @@ public class Riding : AjwStore{
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 storeStatus = storeStatus.WAITING_REQ;
-
-                callRecType = payload.type;
-
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl).Append("ridings");
@@ -206,6 +203,9 @@ public class Riding : AjwStore{
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 storeStatus = storeStatus.WAITING_REQ;
+                callRecType = payload.type;
+                Debug.Log(payload.type);
+
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder

@@ -105,12 +105,14 @@ public class Result_VC : MonoBehaviour {
             switch (index) {
                 //지도화면 보기 버튼
                 case 0:
+                    Debug.Log("지도 화면 보기 버튼");
                     onMapPanel();
                     mapViewBtn.SetActive(false);
                     recordViewBtn.SetActive(true);
                     break;
                 //확인 버튼
                 case 1:
+                    offMapPanel();
                     tweenPos();
                     break;
                 //결과화면 보기 버튼
