@@ -27,7 +27,10 @@ public class HistoryDetailViewController : MonoBehaviour {
     public HistoryViewController parentController;
 
     private TweenPosition tP;
-    private bool isReverse_tp;
+    private bool 
+        isReverse_tp,
+        isTweening = false;
+
     public GameObject blockingCollPanel;
 
     void Awake() {
@@ -38,6 +41,11 @@ public class HistoryDetailViewController : MonoBehaviour {
     }
 
     public void tweenPos() {
+        if (isTweening) {
+            return;
+        }
+        isTweening = true;
+        blockingCollPanel.SetActive(true);
         if (!isReverse_tp) {
             tP.PlayForward();
         }
@@ -57,6 +65,8 @@ public class HistoryDetailViewController : MonoBehaviour {
     }
 
     public void tpFinished() {
+        isTweening = false;
+        blockingCollPanel.SetActive(false);
         //패널 닫기시
         if (isReverse_tp) {
             gameObject.SetActive(false);

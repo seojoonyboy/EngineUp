@@ -8,7 +8,9 @@ public class MyHomeViewController : MonoBehaviour {
 
     public GameObject blockingCollPanel;
 
-    private bool isReverse_tp;
+    private bool 
+        isReverse_tp,
+        isTweening = false;
 
     void Awake() {
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
@@ -26,7 +28,12 @@ public class MyHomeViewController : MonoBehaviour {
     }
 
     public void tweenPos() {
-        if(!isReverse_tp) {
+        if (isTweening) {
+            return;
+        }
+        isTweening = true;
+        blockingCollPanel.SetActive(true);
+        if (!isReverse_tp) {
             tP.PlayForward();
         }
         else {
@@ -42,6 +49,7 @@ public class MyHomeViewController : MonoBehaviour {
     }
 
     public void tPFinished() {
+        isTweening = false;
         blockingCollPanel.SetActive(false);
 
         if(isReverse_tp) {
