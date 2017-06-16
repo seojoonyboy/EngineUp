@@ -1005,6 +1005,7 @@ GameObject:
   - component: {fileID: 16145511}
   - component: {fileID: 16145513}
   - component: {fileID: 16145512}
+  - component: {fileID: 16145514}
   m_Layer: 5
   m_Name: ConfirmButton
   m_TagString: Untagged
@@ -1125,6 +1126,21 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 188, y: 76, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &16145514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 16145509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 7d734d412e5152c4a97c7c46405bfcef, type: 3}
+  trigger: 0
+  volume: 1
+  pitch: 1
 --- !u!1 &19772496
 GameObject:
   m_ObjectHideFlags: 0
@@ -7361,7 +7377,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 795
+  mWidth: 794
   mHeight: 336
   mDepth: 1
   mMat: {fileID: 0}
@@ -10275,6 +10291,9 @@ MonoBehaviour:
   atlas: {fileID: 114209369144659982, guid: 0e401decb4263894ebc7043bc91fb0a5, type: 2}
   bicycleAtlas: {fileID: 114754161491036460, guid: 4d3af00071fb91d48a9ff8030dffb593,
     type: 2}
+  audioClip:
+  - {fileID: 8300000, guid: c04265f48a67d3048b261a094e41e67e, type: 3}
+  - {fileID: 8300000, guid: 8a969c70eda03a74bade9d418e4ef84d, type: 3}
   lvLavel: {fileID: 1865286251}
 --- !u!1 &168669144
 GameObject:
@@ -12945,7 +12964,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0, g: 0, b: 0, a: 1}
   mPivot: 4
-  mWidth: 535
+  mWidth: 534
   mHeight: 2
   mDepth: 4
   mMat: {fileID: 0}
@@ -17105,7 +17124,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3025
+  startingRenderQueue: 3024
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 3
@@ -21905,7 +21924,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0.2205882, g: 0.2205882, b: 0.2205882, a: 0.622}
   mPivot: 4
-  mWidth: 1083
+  mWidth: 1082
   mHeight: 1923
   mDepth: 0
   mMat: {fileID: 0}
@@ -25301,6 +25320,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isOn: 0
+--- !u!114 &404838552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 404838550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 7d734d412e5152c4a97c7c46405bfcef, type: 3}
+  trigger: 0
+  volume: 1
+  pitch: 1
 --- !u!1 &406040498
 GameObject:
   m_ObjectHideFlags: 0
@@ -25545,7 +25579,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 797
+  mWidth: 796
   mHeight: 334
   mDepth: 1
   mMat: {fileID: 0}
@@ -27526,7 +27560,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 436586511}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 163, y: -395, z: 0}
+  m_LocalPosition: {x: 162, y: -395, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 843368796}
@@ -30124,6 +30158,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isOn: 0
+--- !u!114 &472908926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 472908924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 7d734d412e5152c4a97c7c46405bfcef, type: 3}
+  trigger: 0
+  volume: 1
+  pitch: 1
 --- !u!1001 &474176737
 Prefab:
   m_ObjectHideFlags: 0
@@ -32299,103 +32348,6 @@ MonoBehaviour:
   mFont: {fileID: 114000011590425542, guid: 71204597dfa391042894eb4c937a4fc5, type: 2}
   mText: New Label
   mFontSize: 40
-  mFontStyle: 0
-  mAlignment: 0
-  mEncoding: 1
-  mMaxLineCount: 0
-  mEffectStyle: 0
-  mEffectColor: {r: 0, g: 0, b: 0, a: 1}
-  mSymbols: 1
-  mEffectDistance: {x: 1, y: 1}
-  mOverflow: 0
-  mApplyGradient: 0
-  mGradientTop: {r: 1, g: 1, b: 1, a: 1}
-  mGradientBottom: {r: 0.7, g: 0.7, b: 0.7, a: 1}
-  mSpacingX: 0
-  mSpacingY: 0
-  mUseFloatSpacing: 0
-  mFloatSpacingX: 0
-  mFloatSpacingY: 0
-  mOverflowEllipsis: 0
-  mOverflowWidth: 0
-  mModifier: 0
-  mShrinkToFit: 0
-  mMaxLineWidth: 0
-  mMaxLineHeight: 0
-  mLineWidth: 0
-  mMultiline: 1
---- !u!1 &506297233
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 506297234}
-  - component: {fileID: 506297235}
-  m_Layer: 5
-  m_Name: Label
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &506297234
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 506297233}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 780604581}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &506297235
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 506297233}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9d0b5f3bbe925a408bd595c79d0bf63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leftAnchor:
-    target: {fileID: 780604581}
-    relative: 0
-    absolute: 15
-  rightAnchor:
-    target: {fileID: 780604581}
-    relative: 1
-    absolute: -15
-  bottomAnchor:
-    target: {fileID: 780604581}
-    relative: 0
-    absolute: 13
-  topAnchor:
-    target: {fileID: 780604581}
-    relative: 1
-    absolute: -13
-  updateAnchors: 1
-  mColor: {r: 1, g: 1, b: 1, a: 1}
-  mPivot: 4
-  mWidth: 142
-  mHeight: 30
-  mDepth: 6
-  mMat: {fileID: 0}
-  autoResizeBoxCollider: 0
-  hideIfOffScreen: 0
-  keepAspectRatio: 0
-  aspectRatio: 3.3809524
-  keepCrispWhenShrunk: 1
-  mTrueTypeFont: {fileID: 0}
-  mFont: {fileID: 114000011092689454, guid: 389e6b28ca6e817498e03b80cf62c54e, type: 2}
-  mText: "\uCE90\uB9AD\uD130 \uC7A5\uCC29\uD558\uAE30"
-  mFontSize: 60
   mFontStyle: 0
   mAlignment: 0
   mEncoding: 1
@@ -35792,7 +35744,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 1, g: 1, b: 1, a: 1}
   mPivot: 4
-  mWidth: 707
+  mWidth: 706
   mHeight: 978
   mDepth: 1
   mMat: {fileID: 0}
@@ -39713,7 +39665,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3022
+  startingRenderQueue: 3023
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -45656,6 +45608,7 @@ GameObject:
   m_Component:
   - component: {fileID: 718076405}
   - component: {fileID: 718076406}
+  - component: {fileID: 718076407}
   m_Layer: 5
   m_Name: ItemDetailModal
   m_TagString: Untagged
@@ -45716,7 +45669,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3026
+  startingRenderQueue: 3025
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -45727,6 +45680,21 @@ MonoBehaviour:
   mSortingLayerName: 
   mClipOffset: {x: 0, y: 0}
   useSortingOrder: 0
+--- !u!114 &718076407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 718076404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: c04265f48a67d3048b261a094e41e67e, type: 3}
+  trigger: 6
+  volume: 1
+  pitch: 1
 --- !u!1 &718503428
 GameObject:
   m_ObjectHideFlags: 0
@@ -47270,6 +47238,7 @@ GameObject:
   m_Component:
   - component: {fileID: 738574169}
   - component: {fileID: 738574170}
+  - component: {fileID: 738574171}
   m_Layer: 5
   m_Name: SellingModal
   m_TagString: Untagged
@@ -47341,6 +47310,21 @@ MonoBehaviour:
   mSortingLayerName: 
   mClipOffset: {x: 0, y: 0}
   useSortingOrder: 0
+--- !u!114 &738574171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 738574168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: c04265f48a67d3048b261a094e41e67e, type: 3}
+  trigger: 6
+  volume: 1
+  pitch: 1
 --- !u!1 &739626300
 GameObject:
   m_ObjectHideFlags: 0
@@ -49414,133 +49398,6 @@ MonoBehaviour:
   mMaxLineHeight: 0
   mLineWidth: 0
   mMultiline: 1
---- !u!1 &780604580
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 780604581}
-  - component: {fileID: 780604584}
-  - component: {fileID: 780604583}
-  - component: {fileID: 780604582}
-  m_Layer: 5
-  m_Name: EquipButton
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &780604581
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 780604580}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -370, y: 768, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 506297234}
-  m_Father: {fileID: 2054490827}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &780604582
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 780604580}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tweenTarget: {fileID: 780604580}
-  hover: {r: 0.88235295, g: 0.78431374, b: 0.5882353, a: 1}
-  pressed: {r: 0.7176471, g: 0.6392157, b: 0.48235294, a: 1}
-  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  duration: 0.2
-  dragHighlight: 0
-  hoverSprite: 
-  pressedSprite: 
-  disabledSprite: 
-  hoverSprite2D: {fileID: 0}
-  pressedSprite2D: {fileID: 0}
-  disabledSprite2D: {fileID: 0}
-  pixelSnap: 0
-  onClick:
-  - mTarget: {fileID: 508020537}
-    mMethodName: equipCharButton
-    mParameters: []
-    oneShot: 0
---- !u!65 &780604583
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 780604580}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 172, y: 56, z: 0}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &780604584
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 780604580}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b3dc54f924693f41b5cbecb267e647a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leftAnchor:
-    target: {fileID: 0}
-    relative: 0
-    absolute: 0
-  rightAnchor:
-    target: {fileID: 0}
-    relative: 1
-    absolute: 0
-  bottomAnchor:
-    target: {fileID: 0}
-    relative: 0
-    absolute: 0
-  topAnchor:
-    target: {fileID: 0}
-    relative: 1
-    absolute: 0
-  updateAnchors: 1
-  mColor: {r: 1, g: 1, b: 1, a: 1}
-  mPivot: 4
-  mWidth: 172
-  mHeight: 56
-  mDepth: 5
-  mMat: {fileID: 0}
-  autoResizeBoxCollider: 1
-  hideIfOffScreen: 0
-  keepAspectRatio: 0
-  aspectRatio: 3.0714285
-  mType: 1
-  mFillDirection: 4
-  mFillAmount: 1
-  mInvert: 0
-  mFlip: 0
-  mApplyGradient: 0
-  mGradientTop: {r: 1, g: 1, b: 1, a: 1}
-  mGradientBottom: {r: 0.7, g: 0.7, b: 0.7, a: 1}
-  centerType: 1
-  leftType: 1
-  rightType: 1
-  bottomType: 1
-  topType: 1
-  mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
-  mSpriteName: garage_butten
-  mFillCenter: 1
 --- !u!1 &780667009
 GameObject:
   m_ObjectHideFlags: 0
@@ -50583,6 +50440,7 @@ GameObject:
   - component: {fileID: 809307844}
   - component: {fileID: 809307843}
   - component: {fileID: 809307842}
+  - component: {fileID: 809307845}
   m_Layer: 5
   m_Name: ConfirmButton
   m_TagString: Untagged
@@ -50703,6 +50561,21 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: riding_modal_button
   mFillCenter: 1
+--- !u!114 &809307845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 809307840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 7d734d412e5152c4a97c7c46405bfcef, type: 3}
+  trigger: 0
+  volume: 1
+  pitch: 1
 --- !u!1 &810292368
 GameObject:
   m_ObjectHideFlags: 0
@@ -55473,7 +55346,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 889007614}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2, y: 43, z: 0}
+  m_LocalPosition: {x: -1, y: 43, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 407333816}
@@ -55509,7 +55382,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0, g: 0, b: 0, a: 1}
   mPivot: 4
-  mWidth: 544
+  mWidth: 543
   mHeight: 46
   mDepth: 2
   mMat: {fileID: 0}
@@ -55572,7 +55445,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 889288024}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -157, y: -396, z: 0}
+  m_LocalPosition: {x: -156, y: -396, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 920731401}
@@ -60121,6 +59994,7 @@ GameObject:
   - component: {fileID: 964198719}
   - component: {fileID: 964198721}
   - component: {fileID: 964198720}
+  - component: {fileID: 964198722}
   m_Layer: 5
   m_Name: CancelButton
   m_TagString: Untagged
@@ -60237,6 +60111,21 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 188, y: 74, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &964198722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 964198717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 7d734d412e5152c4a97c7c46405bfcef, type: 3}
+  trigger: 0
+  volume: 1
+  pitch: 1
 --- !u!1 &965249475
 GameObject:
   m_ObjectHideFlags: 0
@@ -63028,6 +62917,7 @@ GameObject:
   m_Component:
   - component: {fileID: 999705389}
   - component: {fileID: 999705390}
+  - component: {fileID: 999705391}
   m_Layer: 5
   m_Name: LockingModal
   m_TagString: Untagged
@@ -63088,7 +62978,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3026
+  startingRenderQueue: 3025
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -63099,6 +62989,21 @@ MonoBehaviour:
   mSortingLayerName: 
   mClipOffset: {x: 0, y: 0}
   useSortingOrder: 0
+--- !u!114 &999705391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 999705388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: c04265f48a67d3048b261a094e41e67e, type: 3}
+  trigger: 6
+  volume: 1
+  pitch: 1
 --- !u!1 &1002722436
 GameObject:
   m_ObjectHideFlags: 0
@@ -65592,6 +65497,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1048032520}
   - component: {fileID: 1048032521}
+  - component: {fileID: 1048032522}
   m_Layer: 5
   m_Name: DescPanel
   m_TagString: Untagged
@@ -65653,7 +65559,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3031
+  startingRenderQueue: 3024
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -65664,6 +65570,21 @@ MonoBehaviour:
   mSortingLayerName: 
   mClipOffset: {x: 0, y: 0}
   useSortingOrder: 0
+--- !u!114 &1048032522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1048032519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: c04265f48a67d3048b261a094e41e67e, type: 3}
+  trigger: 6
+  volume: 1
+  pitch: 1
 --- !u!1 &1049028445
 GameObject:
   m_ObjectHideFlags: 0
@@ -74753,7 +74674,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0.2205882, g: 0.2205882, b: 0.2205882, a: 0.622}
   mPivot: 4
-  mWidth: 1083
+  mWidth: 1082
   mHeight: 1923
   mDepth: 0
   mMat: {fileID: 0}
@@ -79271,6 +79192,7 @@ GameObject:
   - component: {fileID: 1282108145}
   - component: {fileID: 1282108144}
   - component: {fileID: 1282108143}
+  - component: {fileID: 1282108146}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -79386,6 +79308,21 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: partnerRoom_CloseBtn
   mFillCenter: 1
+--- !u!114 &1282108146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1282108141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 7d734d412e5152c4a97c7c46405bfcef, type: 3}
+  trigger: 0
+  volume: 1
+  pitch: 1
 --- !u!1001 &1283019552
 Prefab:
   m_ObjectHideFlags: 0
@@ -82253,6 +82190,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1335083307}
   - component: {fileID: 1335083308}
+  - component: {fileID: 1335083309}
   m_Layer: 5
   m_Name: SingleModal
   m_TagString: Untagged
@@ -82333,6 +82271,21 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: riding_containerBg
   mFillCenter: 1
+--- !u!114 &1335083309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1335083306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 259f639483ecfb241b5bd189a958b80c, type: 3}
+  trigger: 6
+  volume: 1
+  pitch: 1
 --- !u!1 &1335104991
 GameObject:
   m_ObjectHideFlags: 0
@@ -88274,7 +88227,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3022
+  startingRenderQueue: 3023
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 3
@@ -90791,7 +90744,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0.20784314, g: 0.20784314, b: 0.20784314, a: 1}
   mPivot: 4
-  mWidth: 535
+  mWidth: 534
   mHeight: 148
   mDepth: 4
   mMat: {fileID: 0}
@@ -91137,6 +91090,7 @@ GameObject:
   - component: {fileID: 1482892561}
   - component: {fileID: 1482892560}
   - component: {fileID: 1482892559}
+  - component: {fileID: 1482892562}
   m_Layer: 5
   m_Name: CancelButton
   m_TagString: Untagged
@@ -91151,7 +91105,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1482892557}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 120, y: -80, z: 0}
+  m_LocalPosition: {x: 119, y: -80, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 827384823}
@@ -91253,6 +91207,21 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013456532138, guid: 71e0d9e23a54f044e9fa13370f0256aa, type: 2}
   mSpriteName: riding_modal_button
   mFillCenter: 1
+--- !u!114 &1482892562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1482892557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 7d734d412e5152c4a97c7c46405bfcef, type: 3}
+  trigger: 0
+  volume: 1
+  pitch: 1
 --- !u!1 &1483029500
 GameObject:
   m_ObjectHideFlags: 0
@@ -94802,6 +94771,7 @@ GameObject:
   - component: {fileID: 1561905704}
   - component: {fileID: 1561905706}
   - component: {fileID: 1561905705}
+  - component: {fileID: 1561905707}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -94918,6 +94888,21 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 188, y: 76, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1561905707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1561905702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 7d734d412e5152c4a97c7c46405bfcef, type: 3}
+  trigger: 0
+  volume: 1
+  pitch: 1
 --- !u!1001 &1567659253
 Prefab:
   m_ObjectHideFlags: 0
@@ -101782,6 +101767,7 @@ GameObject:
   - component: {fileID: 1698934117}
   - component: {fileID: 1698934116}
   - component: {fileID: 1698934118}
+  - component: {fileID: 1698934114}
   m_Layer: 5
   m_Name: CheckBox
   m_TagString: Untagged
@@ -101802,8 +101788,23 @@ Transform:
   - {fileID: 672212997}
   - {fileID: 1066314490}
   m_Father: {fileID: 2054490827}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1698934114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1698934112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 7d734d412e5152c4a97c7c46405bfcef, type: 3}
+  trigger: 0
+  volume: 1
+  pitch: 1
 --- !u!65 &1698934116
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -105637,6 +105638,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1775261355}
   - component: {fileID: 1775261356}
+  - component: {fileID: 1775261358}
   m_Layer: 5
   m_Name: NotifyModal
   m_TagString: Untagged
@@ -105697,7 +105699,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3024
+  startingRenderQueue: 3023
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -105708,6 +105710,21 @@ MonoBehaviour:
   mSortingLayerName: 
   mClipOffset: {x: 0, y: 0}
   useSortingOrder: 0
+--- !u!114 &1775261358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1775261354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d44bc69c2ca5f943b845318866dc1bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: 8a969c70eda03a74bade9d418e4ef84d, type: 3}
+  trigger: 5
+  volume: 1
+  pitch: 1
 --- !u!1 &1777083612
 GameObject:
   m_ObjectHideFlags: 0
@@ -107005,7 +107022,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0, g: 0, b: 0, a: 1}
   mPivot: 4
-  mWidth: 535
+  mWidth: 534
   mHeight: 132
   mDepth: 4
   mMat: {fileID: 0}
@@ -110712,7 +110729,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0.34901962, g: 0.34901962, b: 0.34901962, a: 1}
   mPivot: 4
-  mWidth: 623
+  mWidth: 622
   mHeight: 60
   mDepth: 4
   mMat: {fileID: 0}
@@ -122539,7 +122556,6 @@ Transform:
   - {fileID: 414748590}
   - {fileID: 1959581299}
   - {fileID: 388721740}
-  - {fileID: 780604581}
   - {fileID: 1698934113}
   m_Father: {fileID: 508020535}
   m_RootOrder: 1
@@ -125662,7 +125678,7 @@ MonoBehaviour:
   updateAnchors: 1
   mColor: {r: 0.2205882, g: 0.2205882, b: 0.2205882, a: 0.622}
   mPivot: 4
-  mWidth: 1083
+  mWidth: 1082
   mHeight: 1923
   mDepth: 0
   mMat: {fileID: 0}
@@ -125696,7 +125712,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1083, y: 1923, z: 0}
+  m_Size: {x: 1082, y: 1923, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2116897998
 GameObject:

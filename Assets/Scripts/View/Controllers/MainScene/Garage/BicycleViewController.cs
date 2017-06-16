@@ -42,6 +42,7 @@ public class BicycleViewController : MonoBehaviour {
     public UIAtlas 
         atlas,
         bicycleAtlas;
+    public AudioClip[] audioClip;
 
     List<int> lockIdList = new List<int>();
     List<int> unlockList = new List<int>();
@@ -265,6 +266,8 @@ public class BicycleViewController : MonoBehaviour {
         else {
             notifyModal.SetActive(true);
             notifyModal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "등급이 낮아 아이템을 장착할 수 없습니다.";
+            notifyModal.GetComponent<UIPlaySound>().audioClip = audioClip[0];
+            notifyModal.GetComponent<UIPlaySound>().Play();
         }
     }
 
@@ -650,6 +653,8 @@ public class BicycleViewController : MonoBehaviour {
         isSingleSellOrLock = false;
         notifyModal.SetActive(true);
         notifyModal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "총 " + gears + "개의 기어를 획득하였습니다.";
+        notifyModal.GetComponent<UIPlaySound>().audioClip = audioClip[1];
+        notifyModal.GetComponent<UIPlaySound>().Play();
         sellList.Clear();
     }
 
