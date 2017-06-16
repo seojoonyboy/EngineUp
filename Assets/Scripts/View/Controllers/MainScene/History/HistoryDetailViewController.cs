@@ -59,15 +59,13 @@ public class HistoryDetailViewController : MonoBehaviour {
     public void tpFinished() {
         //패널 닫기시
         if (isReverse_tp) {
-            Debug.Log("닫기");
             gameObject.SetActive(false);
+            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         //패널 활성화시
         else {
-            Debug.Log("열기");
             blockingCollPanel.SetActive(false);
-            tP.transform.Find("TopPanel").gameObject.SetActive(true);
-
+            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
             foreach (Collider col in collider) {
                 col.enabled = false;
             }
@@ -95,10 +93,6 @@ public class HistoryDetailViewController : MonoBehaviour {
             col.enabled = true;
         }
         mapHeader.SetActive(false);
-
-        //parentController.gameObject.SetActive(true);
-
-        tP.transform.Find("TopPanel").gameObject.SetActive(false);
         tP.ResetToBeginning();
     }
 

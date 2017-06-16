@@ -22,7 +22,6 @@ public class MyHomeViewController : MonoBehaviour {
     }
 
     void OnDisable() {
-        tP.transform.Find("TopPanel").gameObject.SetActive(false);
         tP.ResetToBeginning();
     }
 
@@ -43,11 +42,14 @@ public class MyHomeViewController : MonoBehaviour {
     }
 
     public void tPFinished() {
-        tP.transform.Find("TopPanel").gameObject.SetActive(true);
         blockingCollPanel.SetActive(false);
 
         if(isReverse_tp) {
             gameObject.SetActive(false);
+            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
+        }
+        else {
+            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
         }
 
         isReverse_tp = true;

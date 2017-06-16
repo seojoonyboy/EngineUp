@@ -61,7 +61,6 @@ public class CharacterViewControlller : MonoBehaviour {
     void OnDisable() {
         selectedChar = null;
 
-        tP.transform.Find("TopPanel").gameObject.SetActive(false);
         tP.ResetToBeginning();
     }
 
@@ -82,11 +81,15 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     public void tpFinished() {
-        tP.transform.Find("TopPanel").gameObject.SetActive(true);
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
             gameObject.SetActive(false);
+            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
+        }
+
+        else {
+            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
         }
 
         isReverse_tp = true;

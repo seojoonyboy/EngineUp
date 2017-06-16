@@ -51,7 +51,6 @@ public class HistoryViewController : MonoBehaviour {
         preDate = null;
         isFirstGetRidingData = true;
 
-        tP.transform.Find("TopPanel").gameObject.SetActive(false);
         tP.ResetToBeginning();
     }
 
@@ -74,10 +73,11 @@ public class HistoryViewController : MonoBehaviour {
     public void tpFinished() {
         if (isReverse_tp) {
             gameObject.SetActive(false);
+            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         else {
             blockingCollPanel.SetActive(false);
-            tP.transform.Find("TopPanel").gameObject.SetActive(true);
+            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
             getRidingDataSets();
         }
 

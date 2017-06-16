@@ -74,8 +74,6 @@ public class StatViewController : MonoBehaviour {
 
             tP.ResetToBeginning();
             tP.PlayForward();
-
-            tP.transform.Find("TopPanel").gameObject.SetActive(false);
         }
     }
 
@@ -84,9 +82,10 @@ public class StatViewController : MonoBehaviour {
 
         if (isReverse_tp) {
             gameObject.SetActive(false);
+            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         else {
-            tP.transform.Find("TopPanel").gameObject.SetActive(true);
+            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
 
             MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
             gm.gameDispatcher.dispatch(act);
@@ -96,7 +95,6 @@ public class StatViewController : MonoBehaviour {
     }
 
     void OnDisable() {
-        tP.transform.Find("TopPanel").gameObject.SetActive(false);
         tP.ResetToBeginning();
     }
 
