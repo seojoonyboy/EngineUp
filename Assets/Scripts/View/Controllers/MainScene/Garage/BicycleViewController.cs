@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Text;
 public class BicycleViewController : MonoBehaviour {
     private GameManager gm;
     public BicycleItem_Inventory bicycleItemStore;
@@ -35,7 +35,10 @@ public class BicycleViewController : MonoBehaviour {
 
     public int pagePerSlotCount;
 
-    public UILabel[] spects;
+    public UILabel[] 
+        spects,
+        incSpects;
+
     public UIScrollView[] scrollview;
 
     public int[] equipedItemIndex;
@@ -63,6 +66,12 @@ public class BicycleViewController : MonoBehaviour {
 
         if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
             makeList();
+        }
+
+        if(bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
+            if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+                setStat();
+            }
         }
     }
 
@@ -225,6 +234,29 @@ public class BicycleViewController : MonoBehaviour {
         GameObject modal = detailModal.transform.Find("Modal").gameObject;
         Info info = selectedItem.GetComponent<Info>();
 
+        StringBuilder sb = new StringBuilder();
+        int val = info.strength;
+        if(val != 0) {
+            string str = "근력 + " + val + "\n";
+            sb.Append(str);
+        }
+        val = info.endurance;
+        if(val != 0) {
+            string str = "지구력 + " + val + "\n";
+            sb.Append(str);
+        }
+        val = info.speed;
+        if (val != 0) {
+            string str = "스피드 + " + val + "\n";
+            sb.Append(str);
+        }
+        val = info.recovery;
+        if (val != 0) {
+            string str = "회복력 + " + val + "\n";
+            sb.Append(str);
+        }
+
+        modal.transform.Find("Spec").GetComponent<UILabel>().text = sb.ToString();
         modal.transform.Find("Name").GetComponent<UILabel>().text = info.name;
         modal.transform.Find("Desc").GetComponent<UILabel>().text = info.desc;
         modal.transform.Find("limitLv").GetComponent<UILabel>().text = "제한 레벨 : " + info.limit_rank;
@@ -327,6 +359,10 @@ public class BicycleViewController : MonoBehaviour {
                     info.parts = _item.parts;
                     info.gear = _item.gear;
                     info.imageId = _item.id;
+                    info.speed = _item.speed;
+                    info.endurance = _item.endurance;
+                    info.strength = _item.strength;
+                    info.recovery = _item.regeneration;
 
                     if (data.is_equiped == "true") {
                         info.is_equiped = true;
@@ -387,6 +423,10 @@ public class BicycleViewController : MonoBehaviour {
                     info.parts = data_item.parts;
                     info.gear = data_item.gear;
                     info.imageId = data_item.id;
+                    info.speed = data_item.speed;
+                    info.endurance = data_item.endurance;
+                    info.strength = data_item.strength;
+                    info.recovery = data_item.regeneration;
 
                     if (data.is_equiped == "true") {
                         info.is_equiped = true;
@@ -447,6 +487,10 @@ public class BicycleViewController : MonoBehaviour {
                     info.parts = data_item.parts;
                     info.gear = data_item.gear;
                     info.imageId = data_item.id;
+                    info.speed = data_item.speed;
+                    info.endurance = data_item.endurance;
+                    info.strength = data_item.strength;
+                    info.recovery = data_item.regeneration;
 
                     if (data.is_equiped == "true") {
                         info.is_equiped = true;
@@ -475,6 +519,63 @@ public class BicycleViewController : MonoBehaviour {
         initGrid();
         setMainStageImage();
         setSideBar();
+    }
+
+    private void initStat() {
+        for(int i=0; i<incSpects.Length; i++) {
+            incSpects[i].gameObject.SetActive(true);
+        }
+    }
+
+    private void setStat() {
+        initStat();
+
+        status status = userStore.myData.status;
+
+        int endurance = status.endurance;
+        int speed = status.speed;
+        int recovery = status.regeneration;
+        int strength = status.strength;
+
+        int incEnd = 0;
+        int incSpeed = 0;
+        int incRecovery = 0;
+        int incStrength = 0;
+
+        RespGetItems equipedItem;
+        for(int i=0; i<bicycleItemStore.equipedItemIndex.Length; i++) {
+            equipedItem = bicycleItemStore.equipedItemIndex[i];
+            if (equipedItem != null) {
+                incEnd += equipedItem.item.strength;
+                incSpeed += equipedItem.item.speed;
+                incRecovery += equipedItem.item.regeneration;
+                incStrength += equipedItem.item.strength;
+            }
+        }
+
+        if(incStrength == 0) {
+            incSpects[0].gameObject.SetActive(false);
+        } else {
+            incSpects[0].text = "+ " + incStrength;
+        }
+
+        if(incSpeed == 0) {
+            incSpects[1].gameObject.SetActive(false);
+        } else {
+            incSpects[1].text = "+ " + incSpeed;
+        }
+
+        if (incRecovery == 0) {
+            incSpects[2].gameObject.SetActive(false);
+        } else {
+            incSpects[2].text = "+ " + incRecovery;
+        }
+
+        if (incEnd == 0) {
+            incSpects[3].gameObject.SetActive(false);
+        } else {
+            incSpects[3].text = "+ " + incEnd;
+        }
     }
 
     private void setMainStageImage() {
@@ -528,6 +629,10 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.name = _item.name;
             sideBarInfo.limit_rank = _item.limit_rank;
             sideBarInfo.gear = _item.gear;
+            sideBarInfo.speed = _item.speed;
+            sideBarInfo.strength = _item.strength;
+            sideBarInfo.endurance = _item.endurance;
+            sideBarInfo.recovery = _item.regeneration;
 
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
@@ -553,6 +658,10 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.name = _item.name;
             sideBarInfo.limit_rank = _item.limit_rank;
             sideBarInfo.gear = _item.gear;
+            sideBarInfo.speed = _item.speed;
+            sideBarInfo.strength = _item.strength;
+            sideBarInfo.endurance = _item.endurance;
+            sideBarInfo.recovery = _item.regeneration;
 
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
@@ -579,6 +688,10 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.name = _item.name;
             sideBarInfo.limit_rank = _item.limit_rank;
             sideBarInfo.gear = _item.gear;
+            sideBarInfo.speed = _item.speed;
+            sideBarInfo.strength = _item.strength;
+            sideBarInfo.endurance = _item.endurance;
+            sideBarInfo.recovery = _item.regeneration;
 
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
@@ -747,6 +860,11 @@ public class BicycleViewController : MonoBehaviour {
         public int gear;
         public string parts;
         public int limit_rank;
+
+        public int speed;
+        public int recovery;
+        public int strength;
+        public int endurance;
     }
 
     public void offPanel() {

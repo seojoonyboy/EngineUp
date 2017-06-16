@@ -205,6 +205,11 @@ public class CharacterViewControlller : MonoBehaviour {
         sprite.spriteName = index + "-3";
     }
 
+    //캐릭터 근력, 지구력, 스피드, 회복력 정보
+    public void setStat() {
+        
+    }
+
     public void sideBarClicked(GameObject obj) {
         GameObject _sprite = obj.transform.Find("Sprite").gameObject;
 
