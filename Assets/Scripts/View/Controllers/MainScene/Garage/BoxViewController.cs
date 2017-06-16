@@ -17,7 +17,9 @@ public class BoxViewController : MonoBehaviour {
     public GameObject 
         loadingModal,
         notifyModal,
-        boxOpenModal;
+        boxOpenModal,
+        singleOpenButton,
+        multiOpenButton;
 
     public GameObject 
         _openEffect,
@@ -179,9 +181,11 @@ public class BoxViewController : MonoBehaviour {
         if(boxNum >= openNum) {
             act.num = openNum;
             gm.gameDispatcher.dispatch(act);
+            singleOpenButton.GetComponent<UIPlaySound>().Play();
         }
         else {
             onNotifyModal();
+            notifyModal.GetComponent<UIPlaySound>().Play();
         }
     }
 
