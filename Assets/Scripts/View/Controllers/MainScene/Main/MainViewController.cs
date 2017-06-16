@@ -28,10 +28,11 @@ public class MainViewController : MonoBehaviour {
         gm.gameDispatcher.dispatch(act);
 
         //튜토리얼 진행 여부 확인
-        //int isFirstPlay = PlayerPrefs.GetInt("isFirstPlay");
-        //if(isFirstPlay != 1) {
-        //    tutorial.SetActive(true);
-        //}
+        int isFirstPlay = PlayerPrefs.GetInt("isFirstPlay");
+        if (isFirstPlay != 1) {
+            tutorial.SetActive(true);
+            charSprite.gameObject.SetActive(false);
+        }
     }
 
     public void onUserListener() {

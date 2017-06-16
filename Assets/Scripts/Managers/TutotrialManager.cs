@@ -11,7 +11,6 @@ public class TutotrialManager : MonoBehaviour {
     public UILabel context;
     public GameObject
         PARTNER,
-        NPC,
         myCharacter,
         talkContainer,
         container,
@@ -19,6 +18,7 @@ public class TutotrialManager : MonoBehaviour {
         fading;
     public Riding_VC ridingController;
     public MyHomeViewController myhomeController;
+    public MainViewController mainViewController;
     Tutorial[] text;
     int count = 0;
     bool 
@@ -47,93 +47,55 @@ public class TutotrialManager : MonoBehaviour {
             typingEffect.Finish();
             return;
         }
-        effectInit();
+        //effectInit();
         switch (count) {
             case 0:
+                nextPage();
+                onEffect(0, false);
+                break;
             case 1:
                 nextPage();
                 break;
             case 2:
-                PARTNER.SetActive(true);
+                offClonedButtons(buttons[0]);
+                onEffect(2);
                 nextPage();
                 break;
             case 3:
+                nextPage();
+                break;
             case 4:
+                offClonedButtons(buttons[5]);
+                onEffect(4);
+                nextPage();
+                break;
             case 5:
+                offClonedButtons(buttons[8]);
                 nextPage();
                 break;
             case 6:
-                nextPage();
-                shakeEffect();
+                onEffect(6);
                 break;
-            case 7:
-                nextPage();
-                NPC.SetActive(true);
+        }
+    }
+
+    void onEffect(int index, bool needOffContainer = true) {
+        if(needOffContainer) {
+            talkContainer.SetActive(false);
+        }
+        switch (index) {
+            case 0:
+                StartCoroutine(activateButton(0));
                 break;
-            case 8:
-            case 9:
-                nextPage();
+            case 2:
+                StartCoroutine(activateButton(5));
                 break;
-            case 10:
-                onEffect(count);
+            case 4:
+                StartCoroutine(activateButton(8));
                 break;
-            case 11:
-                onEffect(count);
-                break;
-            case 12:
-                nextPage();
-                break;
-            case 13:
-                onEffect(count);
-                break;
-            case 14:
-                nextPage();
-                break;
-            case 15:
-                ridingResume();
-                onEffect(count);
-                break;
-            case 16:
-            case 17:
-            case 18:
-                onEffect(count);
-                break;
-            case 19:
-            case 20:
-                nextPage();
-                break;
-            case 21:
-                onEffect(count);
-                break;
-            case 22:
-            case 23:
-                nextPage();
-                break;
-            case 24:
-                onEffect(count);
-                break;
-            case 25:
-            case 26:
-            case 27:
-            case 28:
-                nextPage();
-                break;
-            case 29:
-                onEffect(count);
-                break;
-            case 30:
-            case 31:
-                nextPage();
-                break;
-            case 32:
-                onEffect(count);
-                break;
-            case 33:
-            case 34:
-                nextPage();
-                break;
-            case 35:
-                onEffect(count);
+            case 6:
+                fading.SetActive(true);
+                StartCoroutine(FadeOut());
                 break;
         }
     }
@@ -152,57 +114,11 @@ public class TutotrialManager : MonoBehaviour {
         isFirstClick = true;
     }
 
-    void onEffect(int index) {
-        talkContainer.SetActive(false);
-        switch(index) {
-            case 10:
-                StartCoroutine(activateButton(0));
-                break;
-            case 11:
-                StartCoroutine(activateButton(1));
-                break;
-            case 13:
-                background.SetActive(false);
-                clonedPanels[0].SetActive(false);
-                ridingController.onRidingStartButton(true);
-                break;
-            case 15:
-                StartCoroutine(activateButton(2));
-                break;
-            case 16:
-                StartCoroutine(activateButton(4));
-                break;
-            case 17:
-                StartCoroutine(activateButton(5));
-                break;
-            case 18:
-                StartCoroutine(activateButton(6));
-                break;
-            case 21:
-                StartCoroutine(activateButton(7));
-                break;
-            case 24:
-                StartCoroutine(activateButton(8));
-                break;
-            case 29:
-            case 32:
-                fading.SetActive(true);
-                StartCoroutine(FadeInOut(true));
-                break;
-            case 35:
-                fading.SetActive(true);
-                StartCoroutine(FadeOut(false));
-                Invoke("tutorialEnd", 3.0f);
-                break;
-        }
-    }
-
     void offFading() {
         fading.SetActive(false);
     }
 
     void effectInit() {
-        NPC.SetActive(false);
         PARTNER.SetActive(false);
         myCharacter.SetActive(false);
     }
@@ -292,6 +208,7 @@ public class TutotrialManager : MonoBehaviour {
 
     void tutorialEnd() {
         gameObject.SetActive(false);
+        mainViewController.charSprite.gameObject.SetActive(true);
         PlayerPrefs.SetInt("isFirstPlay", 1);
     }
 
@@ -300,7 +217,7 @@ public class TutotrialManager : MonoBehaviour {
         TweenAlpha.Begin(fading, 2.0f, 1.0f);
         yield return new WaitForSeconds(2.0f);
         fading.SetActive(false);
-
+        tutorialEnd();
         if (needNextPange) {
             nextPage();
         }
