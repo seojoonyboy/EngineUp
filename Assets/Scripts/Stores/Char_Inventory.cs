@@ -143,6 +143,16 @@ public class character_inventory {
     public int lv;
     public int exp;
     public string has_character;
+    public charStat status;
+
+}
+
+[System.Serializable]
+public class charStat {
+    public int strength;
+    public int speed;
+    public int endurance;
+    public int regeneration;
 }
 
 [System.Serializable]

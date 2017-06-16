@@ -21,7 +21,9 @@ public class CharacterViewControlller : MonoBehaviour {
         blockingCollPanel;
 
     public GameObject equipButton;
-    public UILabel[] stats;
+    public UILabel[] 
+        stats,
+        incStats;
 
     public UIAtlas[] atlasArr;
 
@@ -117,6 +119,12 @@ public class CharacterViewControlller : MonoBehaviour {
                     setMainChar(charInfo.character, charInfo.lv);
                     setSideBar(charInfo.character);
 
+                    foreach (character_inventory character in charInvenStore.my_characters) {
+                        if (character.character == charInfo.character) {
+                            setStat(character);
+                        }
+                    }
+
                     if (charInvenStore.all_characters.ContainsKey(charInfo.character).Equals(true)) {
                         all_characters tmp = charInvenStore.all_characters[charInfo.character];
                         setFriendlySlider(charInfo.lv, tmp.lvup_exps, charInfo.exp);
@@ -206,8 +214,69 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     //캐릭터 근력, 지구력, 스피드, 회복력 정보
-    public void setStat() {
+    public void setStat(character_inventory character) {
+        initStat();
+        charStat stat = character.status;
         
+        int strength = stat.strength;
+        int speed = stat.speed;
+        int endurance = stat.endurance;
+        int recovery = stat.regeneration;
+
+        stats[0].text = strength.ToString();
+        stats[1].text = endurance.ToString();
+        stats[2].text = speed.ToString();
+        stats[3].text = recovery.ToString();
+        BicycleItem_Inventory bS = gm.bicycleInventStore;
+        var euipedItems = bS.equipedItemIndex;
+
+        int itemEnd = 0;
+        int itemSpeed = 0;
+        int itemRecovery = 0;
+        int itemStrength = 0;
+
+        for (int i = 0; i < euipedItems.Length; i++) {
+            if (euipedItems[i] != null) {
+                itemEnd += euipedItems[i].item.endurance;
+                itemSpeed += euipedItems[i].item.speed;
+                itemRecovery += euipedItems[i].item.regeneration;
+                itemStrength += euipedItems[i].item.strength;
+            }
+        }
+
+        if (itemStrength == 0) {
+            incStats[0].gameObject.SetActive(false);
+        }
+        else {
+            incStats[0].text = "+ " + itemStrength;
+        }
+
+        if (itemEnd == 0) {
+            incStats[1].gameObject.SetActive(false);
+        }
+        else {
+            incStats[1].text = "+ " + itemEnd;
+        }
+
+        if (itemSpeed == 0) {
+            incStats[2].gameObject.SetActive(false);
+        }
+        else {
+            incStats[2].text = "+ " + itemSpeed;
+        }
+
+        if (itemRecovery == 0) {
+            incStats[3].gameObject.SetActive(false);
+        }
+        else {
+            incStats[3].text = "+ " + itemRecovery;
+        }
+    }
+
+    private void initStat() {
+        for (int i = 0; i < incStats.Length; i++) {
+            incStats[i].gameObject.SetActive(true);
+        }
     }
 
     public void sideBarClicked(GameObject obj) {
