@@ -22,6 +22,7 @@ public class Riding : AjwStore{
     public float maxSpeed = 0;
     public float uphillDistance;
     public string totalTime = "00:00:00";
+    public string preTime;
     public int boxes = 0;
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
@@ -273,6 +274,10 @@ public class Riding : AjwStore{
             GetGPSDataAction _act = action as GetGPSDataAction;
             _gpsOperation(_act);
             totalTime = _act.timeText;
+            if(totalTime != null) {
+                preTime = totalTime;
+            }
+                Debug.Log(totalTime);
             _emitChange();
             break;
         case ActionTypes.RIDING_END:

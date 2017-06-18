@@ -245,7 +245,7 @@ public class Riding_VC : MonoBehaviour {
         int boxNum = ridingStore.boxes;
         char delimeter = '.';
         //string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
-        string time = ridingStore.totalTime;
+        string time = ridingStore.preTime;
         refreshTxt(currSpeed, avgSpeed, dist, time, maxSpeed, uphillDistance, boxNum);
         sliderRefresh(dist);
     }
