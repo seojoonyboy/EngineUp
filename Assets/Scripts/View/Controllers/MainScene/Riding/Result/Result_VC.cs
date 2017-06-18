@@ -251,7 +251,7 @@ public class Result_VC : MonoBehaviour {
         preStrength.text = _preStr.ToString();
         preRecovery.text = _preReco.ToString();
         preSpeed.text = _preSpeed.ToString();
-        preRecovery.text = _preReco.ToString();
+        preEndurance.text = _preEndur.ToString();
 
         var stat = data.status;
         if(_preStr == stat.strength) {
@@ -399,10 +399,15 @@ public class Result_VC : MonoBehaviour {
     }
 
     public void offMapPanel() {
-        map.SetActive(false);
-        mapPanel.SetActive(false);
+        if(OnlineMaps.instance != null) {
+            OnlineMaps.instance.RemoveAllDrawingElements();
+            OnlineMaps.instance.RemoveAllMarkers();
 
-        map.transform.localScale = preMapScale;
+            map.SetActive(false);
+            mapPanel.SetActive(false);
+
+            map.transform.localScale = preMapScale;
+        }
 
         foreach (Collider coll in colliders) {
             coll.enabled = true;
