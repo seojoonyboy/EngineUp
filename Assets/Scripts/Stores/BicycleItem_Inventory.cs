@@ -74,6 +74,10 @@ public class BicycleItem_Inventory : AjwStore {
                 allItems = JsonHelper.getJsonArray<RespGetItems>(payload.response.data);
                 init();
                 itemCategorization(allItems);
+
+                MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+                dispatcher.dispatch(act);
+
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:

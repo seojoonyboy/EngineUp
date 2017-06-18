@@ -4,7 +4,8 @@ public class StatViewController : MonoBehaviour {
     public UILabel 
         nickNameLabel,
         mainLvLabel,
-        mainTitleLabel;
+        mainTitleLabel,
+        mainGearLabel;
 
     public Riding ridingStore;
     public User userStore;
@@ -106,7 +107,7 @@ public class StatViewController : MonoBehaviour {
             if(userStore.storeStatus == storeStatus.NORMAL) {
                 initialize();
                 mainLvLabel.text = "Lv " + userStore.myData.status.rank.ToString();
-
+                mainGearLabel.text = userStore.myData.gears.ToString();
                 int exp = userStore.myData.status.exp;
                 //레벨업 환산 후 남은 경험치
                 float extraExp = (float)(exp % mainSliderOffset);
