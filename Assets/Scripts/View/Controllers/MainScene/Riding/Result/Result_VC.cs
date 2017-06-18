@@ -392,6 +392,10 @@ public class Result_VC : MonoBehaviour {
         act.id = ridingStore.ridingId;
         act.type = GetRidingRecords.callType.RIDING_RESULT;
         gm.gameDispatcher.dispatch(act);
+
+        foreach(Collider coll in colliders) {
+            coll.enabled = false;
+        }
     }
 
     public void offMapPanel() {
@@ -399,6 +403,10 @@ public class Result_VC : MonoBehaviour {
         mapPanel.SetActive(false);
 
         map.transform.localScale = preMapScale;
+
+        foreach (Collider coll in colliders) {
+            coll.enabled = true;
+        }
     }
 }
 
