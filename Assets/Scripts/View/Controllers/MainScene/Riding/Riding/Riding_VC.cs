@@ -44,14 +44,15 @@ public class Riding_VC : MonoBehaviour {
     private int boxNum = 0;
 
     private TweenPosition tP;
+    private bool
+        isReverse_tp,
+        isTweening = false;
     void Start() {
         gameManager = GameManager.Instance;
     }
 
     void Awake() {
         tP = StartPanel.transform.Find("Background").GetComponent<TweenPosition>();
-        tP.eventReceiver = gameObject;
-        tP.callWhenFinished = "tPFinished";
     }
 
     void OnEnable() {
@@ -60,8 +61,10 @@ public class Riding_VC : MonoBehaviour {
         maxLabel.text = "0";
         uphillDistanceLabel.text = "0";
 
+        tweenPos();
         blockingCollPanel.SetActive(true);
-        tP.PlayForward();
+        isReverse_tp = false;
+        tP.ResetToBeginning();
     }
 
     void OnDisable() {
@@ -73,15 +76,38 @@ public class Riding_VC : MonoBehaviour {
 
         StartPanel.SetActive(true);
         blockingCollPanel.SetActive(false);
+        isReverse_tp = false;
     }
 
-    void tPFinished() {
+    public void tweenPos() {
+        if (isTweening) {
+            return;
+        }
+        isTweening = true;
+        blockingCollPanel.SetActive(true);
+        if (!isReverse_tp) {
+            tP.PlayForward();
+        }
+        else {
+            //swap
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
+    }
+
+    public void tPFinished() {
+        isTweening = false;
         blockingCollPanel.SetActive(false);
-    }
 
-    //라이딩 시작 취소 버튼 클릭시
-    public void onRidingCancelButton() {
-        gameObject.SetActive(false);
+        if (isReverse_tp) {
+            gameObject.SetActive(false);
+        }
+        isReverse_tp = true;
     }
 
     //라이딩 시작 버튼 클릭시
