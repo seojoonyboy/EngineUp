@@ -380,7 +380,6 @@ public class BicycleViewController : MonoBehaviour {
 
                     if (data.is_locked == "true") {
                         info.is_locked = true;
-                        Debug.Log(info.id);
                         item.transform.Find("LockIcon").gameObject.SetActive(true);
                     }
 
