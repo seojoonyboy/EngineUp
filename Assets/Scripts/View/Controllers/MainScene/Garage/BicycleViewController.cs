@@ -178,7 +178,7 @@ public class BicycleViewController : MonoBehaviour {
         if(isOn) {
             Debug.Log("최종 잠금");
             lockButton.transform.Find("Label").GetComponent<UILabel>().text = "잠금";
-            if (lockIdList.Count != 0) {
+            if (lockIdList.Count != 0 || unlockList.Count != 0) {
                 lockingModal.SetActive(true);
             }
         }
@@ -193,11 +193,8 @@ public class BicycleViewController : MonoBehaviour {
         Info info = obj.GetComponent<Info>();
         //판매모드인 경우
         if (isSellMode) {
-            if (obj.tag == "locked") { return; }
-            if (obj.transform.Find("TypeTag").tag == "locked") {
-                return;
-            }
-            
+            if (info.is_locked) { return; }
+
             GameObject tmp = obj.transform.Find("Selected").gameObject;
             tmp.SetActive(!tmp.activeSelf);
 
@@ -211,11 +208,10 @@ public class BicycleViewController : MonoBehaviour {
         }
         //잠금모드인 경우
         else if (isLockMode) {
-            if (obj.tag == "locked") { return; }
             GameObject tmp = obj.transform.Find("LockIcon").gameObject;
             tmp.SetActive(!tmp.activeSelf);
             if(tmp.activeSelf) {
-                obj.tag = "locked";
+                info.is_locked = true;
                 //int 리스트
                 //리스트에 id값(int)을 담는다. (button index 말고 실제 아이템 id)
                 lockIdList.Add(info.id);
@@ -224,7 +220,7 @@ public class BicycleViewController : MonoBehaviour {
                 }
             }
             else {
-                obj.tag = "unselected";
+                info.is_locked = false;
                 //리스트에 담겨 있으면 제외시킨다.
                 unlockList.Add(info.id);
                 if (lockIdList.Contains(info.id)) {
@@ -379,10 +375,13 @@ public class BicycleViewController : MonoBehaviour {
                     if (data.is_equiped == "true") {
                         info.is_equiped = true;
                         equipedItemIndex[0] = info.imageId;
+                        item.transform.Find("Equip_icon").gameObject.SetActive(true);
                     }
 
                     if (data.is_locked == "true") {
                         info.is_locked = true;
+                        Debug.Log(info.id);
+                        item.transform.Find("LockIcon").gameObject.SetActive(true);
                     }
 
                     EventDelegate.Parameter parm = new EventDelegate.Parameter();
@@ -443,10 +442,12 @@ public class BicycleViewController : MonoBehaviour {
                     if (data.is_equiped == "true") {
                         info.is_equiped = true;
                         equipedItemIndex[1] = info.imageId;
+                        item.transform.Find("Equip_icon").gameObject.SetActive(true);
                     }
 
                     if (data.is_locked == "true") {
                         info.is_locked = true;
+                        item.transform.Find("LockIcon").gameObject.SetActive(true);
                     }
 
                     EventDelegate.Parameter parm = new EventDelegate.Parameter();
@@ -507,10 +508,12 @@ public class BicycleViewController : MonoBehaviour {
                     if (data.is_equiped == "true") {
                         info.is_equiped = true;
                         equipedItemIndex[2] = info.imageId;
+                        item.transform.Find("Equip_icon").gameObject.SetActive(true);
                     }
 
                     if (data.is_locked == "true") {
                         info.is_locked = true;
+                        item.transform.Find("LockIcon").gameObject.SetActive(true);
                     }
 
                     EventDelegate.Parameter parm = new EventDelegate.Parameter();
@@ -765,6 +768,8 @@ public class BicycleViewController : MonoBehaviour {
             }
         }
         isSingleSellOrLock = false;
+        lockIdList.Clear();
+        unlockList.Clear();
     }
 
     public void selling() {
@@ -800,7 +805,6 @@ public class BicycleViewController : MonoBehaviour {
         sellingModal.SetActive(false);
         sellButton.GetComponent<boolIndex>().isOn = false;
         isSellMode = false;
-        sellList.Clear();
         itemInitAct();
     }
 
@@ -808,7 +812,6 @@ public class BicycleViewController : MonoBehaviour {
         lockingModal.SetActive(false);
         lockButton.GetComponent<boolIndex>().isOn = false;
         isLockMode = false;
-        lockIdList.Clear();
         itemInitAct();
     }
 
