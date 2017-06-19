@@ -155,7 +155,9 @@ public class BicycleViewController : MonoBehaviour {
         if (isOn) {
             //최종 판매
             sellButton.transform.Find("Label").GetComponent<UILabel>().text = "판매";
-            sellingModal.SetActive(true);
+            if(sellList.Count != 0) {
+                sellingModal.SetActive(true);
+            }
         }
         else {
             sellButton.transform.Find("Label").GetComponent<UILabel>().text = "최종 판매";
@@ -175,8 +177,10 @@ public class BicycleViewController : MonoBehaviour {
 
         if(isOn) {
             Debug.Log("최종 잠금");
-            lockingModal.SetActive(true);
             lockButton.transform.Find("Label").GetComponent<UILabel>().text = "잠금";
+            if (lockIdList.Count != 0) {
+                lockingModal.SetActive(true);
+            }
         }
         else {
             lockButton.transform.Find("Label").GetComponent<UILabel>().text = "최종 잠금";
@@ -796,6 +800,7 @@ public class BicycleViewController : MonoBehaviour {
         sellingModal.SetActive(false);
         sellButton.GetComponent<boolIndex>().isOn = false;
         isSellMode = false;
+        sellList.Clear();
         itemInitAct();
     }
 
@@ -803,6 +808,7 @@ public class BicycleViewController : MonoBehaviour {
         lockingModal.SetActive(false);
         lockButton.GetComponent<boolIndex>().isOn = false;
         isLockMode = false;
+        lockIdList.Clear();
         itemInitAct();
     }
 
