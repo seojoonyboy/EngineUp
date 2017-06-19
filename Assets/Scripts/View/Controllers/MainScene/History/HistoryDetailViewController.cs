@@ -108,7 +108,6 @@ public class HistoryDetailViewController : MonoBehaviour {
 
     public void setMap(RidingDetails data) {
         map.SetActive(true);
-        Debug.Log("?!");
         OnlineMaps _map = map.GetComponent<OnlineMaps>();
         preMapScale = map.transform.localScale;
         map.transform.localScale = new Vector3(1.45f, 1.0f, 1.45f);
@@ -128,6 +127,20 @@ public class HistoryDetailViewController : MonoBehaviour {
             }
             _line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
             _map.AddDrawingElement(_line);
+
+            if(coords.Length == 1) {
+                //도착마크만 표시
+                Vector2 markerPos = new Vector2(coords[0].latitude, coords[0].longitude);
+                _map.AddMarker(markerPos);
+            }
+            else {
+                //출발 도착 마커 모두 표시
+                Vector2 startPos = new Vector2(coords[0].latitude, coords[0].longitude);
+                _map.AddMarker(startPos);
+
+                Vector2 endPos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
+                _map.AddMarker(endPos);
+            }
         }
         _map.zoom = 18;
 
@@ -142,7 +155,9 @@ public class HistoryDetailViewController : MonoBehaviour {
         OnlineMaps _map = map.GetComponent<OnlineMaps>();
         map.transform.localScale = Vector3.one;
         map.transform.localPosition = preMapPos;
+
         _map.RemoveAllDrawingElements();
+        _map.RemoveAllMarkers();
 
         map.SetActive(false);
     }

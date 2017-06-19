@@ -545,6 +545,11 @@ public class BicycleViewController : MonoBehaviour {
         int recovery = status.regeneration;
         int strength = status.strength;
 
+        spects[0].text = strength.ToString();
+        spects[1].text = speed.ToString();
+        spects[2].text = endurance.ToString();
+        spects[3].text = recovery.ToString();
+
         int incEnd = 0;
         int incSpeed = 0;
         int incRecovery = 0;

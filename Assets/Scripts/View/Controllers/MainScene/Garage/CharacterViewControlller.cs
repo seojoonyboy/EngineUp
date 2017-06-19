@@ -161,6 +161,11 @@ public class CharacterViewControlller : MonoBehaviour {
         lvLabel.text = "Lv. " + info.lv.ToString();
         charName.text = sbInfo.name;
         setFriendlySlider(info.lv, sbInfo.lvup_exps, info.exp);
+
+        stats[0].text = info.strength.ToString();
+        stats[1].text = info.speed.ToString();
+        stats[2].text = info.enurance.ToString();
+        stats[3].text = info.recovery.ToString();
     }
 
     public void setEquipButton(int index, string hasChar) {
@@ -239,8 +244,8 @@ public class CharacterViewControlller : MonoBehaviour {
         int recovery = stat.regeneration;
 
         stats[0].text = strength.ToString();
-        stats[1].text = endurance.ToString();
-        stats[2].text = speed.ToString();
+        stats[1].text = speed.ToString();
+        stats[2].text = endurance.ToString();
         stats[3].text = recovery.ToString();
         BicycleItem_Inventory bS = gm.bicycleInventStore;
         var euipedItems = bS.equipedItemIndex;
@@ -332,6 +337,11 @@ public class CharacterViewControlller : MonoBehaviour {
             info.paid = myChars[i].paid;
             info.lv = myChars[i].lv;
             info.exp = myChars[i].exp;
+            charStat status = myChars[i].status;
+            info.strength = status.strength;
+            info.enurance = status.endurance;
+            info.recovery = status.regeneration;
+            info.speed = status.speed;
 
             //대표 캐릭터인 경우
             if(info.characterId == equipedCharIndex) {
@@ -388,6 +398,11 @@ public class CharacterViewControlller : MonoBehaviour {
         public int exp;
         public int characterId;
         public string has_character;
+
+        public int strength;
+        public int enurance;
+        public int recovery;
+        public int speed;
     }
 
     private class sbInfo : MonoBehaviour {
