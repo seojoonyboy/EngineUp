@@ -6,4 +6,8 @@ public class effectDestroyer : MonoBehaviour {
     public void destroy() {
         Destroy(gameObject);
     }
+
+    void OnDisable() {
+        Destroy(gameObject);
+    }
 }

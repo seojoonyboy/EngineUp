@@ -62,6 +62,16 @@ public class BoxViewController : MonoBehaviour {
 
             tP.ResetToBeginning();
             tP.PlayForward();
+
+            GameObject modal = boxOpenModal.transform.Find("SingleModal").gameObject;
+            modal.SetActive(false);
+
+            modal = boxOpenModal.transform.Find("MultipleModal").gameObject;
+            modal.SetActive(false);
+
+            boxOpenModal.SetActive(false);
+
+            StopCoroutine("openEffect");
         }
     }
 
