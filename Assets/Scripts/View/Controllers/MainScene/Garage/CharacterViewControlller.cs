@@ -126,7 +126,6 @@ public class CharacterViewControlller : MonoBehaviour {
                     character_inventory charInfo = userStore.myData.represent_character.character_inventory;
                     setMainChar(charInfo.character, charInfo.lv);
                     setSideBar(charInfo.character);
-
                     foreach (character_inventory character in charInvenStore.my_characters) {
                         if (character.character == charInfo.character) {
                             setStat(character);
@@ -136,6 +135,7 @@ public class CharacterViewControlller : MonoBehaviour {
                     if (charInvenStore.all_characters.ContainsKey(charInfo.character).Equals(true)) {
                         all_characters tmp = charInvenStore.all_characters[charInfo.character];
                         setFriendlySlider(charInfo.lv, tmp.lvup_exps, charInfo.exp);
+                        setSideBarName(tmp.name);
                     }
 
                     equipButton.SetActive(true);
@@ -155,6 +155,7 @@ public class CharacterViewControlller : MonoBehaviour {
         Debug.Log("ID : " + info.id);
         setMainChar(info.characterId, info.lv);
         setSideBar(info.characterId);
+        setSideBarName(sbInfo.name);
         setEquipButton(info.characterId, info.has_character);
         
         lvLabel.text = "Lv. " + info.lv.ToString();
@@ -219,6 +220,12 @@ public class CharacterViewControlller : MonoBehaviour {
         sprite = sideBarGrid.transform.Find("Lv20Container/Sprite").GetComponent<UISprite>();
         sprite.atlas = atlasArr[index - 1];
         sprite.spriteName = index + "-3";
+    }
+
+    private void setSideBarName(string name) {
+        lv1Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv1\n" + name;
+        lv10Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv10\n" + name;
+        lv20Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv20\n" + name;
     }
 
     //캐릭터 근력, 지구력, 스피드, 회복력 정보
