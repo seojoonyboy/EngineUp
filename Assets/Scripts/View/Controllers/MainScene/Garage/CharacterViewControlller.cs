@@ -127,7 +127,7 @@ public class CharacterViewControlller : MonoBehaviour {
                 if(gameObject.activeSelf) {
                     character_inventory charInfo = userStore.myData.represent_character.character_inventory;
                     setMainChar(charInfo.character, charInfo.lv);
-                    setSideBar(charInfo.character);
+                    setSideBar(charInfo.character, charInfo.lv);
                     foreach (character_inventory character in charInvenStore.my_characters) {
                         if (character.character == charInfo.character) {
                             setStat(character);
@@ -155,7 +155,7 @@ public class CharacterViewControlller : MonoBehaviour {
         Info info = obj.GetComponent<Info>();
         sbInfo sbInfo = obj.GetComponent<sbInfo>();
         setMainChar(info.characterId, info.lv);
-        setSideBar(info.characterId);
+        setSideBar(info.characterId, info.lv);
         setSideBarName(sbInfo.name);
         setEquipButton(info.characterId, info.has_character);
         
@@ -216,7 +216,10 @@ public class CharacterViewControlller : MonoBehaviour {
         charPref.name = "Character";
     }
 
-    public void setSideBar(int index) {
+    public void setSideBar(int index, int lv) {
+        sideBarGrid.transform.Find("Lv10Container/DeactiveContainer").gameObject.SetActive(false);
+        sideBarGrid.transform.Find("Lv20Container/DeactiveContainer").gameObject.SetActive(false);
+
         UISprite sprite = sideBarGrid.transform.Find("Lv1Container/Sprite").GetComponent<UISprite>();
         sprite.atlas = atlasArr[index - 1];
         sprite.spriteName = index + "-1";
@@ -224,10 +227,16 @@ public class CharacterViewControlller : MonoBehaviour {
         sprite = sideBarGrid.transform.Find("Lv10Container/Sprite").GetComponent<UISprite>();
         sprite.atlas = atlasArr[index - 1];
         sprite.spriteName = index + "-2";
+        if(lv < 10) {
+            sideBarGrid.transform.Find("Lv10Container/DeactiveContainer").gameObject.SetActive(true);
+        }
 
         sprite = sideBarGrid.transform.Find("Lv20Container/Sprite").GetComponent<UISprite>();
         sprite.atlas = atlasArr[index - 1];
         sprite.spriteName = index + "-3";
+        if(lv < 20) {
+            sideBarGrid.transform.Find("Lv20Container/DeactiveContainer").gameObject.SetActive(true);
+        }
     }
 
     private void setSideBarName(string name) {
