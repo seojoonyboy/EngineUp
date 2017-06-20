@@ -299,13 +299,25 @@ public class BicycleItem_Inventory : AjwStore {
 
     private class SortByName : IComparer, IComparer<RespGetItems> {
         public int Compare(RespGetItems x, RespGetItems y) {
-            //throw new NotImplementedException();
-            return x.item.name.CompareTo(y.item.name);
+            string xName = x.item.name;
+            string yName = y.item.name;
+
+            if(xName == yName) {
+                return x.id.CompareTo(y.id);
+            }
+            else {
+                return x.item.name.CompareTo(y.item.name);
+            }
         }
 
         public int Compare(object x, object y) {
-            //throw new NotImplementedException();
-            return Compare((RespGetItems)x, (RespGetItems)y);
+            RespGetItems _x = x as RespGetItems;
+            RespGetItems _y = y as RespGetItems;
+
+            if (_x.id == _y.id) {
+                return _x.id.CompareTo(_y.id);
+            }
+            return Compare(_x, _y);
         }
     }
 
