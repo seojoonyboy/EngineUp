@@ -20,6 +20,8 @@ public class BicycleViewController : MonoBehaviour {
         sideBar,
         selectedItem;
 
+    public GameObject[] toggleBeetweenLines;
+
     public GameObject
         sellButton,
         lockButton,
@@ -187,6 +189,20 @@ public class BicycleViewController : MonoBehaviour {
         }
         isLockMode = !isOn;
         lockButton.GetComponent<boolIndex>().isOn = isLockMode;
+    }
+
+    //프레임, 바퀴, 구동계 분류버튼 클릭
+    public void OnToggle(GameObject obj) {
+        toggleBeetweenLines[0].SetActive(false);
+        toggleBeetweenLines[1].SetActive(false);
+
+        if (obj.name == "FrameContainer") {
+            toggleBeetweenLines[1].SetActive(true);
+        }
+        else if(obj.name == "EngineContainer") {
+            toggleBeetweenLines[0].SetActive(true);
+            toggleBeetweenLines[1].SetActive(true);
+        }
     }
 
     public void selected(GameObject obj) {
