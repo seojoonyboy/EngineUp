@@ -20,7 +20,9 @@ public class CharacterViewControlller : MonoBehaviour {
         DescPanel,
         blockingCollPanel;
 
-    public GameObject equipButton;
+    public GameObject 
+        equipButton,
+        nonpossessionButton;
     public UILabel[] 
         stats,
         incStats;
@@ -152,7 +154,6 @@ public class CharacterViewControlller : MonoBehaviour {
 
         Info info = obj.GetComponent<Info>();
         sbInfo sbInfo = obj.GetComponent<sbInfo>();
-        Debug.Log("ID : " + info.id);
         setMainChar(info.characterId, info.lv);
         setSideBar(info.characterId);
         setSideBarName(sbInfo.name);
@@ -171,6 +172,7 @@ public class CharacterViewControlller : MonoBehaviour {
     public void setEquipButton(int index, string hasChar) {
         if (hasChar == "true") {
             equipButton.SetActive(true);
+            nonpossessionButton.SetActive(false);
             character_inventory charInfo = userStore.myData.represent_character.character_inventory;
             if (index == charInfo.character) {
                 equipButton.transform.Find("Check").gameObject.SetActive(true);
@@ -181,6 +183,7 @@ public class CharacterViewControlller : MonoBehaviour {
         }
         else {
             equipButton.SetActive(false);
+            nonpossessionButton.SetActive(true);
         }
     }
 
