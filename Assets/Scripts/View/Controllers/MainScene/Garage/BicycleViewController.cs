@@ -68,31 +68,25 @@ public class BicycleViewController : MonoBehaviour {
     public void onBicycleItemStoreListener() {
         ActionTypes bicycleItemStoreEventType = bicycleItemStore.eventType;
 
-        if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
-            makeList();
-        }
-
         if(gameObject.activeSelf) {
-            if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
-                if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                    setStat();
-                }
+            if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
+                makeList();
             }
         }
-    }
-
-    public void onCharStoreListener() {
-        
     }
 
     public void onUserStoreListener() {
         ActionTypes userStoreEventType = userStore.eventType;
         lvLavel.text = "Lv. " + userStore.myData.status.rank.ToString();
+
+        if(userStoreEventType == ActionTypes.MYINFO) {
+            if(userStore.storeStatus == storeStatus.NORMAL) {
+                setStat();
+            }
+        }
     }
 
     void OnEnable() {
-        itemInitAct();
-
         tweenPos();
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
@@ -107,6 +101,8 @@ public class BicycleViewController : MonoBehaviour {
         blockingCollPanel.SetActive(true);
         if (!isReverse_tp) {
             tP.PlayForward();
+
+            itemInitAct();
         }
         else {
             //swap
@@ -561,9 +557,10 @@ public class BicycleViewController : MonoBehaviour {
 
     private void setStat() {
         initStat();
-
+        if (charItemStore.my_characters == null) { return; }
         character_inventory repChar = null;
         character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+
         foreach(character_inventory character in charItemStore.my_characters) {
             if(character.character == charInfo.character) {
                 repChar = character;
@@ -577,9 +574,9 @@ public class BicycleViewController : MonoBehaviour {
             int strength = status.strength;
 
             spects[0].text = strength.ToString();
-            spects[1].text = endurance.ToString();
-            spects[2].text = speed.ToString();
-            spects[3].text = recovery.ToString();
+            spects[1].text = speed.ToString();
+            spects[2].text = recovery.ToString();
+            spects[3].text = endurance.ToString();
         }
 
         int incEnd = 0;
@@ -857,10 +854,6 @@ public class BicycleViewController : MonoBehaviour {
     private void itemInitAct() {
         getCharacters_act charInfo = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
         gm.gameDispatcher.dispatch(charInfo);
-
-        getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
-        act._type = equip_act.type.ITEM;
-        gm.gameDispatcher.dispatch(act);
 
         int index = PlayerPrefs.GetInt("Filter");
 

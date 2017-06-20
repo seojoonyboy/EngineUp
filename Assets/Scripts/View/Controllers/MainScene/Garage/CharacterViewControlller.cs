@@ -59,9 +59,6 @@ public class CharacterViewControlller : MonoBehaviour {
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
-
-        getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
-        gm.gameDispatcher.dispatch(act);
     }
 
     void OnDisable() {
@@ -102,6 +99,9 @@ public class CharacterViewControlller : MonoBehaviour {
 
         else {
             gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
+
+            getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
+            gm.gameDispatcher.dispatch(act);
         }
 
         isReverse_tp = true;

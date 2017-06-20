@@ -52,9 +52,9 @@ public class MainSceneManager : fbl_SceneManager {
         gm.boxInvenStore.addListener(boxViewCtrler.onBoxStoreListener);
         gm.userStore.addListener(boxViewCtrler.onUserStoreListener);
 
-        gm.charInvenStore.addListener(bicycleViewCtrler.onCharStoreListener);
         gm.bicycleInventStore.addListener(bicycleViewCtrler.onBicycleItemStoreListener);
-        
+        gm.userStore.addListener(bicycleViewCtrler.onUserStoreListener);
+
         gm.charInvenStore.addListener(charViewCtrler.onCharInvenStore);
         gm.userStore.addListener(charViewCtrler.onUserListener);
         gm.userStore.addListener(bicycleViewCtrler.onUserStoreListener);
