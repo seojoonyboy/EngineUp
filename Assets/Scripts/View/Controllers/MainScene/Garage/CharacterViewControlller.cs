@@ -108,13 +108,15 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     public void onCharInvenStore() {
-        ActionTypes charStoreEventType = charInvenStore.eventType;
+        if(gameObject.activeSelf) {
+            ActionTypes charStoreEventType = charInvenStore.eventType;
 
-        if (charStoreEventType == ActionTypes.GARAGE_CHAR_INIT) {
-            if (charInvenStore.storeStatus == storeStatus.NORMAL) {
-                character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                int equpedCharIndex = charInfo.character;
-                makeList(equpedCharIndex);
+            if (charStoreEventType == ActionTypes.GARAGE_CHAR_INIT) {
+                if (charInvenStore.storeStatus == storeStatus.NORMAL) {
+                    character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+                    int equpedCharIndex = charInfo.character;
+                    makeList(equpedCharIndex);
+                }
             }
         }
     }
@@ -138,6 +140,7 @@ public class CharacterViewControlller : MonoBehaviour {
                         all_characters tmp = charInvenStore.all_characters[charInfo.character];
                         setFriendlySlider(charInfo.lv, tmp.lvup_exps, charInfo.exp);
                         setSideBarName(tmp.name);
+                        charName.text = tmp.name;
                     }
 
                     equipButton.SetActive(true);
@@ -164,8 +167,8 @@ public class CharacterViewControlller : MonoBehaviour {
         setFriendlySlider(info.lv, sbInfo.lvup_exps, info.exp);
 
         stats[0].text = info.strength.ToString();
-        stats[1].text = info.speed.ToString();
-        stats[2].text = info.enurance.ToString();
+        stats[1].text = info.enurance.ToString();
+        stats[2].text = info.speed.ToString();
         stats[3].text = info.recovery.ToString();
     }
 
@@ -256,9 +259,10 @@ public class CharacterViewControlller : MonoBehaviour {
         int recovery = stat.regeneration;
 
         stats[0].text = strength.ToString();
-        stats[1].text = speed.ToString();
-        stats[2].text = endurance.ToString();
+        stats[1].text = endurance.ToString();
+        stats[2].text = speed.ToString();
         stats[3].text = recovery.ToString();
+
         BicycleItem_Inventory bS = gm.bicycleInventStore;
         var euipedItems = bS.equipedItemIndex;
 

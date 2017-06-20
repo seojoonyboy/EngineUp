@@ -72,9 +72,11 @@ public class BicycleViewController : MonoBehaviour {
             makeList();
         }
 
-        if(bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
-            if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                setStat();
+        if(gameObject.activeSelf) {
+            if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
+                if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+                    setStat();
+                }
             }
         }
     }
@@ -560,17 +562,25 @@ public class BicycleViewController : MonoBehaviour {
     private void setStat() {
         initStat();
 
-        status status = userStore.myData.status;
+        character_inventory repChar = null;
+        character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+        foreach(character_inventory character in charItemStore.my_characters) {
+            if(character.character == charInfo.character) {
+                repChar = character;
+            }
+        }
+        var status = repChar.status;
+        if(status != null) {
+            int endurance = status.endurance;
+            int speed = status.speed;
+            int recovery = status.regeneration;
+            int strength = status.strength;
 
-        int endurance = status.endurance;
-        int speed = status.speed;
-        int recovery = status.regeneration;
-        int strength = status.strength;
-
-        spects[0].text = strength.ToString();
-        spects[1].text = speed.ToString();
-        spects[2].text = endurance.ToString();
-        spects[3].text = recovery.ToString();
+            spects[0].text = strength.ToString();
+            spects[1].text = endurance.ToString();
+            spects[2].text = speed.ToString();
+            spects[3].text = recovery.ToString();
+        }
 
         int incEnd = 0;
         int incSpeed = 0;
@@ -845,6 +855,9 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     private void itemInitAct() {
+        getCharacters_act charInfo = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
+        gm.gameDispatcher.dispatch(charInfo);
+
         getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
         act._type = equip_act.type.ITEM;
         gm.gameDispatcher.dispatch(act);

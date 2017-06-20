@@ -198,26 +198,30 @@ public class BicycleItem_Inventory : AjwStore {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
-                Debug.Log("Lock");
                 if (payload.type == "lock") {
                     strBuilder.Append(networkManager.baseUrl)
                     .Append("inventory/items/")
                     .Append(payload.id)
                     .Append("/lock");
+
+                    Debug.Log("Lock ID :" + payload.id);
                 }
                 else if (payload.type == "unlock") {
                     strBuilder.Append(networkManager.baseUrl)
                     .Append("inventory/items/")
                     .Append(payload.id)
                     .Append("/unlock");
+
+                    Debug.Log("UNLock ID :" + payload.id);
                 }
+
+                
 
                 WWWForm form = new WWWForm();
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                Debug.Log("아이템 잠금(해제) 완료");
 
                 getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
                 act._type = equip_act.type.ITEM;

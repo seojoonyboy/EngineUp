@@ -24,11 +24,6 @@ public class Char_Inventory : AjwStore {
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
-            //case ActionTypes.SIGNIN:
-            //    string[] ids = new string[1];
-            //    ids[0] = userStore.dispatchToken;
-            //    gm.gameDispatcher.waitFor(ids);
-            //    break;
             case ActionTypes.GARAGE_CHAR_INIT:
                 representChar = userStore.myCharacters;
                 getMyChar(action as getCharacters_act);
