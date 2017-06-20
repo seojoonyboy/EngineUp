@@ -65,6 +65,7 @@ public class CharacterViewControlller : MonoBehaviour {
         selectedChar = null;
 
         tP.ResetToBeginning();
+        nonpossessionButton.SetActive(false);
     }
 
     public void tweenPos() {
