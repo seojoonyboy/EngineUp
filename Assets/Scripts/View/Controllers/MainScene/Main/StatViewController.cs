@@ -41,16 +41,29 @@ public class StatViewController : MonoBehaviour {
     private TweenPosition tP;
     public GameObject blockingCollPanel;
     private bool isReverse_tp;
+
+    private UISprite contents;
+    private float color;
     void Awake() {
         gm = GameManager.Instance;
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+
+        contents = gameObject.transform.Find("Background").GetComponent<UISprite>();
+        color = contents.alpha;
+
+        contents.alpha = 0;
     }
 
-    void OnEnable() {
+    public void onPanel() {
+        contents.alpha = color;
         tweenPos();
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
+    }
+
+    public void offPanel() {
+        gameObject.transform.Find("Background").GetComponent<UISprite>().alpha = 0f;
     }
 
     void Update() {
@@ -82,7 +95,7 @@ public class StatViewController : MonoBehaviour {
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
-            gameObject.SetActive(false);
+            offPanel();
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         else {
@@ -132,10 +145,6 @@ public class StatViewController : MonoBehaviour {
                 makeDistrictsList();
             }
         }
-    }
-
-    public void offPanel() {
-        gameObject.SetActive(false);
     }
 
     private void initialize() {

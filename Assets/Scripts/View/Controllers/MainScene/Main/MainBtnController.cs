@@ -53,7 +53,7 @@ public class MainBtnController : MonoBehaviour {
                 panels[5].SetActive(true);
                 break;
             case MainButtonEnum.Type.MYINFO:
-                panels[4].SetActive(true);
+                panels[4].GetComponent<StatViewController>().onPanel();
                 break;
         }
     }
