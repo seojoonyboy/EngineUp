@@ -211,6 +211,9 @@ public class CharacterViewControlller : MonoBehaviour {
 
         int arrIndex = index - 1;
         int arrSubIndex = lv - 1;
+        if(arrSubIndex == -1) {
+            arrSubIndex = 0;
+        }
         GameObject charPref = Instantiate(Characters[arrIndex].Pref[arrSubIndex]);
         prevMainChar = charPref;
         charPref.transform.SetParent(mainStage.transform);
@@ -335,51 +338,52 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void makeList(int equipedCharIndex = -1) {
         removeList();
-        //내 캐릭터 리스트 생성
-        character_inventory[] myChars = charInvenStore.my_characters;
         int repCharIndex = charInvenStore.representChar.character_inventory.id;
 
-        for (int i=0; i< myChars.Length; i++) {
+        //내 캐릭터 리스트 생성
+        character_inventory[] myChars = charInvenStore.my_characters;
+        var allChars = charInvenStore.all_characters;
+
+        foreach(KeyValuePair<int, all_characters> dC in allChars) {
             GameObject item = Instantiate(itemPref);
             item.transform.SetParent(itemGrid.transform);
             item.transform.localScale = Vector3.one;
             item.transform.localPosition = Vector3.zero;
 
             Info info = item.AddComponent<Info>();
+            info.characterId = dC.Key;
+            sbInfo sbInfo = item.AddComponent<sbInfo>();
+            sbInfo.name = dC.Value.name;
+            sbInfo.desc = dC.Value.desc;
+            sbInfo.cost = dC.Value.cost;
+            sbInfo.lvup_exps = dC.Value.lvup_exps;
 
-            info.id = myChars[i].id;
-            info.characterId = myChars[i].character;
-            info.has_character = myChars[i].has_character;
-            info.paid = myChars[i].paid;
-            info.lv = myChars[i].lv;
-            info.exp = myChars[i].exp;
-            charStat status = myChars[i].status;
-            info.strength = status.strength;
-            info.enurance = status.endurance;
-            info.recovery = status.regeneration;
-            info.speed = status.speed;
+            var element = Array.Find(myChars, arr => arr.character.Equals(dC.Key));
+            //보유한 캐릭터
+            if(element != null) {
+                info.paid = element.paid;
+                info.lv = element.lv;
+                info.exp = element.exp;
+                info.has_character = element.has_character;
+                info.strength = element.status.strength;
+                info.enurance = element.status.endurance;
+                info.recovery = element.status.regeneration;
+                info.speed = element.status.speed;
 
-            //대표 캐릭터인 경우
-            if(info.characterId == equipedCharIndex) {
-                selectedChar = item;
-            }
+                if (repCharIndex == element.character) {
+                    selectedChar = item;
+                }
 
-            if (charInvenStore.all_characters.ContainsKey(info.characterId).Equals(true)) {
-                all_characters tmp = charInvenStore.all_characters[info.characterId];
-
-                sbInfo sbInfo = item.AddComponent<sbInfo>();
-                sbInfo.name = tmp.name;
-                sbInfo.desc = tmp.desc;
-                sbInfo.cost = tmp.cost;
-                sbInfo.lvup_exps = tmp.lvup_exps;
+                if(element.has_character == "true") {
+                    item.transform.Find("DeactiveContainer").gameObject.SetActive(false);
+                }
 
                 item.transform.Find("Puzzles/Value").GetComponent<UILabel>().text = info.paid + " / " + sbInfo.cost.ToString();
             }
-
-            if(info.has_character == "true") {
-                item.transform.Find("DeactiveContainer").gameObject.SetActive(false);
+            //보유하고 있지 않은 캐릭터의 경우
+            else {
+                item.transform.Find("Puzzles/Value").GetComponent<UILabel>().text = "미보유";
             }
-
             UISprite sprite = item.transform.Find("Portrait").GetComponent<UISprite>();
             int atlasIndex = info.characterId;
             sprite.atlas = atlasArr[atlasIndex - 1];
