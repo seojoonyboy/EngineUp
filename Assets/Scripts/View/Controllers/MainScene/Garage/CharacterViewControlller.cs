@@ -162,7 +162,7 @@ public class CharacterViewControlller : MonoBehaviour {
         setSideBar(info.characterId, info.lv);
         setSideBarName(sbInfo.name);
         setEquipButton(info.characterId, info.has_character);
-        
+
         lvLabel.text = "Lv. " + info.lv.ToString();
         charName.text = sbInfo.name;
         setFriendlySlider(info.lv, sbInfo.lvup_exps, info.exp);
@@ -195,17 +195,16 @@ public class CharacterViewControlller : MonoBehaviour {
         float offset = 0;
         switch(lv) {
             case 1:
-                offset = 1 / lvUp_exp[0];
+                offset = 1 / (float)lvUp_exp[0];
                 break;
             case 2:
-                offset = 1 / lvUp_exp[1];
+                offset = 1 / (float)lvUp_exp[1];
                 break;
         }
         friendlySlider.value = exp * offset;
     }
 
     public void setMainChar(int index, int lv) {
-        Debug.Log("Index : " + index + ", LV : " + lv);
         if(prevMainChar != null) {
             Destroy(prevMainChar);
         }
@@ -231,22 +230,22 @@ public class CharacterViewControlller : MonoBehaviour {
         sprite = sideBarGrid.transform.Find("Lv10Container/Sprite").GetComponent<UISprite>();
         sprite.atlas = atlasArr[index - 1];
         sprite.spriteName = index + "-2";
-        if(lv < 10) {
+        if(lv < 2) {
             sideBarGrid.transform.Find("Lv10Container/DeactiveContainer").gameObject.SetActive(true);
         }
 
         sprite = sideBarGrid.transform.Find("Lv20Container/Sprite").GetComponent<UISprite>();
         sprite.atlas = atlasArr[index - 1];
         sprite.spriteName = index + "-3";
-        if(lv < 20) {
+        if(lv < 3) {
             sideBarGrid.transform.Find("Lv20Container/DeactiveContainer").gameObject.SetActive(true);
         }
     }
 
     private void setSideBarName(string name) {
         lv1Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv1\n" + name;
-        lv10Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv10\n" + name;
-        lv20Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv20\n" + name;
+        lv10Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv2\n" + name;
+        lv20Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv3\n" + name;
     }
 
     //캐릭터 근력, 지구력, 스피드, 회복력 정보
