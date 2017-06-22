@@ -79,7 +79,7 @@ public class MyHomeViewController : MonoBehaviour {
                 break;
             //파트너룸(캐릭터)
             case 2:
-                subPanels[0].SetActive(true);
+                subPanels[0].GetComponent<CharacterViewControlller>().onPanel();
                 break;
         }
     }

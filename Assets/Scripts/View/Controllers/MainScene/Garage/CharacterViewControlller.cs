@@ -45,22 +45,31 @@ public class CharacterViewControlller : MonoBehaviour {
 
     private TweenPosition tP;
     private bool isReverse_tp;
-
+    private UISprite panel;
+    private float color;
     void Awake() {
         gm = GameManager.Instance;
         charInvenStore = gm.charInvenStore;
 
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+
+        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
+        color = panel.alpha;
+
+        panel.alpha = 0;
     }
 
-    void OnEnable() {
+    public void onPanel() {
+        panel.alpha = color;
         tweenPos();
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
     }
 
-    void OnDisable() {
+    void offPanel() {
+        panel.alpha = 0f;
+
         selectedChar = null;
 
         tP.ResetToBeginning();
@@ -94,7 +103,7 @@ public class CharacterViewControlller : MonoBehaviour {
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
-            gameObject.SetActive(false);
+            offPanel();
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
 
@@ -124,30 +133,31 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void onUserListener() {
         ActionTypes userStoreEventType = userStore.eventType;
-
         if (userStoreEventType == ActionTypes.MYINFO) {
             if (userStore.storeStatus == storeStatus.NORMAL) {
-                if(gameObject.activeSelf) {
-                    character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                    setMainChar(charInfo.character, charInfo.lv);
-                    setSideBar(charInfo.character, charInfo.lv);
-                    foreach (character_inventory character in charInvenStore.my_characters) {
-                        if (character.character == charInfo.character) {
-                            setStat(character);
-                        }
-                    }
-
-                    if (charInvenStore.all_characters.ContainsKey(charInfo.character).Equals(true)) {
-                        all_characters tmp = charInvenStore.all_characters[charInfo.character];
-                        setFriendlySlider(charInfo.lv, tmp.lvup_exps, charInfo.exp);
-                        setSideBarName(tmp.name);
-                        charName.text = tmp.name;
-                    }
-
-                    equipButton.SetActive(true);
-                    equipButton.transform.Find("Check").gameObject.SetActive(true);
-                    lvLabel.text = "Lv " + charInfo.lv.ToString();
+                if(panel.alpha == 0) {
+                    return;
                 }
+                character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+                setMainChar(charInfo.character, charInfo.lv);
+                setSideBar(charInfo.character, charInfo.lv);
+
+                foreach (character_inventory character in charInvenStore.my_characters) {
+                    if (character.character == charInfo.character) {
+                        setStat(character);
+                    }
+                }
+
+                if (charInvenStore.all_characters.ContainsKey(charInfo.character).Equals(true)) {
+                    all_characters tmp = charInvenStore.all_characters[charInfo.character];
+                    setFriendlySlider(charInfo.lv, tmp.lvup_exps, charInfo.exp);
+                    setSideBarName(tmp.name);
+                    charName.text = tmp.name;
+                }
+
+                equipButton.SetActive(true);
+                equipButton.transform.Find("Check").gameObject.SetActive(true);
+                lvLabel.text = "Lv " + charInfo.lv.ToString();
             }
         }
     }
@@ -361,6 +371,7 @@ public class CharacterViewControlller : MonoBehaviour {
             var element = Array.Find(myChars, arr => arr.character.Equals(dC.Key));
             //보유한 캐릭터
             if(element != null) {
+                info.id = element.id;
                 info.paid = element.paid;
                 info.lv = element.lv;
                 info.exp = element.exp;

@@ -63,7 +63,7 @@ public class StatViewController : MonoBehaviour {
     }
 
     public void offPanel() {
-        gameObject.transform.Find("Background").GetComponent<UISprite>().alpha = 0f;
+        contents.alpha = 0f;
     }
 
     void Update() {
