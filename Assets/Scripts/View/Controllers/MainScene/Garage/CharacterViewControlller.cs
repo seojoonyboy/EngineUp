@@ -7,6 +7,7 @@ public class CharacterViewControlller : MonoBehaviour {
     GameManager gm;
     Char_Inventory charInvenStore;
     public User userStore;
+    public TweenManager tM;
     //character_inventory[] characters;
 
     public GameObject
@@ -43,9 +44,7 @@ public class CharacterViewControlller : MonoBehaviour {
     private GameObject prevMainChar;
 
     private TweenPosition tP;
-    private bool 
-        isReverse_tp,
-        isTweening = false;
+    private bool isReverse_tp;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -69,10 +68,11 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     public void tweenPos() {
+        bool isTweening = tM.isTweening;
         if(isTweening) {
             return;
         }
-        isTweening = true;
+        tM.isTweening = true;
         blockingCollPanel.SetActive(true);
         if (!isReverse_tp) {
             tP.PlayForward();
@@ -90,7 +90,7 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     public void tpFinished() {
-        isTweening = false;
+        tM.isTweening = false;
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {

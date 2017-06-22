@@ -6,6 +6,7 @@ using System.Text;
 public class BicycleViewController : MonoBehaviour {
     private GameManager gm;
     public BicycleItem_Inventory bicycleItemStore;
+    public TweenManager tM;
     public Char_Inventory charItemStore;
     public User userStore;
 
@@ -57,8 +58,7 @@ public class BicycleViewController : MonoBehaviour {
 
     private TweenPosition tP;
     private bool 
-        isReverse_tp,
-        isTweening = false;
+        isReverse_tp;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -94,10 +94,12 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     public void tweenPos() {
+        bool isTweening = tM.isTweening;
         if (isTweening) {
             return;
         }
-        isTweening = true;
+        tM.isTweening = true;
+
         blockingCollPanel.SetActive(true);
         if (!isReverse_tp) {
             tP.PlayForward();
@@ -123,7 +125,7 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     public void tpFinished() {
-        isTweening = false;
+        tM.isTweening = false;
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
