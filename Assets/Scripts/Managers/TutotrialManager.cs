@@ -85,16 +85,18 @@ public class TutotrialManager : MonoBehaviour {
         }
         switch (index) {
             case 0:
-                StartCoroutine(activateButton(0));
+                buttons[0].SetActive(true);
                 break;
             case 2:
-                StartCoroutine(activateButton(5));
+                buttons[5].SetActive(true);
                 break;
             case 4:
-                StartCoroutine(activateButton(8));
+                buttons[8].SetActive(true);
                 break;
             case 6:
                 fading.SetActive(true);
+                PARTNER.SetActive(false);
+                offClonedButtons(buttons[8]);
                 StartCoroutine(FadeOut());
                 break;
         }
