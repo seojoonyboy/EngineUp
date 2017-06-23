@@ -47,34 +47,51 @@ public class Riding_VC : MonoBehaviour {
     private bool
         isReverse_tp,
         isTweening = false;
+
+    public UISprite 
+        startPanelSprite,
+        ridingPanelSprite,
+        start_buttonCon_sprite,
+        start_animCon_sprite;
+
+    private float startPanelColor, ridingPanelColor;
+
     void Start() {
         gameManager = GameManager.Instance;
     }
 
     void Awake() {
         tP = StartPanel.transform.Find("Background").GetComponent<TweenPosition>();
+        
+        startPanelColor = startPanelSprite.alpha;
+        ridingPanelColor = ridingPanelSprite.alpha;
+        //라이딩 시작화면, 라이딩 화면 비활성화
+        startPanelSprite.alpha = 0;
+        ridingPanelSprite.alpha = 0;
+        start_animCon_sprite.alpha = 0;
     }
 
-    void OnEnable() {
+    //메인화면에서 라이딩 버튼 클릭시
+    public void onPanel() {
+        //시작 화면 활성화
+        startPanelSprite.alpha = startPanelColor;
+        start_buttonCon_sprite.alpha = startPanelColor;
+        tweenPos();
+
         avgSpeedLabel.text = "0";
         distLabel.text = "0";
         maxLabel.text = "0";
         uphillDistanceLabel.text = "0";
-
-        tweenPos();
+        
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
-        tP.ResetToBeginning();
     }
 
-    void OnDisable() {
+    private void offPanel() {
+        startPanelSprite.alpha = 0;
+
         isPausePressed = false;
         pauseModal.SetActive(isPausePressed);
-        beforeStartModal_AnimContainer.SetActive(false);
-
-        tP.ResetToBeginning();
-
-        StartPanel.SetActive(true);
         blockingCollPanel.SetActive(false);
         isReverse_tp = false;
     }
@@ -86,6 +103,7 @@ public class Riding_VC : MonoBehaviour {
         isTweening = true;
         blockingCollPanel.SetActive(true);
         if (!isReverse_tp) {
+            tP.ResetToBeginning();
             tP.PlayForward();
         }
         else {
@@ -105,34 +123,22 @@ public class Riding_VC : MonoBehaviour {
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
-            gameObject.SetActive(false);
+            offPanel();
         }
         isReverse_tp = true;
     }
 
     //라이딩 시작 버튼 클릭시
-    public void onRidingStartButton(bool isTutorial = false) {
-        offBeforeStartModal();
-        beforeStartModal_AnimContainer.SetActive(true);
+    public void onRidingStartButton() {
+        start_buttonCon_sprite.alpha = 0;
+        start_animCon_sprite.alpha = startPanelColor;
+        start_animCon_sprite.GetComponent<RidingStartAnimController>().startAnim();
+
         //초기 위칫값을 지정한다. (받은 값들의 평균)
         gpsReceiver = Instantiate(gpsPref);
-        if(isTutorial) {
-            StartCoroutine(freeze(5.0f));
-        }
         MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
         act._type = MyInfo.type.RIDING_START;
         gameManager.gameDispatcher.dispatch(act);
-    }
-
-    IEnumerator freeze(float interval) {
-        float val = interval;
-        while(val >= 0.0f) {
-            val -= 1.0f;
-            yield return new WaitForSeconds(1.0f);
-        }
-        pauseButtonPressed();
-        tutManager.ridingPaused();
-        Debug.Log("Freezing");
     }
 
     //라이딩 종료 버튼 눌렀을 때
@@ -142,10 +148,6 @@ public class Riding_VC : MonoBehaviour {
         exitModal.transform.Find("Modal/Description").GetComponent<UILabel>().text = "지금 종료하시면 \n총 " + boxNum + "개의 상자를 얻을 수 있습니다.";
         //라이딩 일시정지
         Time.timeScale = 0;
-    }
-
-    public void offBeforeStartModal() {
-        beforeStartModal_ButtonContainer.SetActive(false);
     }
 
     public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time, float maxSpeed, float uphillDist, int boxNum) {
@@ -174,10 +176,10 @@ public class Riding_VC : MonoBehaviour {
     //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
     public void ridingEnd() {
         offToggleGroup();
-        gameObject.SetActive(false);
-        
-        ridingPanel.SetActive(false);
-        StartPanel.SetActive(true);
+        offPanel();
+
+        ridingPanelSprite.alpha = 0;
+        startPanelSprite.alpha = 0;
 
         exitModal.SetActive(false);
 
@@ -201,10 +203,11 @@ public class Riding_VC : MonoBehaviour {
     }
 
     public IEnumerator ridingStart() {
-        ridingPanel.SetActive(true);
+        //라이딩 화면 활성화
+        ridingPanelSprite.alpha = ridingPanelColor;
         yield return new WaitForSeconds(1);
-        StartPanel.SetActive(false);
-        beforeStartModal_ButtonContainer.SetActive(true);
+        startPanelSprite.alpha = 0;
+        start_animCon_sprite.alpha = 0;
 
         Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
         GameManager.Instance.gameDispatcher.dispatch(act);

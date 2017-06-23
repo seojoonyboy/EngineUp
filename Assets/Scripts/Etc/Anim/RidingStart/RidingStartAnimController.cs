@@ -8,7 +8,8 @@ public class RidingStartAnimController : MonoBehaviour {
     private IEnumerator coroutine;
     public UILabel label;
     public int count;
-    void OnEnable() {
+
+    public void startAnim() {
         coroutine = anim(1);
         StartCoroutine(coroutine);
     }

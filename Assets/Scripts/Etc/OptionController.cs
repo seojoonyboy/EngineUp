@@ -10,22 +10,32 @@ public class OptionController : MonoBehaviour {
     private TweenPosition tP;
     public GameObject blockingCollPanel;
     private bool isReverse_tp;
+
+    public UISprite panel;
+    public float color;
+
     void Awake() {
         gm = GameManager.Instance;
         ridingStore = gm.ridingStore;
 
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+
+        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
+        color = panel.alpha;
+
+        panel.alpha = 0;
     }
 
-    void OnEnable() {
+    public void onPanel() {
+        panel.alpha = color;
         tweenPos();
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
     }
 
-    void OnDisable() {
-        tP.ResetToBeginning();
+    void offPanel() {
+        panel.alpha = 0f;
     }
 
     public void tweenPos() {
@@ -48,7 +58,7 @@ public class OptionController : MonoBehaviour {
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
-            gameObject.SetActive(false);
+            offPanel();
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         else {
@@ -56,10 +66,6 @@ public class OptionController : MonoBehaviour {
         }
 
         isReverse_tp = true;
-    }
-
-    public void offPanel() {
-        gameObject.SetActive(false);
     }
 
     public void onModal(GameObject obj) {

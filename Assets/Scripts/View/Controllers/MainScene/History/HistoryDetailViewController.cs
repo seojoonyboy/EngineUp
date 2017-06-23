@@ -33,11 +33,36 @@ public class HistoryDetailViewController : MonoBehaviour {
 
     public GameObject blockingCollPanel;
 
+    private UISprite panel;
+    private float color;
+
     void Awake() {
         gm = GameManager.Instance;
         ridingStore = gm.ridingStore;
 
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+
+        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
+        color = panel.alpha;
+
+        panel.alpha = 0;
+    }
+
+    public void onPanel() {
+        panel.alpha = color;
+        tweenPos();
+
+        blockingCollPanel.SetActive(true);
+        isReverse_tp = false;
+    }
+
+    private void offPanel() {
+        panel.alpha = 0f;
+        foreach (Collider col in collider) {
+            col.enabled = true;
+        }
+        mapHeader.SetActive(false);
+        tP.ResetToBeginning();
     }
 
     public void tweenPos() {
@@ -50,6 +75,7 @@ public class HistoryDetailViewController : MonoBehaviour {
             tP.PlayForward();
         }
         else {
+            offMap();
             //swap
             Vector3 tmp;
             tmp = tP.to;
@@ -58,9 +84,6 @@ public class HistoryDetailViewController : MonoBehaviour {
 
             tP.ResetToBeginning();
             tP.PlayForward();
-
-            parentController.gameObject.SetActive(true);
-            parentController.blockingCollPanel.SetActive(false);
         }
     }
 
@@ -69,12 +92,11 @@ public class HistoryDetailViewController : MonoBehaviour {
         blockingCollPanel.SetActive(false);
         //패널 닫기시
         if (isReverse_tp) {
-            gameObject.SetActive(false);
+            offPanel();
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         //패널 활성화시
         else {
-            blockingCollPanel.SetActive(false);
             gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
             foreach (Collider col in collider) {
                 col.enabled = false;
@@ -84,26 +106,12 @@ public class HistoryDetailViewController : MonoBehaviour {
             act.id = id;
             act.type = GetRidingRecords.callType.HISTORY;
             gm.gameDispatcher.dispatch(act);
+
             parentController.offPanel();
+            parentController.blockingCollPanel.SetActive(false);
         }
 
         isReverse_tp = true;
-    }
-
-    //지도 사용을 위해 다른 collider를 꺼준다.
-    void OnEnable() {
-        tweenPos();
-
-        blockingCollPanel.SetActive(true);
-        isReverse_tp = false;
-    }
-
-    void OnDisable() {
-        foreach(Collider col in collider) {
-            col.enabled = true;
-        }
-        mapHeader.SetActive(false);
-        tP.ResetToBeginning();
     }
 
     public void setMap(RidingDetails data) {
@@ -147,21 +155,6 @@ public class HistoryDetailViewController : MonoBehaviour {
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
     }
 
-    public void onPanel() {
-        gameObject.SetActive(true);
-    }
-
-    public void offPanel() {
-        OnlineMaps _map = map.GetComponent<OnlineMaps>();
-        map.transform.localScale = Vector3.one;
-        map.transform.localPosition = preMapPos;
-
-        _map.RemoveAllDrawingElements();
-        _map.RemoveAllMarkers();
-
-        map.SetActive(false);
-    }
-
     public void setInfo(RidingDetails data) {
         dist.text = (Math.Round(data.distance, 2, MidpointRounding.AwayFromZero)).ToString();
         avgSpeed.text = (Math.Round(data.avgSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
@@ -191,5 +184,18 @@ public class HistoryDetailViewController : MonoBehaviour {
                 _line.weight = 3f;
             }
         }
+    }
+
+    private void offMap() {
+        OnlineMaps _map = map.GetComponent<OnlineMaps>();
+        map.transform.localScale = Vector3.one;
+        map.transform.localPosition = preMapPos;
+
+        _map.RemoveAllDrawingElements();
+        _map.RemoveAllMarkers();
+
+        map.SetActive(false);
+
+        parentController.panel.alpha = parentController.color;
     }
 }

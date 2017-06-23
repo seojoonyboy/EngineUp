@@ -67,24 +67,58 @@ public class Result_VC : MonoBehaviour {
 
     private TweenPosition tP;
 
+    private UISprite panel;
+    private float color;
+
     void Awake() {
         gm = GameManager.Instance;
         UIEventListener.Get(mapViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
         UIEventListener.Get(confirmBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
         UIEventListener.Get(recordViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
+
+        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
+        color = panel.alpha;
+
+        panel.alpha = 0;
     }
 
     void Start() {
         TextAsset file = (TextAsset)Resources.Load("Exp");
         exps = JsonHelper.getJsonArray<Exp>(file.text);
 
-        tP = gameObject.transform.Find("Container").GetComponent<TweenPosition>();
-        tP.eventReceiver = gameObject;
-        tP.callWhenFinished = "offResultPanel";
+        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
     }
 
-    void OnEnable() {
-        
+    public void onPanel() {
+        panel.alpha = color;
+    }
+
+    void offPanel() {
+        panel.alpha = 0f;
+
+        totalDist.text = "0";
+        avgSpeed.text = "0";
+        maxSpeed.text = "0";
+        uphillDistanceLabel.text = "0";
+        totalTime.text = null;
+
+        foreach (Collider coll in colliders) {
+            coll.enabled = true;
+        }
+
+        mapViewBtn.SetActive(true);
+        recordViewBtn.SetActive(false);
+
+        StrIcon.SetActive(true);
+        EndIcon.SetActive(true);
+        SpeedIcon.SetActive(true);
+        RecoIcon.SetActive(true);
+
+        tP.ResetToBeginning();
+    }
+
+    public void tPFinished() {
+        offPanel();
     }
 
     void btnListener(GameObject obj, bool state) {
@@ -139,31 +173,11 @@ public class Result_VC : MonoBehaviour {
         }
     }
 
-    void OnDisable() {
-        totalDist.text = "0";
-        avgSpeed.text = "0";
-        maxSpeed.text = "0";
-        uphillDistanceLabel.text = "0";
-        totalTime.text = null;
-        gameObject.SetActive(false);
-
-        foreach (Collider coll in colliders) {
-            coll.enabled = true;
-        }
-
-        mapViewBtn.SetActive(true);
-        recordViewBtn.SetActive(false);
-
-        StrIcon.SetActive(true);
-        EndIcon.SetActive(true);
-        SpeedIcon.SetActive(true);
-        RecoIcon.SetActive(true);
-    }
-
     public void onRidingListener() {
         //서버로 부터 callback으로 받은 필터적용된 위도 경도 값을 이용하여 라인을 그린다.
         if (ridingStore.eventType == ActionTypes.RIDING_END) {
-            gameObject.SetActive(true);
+            panel.alpha = color;
+
             setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance, ridingStore.boxes);
 
             MyInfo infoRefresh = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
@@ -171,7 +185,7 @@ public class Result_VC : MonoBehaviour {
             gm.gameDispatcher.dispatch(infoRefresh);
         }
 
-        if(gameObject.activeSelf) {
+        if(panel.alpha != 0) {
             if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
                 if (ridingStore.storeStatus == storeStatus.NORMAL) {
                     _drawLine();
@@ -328,8 +342,7 @@ public class Result_VC : MonoBehaviour {
     }
 
     public void offResultPanel() {
-        OnDisable();
-        tP.ResetToBeginning();
+        offPanel();
     }
 
     void _drawLine() {

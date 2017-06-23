@@ -9,23 +9,32 @@ public class MyHomeViewController : MonoBehaviour {
     public GameObject blockingCollPanel;
     private TweenManager tm;
 
+    private UISprite panel;
+    private float color;
+
     private bool
         isReverse_tp;
 
     void Awake() {
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
         tm = GetComponent<TweenManager>();
+
+        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
+        color = panel.alpha;
+
+        panel.alpha = 0;
     }
 
-    void OnEnable() {
+    public void onPanel() {
+        panel.alpha = color;
         tweenPos();
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
     }
 
-    void OnDisable() {
-        tP.ResetToBeginning();
+    private void offPanel() {
+        panel.alpha = 0f;
     }
 
     public void tweenPos() {
@@ -55,7 +64,7 @@ public class MyHomeViewController : MonoBehaviour {
         blockingCollPanel.SetActive(false);
 
         if(isReverse_tp) {
-            gameObject.SetActive(false);
+            offPanel();
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         else {
@@ -70,7 +79,7 @@ public class MyHomeViewController : MonoBehaviour {
         switch(index) {
             //차고지(자전거)
             case 0:
-                subPanels[1].SetActive(true);
+                subPanels[1].GetComponent<BicycleViewController>().onPanel();
                 break;
             //서재(기록실)
             case 1:

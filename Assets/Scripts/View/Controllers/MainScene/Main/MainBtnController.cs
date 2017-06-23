@@ -35,13 +35,13 @@ public class MainBtnController : MonoBehaviour {
 
         switch (type) {
             case MainButtonEnum.Type.MYHOME:
-                panels[0].SetActive(true);
+                panels[0].GetComponent<MyHomeViewController>().onPanel();
                 break;
             case MainButtonEnum.Type.COMMUNITY:
                 notifyModal.SetActive(true);
                 break;
             case MainButtonEnum.Type.RIDING:
-                panels[2].SetActive(true);
+                panels[2].GetComponent<Riding_VC>().onPanel();
                 break;
             case MainButtonEnum.Type.BOX:
                 panels[3].SetActive(true);
@@ -50,7 +50,7 @@ public class MainBtnController : MonoBehaviour {
                 notifyModal.SetActive(true);
                 break;
             case MainButtonEnum.Type.OPTION:
-                panels[5].SetActive(true);
+                panels[5].GetComponent<OptionController>().onPanel();
                 break;
             case MainButtonEnum.Type.MYINFO:
                 panels[4].GetComponent<StatViewController>().onPanel();

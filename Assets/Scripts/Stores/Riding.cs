@@ -189,7 +189,6 @@ public class Riding : AjwStore{
                 storeStatus = storeStatus.NORMAL;
                 postsCallbackHeader = payload.response.header;
                 ridingRecords = JsonHelper.getJsonArray<RidingRecords>(payload.response.data);
-                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -205,7 +204,6 @@ public class Riding : AjwStore{
             case NetworkAction.statusTypes.REQUEST:
                 storeStatus = storeStatus.WAITING_REQ;
                 callRecType = payload.type;
-                Debug.Log(payload.type);
 
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);

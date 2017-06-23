@@ -32,16 +32,30 @@ public class HistoryViewController : MonoBehaviour {
     private bool isReverse_tp;
 
     public GameObject blockingCollPanel;
+
+    public UISprite panel;
+    public float color;
+
     void Awake() {
         gm = GameManager.Instance;
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+
+        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
+        color = panel.alpha;
+
+        panel.alpha = 0;
     }
 
     public void onPanel() {
+        panel.alpha = color;
         tweenPos();
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
+    }
+
+    public void offPanel() {
+        panel.alpha = 0f;
     }
 
     public void onBackButton() {
@@ -81,11 +95,10 @@ public class HistoryViewController : MonoBehaviour {
         tM.isTweening = false;
         blockingCollPanel.SetActive(false);
         if (isReverse_tp) {
-            gameObject.SetActive(false);
+            offPanel();
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         else {
-            blockingCollPanel.SetActive(false);
             gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
             getRidingDataSets();
         }
@@ -186,10 +199,6 @@ public class HistoryViewController : MonoBehaviour {
             _grid.repositionNow = true;
             _grid.Reposition();
         }
-    }
-
-    public void offPanel() {
-        gameObject.SetActive(false);
     }
 
     void onDetail(GameObject obj) {

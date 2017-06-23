@@ -57,12 +57,19 @@ public class BicycleViewController : MonoBehaviour {
     public UILabel lvLavel;
 
     private TweenPosition tP;
-    private bool 
-        isReverse_tp;
+    private bool isReverse_tp;
+
+    private UISprite panel;
+    private float color;
 
     void Awake() {
         gm = GameManager.Instance;
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+
+        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
+        color = panel.alpha;
+
+        panel.alpha = 0;
     }
 
     public void onBicycleItemStoreListener() {
@@ -86,10 +93,20 @@ public class BicycleViewController : MonoBehaviour {
         }
     }
 
-    void OnEnable() {
+    public void onPanel() {
+        panel.alpha = color;
         tweenPos();
+
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
+    }
+
+    void offPanel() {
+        panel.alpha = 0f;
+
+        selectedItem = null;
+        detailModal.SetActive(false);
+
         tP.ResetToBeginning();
     }
 
@@ -129,7 +146,7 @@ public class BicycleViewController : MonoBehaviour {
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
-            gameObject.SetActive(false);
+            offPanel();
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
 
@@ -138,11 +155,6 @@ public class BicycleViewController : MonoBehaviour {
         }
 
         isReverse_tp = true;
-    }
-
-    void OnDisable() {
-        selectedItem = null;
-        detailModal.SetActive(false);
     }
 
     //판매 버튼 클릭시
@@ -910,9 +922,5 @@ public class BicycleViewController : MonoBehaviour {
         public int recovery;
         public int strength;
         public int endurance;
-    }
-
-    public void offPanel() {
-        gameObject.SetActive(false);
     }
 }
