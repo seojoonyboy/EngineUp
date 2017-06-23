@@ -44,7 +44,7 @@ public class MainBtnController : MonoBehaviour {
                 panels[2].GetComponent<Riding_VC>().onPanel();
                 break;
             case MainButtonEnum.Type.BOX:
-                panels[3].SetActive(true);
+                panels[3].GetComponent<BoxViewController>().onPanel();
                 break;
             case MainButtonEnum.Type.STORE:
                 notifyModal.SetActive(true);

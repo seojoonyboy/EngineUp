@@ -32,21 +32,32 @@ public class BoxViewController : MonoBehaviour {
         uiAtlas;
     private bool isReverse_tp;
 
+    private UISprite panel;
+    private float color;
+
     void Awake() {
         gm = GameManager.Instance;
         boxStore = gm.boxInvenStore;
 
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+
+        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
+        color = panel.alpha;
+
+        panel.alpha = 0;
     }
 
-    void OnEnable() {
-        MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
-        gm.gameDispatcher.dispatch(act);
-
+    public void onPanel() {
+        panel.alpha = color;
         tweenPos();
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
+    }
+
+    void offPanel() {
+        panel.alpha = 0f;
+        tP.ResetToBeginning();
     }
 
     public void tweenPos() {
@@ -79,12 +90,15 @@ public class BoxViewController : MonoBehaviour {
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
-            gameObject.SetActive(false);
+            offPanel();
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
 
         else {
             gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
+
+            MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+            gm.gameDispatcher.dispatch(act);
         }
 
         isReverse_tp = true;
@@ -99,10 +113,6 @@ public class BoxViewController : MonoBehaviour {
                 multiModalBoxNum.text = "x " + boxNum;
             }
         }
-    }
-
-    void OnDisable() {
-        tP.ResetToBeginning();
     }
 
     public void onBoxStoreListener() {
@@ -252,9 +262,5 @@ public class BoxViewController : MonoBehaviour {
         }
         modal.transform.Find("Buttons/ConfirmButton").gameObject.GetComponent<UIButton>().enabled = true;
         modal.transform.Find("Buttons/CancelButton").gameObject.GetComponent<UIButton>().enabled = true;
-    }
-
-    public void offPanel() {
-        gameObject.SetActive(false);
     }
 }
