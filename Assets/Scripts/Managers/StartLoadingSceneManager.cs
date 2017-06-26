@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 public class StartLoadingSceneManager : fbl_SceneManager {
     GameManager gm;
     User userStore;
@@ -9,7 +12,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         nicknameModal,
         charselectModal,
         policyModal,
-        policyErrorModal,
+        errorModal,
         policyContextModal,
         NickNameCheckResultModal,
         buttonGroup,
@@ -19,12 +22,12 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     public FacebookLogin facebooklogin;
     public NormalLogin normalLogin;
 
-    public UIInput modalInput;
+    public InputField modalInput;
     public int charIndex;
 
     private string newNickName;
 
-    public UIToggle
+    public Toggle
         mobileServiceCheckBox,
         privacyCollectCheckBox;
 
@@ -59,8 +62,8 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     //생성하기 버튼 클릭시
     public void okInNicknameModal() {
         Debug.Log("type : " + userStore.loginType);
+        newNickName = modalInput.text;
         Debug.Log("nickName : " + newNickName);
-        newNickName = modalInput.value;
 
         SignupAction signUpAct = ActionCreator.createAction(ActionTypes.SIGNUP) as SignupAction;
         signUpAct.charIndex = charIndex;
@@ -69,7 +72,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
         gm.gameDispatcher.dispatch(signUpAct);
 
-        //nicknameModal.SetActive(false);
+        nicknameModal.SetActive(false);
     }
 
     public void cancelInSignUpModal() {
@@ -93,8 +96,6 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
     //이용 약관 보기 버튼
     public void showPolicyModal(GameObject obj) {
-        policyContextModal.SetActive(true);
-
         int index = obj.GetComponent<ButtonIndex>().index;
 
         switch (index) {
@@ -111,29 +112,28 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
     //이용 약관 닫기 버튼
     public void offPolicyModal() {
-        policyContextModal.SetActive(false);
         mobileServiceContainer.SetActive(false);
         privacyContainer.SetActive(false);
     }
 
     //이용 약관 동의 버튼
     public void onAgreePolicy() {
-        //캐릭터 선택 화면으로 넘어감
-        GetDefaultCharInfo getCharAct = ActionCreator.createAction(ActionTypes.GET_DEFAULT_CHAR_INFO) as GetDefaultCharInfo;
-        gm.gameDispatcher.dispatch(getCharAct);
-
-        if (mobileServiceCheckBox.value && privacyCollectCheckBox.value) {
+        if (mobileServiceCheckBox.isOn && privacyCollectCheckBox.isOn) {
             policyModal.SetActive(false);
             charselectModal.SetActive(true);
+
+            GetDefaultCharInfo getCharAct = ActionCreator.createAction(ActionTypes.GET_DEFAULT_CHAR_INFO) as GetDefaultCharInfo;
+            gm.gameDispatcher.dispatch(getCharAct);
         }
         else {
-            policyErrorModal.SetActive(true);
+            errorModal.SetActive(true);
+            errorModal.transform.Find("Modal/Text").GetComponent<Text>().text = "약관을 체크해 주세요";
         }
     }
 
     //이용약관 에러 모달 닫기 버튼
-    public void offpolicyErrorModal() {
-        policyErrorModal.SetActive(false);
+    public void offErrorModal() {
+        errorModal.SetActive(false);
     }
 
     //이용 약관 거절 버튼
@@ -143,9 +143,6 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
         policyModal.SetActive(false);
         buttonGroup.SetActive(true);
-
-        mobileServiceCheckBox.value = false;
-        privacyCollectCheckBox.value = false;
     }
 
     //캐릭터 선택시
@@ -174,21 +171,21 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         if(userStore.eventType == ActionTypes.GET_DEFAULT_CHAR_INFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
                 //charselectModal.transform.Find("LoadingPanel").gameObject.SetActive(false);
-                charselectModal.transform.Find("LeftHeader/Label").GetComponent<UILabel>().text = "회사원 " + userStore.basicCharacters[0].name;
-                charselectModal.transform.Find("RightHeader/Label").GetComponent<UILabel>().text = "회사원 " + userStore.basicCharacters[1].name;
+                charselectModal.transform.Find("LeftBox/Button/Text").GetComponent<Text>().text = "회사원 " + userStore.basicCharacters[0].name;
+                charselectModal.transform.Find("RightBox/Button/Text").GetComponent<Text>().text = "회사원 " + userStore.basicCharacters[1].name;
 
-                GameObject charBtn = charselectModal.transform.Find("Grid/Man").gameObject;
+                GameObject charBtn = charselectModal.transform.Find("LeftBox").gameObject;
                 charBtn.GetComponent<ButtonIndex>().index = userStore.basicCharacters[0].id;
 
-                charBtn = charselectModal.transform.Find("Grid/Woman").gameObject;
+                charBtn = charselectModal.transform.Find("RightBox").gameObject;
                 charBtn.GetComponent<ButtonIndex>().index = userStore.basicCharacters[1].id;
 
                 charIndex = userStore.basicCharacters[0].id;
 
-                UILabel label = charselectModal.transform.Find("Desc/Description").GetComponent<UILabel>();
+                Text label = charselectModal.transform.Find("Description/Text").GetComponent<Text>();
                 label.text = userStore.basicCharacters[0].desc;
 
-                UILabel header = charselectModal.transform.Find("Desc/Header").GetComponent<UILabel>();
+                Text header = charselectModal.transform.Find("DescHeader").GetComponent<Text>();
                 header.text = userStore.basicCharacters[0].name + "의 이야기";
                 //charselectModal.transform.Find("Desc/Description").GetComponent<UILabel>().text = 
             }
@@ -214,17 +211,22 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         modal.SetActive(false);
     }
 
-    public void setCharIndex(GameObject obj) {
-        charIndex = obj.GetComponent<ButtonIndex>().index;
-        UILabel label = charselectModal.transform.Find("Desc/Description").GetComponent<UILabel>();
-        UILabel header = charselectModal.transform.Find("Desc/Header").GetComponent<UILabel>();
-        if (charIndex == 1) {
-            label.text = userStore.basicCharacters[0].desc;
-            header.text = userStore.basicCharacters[0].name + "의 이야기";
-        }
-        else if(charIndex == 2) {
-            label.text = userStore.basicCharacters[1].desc;
-            header.text = userStore.basicCharacters[1].name + "의 이야기";
+    public void toggleGroupListener() {
+        IEnumerable<Toggle> activeToggles = charselectModal.GetComponent<ToggleGroup>().ActiveToggles();
+        foreach (Toggle tg in activeToggles) {
+            //Debug.Log("active toggle" + tg.name);
+            charIndex = tg.gameObject.GetComponent<ButtonIndex>().index;
+
+            Text label = charselectModal.transform.Find("Description/Text").GetComponent<Text>();
+            Text header = charselectModal.transform.Find("DescHeader").GetComponent<Text>();
+            if (charIndex == 1) {
+                label.text = userStore.basicCharacters[0].desc;
+                header.text = userStore.basicCharacters[0].name + "의 이야기";
+            }
+            else if (charIndex == 2) {
+                label.text = userStore.basicCharacters[1].desc;
+                header.text = userStore.basicCharacters[1].name + "의 이야기";
+            }
         }
     }
 }
