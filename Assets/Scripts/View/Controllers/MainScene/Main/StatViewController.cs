@@ -51,7 +51,6 @@ public class StatViewController : MonoBehaviour {
     }
 
     void OnEnable() {
-        Debug.Log("!!");
         tweenPos();
         isReverse_tp = false;
     }
@@ -273,7 +272,6 @@ public class StatViewController : MonoBehaviour {
     public void onSubmit(GameObject obj) {
         
         string type = obj.GetComponent<InputIndex>().type;
-        Debug.Log(type);
         EditProfileAction profileEditAct = ActionCreator.createAction(ActionTypes.EDIT_PROFILE) as EditProfileAction;
         object value = null;
         switch (type) {
@@ -286,7 +284,6 @@ public class StatViewController : MonoBehaviour {
                 value = obj.transform.Find("Name").GetComponent<Text>().text;
                 editModals[5].SetActive(false);
                 editModals[6].SetActive(false);
-                Debug.Log(value);
                 break;
             case "Birthday":
                 profileEditAct.type = EditProfileAction.profileType.BIRTHDAY;
@@ -318,7 +315,6 @@ public class StatViewController : MonoBehaviour {
                 editModals[6].SetActive(false);
                 profileEditAct.type = EditProfileAction.profileType.BICYCLE;
                 value = obj.transform.Find("Name").GetComponent<Text>().text;
-                Debug.Log(value);
                 break;
         }
         profileEditAct.value = value;
@@ -375,9 +371,9 @@ public class StatViewController : MonoBehaviour {
 
     public void calenderSelEnd(string result) {
         string[] date = result.Split(' ')[0].Split('/');
-        Debug.Log(date[0]);
-        Debug.Log(date[1]);
-        Debug.Log(date[2]);
+        //Debug.Log(date[0]);
+        //Debug.Log(date[1]);
+        //Debug.Log(date[2]);
         editModals[6].SetActive(false);
 
         string value = date[2] + "-" + date[0] + "-" + date[1];
