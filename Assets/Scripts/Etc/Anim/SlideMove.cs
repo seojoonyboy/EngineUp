@@ -8,8 +8,8 @@ public class SlideMove : MonoBehaviour {
     private bool 
         isOn = false,
         isFinished = false;
-    Vector3 leftPos = new Vector3(-143, 0, 0);
-    Vector3 rightPos = new Vector3(143, 0, 0);
+    Vector3 leftPos = new Vector3(-122, 0, 0);
+    Vector3 rightPos = new Vector3(122, 0, 0);
     float time;
     UILabel label;
 
