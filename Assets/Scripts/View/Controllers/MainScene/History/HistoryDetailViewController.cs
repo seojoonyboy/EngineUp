@@ -118,7 +118,7 @@ public class HistoryDetailViewController : MonoBehaviour {
         map.SetActive(true);
         OnlineMaps _map = map.GetComponent<OnlineMaps>();
         preMapScale = map.transform.localScale;
-        map.transform.localScale = new Vector3(1.45f, 1.0f, 1.45f);
+        map.transform.localScale = new Vector3(1.02f, 1.0f, 1.02f);
         preMapPos = map.transform.localPosition;
         map.transform.localPosition = new Vector3(-1953f, 380f, -1179f);
         innerRidingDetails[] coords = data.coords;
