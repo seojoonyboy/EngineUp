@@ -4,6 +4,8 @@ using Facebook.Unity;
 
 public class OptionController : MonoBehaviour {
     GameManager gm;
+    SoundManager sm;
+
     Riding ridingStore;
     public GameObject[] modals;
 
@@ -16,6 +18,7 @@ public class OptionController : MonoBehaviour {
 
     void Awake() {
         gm = GameManager.Instance;
+        sm = SoundManager.Instance;
         ridingStore = gm.ridingStore;
 
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
@@ -39,6 +42,7 @@ public class OptionController : MonoBehaviour {
     }
 
     public void tweenPos() {
+        sm.playEffectSound(0);
         if (!isReverse_tp) {
             tP.PlayForward();
         }

@@ -162,7 +162,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 0.56623375
+  aspectRatio: 1.3316063
   mType: 0
   mFillDirection: 4
   mFillAmount: 1
@@ -520,6 +520,7 @@ GameObject:
   - component: {fileID: 999167970}
   - component: {fileID: 999167969}
   - component: {fileID: 999167971}
+  - component: {fileID: 999167972}
   m_Layer: 5
   m_Name: Camera
   m_TagString: Untagged
@@ -627,6 +628,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbaed16795a34cb4b8ff502992466271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!81 &999167972
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 999167967}
+  m_Enabled: 1
 --- !u!1 &1216005987
 GameObject:
   m_ObjectHideFlags: 0
@@ -693,7 +701,7 @@ MonoBehaviour:
   autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
-  aspectRatio: 1.544601
+  aspectRatio: 1.5680751
   mType: 0
   mFillDirection: 4
   mFillAmount: 1
@@ -710,6 +718,48 @@ MonoBehaviour:
   mAtlas: {fileID: 114000013953199052, guid: 287ef1b107894854784f95813592e7b9, type: 2}
   mSpriteName: title
   mFillCenter: 1
+--- !u!1001 &1561819552
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4430671609272106, guid: a3a3f929fc7020845a3b419d66798192, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 1680.5804
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430671609272106, guid: a3a3f929fc7020845a3b419d66798192, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0.9242732
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430671609272106, guid: a3a3f929fc7020845a3b419d66798192, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430671609272106, guid: a3a3f929fc7020845a3b419d66798192, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430671609272106, guid: a3a3f929fc7020845a3b419d66798192, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430671609272106, guid: a3a3f929fc7020845a3b419d66798192, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430671609272106, guid: a3a3f929fc7020845a3b419d66798192, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430671609272106, guid: a3a3f929fc7020845a3b419d66798192, type: 2}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: a3a3f929fc7020845a3b419d66798192, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1703489197
 GameObject:
   m_ObjectHideFlags: 0
@@ -864,7 +914,7 @@ Prefab:
         type: 2}
     - target: {fileID: 11400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: mFontSize
-      value: 100
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: leftAnchor.target
@@ -944,7 +994,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: aspectRatio
-      value: 6.5
+      value: 6.578125
       objectReference: {fileID: 0}
     - target: {fileID: 11400002, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: mText
@@ -976,7 +1026,7 @@ Prefab:
       objectReference: {fileID: 999167971}
     - target: {fileID: 11400000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}
       propertyPath: onClick.Array.data[0].mMethodName
-      value: onStartLoadingScene
+      value: onStartButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c3a28b051e872b448d4808cfcf9199c, type: 2}

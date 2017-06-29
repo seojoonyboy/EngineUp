@@ -45,8 +45,11 @@ public class StatViewController : MonoBehaviour {
     public bool InputFieldActive = false;
     public RectTransform childRectTransform;
 
+    SoundManager sm;
     void Awake() {
         gm = GameManager.Instance;
+        sm = SoundManager.Instance;
+
         tP = GetComponent<TweenPosition>();
     }
 
@@ -69,6 +72,8 @@ public class StatViewController : MonoBehaviour {
     }
 
     public void tweenPos() {
+        sm.playEffectSound(0);
+
         if (!isReverse_tp) {
             tP.PlayForward();
         }

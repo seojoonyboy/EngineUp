@@ -13,7 +13,7 @@ public class SlideMove : MonoBehaviour {
     float time;
     UILabel label;
 
-    void Start() {
+    void Awake() {
         label = gameObject.transform.Find("InnerImage/Label").GetComponent<UILabel>();
     }
 
@@ -23,6 +23,12 @@ public class SlideMove : MonoBehaviour {
             time = 0;
             StartCoroutine("Slide");
         }
+    }
+
+    void OnEnable() {
+        int isBGMOn = PlayerPrefs.GetInt("BGM");
+        int isESOn = PlayerPrefs.GetInt("ES");
+        int isSilent = PlayerPrefs.GetInt("SILENT");
     }
 
     IEnumerator Slide() {
