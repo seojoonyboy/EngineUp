@@ -12,12 +12,16 @@ public class StatViewController : MonoBehaviour {
     public User userStore;
     public Locations locationStore;
 
+    public MainViewController mainViewController;
+
     public Text[] 
         stats,
         myInfoes,
         totalRidings,
         monthlyRidings,
         profiles;
+
+    public Image rankIcon;
 
     private GameManager gm;
     
@@ -191,14 +195,17 @@ public class StatViewController : MonoBehaviour {
         myInfoes[0].text = data.nickName;
 
         status statData = data.status;
-        myInfoes[1].text = statData.rank.ToString();
-        myInfoes[2].text = userStore.userTitle;
+        int rank = statData.rank;
+        myInfoes[1].text = rank.ToString();
 
         //그룹
         stats[0].text = statData.strength.ToString();
         stats[1].text = statData.speed.ToString();
         stats[2].text = statData.endurance.ToString();
         stats[3].text = statData.regeneration.ToString();
+
+        int iconRank = (int)Mathf.Ceil((float)rank / 5);
+        rankIcon.sprite = mainViewController.ranks[iconRank - 1];
     }
 
     private void setProfile() {

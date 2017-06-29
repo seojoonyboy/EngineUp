@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainViewController : MonoBehaviour {
     public UISprite charSprite;
@@ -12,6 +13,7 @@ public class MainViewController : MonoBehaviour {
     public GameObject 
         bicycle,
         tutorial;
+    public Sprite[] ranks;
 
     void Awake() {
         gm = GameManager.Instance;
