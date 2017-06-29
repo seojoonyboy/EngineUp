@@ -75,8 +75,8 @@ public class BicycleViewController : MonoBehaviour {
     public void onBicycleItemStoreListener() {
         ActionTypes bicycleItemStoreEventType = bicycleItemStore.eventType;
 
-        if(gameObject.activeSelf) {
-            if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
+        if(bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
+            if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
                 makeList();
             }
         }
@@ -120,8 +120,6 @@ public class BicycleViewController : MonoBehaviour {
         blockingCollPanel.SetActive(true);
         if (!isReverse_tp) {
             tP.PlayForward();
-
-            itemInitAct();
         }
         else {
             //swap
@@ -151,6 +149,7 @@ public class BicycleViewController : MonoBehaviour {
         }
 
         else {
+            itemInitAct();
             gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
         }
 
@@ -866,11 +865,12 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     private void itemInitAct() {
-        getCharacters_act charInfo = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
-        gm.gameDispatcher.dispatch(charInfo);
+        getItems_act bicycleInfo = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+        bicycleInfo._type = equip_act.type.ITEM;
+        gm.gameDispatcher.dispatch(bicycleInfo);
 
         int index = PlayerPrefs.GetInt("Filter");
-
+        Debug.Log("Item Init");
         filterSelected(index);
     }
 
