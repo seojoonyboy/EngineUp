@@ -84,7 +84,7 @@ public class BicycleViewController : MonoBehaviour {
 
     public void onUserStoreListener() {
         ActionTypes userStoreEventType = userStore.eventType;
-        lvLavel.text = "Lv. " + userStore.myData.status.rank.ToString();
+        //lvLavel.text = "Lv. " + userStore.myData.status.rank.ToString();
 
         if(userStoreEventType == ActionTypes.MYINFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {

@@ -345,7 +345,6 @@ public class User : AjwStore {
                 _emitChange();
                 break;
             case ActionTypes.EDIT_PROFILE:
-                Debug.Log("?!");
                 editProfile(action as EditProfileAction);
                 break;
             case ActionTypes.USER_BICYCLETYPES:
