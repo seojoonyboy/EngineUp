@@ -106,7 +106,7 @@ public class Riding : AjwStore{
             return;
         }
 
-        if (!_filter(loc)) { return; } // 필터 적용
+        //if (!_filter(loc)) { return; } // 필터 적용
         postBuffer[postBufferCounter] = loc;
         postBufferCounter++;
         Debug.Log(loc.latitude);
