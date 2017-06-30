@@ -161,10 +161,11 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
         if(userStore.eventType == ActionTypes.SIGNUP) {
             if(userStore.storeStatus == storeStatus.ERROR) {
-                Debug.Log("이미 존재하는 닉네임");
                 modal.SetActive(true);
-                NickNameCheckResultModal.SetActive(true);
-                NickNameCheckResultModal.transform.Find("Background/Label").GetComponent<UILabel>().text = userStore.message;
+                errorModal.SetActive(true);
+                errorModal.transform.Find("Modal/Text").GetComponent<Text>().text = userStore.message;
+
+                nicknameModal.SetActive(true);
             }
         }
 
