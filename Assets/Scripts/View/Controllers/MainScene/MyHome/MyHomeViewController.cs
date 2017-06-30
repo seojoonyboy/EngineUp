@@ -5,6 +5,7 @@ using UnityEngine;
 public class MyHomeViewController : MonoBehaviour {
     public GameObject[] subPanels;
     private TweenPosition tP;
+    private SoundManager sm;
 
     public GameObject blockingCollPanel;
     private TweenManager tm;
@@ -18,6 +19,7 @@ public class MyHomeViewController : MonoBehaviour {
     void Awake() {
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
         tm = GetComponent<TweenManager>();
+        sm = SoundManager.Instance;
 
         panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
         color = panel.alpha;
@@ -38,6 +40,7 @@ public class MyHomeViewController : MonoBehaviour {
     }
 
     public void tweenPos() {
+        sm.playEffectSound(0);
         bool isTweening = tm.isTweening;
         if (isTweening) {
             return;
@@ -75,6 +78,7 @@ public class MyHomeViewController : MonoBehaviour {
     }
 
     public void onClick(GameObject obj) {
+        sm.playEffectSound(0);
         int index = obj.GetComponent<ButtonIndex>().index;
         switch(index) {
             //차고지(자전거)

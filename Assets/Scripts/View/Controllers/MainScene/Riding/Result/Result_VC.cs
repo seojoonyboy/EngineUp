@@ -30,6 +30,7 @@ public class Result_VC : MonoBehaviour {
         resultPanel;
 
     OnlineMapsDrawingLine line;
+    SoundManager sm;
 
     public Collider[] colliders;
 
@@ -72,6 +73,8 @@ public class Result_VC : MonoBehaviour {
 
     void Awake() {
         gm = GameManager.Instance;
+        sm = SoundManager.Instance;
+
         UIEventListener.Get(mapViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
         UIEventListener.Get(confirmBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
         UIEventListener.Get(recordViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
@@ -123,6 +126,8 @@ public class Result_VC : MonoBehaviour {
 
     void btnListener(GameObject obj, bool state) {
         //Debug.Log(state);
+        sm.playEffectSound(0);
+
         int index = obj.GetComponent<ButtonIndex>().index;
         if(state) {
             obj.transform.Find("ActiveImg").gameObject.SetActive(true);

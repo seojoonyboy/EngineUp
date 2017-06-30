@@ -8,6 +8,7 @@ public class CharacterViewControlller : MonoBehaviour {
     Char_Inventory charInvenStore;
     public User userStore;
     public TweenManager tM;
+    SoundManager sm;
     //character_inventory[] characters;
 
     public GameObject
@@ -49,6 +50,8 @@ public class CharacterViewControlller : MonoBehaviour {
     private float color;
     void Awake() {
         gm = GameManager.Instance;
+        sm = SoundManager.Instance;
+
         charInvenStore = gm.charInvenStore;
 
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
@@ -95,6 +98,8 @@ public class CharacterViewControlller : MonoBehaviour {
 
             tP.ResetToBeginning();
             tP.PlayForward();
+
+            sm.playEffectSound(0);
         }
     }
 
@@ -164,6 +169,8 @@ public class CharacterViewControlller : MonoBehaviour {
 
     //내 캐릭터중 하나 선택시
     public void charSelected(GameObject obj) {
+        sm.playEffectSound(0);
+
         selectedChar = obj;
 
         Info info = obj.GetComponent<Info>();
@@ -329,6 +336,8 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     public void sideBarClicked(GameObject obj) {
+        sm.playEffectSound(0);
+
         GameObject _sprite = obj.transform.Find("Sprite").gameObject;
 
         string name = _sprite.GetComponent<UISprite>().spriteName;
@@ -452,6 +461,7 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     public void onDescPanel() {
+        sm.playEffectSound(1);
         DescPanel.SetActive(true);
 
         GameObject _desc = DescPanel.transform.Find("InnerBackground").gameObject;
@@ -471,6 +481,7 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void offDescPanel() {
         DescPanel.SetActive(false);
+        sm.playEffectSound(0);
     }
 
     [System.Serializable]

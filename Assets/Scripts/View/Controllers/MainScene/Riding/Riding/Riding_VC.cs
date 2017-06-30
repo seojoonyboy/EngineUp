@@ -25,6 +25,7 @@ public class Riding_VC : MonoBehaviour {
 
     //private GameObject gpsManager;
     private GameManager gameManager;
+    private SoundManager sm;
 
     public UILabel
         currSpeedLabel,
@@ -58,6 +59,7 @@ public class Riding_VC : MonoBehaviour {
 
     void Start() {
         gameManager = GameManager.Instance;
+        sm = SoundManager.Instance;
     }
 
     void Awake() {
@@ -107,6 +109,8 @@ public class Riding_VC : MonoBehaviour {
             tP.PlayForward();
         }
         else {
+            sm.playEffectSound(0);
+
             //swap
             Vector3 tmp;
             tmp = tP.to;
@@ -130,6 +134,8 @@ public class Riding_VC : MonoBehaviour {
 
     //라이딩 시작 버튼 클릭시
     public void onRidingStartButton() {
+        sm.playEffectSound(0);
+
         start_buttonCon_sprite.alpha = 0;
         start_animCon_sprite.alpha = startPanelColor;
         start_animCon_sprite.GetComponent<RidingStartAnimController>().startAnim();
@@ -144,6 +150,8 @@ public class Riding_VC : MonoBehaviour {
     //라이딩 종료 버튼 눌렀을 때
     //모달 활성화
     public void onRidingEndButton() {
+        sm.playEffectSound(0);
+
         exitModal.SetActive(true);
         exitModal.transform.Find("Modal/Description").GetComponent<UILabel>().text = "지금 종료하시면 \n총 " + boxNum + "개의 상자를 얻을 수 있습니다.";
         //라이딩 일시정지
@@ -217,6 +225,7 @@ public class Riding_VC : MonoBehaviour {
     }
 
     public void pauseButtonPressed(bool isTutorial = false) {
+        sm.playEffectSound(0);
         //이미 일시정지 버튼을 누른 상태인 경우
         if (isPausePressed) {
             isPausePressed = false;

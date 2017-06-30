@@ -42,10 +42,10 @@ public class MainBtnController : MonoBehaviour {
         switch (type) {
             case MainButtonEnum.Type.MYHOME:
                 panels[0].GetComponent<MyHomeViewController>().onPanel();
-                sm.playEffectSound(0);
                 break;
             case MainButtonEnum.Type.COMMUNITY:
                 notifyModal.SetActive(true);
+                sm.playEffectSound(1);
                 break;
             case MainButtonEnum.Type.RIDING:
                 panels[2].GetComponent<Riding_VC>().onPanel();
@@ -57,6 +57,7 @@ public class MainBtnController : MonoBehaviour {
                 break;
             case MainButtonEnum.Type.STORE:
                 notifyModal.SetActive(true);
+                sm.playEffectSound(1);
                 break;
             case MainButtonEnum.Type.OPTION:
                 panels[5].GetComponent<OptionController>().onPanel();
@@ -71,5 +72,6 @@ public class MainBtnController : MonoBehaviour {
 
     public void offNotifyModal() {
         notifyModal.SetActive(false);
+        sm.playEffectSound(0);
     }
 }

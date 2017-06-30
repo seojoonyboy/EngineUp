@@ -5,6 +5,8 @@ using UnityEngine;
 using System.Text;
 public class BicycleViewController : MonoBehaviour {
     private GameManager gm;
+    private SoundManager sm;
+
     public BicycleItem_Inventory bicycleItemStore;
     public TweenManager tM;
     public Char_Inventory charItemStore;
@@ -64,6 +66,8 @@ public class BicycleViewController : MonoBehaviour {
 
     void Awake() {
         gm = GameManager.Instance;
+        sm = SoundManager.Instance;
+
         tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
 
         panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
@@ -122,6 +126,7 @@ public class BicycleViewController : MonoBehaviour {
             tP.PlayForward();
         }
         else {
+            sm.playEffectSound(0);
             //swap
             Vector3 tmp;
             tmp = tP.to;
@@ -877,6 +882,10 @@ public class BicycleViewController : MonoBehaviour {
     public void onFilterButton(GameObject obj) {
         GameObject menu = obj.transform.Find("DropMenu").gameObject;
         menu.SetActive(!menu.activeSelf);
+    }
+
+    public void playClickSound() {
+        sm.playEffectSound(0);
     }
 
     public void filterSelected(object obj) {
