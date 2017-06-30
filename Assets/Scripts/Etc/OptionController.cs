@@ -11,7 +11,9 @@ public class OptionController : MonoBehaviour {
 
     private TweenPosition tP;
     public GameObject blockingCollPanel;
-    private bool isReverse_tp;
+    private bool 
+        isReverse_tp,
+        isTweening = false;
 
     public UISprite panel;
     public float color;
@@ -43,6 +45,10 @@ public class OptionController : MonoBehaviour {
 
     public void tweenPos() {
         sm.playEffectSound(0);
+        if(isTweening) {
+            return;
+        }
+
         if (!isReverse_tp) {
             tP.PlayForward();
         }
@@ -56,10 +62,12 @@ public class OptionController : MonoBehaviour {
             tP.ResetToBeginning();
             tP.PlayForward();
         }
+        isTweening = true;
     }
 
     public void tPFinished() {
         blockingCollPanel.SetActive(false);
+        isTweening = false;
 
         if (isReverse_tp) {
             offPanel();
