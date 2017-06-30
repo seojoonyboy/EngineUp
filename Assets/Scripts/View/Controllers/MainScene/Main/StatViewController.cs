@@ -1,17 +1,21 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 
 public class StatViewController : MonoBehaviour {
+    public RadarPolygon 
+        rP_outline,
+        rP_InnerBg;
+
     public UILabel 
         nickNameLabel,
         mainLvLabel,
         mainTitleLabel,
         mainGearLabel;
-
+        
     public Riding ridingStore;
     public User userStore;
     public Locations locationStore;
-
     public MainViewController mainViewController;
 
     public Text[] 
@@ -198,14 +202,59 @@ public class StatViewController : MonoBehaviour {
         int rank = statData.rank;
         myInfoes[1].text = rank.ToString();
 
+        int[] statArr = { statData.strength, statData.speed, statData.endurance, statData.regeneration };
         //그룹
-        stats[0].text = statData.strength.ToString();
-        stats[1].text = statData.speed.ToString();
-        stats[2].text = statData.endurance.ToString();
-        stats[3].text = statData.regeneration.ToString();
+        stats[0].text = statArr[0].ToString();
+        stats[1].text = statArr[1].ToString();
+        stats[2].text = statArr[2].ToString();
+        stats[3].text = statArr[3].ToString();
 
         int iconRank = (int)Mathf.Ceil((float)rank / 5);
         rankIcon.sprite = mainViewController.ranks[iconRank - 1];
+
+        //방사형 차트 기준값 지정(stat중 최댓값)
+        int radarChart_standard = 0;
+        for (int i=0; i<statArr.Length; i++) {
+            if(statArr[i] > radarChart_standard) {
+                radarChart_standard = statArr[i];
+            }
+        }
+
+        //방사형 차트 외각선
+        var rc_val = rP_outline.value;
+        for(int i=0; i<rc_val.Length; i++) {
+            if(radarChart_standard != 0) {
+                if(statArr[i] != 0) {
+                    rc_val[i] = (float)statArr[i] / radarChart_standard;
+                }
+                //내 능력치가 0인 경우
+                else {
+                    rc_val[i] = 0.1f;
+                }
+            }
+            //모든 값이 0인경우
+            else {
+                rc_val[i] = 0.5f;
+            }
+        }
+
+        //방사형 차트 내부 배경
+        rc_val = rP_InnerBg.value;
+        for (int i = 0; i < rc_val.Length; i++) {
+            if (radarChart_standard != 0) {
+                if (statArr[i] != 0) {
+                    rc_val[i] = (float)statArr[i] / radarChart_standard;
+                }
+                //내 능력치가 0인 경우
+                else {
+                    rc_val[i] = 0.1f;
+                }
+            }
+            //모든 값이 0인경우
+            else {
+                rc_val[i] = 0.5f;
+            }
+        }
     }
 
     private void setProfile() {
