@@ -682,6 +682,7 @@ public class BicycleViewController : MonoBehaviour {
         UISprite sideSprite;
         RespGetItems equipedItem = bicycleItemStore.equipedItemIndex[0];
         sideSprite = sideSlot.GetComponent<UISprite>();
+        sideSprite.atlas = bicycleAtlas;
         if (equipedItem != null) {
             RespItem _item = equipedItem.item;
             sideBarInfo.imageId = _item.id;
@@ -696,11 +697,15 @@ public class BicycleViewController : MonoBehaviour {
 
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
-            sideSprite.atlas = bicycleAtlas;
+            
             sideSprite.spriteName = sideBarInfo.imageId + "-1";
+            sideSprite.GetComponent<UIButton>().normalSprite = sideBarInfo.imageId + "-1";
+            sideSprite.GetComponent<UIButton>().enabled = true;
         }
         else {
             sideSprite.spriteName = "-1";
+            sideSprite.GetComponent<UIButton>().normalSprite = "-1";
+            sideSprite.GetComponent<UIButton>().enabled = false;
         }
 
         sideSlot = sideBar.transform.Find("FrameSlot/Item").gameObject;
@@ -728,9 +733,13 @@ public class BicycleViewController : MonoBehaviour {
 
             sideSprite.atlas = bicycleAtlas;
             sideSprite.spriteName = sideBarInfo.imageId + "-1";
+            sideSprite.GetComponent<UIButton>().normalSprite = sideBarInfo.imageId + "-1";
+            sideSprite.GetComponent<UIButton>().enabled = true;
         }
         else {
             sideSprite.spriteName = "-1";
+            sideSprite.GetComponent<UIButton>().normalSprite = "-1";
+            sideSprite.GetComponent<UIButton>().enabled = false;
         }
 
         sideSlot = sideBar.transform.Find("EngineSlot/Item").gameObject;
@@ -758,9 +767,13 @@ public class BicycleViewController : MonoBehaviour {
 
             sideSprite.atlas = bicycleAtlas;
             sideSprite.spriteName = sideBarInfo.imageId + "-1";
+            sideSprite.GetComponent<UIButton>().normalSprite = sideBarInfo.imageId + "-1";
+            sideSprite.GetComponent<UIButton>().enabled = true;
         }
         else {
             sideSprite.spriteName = "-1";
+            sideSprite.GetComponent<UIButton>().normalSprite = "-1";
+            sideSprite.GetComponent<UIButton>().enabled = false;
         }
     }
 
