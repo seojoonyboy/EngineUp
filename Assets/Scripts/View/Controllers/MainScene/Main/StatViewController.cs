@@ -202,12 +202,12 @@ public class StatViewController : MonoBehaviour {
         int rank = statData.rank;
         myInfoes[1].text = rank.ToString();
 
-        int[] statArr = { statData.strength, statData.speed, statData.endurance, statData.regeneration };
+        int[] statArr = { statData.strength, statData.regeneration, statData.endurance, statData.speed };
         //그룹
         stats[0].text = statArr[0].ToString();
-        stats[1].text = statArr[1].ToString();
+        stats[1].text = statArr[3].ToString();
         stats[2].text = statArr[2].ToString();
-        stats[3].text = statArr[3].ToString();
+        stats[3].text = statArr[1].ToString();
 
         int iconRank = (int)Mathf.Ceil((float)rank / 5);
         rankIcon.sprite = mainViewController.ranks[iconRank - 1];
