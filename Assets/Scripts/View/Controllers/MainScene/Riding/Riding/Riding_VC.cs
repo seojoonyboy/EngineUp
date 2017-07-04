@@ -34,7 +34,8 @@ public class Riding_VC : MonoBehaviour {
         maxLabel,
         timeLabel,
         uphillDistanceLabel,
-        boxLabel;
+        boxLabel,
+        ridingStart_questionLabel;
 
     public Riding ridingStore;
     public User userStore;
@@ -76,6 +77,7 @@ public class Riding_VC : MonoBehaviour {
     //메인화면에서 라이딩 버튼 클릭시
     public void onPanel() {
         //시작 화면 활성화
+        ridingStart_questionLabel.text = "라이딩을 시작할까요?";
         startPanelSprite.alpha = startPanelColor;
         start_buttonCon_sprite.alpha = startPanelColor;
         tweenPos();
@@ -136,7 +138,8 @@ public class Riding_VC : MonoBehaviour {
     public void onRidingStartButton() {
         sm.playEffectSound(0);
 
-        start_buttonCon_sprite.alpha = 0;
+        //start_buttonCon_sprite.alpha = 0;
+        ridingStart_questionLabel.text = "라이딩을 시작합니다.";
         start_animCon_sprite.alpha = startPanelColor;
         start_animCon_sprite.GetComponent<RidingStartAnimController>().startAnim();
 
