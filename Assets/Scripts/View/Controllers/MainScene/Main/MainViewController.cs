@@ -45,8 +45,8 @@ public class MainViewController : MonoBehaviour {
                 charSprite.atlas = atlasArr[charIndex - 1];
                 charSprite.spriteName = charIndex + "-" + lv + "-main";
                 charSprite.MakePixelPerfect();
-                charSprite.width = (int)(charSprite.width * 0.7);
-                charSprite.height = (int)(charSprite.height * 0.7);
+                charSprite.width = (int)(charSprite.width * 0.4);
+                charSprite.height = (int)(charSprite.height * 0.4);
             }
         }
     }

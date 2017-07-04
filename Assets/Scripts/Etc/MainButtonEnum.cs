@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MainButtonEnum : MonoBehaviour {
-    public enum Type { MYHOME, COMMUNITY, RIDING, BOX, STORE, MYINFO, OPTION };
+    public enum Type { MYHOME, COMMUNITY, RIDING, BOX, STORE, MYINFO, OPTION, BATTLE };
 
     public Type buttonType;
 }

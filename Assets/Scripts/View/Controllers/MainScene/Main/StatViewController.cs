@@ -10,7 +10,6 @@ public class StatViewController : MonoBehaviour {
     public UILabel 
         nickNameLabel,
         mainLvLabel,
-        mainTitleLabel,
         mainGearLabel;
         
     public Riding ridingStore;
@@ -26,6 +25,7 @@ public class StatViewController : MonoBehaviour {
         profiles;
 
     public Image rankIcon;
+    public UI2DSprite mainRankIcon;
 
     private GameManager gm;
     
@@ -53,6 +53,8 @@ public class StatViewController : MonoBehaviour {
     public bool InputFieldActive = false;
     public RectTransform childRectTransform;
 
+    public Collider[] colliders;
+
     SoundManager sm;
     void Awake() {
         gm = GameManager.Instance;
@@ -64,10 +66,18 @@ public class StatViewController : MonoBehaviour {
     void OnEnable() {
         tweenPos();
         isReverse_tp = false;
+
+        foreach(Collider coll in colliders) {
+            coll.enabled = false;
+        }
     }
 
     public void offPanel() {
         gameObject.SetActive(false);
+
+        foreach (Collider coll in colliders) {
+            coll.enabled = true;
+        }
     }
 
     void Update() {
@@ -117,13 +127,16 @@ public class StatViewController : MonoBehaviour {
     }
 
     public void onUserListener() {
-        mainTitleLabel.text = userStore.userTitle;
+        int rank = userStore.myData.status.rank;
+        int iconRank = (int)Mathf.Ceil((float)rank / 5);
+        mainRankIcon.sprite2D = mainViewController.ranks[rank - 1];
+
         nickNameLabel.text = userStore.nickName;
 
         if (userStore.eventType == ActionTypes.MYINFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
                 initialize();
-                mainLvLabel.text = "Lv " + userStore.myData.status.rank.ToString();
+                mainLvLabel.text = "RANK " + rank.ToString();
                 mainGearLabel.text = userStore.myData.gears.ToString();
                 int exp = userStore.myData.status.exp;
                 //레벨업 환산 후 남은 경험치

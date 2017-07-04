@@ -67,6 +67,10 @@ public class MainBtnController : MonoBehaviour {
                 panels[4].SetActive(true);
                 sm.playEffectSound(0);
                 break;
+            case MainButtonEnum.Type.BATTLE:
+                notifyModal.SetActive(true);
+                sm.playEffectSound(1);
+                break;
         }
     }
 
