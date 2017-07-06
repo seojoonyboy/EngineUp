@@ -13,7 +13,13 @@ public class MainViewController : MonoBehaviour {
     public GameObject 
         bicycle,
         tutorial;
-    public Sprite[] ranks;
+    public Sprite[] 
+        ranks,
+        partner_busts_m;
+
+    public SpritesArr[] 
+        characters_busts_sm,
+        characters_entire_body;
 
     void Awake() {
         gm = GameManager.Instance;

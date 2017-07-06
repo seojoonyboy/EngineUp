@@ -2,81 +2,72 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterViewControlller : MonoBehaviour {
     GameManager gm;
     Char_Inventory charInvenStore;
     public User userStore;
     public TweenManager tM;
+    public MainViewController mV_controller;
+    public ScrollSnapRect scrollSnapRect;
+
     SoundManager sm;
     //character_inventory[] characters;
 
     public GameObject
         mainStage,
         lv1Slot,
-        lv10Slot,
-        lv20Slot,
+        lv2Slot,
+        lv3Slot,
         itemPref,
         selectedChar,
-        IllustPanel,
-        DescPanel,
-        blockingCollPanel;
+        scroll_pagePref,
+        scroll_pageIconPref;
 
     public GameObject 
         equipButton,
-        nonpossessionButton;
-    public UILabel[] 
+        nonepossessionButton,
+        itemGrid,
+        sideBarGrid,
+        pageIconGrid;
+
+    public Text[] 
         stats,
         incStats;
 
-    public UIAtlas[] atlasArr;
-
-    public UIGrid
-        itemGrid,
-        sideBarGrid;
-
-    public UILabel 
+    public Text 
         lvLabel,
         charName;
-    public CharPrefArr[] Characters;
 
-    public UISlider friendlySlider;
-
-    private GameObject prevMainChar;
+    public Slider friendlySlider;
 
     private TweenPosition tP;
     private bool isReverse_tp;
-    private UISprite panel;
-    private float color;
+
     void Awake() {
         gm = GameManager.Instance;
         sm = SoundManager.Instance;
 
         charInvenStore = gm.charInvenStore;
 
-        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
-
-        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
-        color = panel.alpha;
-
-        panel.alpha = 0;
+        tP = GetComponent<TweenPosition>();
     }
 
-    public void onPanel() {
-        panel.alpha = color;
+    void OnEnable() {
         tweenPos();
-
-        blockingCollPanel.SetActive(true);
+        
         isReverse_tp = false;
     }
 
     void offPanel() {
-        panel.alpha = 0f;
-
+        gameObject.SetActive(false);
         selectedChar = null;
 
         tP.ResetToBeginning();
-        nonpossessionButton.SetActive(false);
+        nonepossessionButton.SetActive(false);
+
+        scrollSnapRect.enabled = false;
     }
 
     public void tweenPos() {
@@ -85,7 +76,6 @@ public class CharacterViewControlller : MonoBehaviour {
             return;
         }
         tM.isTweening = true;
-        blockingCollPanel.SetActive(true);
         if (!isReverse_tp) {
             tP.PlayForward();
         }
@@ -105,7 +95,6 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void tpFinished() {
         tM.isTweening = false;
-        blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
             offPanel();
@@ -138,31 +127,29 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void onUserListener() {
         ActionTypes userStoreEventType = userStore.eventType;
-        if (userStoreEventType == ActionTypes.MYINFO) {
-            if (userStore.storeStatus == storeStatus.NORMAL) {
-                if(panel.alpha == 0) {
-                    return;
-                }
-                character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                setMainChar(charInfo.character, charInfo.lv);
-                setSideBar(charInfo.character, charInfo.lv);
-
-                foreach (character_inventory character in charInvenStore.my_characters) {
-                    if (character.character == charInfo.character) {
-                        setStat(character);
+        if(gameObject.activeSelf) {
+            if (userStoreEventType == ActionTypes.MYINFO) {
+                if (userStore.storeStatus == storeStatus.NORMAL) {
+                    character_inventory charInfo = userStore.myData.represent_character.character_inventory;
+                    setMainChar(charInfo.character, charInfo.lv);
+                    setSideBar();
+                    foreach (character_inventory character in charInvenStore.my_characters) {
+                        if (character.character == charInfo.character) {
+                            setStat(character);
+                        }
                     }
-                }
 
-                if (charInvenStore.all_characters.ContainsKey(charInfo.character).Equals(true)) {
-                    all_characters tmp = charInvenStore.all_characters[charInfo.character];
-                    setFriendlySlider(charInfo.lv, tmp.lvup_exps, charInfo.exp);
-                    setSideBarName(tmp.name);
-                    charName.text = tmp.name;
-                }
+                    if (charInvenStore.all_characters.ContainsKey(charInfo.character).Equals(true)) {
+                        all_characters tmp = charInvenStore.all_characters[charInfo.character];
+                        setFriendlySlider(charInfo.lv, tmp.lvup_exps, charInfo.exp);
+                        setSideBarName(tmp.name);
+                        charName.text = tmp.name;
+                    }
 
-                equipButton.SetActive(true);
-                equipButton.transform.Find("Check").gameObject.SetActive(true);
-                lvLabel.text = "Lv " + charInfo.lv.ToString();
+                    equipButton.SetActive(true);
+                    equipButton.transform.Find("Check").gameObject.SetActive(true);
+                    lvLabel.text = "친밀도 Lv " + charInfo.lv.ToString();
+                }
             }
         }
     }
@@ -176,11 +163,12 @@ public class CharacterViewControlller : MonoBehaviour {
         Info info = obj.GetComponent<Info>();
         sbInfo sbInfo = obj.GetComponent<sbInfo>();
         setMainChar(info.characterId, info.lv);
-        setSideBar(info.characterId, info.lv);
+        //setSideBar(info.characterId, info.lv);
+        setSideBar();
         setSideBarName(sbInfo.name);
         setEquipButton(info.characterId, info.has_character);
 
-        lvLabel.text = "Lv. " + info.lv.ToString();
+        lvLabel.text = "친밀도 Lv " + info.lv.ToString();
         charName.text = sbInfo.name;
         setFriendlySlider(info.lv, sbInfo.lvup_exps, info.exp);
 
@@ -193,7 +181,7 @@ public class CharacterViewControlller : MonoBehaviour {
     public void setEquipButton(int index, string hasChar) {
         if (hasChar == "true") {
             equipButton.SetActive(true);
-            nonpossessionButton.SetActive(false);
+            nonepossessionButton.SetActive(false);
             character_inventory charInfo = userStore.myData.represent_character.character_inventory;
             if (index == charInfo.character) {
                 equipButton.transform.Find("Check").gameObject.SetActive(true);
@@ -204,7 +192,7 @@ public class CharacterViewControlller : MonoBehaviour {
         }
         else {
             equipButton.SetActive(false);
-            nonpossessionButton.SetActive(true);
+            nonepossessionButton.SetActive(true);
         }
     }
 
@@ -222,50 +210,99 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     public void setMainChar(int index, int lv) {
-        if(prevMainChar != null) {
-            Destroy(prevMainChar);
-        }
-
         int arrIndex = index - 1;
         int arrSubIndex = lv - 1;
         if(arrSubIndex == -1) {
             arrSubIndex = 0;
         }
-        GameObject charPref = Instantiate(Characters[arrIndex].Pref[arrSubIndex]);
-        prevMainChar = charPref;
-        charPref.transform.SetParent(mainStage.transform);
-        charPref.transform.localPosition = new Vector3(0f, 40f, 0f);
-        charPref.transform.localScale = Vector3.one;
-        charPref.name = "Character";
+
+        var character = mainStage.transform.Find("Character").gameObject;
+        var charImg = character.GetComponent<Image>();
+        charImg.sprite = mV_controller.characters_entire_body[arrIndex].images[arrSubIndex];
+        var rect = character.GetComponent<RectTransform>();
+        charImg.SetNativeSize();
+        Vector3 originSize = rect.sizeDelta;
+        rect.sizeDelta = new Vector3(originSize.x, originSize.y / 2f);
     }
 
-    public void setSideBar(int index, int lv) {
-        sideBarGrid.transform.Find("Lv10Container/DeactiveContainer").gameObject.SetActive(false);
-        sideBarGrid.transform.Find("Lv20Container/DeactiveContainer").gameObject.SetActive(false);
+    public void setSideBar() {
+        Info selInfo = selectedChar.GetComponent<Info>();
+        
+        int index = selInfo.characterId;
+        int lv = selInfo.lv;
+        //Debug.Log("Index : " + index + ", Lv : " + lv);
+        if(lv == 0) {
+            lv = 1;
+        }
+        var imageArr = mV_controller.characters_busts_sm;
+        Image portrait = sideBarGrid.transform.Find("Lv1/Image").GetComponent<Image>();
+        portrait.sprite = imageArr[index - 1].images[lv - 1];
 
-        UISprite sprite = sideBarGrid.transform.Find("Lv1Container/Sprite").GetComponent<UISprite>();
-        sprite.atlas = atlasArr[index - 1];
-        sprite.spriteName = index + "-1";
+        GameObject tmp = sideBarGrid.transform.Find("Lv1").gameObject;
+        Info _info;
+        sbInfo _sbInfo;
 
-        sprite = sideBarGrid.transform.Find("Lv10Container/Sprite").GetComponent<UISprite>();
-        sprite.atlas = atlasArr[index - 1];
-        sprite.spriteName = index + "-2";
-        if(lv < 2) {
-            sideBarGrid.transform.Find("Lv10Container/DeactiveContainer").gameObject.SetActive(true);
+        if(tmp.GetComponent<Info>() == null) {
+            _info = tmp.AddComponent<Info>();
+        }
+        else {
+            _info = tmp.GetComponent<Info>();
+        }
+        _info.id = selInfo.id;
+        _info.characterId = selInfo.characterId;
+        _info.lv = 1;
+
+        if(tmp.GetComponent<sbInfo>() == null) {
+            _sbInfo = tmp.AddComponent<sbInfo>();
+        }
+        else {
+            _sbInfo = tmp.GetComponent<sbInfo>();
         }
 
-        sprite = sideBarGrid.transform.Find("Lv20Container/Sprite").GetComponent<UISprite>();
-        sprite.atlas = atlasArr[index - 1];
-        sprite.spriteName = index + "-3";
-        if(lv < 3) {
-            sideBarGrid.transform.Find("Lv20Container/DeactiveContainer").gameObject.SetActive(true);
+        _info = null;
+
+        portrait = sideBarGrid.transform.Find("Lv2/Image").GetComponent<Image>();
+        portrait.sprite = imageArr[index - 1].images[lv];
+
+        tmp = sideBarGrid.transform.Find("Lv2").gameObject;
+        if (tmp.GetComponent<Info>() == null) {
+            _info = tmp.AddComponent<Info>();
         }
+        else {
+            _info = tmp.GetComponent<Info>();
+        }
+        _info.id = selInfo.id;
+        _info.characterId = selInfo.characterId;
+        _info.lv = 2;
+
+        _info = null;
+
+        if (lv < 2) {
+            sideBarGrid.transform.Find("Lv2/Image/Deactive").gameObject.SetActive(true);
+        }
+
+        portrait = sideBarGrid.transform.Find("Lv3/Image").GetComponent<Image>();
+        portrait.sprite = imageArr[index - 1].images[lv + 1];
+        if (lv < 3) {
+            sideBarGrid.transform.Find("Lv3/Image/Deactive").gameObject.SetActive(true);
+        }
+
+        tmp = sideBarGrid.transform.Find("Lv3").gameObject;
+        if (tmp.GetComponent<Info>() == null) {
+            _info = tmp.AddComponent<Info>();
+        }
+        else {
+            _info = tmp.GetComponent<Info>();
+        }
+        _info.id = selInfo.id;
+        _info.characterId = selInfo.characterId;
+        _info.lv = 3;
     }
 
     private void setSideBarName(string name) {
-        lv1Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv1\n" + name;
-        lv10Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv2\n" + name;
-        lv20Slot.transform.Find("Label").GetComponent<UILabel>().text = "Lv3\n" + name;
+        lv1Slot.transform.Find("Name").GetComponent<Text>().text = name;
+        lv2Slot.transform.Find("Name").GetComponent<Text>().text = name;
+        lv3Slot.transform.Find("Name").GetComponent<Text>().text = name;
     }
 
     //캐릭터 근력, 지구력, 스피드, 회복력 정보
@@ -338,9 +375,9 @@ public class CharacterViewControlller : MonoBehaviour {
     public void sideBarClicked(GameObject obj) {
         sm.playEffectSound(0);
 
-        GameObject _sprite = obj.transform.Find("Sprite").gameObject;
+        GameObject _sprite = obj.transform.Find("Image").gameObject;
 
-        string name = _sprite.GetComponent<UISprite>().spriteName;
+        string name = _sprite.GetComponent<Image>().sprite.name;
         string[] str = name.Split('-');
         setMainChar(Int32.Parse(str[0]), Int32.Parse(str[1]));
     }
@@ -357,17 +394,41 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void makeList(int equipedCharIndex = -1) {
         removeList();
-        int repCharIndex = charInvenStore.representChar.character_inventory.id;
+        int repCharIndex = charInvenStore.representChar.character_inventory.character;
 
         //내 캐릭터 리스트 생성
         character_inventory[] myChars = charInvenStore.my_characters;
         var allChars = charInvenStore.all_characters;
 
-        foreach(KeyValuePair<int, all_characters> dC in allChars) {
+        float tmp = (float)allChars.Count / 3f;
+        int pageNum = Mathf.CeilToInt(tmp);
+
+        GameObject[] pages = new GameObject[pageNum];
+        for(int i=0; i<pageNum; i++) {
+            pages[i] = Instantiate(scroll_pagePref);
+            pages[i].transform.SetParent(itemGrid.transform);
+
+            GameObject pageIcon = Instantiate(scroll_pageIconPref);
+            pageIcon.transform.SetParent(pageIconGrid.transform);
+        }
+
+        int pageIndex = 0;
+        int itemIndex = 0;
+
+        foreach (KeyValuePair<int, all_characters> dC in allChars) {
             GameObject item = Instantiate(itemPref);
-            item.transform.SetParent(itemGrid.transform);
-            item.transform.localScale = Vector3.one;
+
+            Debug.Log("Page Index : " + pageIndex + ", Item Index : " + itemIndex);
+
+            item.transform.SetParent(pages[pageIndex].transform.GetChild(itemIndex).transform);
             item.transform.localPosition = Vector3.zero;
+            if(itemIndex < 2) {
+                itemIndex++;
+            }
+            else {
+                pageIndex++;
+                itemIndex = 0;
+            }
 
             Info info = item.AddComponent<Info>();
             info.characterId = dC.Key;
@@ -377,9 +438,14 @@ public class CharacterViewControlller : MonoBehaviour {
             sbInfo.cost = dC.Value.cost;
             sbInfo.lvup_exps = dC.Value.lvup_exps;
 
+            if (info.characterId == repCharIndex) {
+                selectedChar = item;
+            }
+
             var element = Array.Find(myChars, arr => arr.character.Equals(dC.Key));
+            Text puzzles = item.transform.Find("Bottom/Text").GetComponent<Text>();
             //보유한 캐릭터
-            if(element != null) {
+            if (element != null) {
                 info.id = element.id;
                 info.paid = element.paid;
                 info.lv = element.lv;
@@ -390,48 +456,35 @@ public class CharacterViewControlller : MonoBehaviour {
                 info.recovery = element.status.regeneration;
                 info.speed = element.status.speed;
 
-                if (repCharIndex == element.character) {
-                    selectedChar = item;
-                }
-
-                if(element.has_character == "true") {
+                if (element.has_character == "true") {
                     item.transform.Find("DeactiveContainer").gameObject.SetActive(false);
+                    puzzles.text = "보유중";
                 }
-
-                item.transform.Find("Puzzles/Value").GetComponent<UILabel>().text = info.paid + " / " + sbInfo.cost.ToString();
+                else {
+                    puzzles.text = info.paid + " / " + sbInfo.cost.ToString();
+                }
             }
             //보유하고 있지 않은 캐릭터의 경우
             else {
-                item.transform.Find("Puzzles/Value").GetComponent<UILabel>().text = "미보유";
+                puzzles.text = "미보유";
+                info.lv = 1;
             }
-            UISprite sprite = item.transform.Find("Portrait").GetComponent<UISprite>();
-            int atlasIndex = info.characterId;
-            sprite.atlas = atlasArr[atlasIndex - 1];
-            sprite.spriteName = atlasIndex + "-1-slider";
+            Image sprite = item.transform.Find("Image").GetComponent<Image>();
+            int imgIndex = info.characterId - 1;
+            sprite.sprite = mV_controller.partner_busts_m[imgIndex];
 
-            UIDragScrollView dScrollView = item.AddComponent<UIDragScrollView>();
-            dScrollView.scrollView = itemGrid.transform.parent.GetComponent<UIScrollView>();
-
-            EventDelegate.Parameter param = new EventDelegate.Parameter();
-            EventDelegate onClick = new EventDelegate(this, "charSelected");
-            param.obj = item;
-            onClick.parameters[0] = param;
-            EventDelegate.Add(item.GetComponent<UIButton>().onClick, onClick);
+            item.GetComponent<Button>().onClick.AddListener(() => charSelected(item));
         }
-        //sidebar 갱신
-        init();
+
+        scrollSnapRect.enabled = true;
     }
 
     private void removeList() {
         itemGrid.transform.DestroyChildren();
+        pageIconGrid.transform.DestroyChildren();
     }
 
-    private void init() {
-        itemGrid.repositionNow = true;
-        itemGrid.Reposition();
-    }
-
-    private class Info : MonoBehaviour {
+    public class Info : MonoBehaviour {
         public int id;
         public int paid;
         public int lv;
@@ -445,44 +498,42 @@ public class CharacterViewControlller : MonoBehaviour {
         public int speed;
     }
 
-    private class sbInfo : MonoBehaviour {
+    public class sbInfo : MonoBehaviour {
         public string name;
         public string desc;
         public int cost;
         public int[] lvup_exps;
     }
 
-    public void onIllustPanel() {
-        IllustPanel.SetActive(true);
-    }
+    //public void onIllustPanel() {
+    //    IllustPanel.SetActive(true);
+    //}
 
-    public void offIllustPanel() {
-        IllustPanel.SetActive(false);
-    }
+    //public void offIllustPanel() {
+    //    IllustPanel.SetActive(false);
+    //}
 
-    public void onDescPanel() {
-        sm.playEffectSound(1);
-        DescPanel.SetActive(true);
+    //public void onDescPanel() {
+    //    sm.playEffectSound(1);
+        
+    //    UILabel header = _desc.transform.Find("Header").GetComponent<UILabel>();
+    //    UILabel desc = _desc.transform.Find("Desc").GetComponent<UILabel>();
 
-        GameObject _desc = DescPanel.transform.Find("InnerBackground").gameObject;
-        UILabel header = _desc.transform.Find("Header").GetComponent<UILabel>();
-        UILabel desc = _desc.transform.Find("Desc").GetComponent<UILabel>();
+    //    sbInfo sbInfo = selectedChar.GetComponent<sbInfo>();
+    //    header.text = sbInfo.name;
+    //    desc.text = sbInfo.desc;
 
-        sbInfo sbInfo = selectedChar.GetComponent<sbInfo>();
-        header.text = sbInfo.name;
-        desc.text = sbInfo.desc;
+    //    Info info = selectedChar.GetComponent<Info>();
+    //    int imageIndex = info.characterId - 1;
+    //    UISprite sprite = _desc.transform.Find("Portrait").GetComponent<UISprite>();
+    //    sprite.atlas = atlasArr[imageIndex];
+    //    sprite.spriteName = info.characterId + "-" + info.lv;
+    //}
 
-        Info info = selectedChar.GetComponent<Info>();
-        int imageIndex = info.characterId - 1;
-        UISprite sprite = _desc.transform.Find("Portrait").GetComponent<UISprite>();
-        sprite.atlas = atlasArr[imageIndex];
-        sprite.spriteName = info.characterId + "-" + info.lv;
-    }
-
-    public void offDescPanel() {
-        DescPanel.SetActive(false);
-        sm.playEffectSound(0);
-    }
+    //public void offDescPanel() {
+    //    DescPanel.SetActive(false);
+    //    sm.playEffectSound(0);
+    //}
 
     [System.Serializable]
     public class CharPrefArr {

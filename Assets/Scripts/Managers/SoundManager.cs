@@ -40,7 +40,7 @@ public class SoundManager : Singleton<SoundManager> {
         if (isESON == 0) {
             source.mute = true;
             AudioListener.volume = 0;
-            Debug.Log("효과음 무음");
+            //Debug.Log("효과음 무음");
         }
         else {
             resetSetting();

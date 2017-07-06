@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Item {
     public int id;
@@ -22,4 +23,9 @@ public class BicycleItem : Item {
 
 public class CharacterItem : Item {
     
+}
+
+[System.Serializable]
+public class SpritesArr {
+    public Sprite[] images;
 }
