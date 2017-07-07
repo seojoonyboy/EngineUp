@@ -161,6 +161,7 @@ public class BicycleViewController : MonoBehaviour {
             sellButton.transform.Find("Text").GetComponent<Text>().text = "판매";
             if(sellList.Count != 0) {
                 sellingModal.SetActive(true);
+                playEffectSound(1);
             }
         }
         else {
@@ -184,6 +185,7 @@ public class BicycleViewController : MonoBehaviour {
             lockButton.transform.Find("Text").GetComponent<Text>().text = "잠금";
             if (lockIdList.Count != 0 || unlockList.Count != 0) {
                 lockingModal.SetActive(true);
+                playEffectSound(1);
             }
         }
         else {
@@ -238,6 +240,7 @@ public class BicycleViewController : MonoBehaviour {
         else if(isLockMode == false && isSellMode == false) {
             selectedItem = obj;
             onDetailModal();
+            playEffectSound(1);
         }
     }
 
@@ -314,6 +317,7 @@ public class BicycleViewController : MonoBehaviour {
         }
         else {
             notifyModal.SetActive(true);
+            playEffectSound(1);
             notifyModal.transform.Find("InnerModal/Text").GetComponent<Text>().text = "등급이 낮아 아이템을 장착할 수 없습니다.";
             sm.playEffectSound(0);
             //notifyModal.GetComponent<UIPlaySound>().audioClip = audioClip[0];
@@ -839,6 +843,10 @@ public class BicycleViewController : MonoBehaviour {
 
     public void playClickSound() {
         sm.playEffectSound(0);
+    }
+
+    public void playEffectSound(int index) {
+        sm.playEffectSound(index);
     }
 
     public void filterSelected(int index) {
