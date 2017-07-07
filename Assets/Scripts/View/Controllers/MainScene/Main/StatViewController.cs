@@ -129,7 +129,7 @@ public class StatViewController : MonoBehaviour {
     public void onUserListener() {
         int rank = userStore.myData.status.rank;
         int iconRank = (int)Mathf.Ceil((float)rank / 5);
-        mainRankIcon.sprite2D = mainViewController.ranks[rank - 1];
+        mainRankIcon.sprite2D = mainViewController.ranks[iconRank - 1];
 
         nickNameLabel.text = userStore.nickName;
 

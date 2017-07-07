@@ -83,7 +83,7 @@ public class MyHomeViewController : MonoBehaviour {
         switch(index) {
             //차고지(자전거)
             case 0:
-                subPanels[1].GetComponent<BicycleViewController>().onPanel();
+                subPanels[1].SetActive(true);
                 break;
             //서재(기록실)
             case 1:

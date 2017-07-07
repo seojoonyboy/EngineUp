@@ -10,12 +10,16 @@ public class MainViewController : MonoBehaviour {
     private BicycleItem_Inventory bi;
     public UIAtlas[] atlasArr;
     public UIAtlas bicycleAtlas;
+
     public GameObject 
         bicycle,
         tutorial;
+
     public Sprite[] 
         ranks,
-        partner_busts_m;
+        partner_busts_m,
+        Bicycles_items_slot,
+        Bicycles_items_stage;
 
     public SpritesArr[] 
         characters_busts_sm,
