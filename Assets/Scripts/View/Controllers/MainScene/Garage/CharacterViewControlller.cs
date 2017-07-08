@@ -406,7 +406,7 @@ public class CharacterViewControlller : MonoBehaviour {
         GameObject[] pages = new GameObject[pageNum];
         for(int i=0; i<pageNum; i++) {
             pages[i] = Instantiate(scroll_pagePref);
-            pages[i].transform.SetParent(itemGrid.transform);
+            pages[i].transform.SetParent(itemGrid.transform, false);
 
             GameObject pageIcon = Instantiate(scroll_pageIconPref);
             pageIcon.transform.SetParent(pageIconGrid.transform);
@@ -420,7 +420,7 @@ public class CharacterViewControlller : MonoBehaviour {
 
             Debug.Log("Page Index : " + pageIndex + ", Item Index : " + itemIndex);
 
-            item.transform.SetParent(pages[pageIndex].transform.GetChild(itemIndex).transform);
+            item.transform.SetParent(pages[pageIndex].transform.GetChild(itemIndex).transform, false);
             item.transform.localPosition = Vector3.zero;
             if(itemIndex < 2) {
                 itemIndex++;
@@ -513,22 +513,21 @@ public class CharacterViewControlller : MonoBehaviour {
     //    IllustPanel.SetActive(false);
     //}
 
-    //public void onDescPanel() {
-    //    sm.playEffectSound(1);
-        
-    //    UILabel header = _desc.transform.Find("Header").GetComponent<UILabel>();
-    //    UILabel desc = _desc.transform.Find("Desc").GetComponent<UILabel>();
+    public void onDescPanel() {
+        sm.playEffectSound(1);
+        //UILabel header = _desc.transform.Find("Header").GetComponent<UILabel>();
+        //UILabel desc = _desc.transform.Find("Desc").GetComponent<UILabel>();
 
-    //    sbInfo sbInfo = selectedChar.GetComponent<sbInfo>();
-    //    header.text = sbInfo.name;
-    //    desc.text = sbInfo.desc;
+        sbInfo sbInfo = selectedChar.GetComponent<sbInfo>();
+        //header.text = sbInfo.name;
+        //desc.text = sbInfo.desc;
 
-    //    Info info = selectedChar.GetComponent<Info>();
-    //    int imageIndex = info.characterId - 1;
-    //    UISprite sprite = _desc.transform.Find("Portrait").GetComponent<UISprite>();
-    //    sprite.atlas = atlasArr[imageIndex];
-    //    sprite.spriteName = info.characterId + "-" + info.lv;
-    //}
+        //Info info = selectedChar.GetComponent<Info>();
+        //int imageIndex = info.characterId - 1;
+        //UISprite sprite = _desc.transform.Find("Portrait").GetComponent<UISprite>();
+        //sprite.atlas = atlasArr[imageIndex];
+        //sprite.spriteName = info.characterId + "-" + info.lv;
+    }
 
     //public void offDescPanel() {
     //    DescPanel.SetActive(false);

@@ -357,7 +357,7 @@ public class BicycleViewController : MonoBehaviour {
         for(int i = 0; i < GN; i++) {
             GameObject grid = Instantiate(itemGrid);
             GameObject _content = sR[0].transform.Find("Content").gameObject;
-            grid.transform.SetParent(_content.transform);
+            grid.transform.SetParent(_content.transform, false);
             GameObject pageIcon = Instantiate(pagination_icon_pref);
             pageIcon.name = "Icon";
             pageIcon.transform.SetParent(sR[0].transform.parent.Find("PaginationIcons").transform);
@@ -410,7 +410,7 @@ public class BicycleViewController : MonoBehaviour {
         for (int i = 0; i < GN; i++) {
             GameObject grid = Instantiate(itemGrid);
             GameObject _content = sR[1].transform.Find("Content").gameObject;
-            grid.transform.SetParent(_content.transform);
+            grid.transform.SetParent(_content.transform, false);
             GameObject pageIcon = Instantiate(pagination_icon_pref);
             pageIcon.name = "Icon";
             pageIcon.transform.SetParent(sR[1].transform.parent.Find("PaginationIcons").transform);
@@ -465,7 +465,7 @@ public class BicycleViewController : MonoBehaviour {
         for (int i = 0; i < GN; i++) {
             GameObject grid = Instantiate(itemGrid);
             GameObject _content = sR[2].transform.Find("Content").gameObject;
-            grid.transform.SetParent(_content.transform);
+            grid.transform.SetParent(_content.transform, false);
             GameObject pageIcon = Instantiate(pagination_icon_pref);
             pageIcon.name = "Icon";
             pageIcon.transform.SetParent(sR[2].transform.parent.Find("PaginationIcons").transform);
