@@ -378,13 +378,13 @@ public class BicycleViewController : MonoBehaviour {
             grid.transform.SetParent(_content.transform, false);
             GameObject pageIcon = Instantiate(pagination_icon_pref);
             pageIcon.name = "Icon";
-            pageIcon.transform.SetParent(sR[0].transform.parent.Find("PaginationIcons").transform);
+            pageIcon.transform.SetParent(sR[0].transform.parent.Find("PaginationIcons").transform, false);
             for(int j = 0; j < pagePerSlotCount; j++) {
                 if(cnt < frameItemCnt) {
                     Transform slot = grid.transform.GetChild(j).transform;
                     GameObject item = Instantiate(slotItem);
 
-                    item.transform.SetParent(slot);
+                    item.transform.SetParent(slot, false);
                     item.transform.localPosition = Vector3.zero;
 
                     Info info = item.AddComponent<Info>();
@@ -431,14 +431,14 @@ public class BicycleViewController : MonoBehaviour {
             grid.transform.SetParent(_content.transform, false);
             GameObject pageIcon = Instantiate(pagination_icon_pref);
             pageIcon.name = "Icon";
-            pageIcon.transform.SetParent(sR[1].transform.parent.Find("PaginationIcons").transform);
+            pageIcon.transform.SetParent(sR[1].transform.parent.Find("PaginationIcons").transform, false);
 
             for (int j = 0; j < pagePerSlotCount; j++) {
                 if(cnt < wheelItemCnt) {
                     Transform slot = grid.transform.GetChild(j).transform;
                     GameObject item = Instantiate(slotItem);
 
-                    item.transform.SetParent(slot);
+                    item.transform.SetParent(slot, false);
                     item.transform.localPosition = Vector3.zero;
 
                     Info info = item.AddComponent<Info>();
@@ -486,14 +486,14 @@ public class BicycleViewController : MonoBehaviour {
             grid.transform.SetParent(_content.transform, false);
             GameObject pageIcon = Instantiate(pagination_icon_pref);
             pageIcon.name = "Icon";
-            pageIcon.transform.SetParent(sR[2].transform.parent.Find("PaginationIcons").transform);
+            pageIcon.transform.SetParent(sR[2].transform.parent.Find("PaginationIcons").transform, false);
 
             for (int j = 0; j < pagePerSlotCount; j++) {
                 if(cnt < engineItemCnt) {
                     Transform slot = grid.transform.GetChild(j).transform;
                     GameObject item = Instantiate(slotItem);
 
-                    item.transform.SetParent(slot);
+                    item.transform.SetParent(slot, false);
                     item.transform.localPosition = Vector3.zero;
 
                     Info info = item.AddComponent<Info>();
