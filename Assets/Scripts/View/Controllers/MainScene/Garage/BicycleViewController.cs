@@ -254,26 +254,44 @@ public class BicycleViewController : MonoBehaviour {
 
         Info info = selectedItem.GetComponent<Info>();
 
-        StringBuilder sb = new StringBuilder();
+        List<string> valList = new List<string>();
         int val = info.strength;
         if(val != 0) {
-            string str = "근력 + " + val + "\n";
-            sb.Append(str);
+            string str = "근력 + " + val;
+            valList.Add(str);
         }
         val = info.endurance;
         if(val != 0) {
-            string str = "지구력 + " + val + "\n";
-            sb.Append(str);
+            string str = "지구력 + " + val;
+            valList.Add(str);
         }
         val = info.speed;
         if (val != 0) {
-            string str = "스피드 + " + val + "\n";
-            sb.Append(str);
+            string str = "스피드 + " + val;
+            valList.Add(str);
         }
         val = info.recovery;
         if (val != 0) {
-            string str = "회복력 + " + val + "\n";
-            sb.Append(str);
+            string str = "회복력 + " + val;
+            valList.Add(str);
+        }
+
+        int count = 0;
+        StringBuilder sb = new StringBuilder();
+        foreach(String str in valList) {
+            if(count == 1) {
+                sb.Append("    ");
+                sb.Append(str);
+            }
+            else if(count == 2) {
+                sb.Append("\n");
+                sb.Append(str);
+                sb.Append("    ");
+            }
+            else if(count == 0 || count == 3) {
+                sb.Append(str);
+            }
+            count++;
         }
 
         modal.transform.Find("Spec").GetComponent<Text>().text = sb.ToString();
