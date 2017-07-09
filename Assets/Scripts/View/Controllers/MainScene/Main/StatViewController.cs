@@ -416,7 +416,7 @@ public class StatViewController : MonoBehaviour {
             case 2:
                 editModals[6].SetActive(true);
                 GameObject calender = Instantiate(callenderPref);
-                calender.transform.SetParent(editModals[6].transform);
+                calender.transform.SetParent(editModals[6].transform, false);
                 calender.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 340f);
                 break;
             //WH
