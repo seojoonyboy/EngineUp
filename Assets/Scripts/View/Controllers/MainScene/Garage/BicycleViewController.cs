@@ -579,7 +579,7 @@ public class BicycleViewController : MonoBehaviour {
         for(int i=0; i<bicycleItemStore.equipedItemIndex.Length; i++) {
             equipedItem = bicycleItemStore.equipedItemIndex[i];
             if (equipedItem != null) {
-                incEnd += equipedItem.item.strength;
+                incEnd += equipedItem.item.endurance;
                 incSpeed += equipedItem.item.speed;
                 incRecovery += equipedItem.item.regeneration;
                 incStrength += equipedItem.item.strength;
@@ -849,6 +849,9 @@ public class BicycleViewController : MonoBehaviour {
         getItems_act bicycleInfo = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
         bicycleInfo._type = equip_act.type.ITEM;
         gm.gameDispatcher.dispatch(bicycleInfo);
+
+        getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
+        gm.gameDispatcher.dispatch(act);
 
         int index = PlayerPrefs.GetInt("Filter");
         //Debug.Log("Item Init");
