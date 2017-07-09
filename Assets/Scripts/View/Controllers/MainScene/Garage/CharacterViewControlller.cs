@@ -30,7 +30,9 @@ public class CharacterViewControlller : MonoBehaviour {
         nonepossessionButton,
         itemGrid,
         sideBarGrid,
-        pageIconGrid;
+        pageIconGrid,
+        descModal,
+        blockingCollPanel;
 
     public Text[] 
         stats,
@@ -55,12 +57,14 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     void OnEnable() {
+        blockingCollPanel.SetActive(true);
         tweenPos();
         
         isReverse_tp = false;
     }
 
     void offPanel() {
+        blockingCollPanel.SetActive(false);
         gameObject.SetActive(false);
         selectedChar = null;
 
@@ -515,24 +519,20 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void onDescPanel() {
         sm.playEffectSound(1);
-        //UILabel header = _desc.transform.Find("Header").GetComponent<UILabel>();
-        //UILabel desc = _desc.transform.Find("Desc").GetComponent<UILabel>();
+
+        descModal.SetActive(true);
+        Text header = descModal.transform.Find("InnerModal/Name").GetComponent<Text>();
+        Text desc = descModal.transform.Find("InnerModal/Desc").GetComponent<Text>();
 
         sbInfo sbInfo = selectedChar.GetComponent<sbInfo>();
-        //header.text = sbInfo.name;
-        //desc.text = sbInfo.desc;
-
-        //Info info = selectedChar.GetComponent<Info>();
-        //int imageIndex = info.characterId - 1;
-        //UISprite sprite = _desc.transform.Find("Portrait").GetComponent<UISprite>();
-        //sprite.atlas = atlasArr[imageIndex];
-        //sprite.spriteName = info.characterId + "-" + info.lv;
+        header.text = sbInfo.name;
+        desc.text = sbInfo.desc;
     }
 
-    //public void offDescPanel() {
-    //    DescPanel.SetActive(false);
-    //    sm.playEffectSound(0);
-    //}
+    public void offDescPanel() {
+        descModal.SetActive(false);
+        sm.playEffectSound(0);
+    }
 
     [System.Serializable]
     public class CharPrefArr {
