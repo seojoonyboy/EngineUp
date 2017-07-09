@@ -22,6 +22,9 @@ public class Char_Inventory : AjwStore {
     public Dictionary<int, all_characters> all_characters = new Dictionary<int, all_characters>();
     public ActionTypes eventType;
 
+    //현재 보유하지 않은 캐릭터 역시 파트너룸에서 보여주기 위한 임시 배열
+    public charStat[] allStats;
+
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.GARAGE_CHAR_INIT:
