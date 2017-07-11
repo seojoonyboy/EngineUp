@@ -52,7 +52,7 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case ActionTypes.ITEM_INIT:
                 item_init itemInitAct = action as item_init;
-                if(itemInitAct._type == equip_act.type.BOTH || itemInitAct._type == equip_act.type.ITEM) {
+                if(itemInitAct._type == equip_act.type.ITEM) {
                     getItems(itemInitAct);
                 }
                 break;
@@ -73,6 +73,7 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
+                Debug.Log(payload.response.data);
                 message = "아이템을 성공적으로 불러왔습니다.";
                 allItems = JsonHelper.getJsonArray<RespGetItems>(payload.response.data);
 

@@ -196,7 +196,7 @@ public class User : AjwStore {
                 nickName = callbackData.user.nickName;
                 userId = callbackData.user.id;
                 myCharacters = callbackData.user.represent_character;
-
+                Debug.Log(userTokenId);
                 //Debug.Log("Nickname : " + nickName);
                 GameStartAction startAct = ActionCreator.createAction(ActionTypes.GAME_START) as GameStartAction;
                 dispatcher.dispatch(startAct);

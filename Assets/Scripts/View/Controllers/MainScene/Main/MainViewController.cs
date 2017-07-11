@@ -39,8 +39,12 @@ public class MainViewController : MonoBehaviour {
         //act._type = equip_act.type.ITEM;
         //gm.gameDispatcher.dispatch(act);
         item_init initItemAct = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
-        initItemAct._type = equip_act.type.BOTH;
+        initItemAct._type = equip_act.type.ITEM;
         gm.gameDispatcher.dispatch(initItemAct);
+
+        item_init _act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
+        _act._type = equip_act.type.CHAR;
+        gm.gameDispatcher.dispatch(_act);
 
         //튜토리얼 진행 여부 확인
         int isFirstPlay = PlayerPrefs.GetInt("isFirstPlay");
