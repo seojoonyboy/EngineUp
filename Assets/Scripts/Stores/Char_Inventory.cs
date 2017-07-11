@@ -28,8 +28,8 @@ public class Char_Inventory : AjwStore {
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.GARAGE_CHAR_INIT:
-                representChar = userStore.myCharacters;
-                getMyChar(action as getCharacters_act);
+                //representChar = userStore.myCharacters;
+                //getMyChar(action as getCharacters_act);
                 break;
             case ActionTypes.CHAR_OPEN:
                 unlock(action as garage_unlock_char);
@@ -37,12 +37,18 @@ public class Char_Inventory : AjwStore {
             case ActionTypes.GARAGE_ITEM_EQUIP:
                 equip(action as equip_act);
                 break;
+            case ActionTypes.ITEM_INIT:
+                item_init itemInitAct = action as item_init;
+                if (itemInitAct._type == equip_act.type.BOTH || itemInitAct._type == equip_act.type.CHAR) {
+                    getMyChar(itemInitAct);
+                }
+                break;
         }
         eventType = action.type;
     }
 
     //내 캐릭터 목록 가져오기
-    private void getMyChar(getCharacters_act payload) {
+    private void getMyChar(item_init payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;

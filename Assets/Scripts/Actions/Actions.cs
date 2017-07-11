@@ -13,7 +13,8 @@ public enum ActionTypes {
     BOX_OPEN, CHAR_OPEN,
     MYINFO, GET_RIDING_RECORDS, RIDING_DETAILS, RIDING_RECORDS_REMOVE,
     EDIT_PROFILE,
-    COUNTRIES, USER_BICYCLETYPES
+    COUNTRIES, USER_BICYCLETYPES,
+    ITEM_INIT
 }
 
 public class Actions{
@@ -164,6 +165,9 @@ public static class ActionCreator{
             break;
         case ActionTypes.USER_BICYCLETYPES:
             _return = new GetBicycleTypes();
+            break;
+        case ActionTypes.ITEM_INIT:
+            _return = new item_init();
             break;
         }
          _return.type = _type;

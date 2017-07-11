@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 //자전거 아이템 관련
 public class equip_act : NetworkAction {
-    public enum type { CHAR, ITEM }
+    public enum type { CHAR, ITEM, BOTH }
     public type _type;
     public int id;
 }
@@ -30,3 +30,5 @@ public class itemSort : Actions {
     public enum type { NAME, GRADE, DATE }
     public type _type;
 }
+
+public class item_init : equip_act { }

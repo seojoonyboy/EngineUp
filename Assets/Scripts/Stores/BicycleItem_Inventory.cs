@@ -33,10 +33,10 @@ public class BicycleItem_Inventory : AjwStore {
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.GARAGE_ITEM_INIT:
-                getItems_act getItemsAct = action as getItems_act;
-                if(getItemsAct._type == equip_act.type.ITEM) {
-                    getItems(action as getItems_act);
-                }
+                //getItems_act getItemsAct = action as getItems_act;
+                //if(getItemsAct._type == equip_act.type.ITEM) {
+                //    getItems(action as getItems_act);
+                //}
                 break;
             case ActionTypes.GARAGE_ITEM_EQUIP:
                 equip(action as equip_act);
@@ -50,15 +50,18 @@ public class BicycleItem_Inventory : AjwStore {
             case ActionTypes.GARAGE_SELL:
                 sell(action as garage_sell_act);
                 break;
-            case ActionTypes.GARAGE_ITEM_SORT:
-                itemSort(action as itemSort);
+            case ActionTypes.ITEM_INIT:
+                item_init itemInitAct = action as item_init;
+                if(itemInitAct._type == equip_act.type.BOTH || itemInitAct._type == equip_act.type.ITEM) {
+                    getItems(itemInitAct);
+                }
                 break;
         }
         eventType = action.type;
     }
 
     //내 아이템 목록 불러오기
-    private void getItems(getItems_act payload) {
+    private void getItems(item_init payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 storeStatus = storeStatus.WAITING_REQ;
@@ -72,11 +75,10 @@ public class BicycleItem_Inventory : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 message = "아이템을 성공적으로 불러왔습니다.";
                 allItems = JsonHelper.getJsonArray<RespGetItems>(payload.response.data);
+
                 init();
                 itemCategorization(allItems);
-
-                MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
-                dispatcher.dispatch(act);
+                itemSort();
 
                 _emitChange();
                 break;
@@ -111,12 +113,35 @@ public class BicycleItem_Inventory : AjwStore {
                 }
             }
         }
-        itemSort act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_SORT) as itemSort;
-        dispatcher.dispatch(act);
+        itemEffect();
+        
+        //itemSort act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_SORT) as itemSort;
+        //dispatcher.dispatch(act);
+    }
+
+    //아이템 장착에 의한 total spec 계산
+    private void itemEffect() {
+        int totalStr = 0;
+        int totalSpeed = 0;
+        int totalEndurance = 0;
+        int totalRecovery = 0;
+        for(int i=0; i<equipedItemIndex.Length; i++) {
+            if(equipedItemIndex[i] != null) {
+                var item = equipedItemIndex[i].item;
+                totalStr += item.strength;
+                totalSpeed += item.speed;
+                totalRecovery += item.regeneration;
+                totalEndurance += item.endurance;
+            }
+        }
+        userStore.itemSpects.Item_strength = totalStr;
+        userStore.itemSpects.Item_speed = totalSpeed;
+        userStore.itemSpects.Item_regeneration = totalRecovery;
+        userStore.itemSpects.Item_endurance = totalEndurance;
     }
 
     //아이템 정렬
-    private void itemSort(itemSort act) {
+    private void itemSort() {
         int index = PlayerPrefs.GetInt("Filter");
         //Debug.Log("Sorting index : " + index);
         switch (index) {
@@ -131,14 +156,10 @@ public class BicycleItem_Inventory : AjwStore {
                 engineItems.Sort(new SortByGrade());
                 break;
         }
-        _emitChange();
     }
 
     //아이템 장착
     private void equip(equip_act payload) {
-        if(payload._type != equip_act.type.ITEM) {
-            return;
-        }
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
@@ -152,7 +173,7 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
                 act._type = equip_act.type.ITEM;
                 dispatcher.dispatch(act);
 
@@ -180,7 +201,7 @@ public class BicycleItem_Inventory : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 Debug.Log("아이템 해제 완료");
-                getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
                 act._type = equip_act.type.ITEM;
                 dispatcher.dispatch(act);
 

@@ -35,9 +35,12 @@ public class MainViewController : MonoBehaviour {
     }
 
     void Start() {
-        getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
-        act._type = equip_act.type.ITEM;
-        gm.gameDispatcher.dispatch(act);
+        //getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+        //act._type = equip_act.type.ITEM;
+        //gm.gameDispatcher.dispatch(act);
+        item_init initItemAct = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
+        initItemAct._type = equip_act.type.BOTH;
+        gm.gameDispatcher.dispatch(initItemAct);
 
         //튜토리얼 진행 여부 확인
         int isFirstPlay = PlayerPrefs.GetInt("isFirstPlay");

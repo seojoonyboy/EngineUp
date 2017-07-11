@@ -37,6 +37,8 @@ public class User : AjwStore {
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
     public ActionTypes eventType;
     public SignupAction.loginType loginType;
+
+    public ItemSpects itemSpects = new ItemSpects();
     //최신 내 정보 불러오기
     void myInfo(MyInfo payload) {
         switch (payload.status) {
@@ -56,11 +58,13 @@ public class User : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 setMessage(2);
                 myData = UserData.fromJSON(payload.response.data);
+                Debug.Log(myData);
                 setUserTitle(myData.status.rank);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
+                Debug.Log(myData);
                 _emitChange();
                 break;
         }
@@ -506,4 +510,17 @@ public class record_this_month : record {
     public int id;
     public int year;
     public int month;
+}
+
+public class ItemSpects
+{
+    public int Item_strength = 0;
+    public int Item_speed = 0;
+    public int Item_endurance = 0;
+    public int Item_regeneration = 0;
+
+    public int Char_strength = 0;
+    public int Char_speed = 0;
+    public int Char_endurance = 0;
+    public int Char_regeneration = 0;
 }

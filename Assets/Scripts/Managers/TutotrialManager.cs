@@ -40,7 +40,7 @@ public class TutotrialManager : MonoBehaviour {
     }
 
     public void panelClicked() {
-        Debug.Log("Count : " + count);
+        //Debug.Log("Count : " + count);
         if (count > text.Length - 1) { return; }
         if (!isFirstClick) {
             isFirstClick = true;

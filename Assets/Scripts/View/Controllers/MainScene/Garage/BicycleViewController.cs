@@ -73,10 +73,11 @@ public class BicycleViewController : MonoBehaviour {
     public void onBicycleItemStoreListener() {
         ActionTypes bicycleItemStoreEventType = bicycleItemStore.eventType;
 
-        if(gameObject.activeSelf) {
-            if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
+        if (gameObject.activeSelf) {
+            if (bicycleItemStoreEventType == ActionTypes.ITEM_INIT) {
                 if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
                     makeList();
+                    setStat();
                 }
             }
         }
@@ -86,11 +87,11 @@ public class BicycleViewController : MonoBehaviour {
         ActionTypes userStoreEventType = userStore.eventType;
         //lvLavel.text = "Lv. " + userStore.myData.status.rank.ToString();
 
-        if(userStoreEventType == ActionTypes.MYINFO) {
-            if(userStore.storeStatus == storeStatus.NORMAL) {
-                setStat();
-            }
-        }
+        //if(userStoreEventType == ActionTypes.MYINFO) {
+        //    if(userStore.storeStatus == storeStatus.NORMAL) {
+        //        setStat();
+        //    }
+        //}
     }
 
     void OnEnable() {
@@ -140,7 +141,9 @@ public class BicycleViewController : MonoBehaviour {
         }
 
         else {
-            itemInitAct();
+            //itemInitAct();
+            makeList();
+            setStat();
             gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
         }
 
@@ -548,67 +551,56 @@ public class BicycleViewController : MonoBehaviour {
 
     private void setStat() {
         initStat();
-        if (charItemStore.my_characters == null) { return; }
-        character_inventory repChar = null;
-        character_inventory charInfo = userStore.myData.represent_character.character_inventory;
 
-        foreach(character_inventory character in charItemStore.my_characters) {
-            if(character.character == charInfo.character) {
-                repChar = character;
-            }
-        }
-        var status = repChar.status;
-        if(status != null) {
-            int endurance = status.endurance;
-            int speed = status.speed;
-            int recovery = status.regeneration;
-            int strength = status.strength;
+        //아이템 장착, 파트너 장착에 따른 Spec 변화
+        var itemSpects = userStore.itemSpects;
 
-            spects[0].text = strength.ToString();
-            spects[1].text = speed.ToString();
-            spects[2].text = recovery.ToString();
-            spects[3].text = endurance.ToString();
-        }
+        //파트너 장착 효과
+        int char_str = itemSpects.Char_strength;
+        int char_end = itemSpects.Char_endurance;
+        int char_reg = itemSpects.Char_regeneration;
+        int char_speed = itemSpects.Char_speed;
 
-        int incEnd = 0;
-        int incSpeed = 0;
-        int incRecovery = 0;
-        int incStrength = 0;
+        //아이템 장착 효과
+        int item_str = itemSpects.Item_strength;
+        int item_end = itemSpects.Item_endurance;
+        int item_speed = itemSpects.Item_speed;
+        int item_reg = itemSpects.Item_regeneration;
 
-        RespGetItems equipedItem;
-        for(int i=0; i<bicycleItemStore.equipedItemIndex.Length; i++) {
-            equipedItem = bicycleItemStore.equipedItemIndex[i];
-            if (equipedItem != null) {
-                incEnd += equipedItem.item.endurance;
-                incSpeed += equipedItem.item.speed;
-                incRecovery += equipedItem.item.regeneration;
-                incStrength += equipedItem.item.strength;
-            }
-        }
-
-        if(incStrength == 0) {
+        //아이템 장착 효과 UI 반영
+        if(item_str == 0) {
             incSpects[0].gameObject.SetActive(false);
-        } else {
-            incSpects[0].text = "+ " + incStrength;
+        }
+        else {
+            incSpects[0].text = "+ " + item_str.ToString();
         }
 
-        if(incSpeed == 0) {
+        if (item_speed == 0) {
             incSpects[1].gameObject.SetActive(false);
-        } else {
-            incSpects[1].text = "+ " + incSpeed;
+        }
+        else {
+            incSpects[1].text = "+ " + item_speed.ToString();
         }
 
-        if (incRecovery == 0) {
+        if (item_reg == 0) {
             incSpects[2].gameObject.SetActive(false);
-        } else {
-            incSpects[2].text = "+ " + incRecovery;
+        }
+        else {
+            incSpects[2].text = "+ " + item_reg.ToString();
         }
 
-        if (incEnd == 0) {
+        if (item_end == 0) {
             incSpects[3].gameObject.SetActive(false);
-        } else {
-            incSpects[3].text = "+ " + incEnd;
         }
+        else {
+            incSpects[3].text = "+ " + item_end.ToString();
+        }
+
+        //파트너 장착 효과 UI 반영
+        spects[0].text = char_str.ToString();
+        spects[1].text = char_speed.ToString();
+        spects[2].text = char_reg.ToString();
+        spects[3].text = char_end.ToString();
     }
 
     private void setMainStageImage() {
