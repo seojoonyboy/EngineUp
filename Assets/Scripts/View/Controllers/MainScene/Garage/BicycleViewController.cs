@@ -664,15 +664,9 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.is_equiped = true;
 
             sideSprite.sprite = mV.Bicycles_items_slot[sideBarInfo.imageId - 1];
-            //sideSprite.spriteName = sideBarInfo.imageId + "-1";
-            //sideSprite.GetComponent<UIButton>().normalSprite = sideBarInfo.imageId + "-1";
-            //sideSprite.GetComponent<UIButton>().enabled = true;
         }
         else {
             sideSprite.sprite = defaultSideSlotImg;
-            //sideSprite.spriteName = "-1";
-            //sideSprite.GetComponent<UIButton>().normalSprite = "-1";
-            //sideSprite.GetComponent<UIButton>().enabled = false;
         }
 
         sideSlot = sideBar.transform.Find("FrameSlot/Item").gameObject;
@@ -701,16 +695,9 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.is_equiped = true;
 
             sideSprite.sprite = mV.Bicycles_items_slot[sideBarInfo.imageId - 1];
-            //sideSprite.atlas = bicycleAtlas;
-            //sideSprite.spriteName = sideBarInfo.imageId + "-1";
-            //sideSprite.GetComponent<UIButton>().normalSprite = sideBarInfo.imageId + "-1";
-            //sideSprite.GetComponent<UIButton>().enabled = true;
         }
         else {
             sideSprite.sprite = defaultSideSlotImg;
-            //sideSprite.spriteName = "-1";
-            //sideSprite.GetComponent<UIButton>().normalSprite = "-1";
-            //sideSprite.GetComponent<UIButton>().enabled = false;
         }
 
         sideSlot = sideBar.transform.Find("EngineSlot/Item").gameObject;
@@ -739,16 +726,9 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.is_equiped = true;
 
             sideSprite.sprite = mV.Bicycles_items_slot[sideBarInfo.imageId - 1];
-            //sideSprite.atlas = bicycleAtlas;
-            //sideSprite.spriteName = sideBarInfo.imageId + "-1";
-            //sideSprite.GetComponent<UIButton>().normalSprite = sideBarInfo.imageId + "-1";
-            //sideSprite.GetComponent<UIButton>().enabled = true;
         }
         else {
             sideSprite.sprite = defaultSideSlotImg;
-            //sideSprite.spriteName = "-1";
-            //sideSprite.GetComponent<UIButton>().normalSprite = "-1";
-            //sideSprite.GetComponent<UIButton>().enabled = false;
         }
     }
 
