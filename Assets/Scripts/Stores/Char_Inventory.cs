@@ -24,13 +24,10 @@ public class Char_Inventory : AjwStore {
 
     //현재 보유하지 않은 캐릭터 역시 파트너룸에서 보여주기 위한 임시 배열
     public charStat[] allStats;
+    public character_inventory repCharacter;
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
-            case ActionTypes.GARAGE_CHAR_INIT:
-                //representChar = userStore.myCharacters;
-                //getMyChar(action as getCharacters_act);
-                break;
             case ActionTypes.CHAR_OPEN:
                 unlock(action as garage_unlock_char);
                 break;
@@ -42,6 +39,11 @@ public class Char_Inventory : AjwStore {
                 if (itemInitAct._type == equip_act.type.CHAR) {
                     getMyChar(itemInitAct);
                 }
+                break;
+            case ActionTypes.BOX_OPEN:
+                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
+                act._type = equip_act.type.CHAR;
+                dispatcher.dispatch(act);
                 break;
         }
         eventType = action.type;
@@ -69,10 +71,20 @@ public class Char_Inventory : AjwStore {
                 }
 
                 my_characters = callback.character_inventory;
+                int repCharId = userStore.myData.represent_character.character_inventory.character;
 
-                MyInfo myinfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
-                dispatcher.dispatch(myinfoAct);
+                foreach(character_inventory charInven in my_characters) {
+                    if(charInven.character == repCharId) {
+                        var status = charInven.status;
+                        userStore.itemSpects.Char_endurance = status.endurance;
+                        userStore.itemSpects.Char_regeneration = status.regeneration;
+                        userStore.itemSpects.Char_speed = status.speed;
+                        userStore.itemSpects.Char_strength = status.strength;
 
+                        //대표 캐릭터 정보 저장
+                        repCharacter = charInven;
+                    }
+                }
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -103,8 +115,14 @@ public class Char_Inventory : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 Debug.Log("캐릭터 장착 완료");
-                getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
+
+                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
+                act._type = equip_act.type.CHAR;
                 dispatcher.dispatch(act);
+
+                MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+                dispatcher.dispatch(myInfoAct);
+
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
@@ -129,8 +147,11 @@ public class Char_Inventory : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 Debug.Log("캐릭터 해금 완료");
-                getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
+
+                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
+                act._type = equip_act.type.CHAR;
                 dispatcher.dispatch(act);
+
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;

@@ -19,47 +19,9 @@ public class GarageViewController : MonoBehaviour {
         charItemStore = gm.charInvenStore;
     }
 
-    public void onUserStoreListener() {
-        ActionTypes userStoreEventType = userStore.eventType;
+    public void onUserStoreListener() { }
 
-        if (userStoreEventType == ActionTypes.MYINFO) {
-            if(userStore.storeStatus == storeStatus.NORMAL) {
-                character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                charController.setMainChar(charInfo.id, charInfo.lv);
-                //charController.setSideBar(charInfo.id, charInfo.lv);
-                charController.lvLabel.text = charInfo.lv.ToString();
-            }
-        }
-    }
-
-    public void onBicycleStoreListener() {
-        ActionTypes bicycleItemStoreEventType = bicycleItemStore.eventType;
-
-        if (bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_INIT) {
-            if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                bicycleController.makeList();
-            }
-        }
-
-        else if (bicycleItemStoreEventType == ActionTypes.GARAGE_SELL) {
-            if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                bicycleController.makeList();
-            }
-        }
-    }
-
-    public void onCharStoreListener() {
-        ActionTypes charStoreEventType = charItemStore.eventType;
-
-        if(charStoreEventType == ActionTypes.GARAGE_CHAR_INIT) {
-            charController.makeList();
-            Debug.Log("?!");
-        }
-
-        //if(charStoreEventType == ActionTypes.GARAGE_ITEM_EQUIP) {
-        //    Debug.Log("캐릭터 장착");
-        //}
-    }
+    public void onCharStoreListener() { }
 
     public void offPanel() {
         gameObject.SetActive(false);

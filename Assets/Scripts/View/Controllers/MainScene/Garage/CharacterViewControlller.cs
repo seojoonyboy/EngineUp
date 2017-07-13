@@ -108,8 +108,12 @@ public class CharacterViewControlller : MonoBehaviour {
         else {
             gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
 
-            getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
-            gm.gameDispatcher.dispatch(act);
+            makeList();
+            character_inventory charInfo = charInvenStore.repCharacter;
+            setMainChar(charInfo.character, charInfo.lv);
+            setEquipButton(charInfo.character, charInfo.has_character);
+            setSideBar();
+            setStat();
         }
 
         isReverse_tp = true;
@@ -119,11 +123,14 @@ public class CharacterViewControlller : MonoBehaviour {
         if(gameObject.activeSelf) {
             ActionTypes charStoreEventType = charInvenStore.eventType;
 
-            if (charStoreEventType == ActionTypes.GARAGE_CHAR_INIT) {
+            if (charStoreEventType == ActionTypes.ITEM_INIT) {
                 if (charInvenStore.storeStatus == storeStatus.NORMAL) {
-                    character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                    int equpedCharIndex = charInfo.character;
-                    makeList(equpedCharIndex);
+                    makeList();
+                    character_inventory charInfo = charInvenStore.repCharacter;
+                    setMainChar(charInfo.character, charInfo.lv);
+                    setEquipButton(charInfo.character, charInfo.has_character);
+                    setSideBar();
+                    setStat();
                 }
             }
         }
@@ -131,31 +138,7 @@ public class CharacterViewControlller : MonoBehaviour {
 
     public void onUserListener() {
         ActionTypes userStoreEventType = userStore.eventType;
-        if(gameObject.activeSelf) {
-            if (userStoreEventType == ActionTypes.MYINFO) {
-                if (userStore.storeStatus == storeStatus.NORMAL) {
-                    character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-                    setMainChar(charInfo.character, charInfo.lv);
-                    setSideBar();
-                    foreach (character_inventory character in charInvenStore.my_characters) {
-                        if (character.character == charInfo.character) {
-                            setStat(character);
-                        }
-                    }
-
-                    if (charInvenStore.all_characters.ContainsKey(charInfo.character).Equals(true)) {
-                        all_characters tmp = charInvenStore.all_characters[charInfo.character];
-                        setFriendlySlider(charInfo.lv, tmp.lvup_exps, charInfo.exp);
-                        setSideBarName(tmp.name);
-                        charName.text = tmp.name;
-                    }
-
-                    equipButton.SetActive(true);
-                    equipButton.transform.Find("Check").gameObject.SetActive(true);
-                    lvLabel.text = "친밀도 Lv " + charInfo.lv.ToString();
-                }
-            }
-        }
+        
     }
 
     //내 캐릭터중 하나 선택시
@@ -310,63 +293,53 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     //캐릭터 근력, 지구력, 스피드, 회복력 정보
-    public void setStat(character_inventory character) {
+    public void setStat() {
         initStat();
-        charStat stat = character.status;
+        var spects = userStore.itemSpects;
         
-        int strength = stat.strength;
-        int speed = stat.speed;
-        int endurance = stat.endurance;
-        int recovery = stat.regeneration;
+        int strength = spects.Char_strength;
+        int speed = spects.Char_speed;
+        int endurance = spects.Char_endurance;
+        int recovery = spects.Char_regeneration;
 
         stats[0].text = strength.ToString();
         stats[1].text = endurance.ToString();
         stats[2].text = speed.ToString();
         stats[3].text = recovery.ToString();
+        
+        //아이템 장착 효과
+        int item_str = spects.Item_strength;
+        int item_end = spects.Item_endurance;
+        int item_speed = spects.Item_speed;
+        int item_reg = spects.Item_regeneration;
 
-        BicycleItem_Inventory bS = gm.bicycleInventStore;
-        var euipedItems = bS.equipedItemIndex;
-
-        int itemEnd = 0;
-        int itemSpeed = 0;
-        int itemRecovery = 0;
-        int itemStrength = 0;
-
-        for (int i = 0; i < euipedItems.Length; i++) {
-            if (euipedItems[i] != null) {
-                itemEnd += euipedItems[i].item.endurance;
-                itemSpeed += euipedItems[i].item.speed;
-                itemRecovery += euipedItems[i].item.regeneration;
-                itemStrength += euipedItems[i].item.strength;
-            }
-        }
-
-        if (itemStrength == 0) {
+        //아이템 장착 효과 UI 반영
+        if (item_str == 0) {
             incStats[0].gameObject.SetActive(false);
         }
         else {
-            incStats[0].text = "+ " + itemStrength;
+            incStats[0].text = "+ " + item_str.ToString();
         }
 
-        if (itemEnd == 0) {
+        if (item_end == 0) {
             incStats[1].gameObject.SetActive(false);
         }
         else {
-            incStats[1].text = "+ " + itemEnd;
+            incStats[1].text = "+ " + item_end.ToString();
         }
 
-        if (itemSpeed == 0) {
+        if (item_speed == 0) {
             incStats[2].gameObject.SetActive(false);
         }
         else {
-            incStats[2].text = "+ " + itemSpeed;
+            incStats[2].text = "+ " + item_speed.ToString();
         }
 
-        if (itemRecovery == 0) {
+        if (item_reg == 0) {
             incStats[3].gameObject.SetActive(false);
         }
         else {
-            incStats[3].text = "+ " + itemRecovery;
+            incStats[3].text = "+ " + item_reg.ToString();
         }
     }
 
@@ -396,9 +369,9 @@ public class CharacterViewControlller : MonoBehaviour {
         equipButton.transform.Find("Check").gameObject.SetActive(true);
     }
 
-    public void makeList(int equipedCharIndex = -1) {
+    public void makeList() {
         removeList();
-        int repCharIndex = charInvenStore.representChar.character_inventory.character;
+        int repCharIndex = charInvenStore.repCharacter.character;
 
         //내 캐릭터 리스트 생성
         character_inventory[] myChars = charInvenStore.my_characters;

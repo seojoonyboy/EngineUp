@@ -35,9 +35,6 @@ public class MainViewController : MonoBehaviour {
     }
 
     void Start() {
-        //getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
-        //act._type = equip_act.type.ITEM;
-        //gm.gameDispatcher.dispatch(act);
         item_init initItemAct = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
         initItemAct._type = equip_act.type.ITEM;
         gm.gameDispatcher.dispatch(initItemAct);
@@ -45,6 +42,9 @@ public class MainViewController : MonoBehaviour {
         item_init _act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
         _act._type = equip_act.type.CHAR;
         gm.gameDispatcher.dispatch(_act);
+
+        MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+        gm.gameDispatcher.dispatch(myInfoAct);
 
         //튜토리얼 진행 여부 확인
         int isFirstPlay = PlayerPrefs.GetInt("isFirstPlay");
@@ -69,33 +69,35 @@ public class MainViewController : MonoBehaviour {
     }
 
     public void onBicycleInvenListener() {
-        if(bi.eventType == ActionTypes.GARAGE_ITEM_INIT) {
-            if(bi.storeStatus == storeStatus.NORMAL) {
-                RespGetItems[] items = bi.frameItems.ToArray(typeof(RespGetItems)) as RespGetItems[];
-                foreach (RespGetItems item in items){
-                    if(item.is_equiped == "true") {
-                        UISprite sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
-                        sprite.atlas = bicycleAtlas;
-                        sprite.spriteName = item.item.id.ToString();
-                    }
+        if(bi.eventType == ActionTypes.ITEM_INIT) {
+            if (bi.storeStatus == storeStatus.NORMAL) {
+                UISprite sprite = null;
+
+                sprite = bicycle.transform.Find("Wheel").GetComponent<UISprite>();
+                sprite.atlas = bicycleAtlas;
+                if (bi.equipedItemIndex[0] != null) {
+                    sprite.spriteName = bi.equipedItemIndex[0].item.id.ToString();
+                }
+                else {
+                    sprite.spriteName = "6";
                 }
 
-                items = bi.engineItems.ToArray(typeof(RespGetItems)) as RespGetItems[];
-                foreach (RespGetItems item in items) {
-                    if (item.is_equiped == "true") {
-                        UISprite sprite = bicycle.transform.Find("Engine").GetComponent<UISprite>();
-                        sprite.atlas = bicycleAtlas;
-                        sprite.spriteName = item.item.id.ToString();
-                    }
+                sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
+                sprite.atlas = bicycleAtlas;
+                if (bi.equipedItemIndex[1] != null) {
+                    sprite.spriteName = bi.equipedItemIndex[1].item.id.ToString();
+                }
+                else {
+                    sprite.spriteName = "3";
                 }
 
-                items = bi.wheelItems.ToArray(typeof(RespGetItems)) as RespGetItems[];
-                foreach (RespGetItems item in items) {
-                    if (item.is_equiped == "true") {
-                        UISprite sprite = bicycle.transform.Find("Wheel").GetComponent<UISprite>();
-                        sprite.atlas = bicycleAtlas;
-                        sprite.spriteName = item.item.id.ToString();
-                    }
+                sprite = bicycle.transform.Find("Engine").GetComponent<UISprite>();
+                sprite.atlas = bicycleAtlas;
+                if (bi.equipedItemIndex[2] != null) {
+                    sprite.spriteName = bi.equipedItemIndex[2].item.id.ToString();
+                }
+                else {
+                    sprite.spriteName = "9";
                 }
             }
         }

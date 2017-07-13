@@ -206,7 +206,6 @@ public class User : AjwStore {
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 message = "User 정보가 없습니다. 회원가입으로 넘어갑니다.";
-                Debug.Log(act.response.data);
                 _emitChange();
                 break;
         }
@@ -235,7 +234,6 @@ public class User : AjwStore {
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 message = "캐릭터 정보를 불러오는데 문제가 발생하였습니다.";
-                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
         }
@@ -295,7 +293,6 @@ public class User : AjwStore {
                 storeStatus = storeStatus.ERROR;
 
                 message = "캐릭터 정보를 불러오는데 문제가 발생하였습니다.";
-                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
         }

@@ -32,12 +32,6 @@ public class BicycleItem_Inventory : AjwStore {
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
-            case ActionTypes.GARAGE_ITEM_INIT:
-                //getItems_act getItemsAct = action as getItems_act;
-                //if(getItemsAct._type == equip_act.type.ITEM) {
-                //    getItems(action as getItems_act);
-                //}
-                break;
             case ActionTypes.GARAGE_ITEM_EQUIP:
                 equip(action as equip_act);
                 break;
@@ -56,6 +50,15 @@ public class BicycleItem_Inventory : AjwStore {
                     getItems(itemInitAct);
                 }
                 break;
+            case ActionTypes.GARAGE_ITEM_SORT:
+                itemSort();
+                _emitChange();
+                break;
+            case ActionTypes.BOX_OPEN:
+                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
+                act._type = equip_act.type.ITEM;
+                dispatcher.dispatch(act);
+                break;
         }
         eventType = action.type;
     }
@@ -73,7 +76,7 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                Debug.Log(payload.response.data);
+                Debug.Log("아이템 목록 가져오기 : " + payload.response.data);
                 message = "아이템을 성공적으로 불러왔습니다.";
                 allItems = JsonHelper.getJsonArray<RespGetItems>(payload.response.data);
 
@@ -86,6 +89,7 @@ public class BicycleItem_Inventory : AjwStore {
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 message = "아이템 목록을 불러오는 과정에서 문제가 발생하였습니다.";
+                Debug.Log("아이템 목록 가져오기 : " + payload.response.data);
                 _emitChange();
                 break;
         }
@@ -237,15 +241,13 @@ public class BicycleItem_Inventory : AjwStore {
                     Debug.Log("UNLock ID :" + payload.id);
                 }
 
-                
-
                 WWWForm form = new WWWForm();
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
 
-                getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
                 act._type = equip_act.type.ITEM;
                 dispatcher.dispatch(act);
 
@@ -285,7 +287,7 @@ public class BicycleItem_Inventory : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 Debug.Log("아이템 판매 완료");
 
-                getItems_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
                 act._type = equip_act.type.ITEM;
                 dispatcher.dispatch(act);
 

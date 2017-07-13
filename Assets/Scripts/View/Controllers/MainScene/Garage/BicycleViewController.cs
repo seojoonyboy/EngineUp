@@ -80,6 +80,13 @@ public class BicycleViewController : MonoBehaviour {
                     setStat();
                 }
             }
+
+            if(bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
+                if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+                    makeList();
+                    //Debug.Log("아이템 정렬");
+                }
+            }
         }
     }
 
@@ -250,6 +257,10 @@ public class BicycleViewController : MonoBehaviour {
     //아이템 상세보기 Modal
     public void onDetailModal() {
         detailModal.SetActive(true);
+
+        sellList.Clear();
+        sellList.Add(selectedItem.GetComponent<Info>());
+
         isSingleSellOrLock = true;
 
         GameObject modal = detailModal.transform.Find("InnerModal").gameObject;
@@ -790,6 +801,7 @@ public class BicycleViewController : MonoBehaviour {
         foreach (Info info in sellList) {
             idLists.Add(info.id);
             gears += info.gear;
+            Debug.Log(info.id);
         }
         act.lists = idLists;
         gm.gameDispatcher.dispatch(act);
@@ -838,16 +850,13 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     private void itemInitAct() {
-        getItems_act bicycleInfo = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_INIT) as getItems_act;
+        item_init bicycleInfo = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
         bicycleInfo._type = equip_act.type.ITEM;
         gm.gameDispatcher.dispatch(bicycleInfo);
 
-        getCharacters_act act = ActionCreator.createAction(ActionTypes.GARAGE_CHAR_INIT) as getCharacters_act;
-        gm.gameDispatcher.dispatch(act);
-
-        int index = PlayerPrefs.GetInt("Filter");
+        //int index = PlayerPrefs.GetInt("Filter");
         //Debug.Log("Item Init");
-        filterSelected(index);
+        //filterSelected(index);
     }
 
     public void onFilterButton(GameObject obj) {
