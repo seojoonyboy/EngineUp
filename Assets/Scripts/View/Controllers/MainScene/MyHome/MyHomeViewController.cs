@@ -9,34 +9,20 @@ public class MyHomeViewController : MonoBehaviour {
 
     public GameObject blockingCollPanel;
     private TweenManager tm;
-
-    private UISprite panel;
-    private float color;
-
     private bool
         isReverse_tp;
 
     void Awake() {
-        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+        tP = GetComponent<TweenPosition>();
         tm = GetComponent<TweenManager>();
         sm = SoundManager.Instance;
-
-        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
-        color = panel.alpha;
-
-        panel.alpha = 0;
     }
 
-    public void onPanel() {
-        panel.alpha = color;
+    void OnEnable() {
         tweenPos();
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
-    }
-
-    private void offPanel() {
-        panel.alpha = 0f;
     }
 
     public void tweenPos() {
@@ -67,7 +53,7 @@ public class MyHomeViewController : MonoBehaviour {
         blockingCollPanel.SetActive(false);
 
         if(isReverse_tp) {
-            offPanel();
+            gameObject.SetActive(false);
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         else {

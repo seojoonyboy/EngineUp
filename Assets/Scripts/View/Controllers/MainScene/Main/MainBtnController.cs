@@ -41,7 +41,7 @@ public class MainBtnController : MonoBehaviour {
 
         switch (type) {
             case MainButtonEnum.Type.MYHOME:
-                panels[0].GetComponent<MyHomeViewController>().onPanel();
+                panels[0].SetActive(true);
                 break;
             case MainButtonEnum.Type.COMMUNITY:
                 notifyModal.SetActive(true);
