@@ -7,7 +7,7 @@ public class StatViewController : MonoBehaviour {
         rP_outline,
         rP_InnerBg;
 
-    public UILabel 
+    public Text 
         nickNameLabel,
         mainLvLabel,
         mainGearLabel;
@@ -25,11 +25,11 @@ public class StatViewController : MonoBehaviour {
         profiles;
 
     public Image rankIcon;
-    public UI2DSprite mainRankIcon;
+    public Image mainRankIcon;
 
     private GameManager gm;
     
-    public UISlider mainSlider;
+    public Slider mainSlider;
     public int mainSliderOffset = 100;
 
     public GameObject 
@@ -129,14 +129,14 @@ public class StatViewController : MonoBehaviour {
     public void onUserListener() {
         int rank = userStore.myData.status.rank;
         int iconRank = (int)Mathf.Ceil((float)rank / 5);
-        mainRankIcon.sprite2D = mainViewController.ranks[iconRank - 1];
+        mainRankIcon.sprite = mainViewController.ranks[iconRank - 1];
 
         nickNameLabel.text = userStore.nickName;
 
         if (userStore.eventType == ActionTypes.MYINFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
                 initialize();
-                mainLvLabel.text = "RANK " + rank.ToString();
+                mainLvLabel.text = "랭크 " + rank.ToString();
                 mainGearLabel.text = userStore.myData.gears.ToString();
                 int exp = userStore.myData.status.exp;
                 //레벨업 환산 후 남은 경험치
@@ -145,7 +145,7 @@ public class StatViewController : MonoBehaviour {
                 //slider 최댓값 100 기준
                 float sliderVal = extraExp / mainSliderOffset;
                 mainSlider.value = sliderVal;
-                mainSlider.transform.Find("Val").GetComponent<UILabel>().text = extraExp + " / " + mainSliderOffset + " Km";
+                mainSlider.transform.parent.Find("Exp").GetComponent<Text>().text = extraExp + " / " + mainSliderOffset + " Km";
             }
         }
 

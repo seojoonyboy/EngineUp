@@ -48,7 +48,7 @@ public class MainBtnController : MonoBehaviour {
                 sm.playEffectSound(1);
                 break;
             case MainButtonEnum.Type.RIDING:
-                panels[2].GetComponent<Riding_VC>().onPanel();
+                panels[2].SetActive(true);
                 sm.playEffectSound(0);
                 break;
             case MainButtonEnum.Type.BOX:

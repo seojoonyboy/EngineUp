@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 [AddComponentMenu("NGUI/Tween/Slider")]
 public class TweenSlider : UITweener {
@@ -6,7 +7,7 @@ public class TweenSlider : UITweener {
     public float to = 0.0f;
 
     protected override void OnUpdate(float factor, bool isFinished) {
-        gameObject.GetComponent<UISlider>().value = from * (1f - factor) + to * factor;
+        GetComponent<Slider>().value = from * (1f - factor) + to * factor;
     }
 
     static public TweenSlider Begin(GameObject go, float duration, float sliderVal) {

@@ -4,6 +4,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Riding_VC : MonoBehaviour {
     public TutotrialManager tutManager;
@@ -27,8 +28,7 @@ public class Riding_VC : MonoBehaviour {
     private GameManager gameManager;
     private SoundManager sm;
 
-    public UILabel
-        currSpeedLabel,
+    public Text
         avgSpeedLabel,
         distLabel,
         maxLabel,
@@ -40,64 +40,55 @@ public class Riding_VC : MonoBehaviour {
     public Riding ridingStore;
     public User userStore;
 
-    public UISlider slider;
+    public Slider slider;
     public int sliderMaxValue;
 
     private int boxNum = 0;
 
     private TweenPosition tP;
     private bool
-        isReverse_tp,
+        isReverse_tp = false,
         isTweening = false;
-
-    public UISprite 
-        startPanelSprite,
-        ridingPanelSprite,
-        start_buttonCon_sprite,
-        start_animCon_sprite;
-
-    private float startPanelColor, ridingPanelColor;
-
     void Start() {
         gameManager = GameManager.Instance;
         sm = SoundManager.Instance;
     }
 
     void Awake() {
-        tP = StartPanel.transform.Find("Background").GetComponent<TweenPosition>();
-        
-        startPanelColor = startPanelSprite.alpha;
-        ridingPanelColor = ridingPanelSprite.alpha;
-        //라이딩 시작화면, 라이딩 화면 비활성화
-        startPanelSprite.alpha = 0;
-        ridingPanelSprite.alpha = 0;
-        start_animCon_sprite.alpha = 0;
+        tP = StartPanel.GetComponent<TweenPosition>();
     }
 
-    //메인화면에서 라이딩 버튼 클릭시
-    public void onPanel() {
-        //시작 화면 활성화
-        ridingStart_questionLabel.text = "라이딩을 시작할까요?";
-        startPanelSprite.alpha = startPanelColor;
-        start_buttonCon_sprite.alpha = startPanelColor;
+    void OnEnable() {
         tweenPos();
+    }
 
+    void OnDisable() {
+        reset();
+    }
+
+    private void reset() {
+        StartPanel.SetActive(true);
+        ridingPanel.SetActive(false);
+
+        isPausePressed = false;
+        pauseModal.SetActive(isPausePressed);
+
+        beforeStartModal_ButtonContainer.SetActive(true);
+        beforeStartModal_AnimContainer.SetActive(false);
+
+        tP.from = new Vector3(0, -1920, 0);
+        tP.to = Vector3.zero;
+        
         avgSpeedLabel.text = "0";
         distLabel.text = "0";
         maxLabel.text = "0";
         uphillDistanceLabel.text = "0";
         
-        blockingCollPanel.SetActive(true);
-        isReverse_tp = false;
-    }
+        ridingStart_questionLabel.text = "라이딩을 시작할까요?";
 
-    private void offPanel() {
-        startPanelSprite.alpha = 0;
-
-        isPausePressed = false;
-        pauseModal.SetActive(isPausePressed);
-        blockingCollPanel.SetActive(false);
         isReverse_tp = false;
+
+        resetToggle();
     }
 
     public void tweenPos() {
@@ -111,8 +102,6 @@ public class Riding_VC : MonoBehaviour {
             tP.PlayForward();
         }
         else {
-            sm.playEffectSound(0);
-
             //swap
             Vector3 tmp;
             tmp = tP.to;
@@ -129,19 +118,22 @@ public class Riding_VC : MonoBehaviour {
         blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
-            offPanel();
+            gameObject.SetActive(false);
+            isReverse_tp = false;
         }
-        isReverse_tp = true;
+        else {
+            isReverse_tp = true;
+        }
     }
 
     //라이딩 시작 버튼 클릭시
     public void onRidingStartButton() {
         sm.playEffectSound(0);
 
-        //start_buttonCon_sprite.alpha = 0;
         ridingStart_questionLabel.text = "라이딩을 시작합니다.";
-        start_animCon_sprite.alpha = startPanelColor;
-        start_animCon_sprite.GetComponent<RidingStartAnimController>().startAnim();
+        beforeStartModal_ButtonContainer.SetActive(false);
+        beforeStartModal_AnimContainer.SetActive(true);
+        beforeStartModal_AnimContainer.GetComponent<RidingStartAnimController>().startAnim();
 
         //초기 위칫값을 지정한다. (받은 값들의 평균)
         gpsReceiver = Instantiate(gpsPref);
@@ -153,7 +145,7 @@ public class Riding_VC : MonoBehaviour {
     //라이딩 종료 버튼 눌렀을 때
     //모달 활성화
     public void onRidingEndButton() {
-        sm.playEffectSound(0);
+        sm.playEffectSound(1);
 
         exitModal.SetActive(true);
         exitModal.transform.Find("Modal/Description").GetComponent<UILabel>().text = "지금 종료하시면 \n총 " + boxNum + "개의 상자를 얻을 수 있습니다.";
@@ -186,11 +178,7 @@ public class Riding_VC : MonoBehaviour {
 
     //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
     public void ridingEnd() {
-        offToggleGroup();
-        offPanel();
-
-        ridingPanelSprite.alpha = 0;
-        startPanelSprite.alpha = 0;
+        gameObject.SetActive(false);
 
         exitModal.SetActive(false);
 
@@ -204,9 +192,12 @@ public class Riding_VC : MonoBehaviour {
 
     //종료 모달에서 취소 버튼을 눌렀을 때
     public void onCancelExitButton() {
-        offToggleGroup();
         Time.timeScale = 1;
         exitModal.SetActive(false);
+
+        var toggle = exitBtn.GetComponent<Toggle>();
+        toggle.isOn = false;
+        OnToggle(toggle);
     }
 
     public void stopGPSReceive() {
@@ -215,10 +206,9 @@ public class Riding_VC : MonoBehaviour {
 
     public IEnumerator ridingStart() {
         //라이딩 화면 활성화
-        ridingPanelSprite.alpha = ridingPanelColor;
+        ridingPanel.SetActive(true);
         yield return new WaitForSeconds(1);
-        startPanelSprite.alpha = 0;
-        start_animCon_sprite.alpha = 0;
+        StartPanel.SetActive(false);
 
         Actions act = ActionCreator.createAction(ActionTypes.RIDING_START);
         GameManager.Instance.gameDispatcher.dispatch(act);
@@ -229,6 +219,7 @@ public class Riding_VC : MonoBehaviour {
 
     public void pauseButtonPressed(bool isTutorial = false) {
         sm.playEffectSound(0);
+        pauseModal.SetActive(true);
         //이미 일시정지 버튼을 누른 상태인 경우
         if (isPausePressed) {
             isPausePressed = false;
@@ -265,8 +256,37 @@ public class Riding_VC : MonoBehaviour {
         sliderRefresh(dist);
     }
 
-    void offToggleGroup() {
-        UIToggle toggle = UIToggle.GetActiveToggle(5);
-        toggle.value = false;
+    public void OnToggle(Toggle toggle) {
+        int index = toggle.gameObject.GetComponent<ButtonIndex>().index;
+        GameObject obj = toggle.gameObject;
+
+        obj.transform.Find("OffImg").gameObject.SetActive(!toggle.isOn);
+        obj.transform.Find("OffLabel").gameObject.SetActive(!toggle.isOn);
+        obj.transform.Find("OnImg").gameObject.SetActive(toggle.isOn);
+        obj.transform.Find("OnLabel").gameObject.SetActive(toggle.isOn);
+
+        switch (index) {
+            case 0:
+                exitModal.SetActive(toggle.isOn);
+                break;
+            case 1:
+                pauseButtonPressed();
+                pauseModal.SetActive(toggle.isOn);
+                break;
+        }
+    }
+
+    private void resetToggle() {
+        pauseBtn.GetComponent<Toggle>().isOn = false;
+        pauseBtn.transform.Find("OffImg").gameObject.SetActive(true);
+        pauseBtn.transform.Find("OffLabel").gameObject.SetActive(true);
+        pauseBtn.transform.Find("OnImg").gameObject.SetActive(false);
+        pauseBtn.transform.Find("OnLabel").gameObject.SetActive(false);
+
+        exitBtn.GetComponent<Toggle>().isOn = false;
+        exitBtn.transform.Find("OffImg").gameObject.SetActive(true);
+        exitBtn.transform.Find("OffLabel").gameObject.SetActive(true);
+        exitBtn.transform.Find("OnImg").gameObject.SetActive(false);
+        exitBtn.transform.Find("OnLabel").gameObject.SetActive(false);
     }
 }

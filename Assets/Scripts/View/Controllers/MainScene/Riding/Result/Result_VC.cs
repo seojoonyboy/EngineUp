@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class Result_VC : MonoBehaviour {
-    public UILabel
+    public Text
         totalDist,
         totalTime,
         avgSpeed,
@@ -42,11 +42,11 @@ public class Result_VC : MonoBehaviour {
         confirmBtn,
         recordViewBtn;
 
-    public UISlider 
+    public Slider 
         lvSlider,
         friendlySlider;
 
-    public UILabel
+    public Text
         LvHeader,
         FrHeader,
         LvExp,
@@ -68,37 +68,18 @@ public class Result_VC : MonoBehaviour {
 
     private TweenPosition tP;
 
-    private UISprite panel;
-    private float color;
-
     void Awake() {
         gm = GameManager.Instance;
         sm = SoundManager.Instance;
-
-        UIEventListener.Get(mapViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
-        UIEventListener.Get(confirmBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
-        UIEventListener.Get(recordViewBtn).onPress += new UIEventListener.BoolDelegate(btnListener);
-
-        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
-        color = panel.alpha;
-
-        panel.alpha = 0;
     }
 
     void Start() {
         TextAsset file = (TextAsset)Resources.Load("Exp");
         exps = JsonHelper.getJsonArray<Exp>(file.text);
 
-        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
+        tP = GetComponent<TweenPosition>();
     }
-
-    public void onPanel() {
-        panel.alpha = color;
-    }
-
     void offPanel() {
-        panel.alpha = 0f;
-
         totalDist.text = "0";
         avgSpeed.text = "0";
         maxSpeed.text = "0";
@@ -118,50 +99,12 @@ public class Result_VC : MonoBehaviour {
         RecoIcon.SetActive(true);
 
         tP.ResetToBeginning();
+
+        gameObject.SetActive(false);
     }
 
     public void tPFinished() {
         offPanel();
-    }
-
-    void btnListener(GameObject obj, bool state) {
-        //Debug.Log(state);
-        sm.playEffectSound(0);
-
-        int index = obj.GetComponent<ButtonIndex>().index;
-        if(state) {
-            obj.transform.Find("ActiveImg").gameObject.SetActive(true);
-            obj.transform.Find("DeactiveImg").gameObject.SetActive(false);
-            obj.transform.Find("ActiveLabel").gameObject.SetActive(true);
-            obj.transform.Find("DeactiveLabel").gameObject.SetActive(false);
-        }
-        else {
-            obj.transform.Find("ActiveImg").gameObject.SetActive(false);
-            obj.transform.Find("DeactiveImg").gameObject.SetActive(true);
-            obj.transform.Find("ActiveLabel").gameObject.SetActive(false);
-            obj.transform.Find("DeactiveLabel").gameObject.SetActive(true);
-
-            switch (index) {
-                //지도화면 보기 버튼
-                case 0:
-                    Debug.Log("지도 화면 보기 버튼");
-                    onMapPanel();
-                    mapViewBtn.SetActive(false);
-                    recordViewBtn.SetActive(true);
-                    break;
-                //확인 버튼
-                case 1:
-                    offMapPanel();
-                    tweenPos();
-                    break;
-                //결과화면 보기 버튼
-                case 2:
-                    offMapPanel();
-                    mapViewBtn.SetActive(true);
-                    recordViewBtn.SetActive(false);
-                    break;
-            }
-        }
     }
 
     void zooming() {
@@ -181,8 +124,7 @@ public class Result_VC : MonoBehaviour {
     public void onRidingListener() {
         //서버로 부터 callback으로 받은 필터적용된 위도 경도 값을 이용하여 라인을 그린다.
         if (ridingStore.eventType == ActionTypes.RIDING_END) {
-            panel.alpha = color;
-
+            gameObject.SetActive(true);
             setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance, ridingStore.boxes);
 
             MyInfo infoRefresh = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
@@ -190,12 +132,10 @@ public class Result_VC : MonoBehaviour {
             gm.gameDispatcher.dispatch(infoRefresh);
         }
 
-        if(panel.alpha != 0) {
-            if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
-                if (ridingStore.storeStatus == storeStatus.NORMAL) {
-                    _drawLine();
-                    _drawMarker();
-                }
+        if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
+            if (ridingStore.storeStatus == storeStatus.NORMAL) {
+                //_drawLine();
+                //_drawMarker();
             }
         }
     }
@@ -220,7 +160,7 @@ public class Result_VC : MonoBehaviour {
         float lvSliderOffset = exps[currLv].exp;
         TweenSlider twSlider = lvSlider.GetComponent<TweenSlider>();
 
-        twSlider.GetComponent<UISlider>().value = (float)data.status.exp / lvSliderOffset;
+        twSlider.GetComponent<Slider>().value = (float)data.status.exp / lvSliderOffset;
         //레벨 업
         if (preLv != currLv) {
             twSlider.from = 0;
@@ -248,7 +188,7 @@ public class Result_VC : MonoBehaviour {
             friendlyOffset = maxExps[1];
         }
 
-        twSlider.GetComponent<UISlider>().value = (float)currCharExp / friendlyOffset; 
+        twSlider.GetComponent<Slider>().value = (float)currCharExp / friendlyOffset; 
 
         //레벨업
         if (preCharLv != currCharLv) {
@@ -398,38 +338,74 @@ public class Result_VC : MonoBehaviour {
     }
 
     public void onMapPanel() {
-        map.SetActive(true);
+        //map.SetActive(true);
         mapPanel.SetActive(true);
 
-        preMapScale = map.transform.localScale;
-        map.transform.localScale = new Vector3(2.025f, 1.0f, 2.025f);
-        map.transform.localPosition = new Vector3(-1953f, 380f, -1266f);
-        OnlineMapsControlBase.instance.OnMapZoom += zooming;
+        //preMapScale = map.transform.localScale;
+        //map.transform.localScale = new Vector3(2.025f, 1.0f, 2.025f);
+        //map.transform.localPosition = new Vector3(-1953f, 380f, -1266f);
+        //OnlineMapsControlBase.instance.OnMapZoom += zooming;
 
-        GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
-        act.id = ridingStore.ridingId;
-        act.type = GetRidingRecords.callType.RIDING_RESULT;
-        gm.gameDispatcher.dispatch(act);
+        //GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
+        //act.id = ridingStore.ridingId;
+        //act.type = GetRidingRecords.callType.RIDING_RESULT;
+        //gm.gameDispatcher.dispatch(act);
 
-        foreach(Collider coll in colliders) {
-            coll.enabled = false;
-        }
+        //foreach(Collider coll in colliders) {
+        //    coll.enabled = false;
+        //}
     }
 
     public void offMapPanel() {
-        if(OnlineMaps.instance != null) {
-            OnlineMaps.instance.RemoveAllDrawingElements();
-            OnlineMaps.instance.RemoveAllMarkers();
+        mapPanel.SetActive(false);
 
-            map.SetActive(false);
-            mapPanel.SetActive(false);
+        //if(OnlineMaps.instance != null) {
+        //    OnlineMaps.instance.RemoveAllDrawingElements();
+        //    OnlineMaps.instance.RemoveAllMarkers();
 
-            map.transform.localScale = preMapScale;
+        //    map.SetActive(false);
+        //    mapPanel.SetActive(false);
+
+        //    map.transform.localScale = preMapScale;
+        //}
+
+        //foreach (Collider coll in colliders) {
+        //    coll.enabled = true;
+        //}
+    }
+
+    public void OnButtonPressed(GameObject obj) {
+        obj.transform.Find("OnImg").gameObject.SetActive(true);
+        obj.transform.Find("OffImg").gameObject.SetActive(false);
+        obj.transform.Find("OnLabel").gameObject.SetActive(true);
+        obj.transform.Find("OffLabel").gameObject.SetActive(false);
+    }
+
+    public void OnButtonReleased(GameObject obj) {
+        int index = obj.GetComponent<ButtonIndex>().index;
+
+        switch (index) {
+            case 0:
+                onMapPanel();
+
+                recordViewBtn.SetActive(true);
+                mapViewBtn.SetActive(false);
+                break;
+            case 1:
+                tweenPos();
+                break;
+            case 2:
+                offMapPanel();
+
+                recordViewBtn.SetActive(false);
+                mapViewBtn.SetActive(true);
+                break;
         }
 
-        foreach (Collider coll in colliders) {
-            coll.enabled = true;
-        }
+        obj.transform.Find("OnImg").gameObject.SetActive(false);
+        obj.transform.Find("OffImg").gameObject.SetActive(true);
+        obj.transform.Find("OnLabel").gameObject.SetActive(false);
+        obj.transform.Find("OffLabel").gameObject.SetActive(true);
     }
 }
 
