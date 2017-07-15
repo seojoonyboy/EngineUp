@@ -5,7 +5,6 @@ using System;
 using UnityEngine.UI;
 
 public class HistoryDetailViewController : MonoBehaviour {
-    public BoxCollider[] collider;
     public GameObject map;
     private Vector3 preMapScale;
     public int id;
@@ -13,8 +12,7 @@ public class HistoryDetailViewController : MonoBehaviour {
     private Riding ridingStore;
     private Vector3 preMapPos;
 
-    public GameObject mapHeader;
-    public UILabel
+    public Text
         dist,
         avgSpeed,
         uphill,
@@ -32,37 +30,18 @@ public class HistoryDetailViewController : MonoBehaviour {
         isTweening = false;
 
     public GameObject blockingCollPanel;
-
-    private UISprite panel;
-    private float color;
-
     void Awake() {
         gm = GameManager.Instance;
         ridingStore = gm.ridingStore;
 
-        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
-
-        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
-        color = panel.alpha;
-
-        panel.alpha = 0;
+        tP = GetComponent<TweenPosition>();
     }
 
-    public void onPanel() {
-        panel.alpha = color;
+    void OnEnable() {
         tweenPos();
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
-    }
-
-    private void offPanel() {
-        panel.alpha = 0f;
-        foreach (Collider col in collider) {
-            col.enabled = true;
-        }
-        mapHeader.SetActive(false);
-        tP.ResetToBeginning();
     }
 
     public void tweenPos() {
@@ -92,22 +71,17 @@ public class HistoryDetailViewController : MonoBehaviour {
         blockingCollPanel.SetActive(false);
         //패널 닫기시
         if (isReverse_tp) {
-            offPanel();
+            gameObject.SetActive(false);
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         //패널 활성화시
         else {
             gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
-            foreach (Collider col in collider) {
-                col.enabled = false;
-            }
 
             GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
             act.id = id;
             act.type = GetRidingRecords.callType.HISTORY;
             gm.gameDispatcher.dispatch(act);
-
-            parentController.gameObject.SetActive(false);
         }
 
         isReverse_tp = true;

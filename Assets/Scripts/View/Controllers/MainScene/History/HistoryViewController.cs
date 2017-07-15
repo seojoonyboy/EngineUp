@@ -103,7 +103,6 @@ public class HistoryViewController : MonoBehaviour {
         if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
             if (ridingStore.storeStatus == storeStatus.NORMAL) {
                 if(ridingStore.callRecType == GetRidingRecords.callType.HISTORY) {
-                    subController.mapHeader.SetActive(true);
                     subController.setInfo(ridingStore.ridingDetails);
                     subController.setMap(ridingStore.ridingDetails);
                     subController.setDate(ridingStore.ridingDetails.createDate);
@@ -163,7 +162,7 @@ public class HistoryViewController : MonoBehaviour {
         int index = obj.GetComponent<ButtonIndex>().index;
         subController.id = index;
 
-        subController.onPanel();
+        subController.gameObject.SetActive(true);
     }
 
     private EventDelegate.Parameter MakeParameter(UnityEngine.Object _value, System.Type _type) {
