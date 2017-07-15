@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class HistoryViewController : MonoBehaviour {
     public GameObject 
@@ -9,9 +10,8 @@ public class HistoryViewController : MonoBehaviour {
         innerContainer;
 
     public GameObject[] items;
-    public UIScrollView scrollView;
+    public GameObject scrollView;
 
-    public int containerHeight = 400;
     private GameManager gm;
     public Riding ridingStore;
     public User userStore;
@@ -19,7 +19,6 @@ public class HistoryViewController : MonoBehaviour {
     public HistoryDetailViewController subController;
     public TweenManager tM;
 
-    public GameObject containerFirstTarget;
     private bool isFirstGetRidingData = true;
 
     private GameObject
@@ -31,31 +30,19 @@ public class HistoryViewController : MonoBehaviour {
     private TweenPosition tP;
     private bool isReverse_tp;
 
-    public GameObject blockingCollPanel;
-
-    public UISprite panel;
-    public float color;
-
     void Awake() {
         gm = GameManager.Instance;
-        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
-
-        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
-        color = panel.alpha;
-
-        panel.alpha = 0;
+        tP = GetComponent<TweenPosition>();
     }
 
-    public void onPanel() {
-        panel.alpha = color;
+    void OnEnable() {
         tweenPos();
 
-        blockingCollPanel.SetActive(true);
         isReverse_tp = false;
     }
 
-    public void offPanel() {
-        panel.alpha = 0f;
+    void OnDisable() {
+
     }
 
     public void onBackButton() {
@@ -75,7 +62,7 @@ public class HistoryViewController : MonoBehaviour {
             return;
         }
         tM.isTweening = true;
-        blockingCollPanel.SetActive(true);
+
         if (!isReverse_tp) {
             tP.PlayForward();
         }
@@ -93,9 +80,9 @@ public class HistoryViewController : MonoBehaviour {
 
     public void tpFinished() {
         tM.isTweening = false;
-        blockingCollPanel.SetActive(false);
+
         if (isReverse_tp) {
-            offPanel();
+            gameObject.SetActive(false);
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         else {
@@ -133,40 +120,21 @@ public class HistoryViewController : MonoBehaviour {
             string[] date = tmp[0].Split('-');
             string time = tmp[1];
 
-            //Debug.Log("Date : " + tmp[0]);
-            //Debug.Log("Time : " + tmp[1]);
-            
             if (preDate != tmp[0]) {
                 //Debug.Log("날짜가 다름");
                 //이전과 다른 날짜인 경우
                 //새로운 컨테이너를 생성
+
                 item = Instantiate(container);
-                item.transform.Find("Header/Label").GetComponent<UILabel>().text = date[0] + " . " + date[1] + " . " + date[2];
-                GameObject inner = item.transform.Find("Grid/HistoryInnerContainer").gameObject;
+                item.transform.Find("Header/Label").GetComponent<Text>().text = date[0] + " . " + date[1] + " . " + date[2];
+                GameObject inner = item.transform.Find("HistoryInnerContainer/Container").gameObject;
+
+                item.transform.SetParent(scrollView.transform);
+
+                item.transform.localScale = Vector3.one;
+                item.transform.localPosition = Vector3.zero;
 
                 setInfo(inner, data[i].runningTime, gm.userStore.nickName, data[i].get_boxes, data[i].distance, data[i].id);
-                
-                UIDragScrollView dS = inner.AddComponent<UIDragScrollView>();
-                dS.scrollView = scrollView;
-
-                if (preItem == null) {
-                    UIAnchor anchor = item.AddComponent<UIAnchor>();
-                    anchor.container = containerFirstTarget;
-                    anchor.runOnlyOnce = true;
-                    anchor.side = UIAnchor.Side.Bottom;
-                    anchor.pixelOffset = new Vector2(0, -245.0f);
-                }
-                
-                else {
-                    UIGrid grid = preItem.transform.Find("Grid").GetComponent<UIGrid>();
-                    grid.repositionNow = true;
-                    grid.Reposition();
-                    UIAnchor anchor = item.AddComponent<UIAnchor>();
-                    anchor.runOnlyOnce = false;
-                    anchor.container = preItem.transform.Find("Grid").gameObject;
-                    anchor.side = UIAnchor.Side.Bottom;
-                    anchor.pixelOffset = new Vector2(0, -400.0f);
-                }
             }
 
             else {
@@ -175,29 +143,18 @@ public class HistoryViewController : MonoBehaviour {
                 //하위 컨테이너로 붙인다.
                 innerItem = Instantiate(innerContainer);
 
-                innerItem.transform.SetParent(item.transform.Find("Grid").transform);
+                innerItem.transform.SetParent(item.transform);
                 innerItem.transform.localScale = Vector3.one;
                 innerItem.transform.localPosition = Vector3.zero;
 
-                setInfo(innerItem, data[i].runningTime, gm.userStore.nickName, data[i].get_boxes, data[i].distance, data[i].id);
+                GameObject obj = innerItem.transform.Find("Container").gameObject;
+                obj.transform.localScale = Vector3.one;
+                obj.transform.localPosition = Vector3.zero;
 
-                UIDragScrollView dS = innerItem.AddComponent<UIDragScrollView>();
-                dS.scrollView = scrollView;
+                setInfo(obj, data[i].runningTime, gm.userStore.nickName, data[i].get_boxes, data[i].distance, data[i].id);
             }
-
-            item.transform.SetParent(scrollView.transform);
-
-            item.transform.localScale = Vector3.one;
-            item.transform.localPosition = Vector3.zero;
-
             preDate = tmp[0];
             preItem = item;
-        }
-
-        if(item != null) {
-            UIGrid _grid = item.transform.Find("Grid").GetComponent<UIGrid>();
-            _grid.repositionNow = true;
-            _grid.Reposition();
         }
     }
 
@@ -219,17 +176,14 @@ public class HistoryViewController : MonoBehaviour {
 
     private void setInfo(GameObject obj, string runningTime, string nickName, int boxNum, float totalDist, int id) {
         string[] splited = runningTime.Split('.');
-        obj.transform.Find("Time").GetComponent<UILabel>().text = splited[0];
-        obj.transform.Find("Nickname").GetComponent<UILabel>().text = nickName + "님의 라이딩";
-        obj.transform.Find("BoxNum").GetComponent<UILabel>().text = " x" + boxNum;
-        obj.transform.Find("TotalDist").GetComponent<UILabel>().text = (Math.Round(totalDist, 2, MidpointRounding.AwayFromZero)) + " km";
+        obj.transform.Find("Time").GetComponent<Text>().text = splited[0];
+        obj.transform.Find("Nickname").GetComponent<Text>().text = nickName + "님의 라이딩";
+        obj.transform.Find("BoxNum").GetComponent<Text>().text = " x" + boxNum;
+        obj.transform.Find("TotalDist").GetComponent<Text>().text = (Math.Round(totalDist, 2, MidpointRounding.AwayFromZero)) + " km";
 
         obj.AddComponent<ButtonIndex>().index = id;
 
-        EventDelegate eventBtn = new EventDelegate(this, "onDetail");
-        eventBtn.parameters[0] = MakeParameter(obj.gameObject, typeof(GameObject));
-
-        EventDelegate.Add(obj.GetComponent<UIButton>().onClick, eventBtn);
+        obj.GetComponent<Button>().onClick.AddListener(() => onDetail(obj));
     }
 
     //이전 라이딩 기록 추가로 불러옴

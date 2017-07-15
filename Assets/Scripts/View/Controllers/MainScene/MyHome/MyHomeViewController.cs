@@ -7,7 +7,6 @@ public class MyHomeViewController : MonoBehaviour {
     private TweenPosition tP;
     private SoundManager sm;
 
-    public GameObject blockingCollPanel;
     private TweenManager tm;
     private bool
         isReverse_tp;
@@ -20,8 +19,6 @@ public class MyHomeViewController : MonoBehaviour {
 
     void OnEnable() {
         tweenPos();
-
-        blockingCollPanel.SetActive(true);
         isReverse_tp = false;
     }
 
@@ -32,7 +29,7 @@ public class MyHomeViewController : MonoBehaviour {
             return;
         }
         tm.isTweening = true;
-        blockingCollPanel.SetActive(true);
+
         if (!isReverse_tp) {
             tP.PlayForward();
         }
@@ -50,7 +47,6 @@ public class MyHomeViewController : MonoBehaviour {
 
     public void tPFinished() {
         tm.isTweening = false;
-        blockingCollPanel.SetActive(false);
 
         if(isReverse_tp) {
             gameObject.SetActive(false);
@@ -74,7 +70,6 @@ public class MyHomeViewController : MonoBehaviour {
             //서재(기록실)
             case 1:
                 subPanels[2].SetActive(true);
-                subPanels[2].GetComponent<HistoryViewController>().onPanel();
                 break;
             //파트너룸(캐릭터)
             case 2:

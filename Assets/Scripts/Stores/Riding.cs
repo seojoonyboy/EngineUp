@@ -189,6 +189,7 @@ public class Riding : AjwStore{
                 storeStatus = storeStatus.NORMAL;
                 postsCallbackHeader = payload.response.header;
                 ridingRecords = JsonHelper.getJsonArray<RidingRecords>(payload.response.data);
+                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:

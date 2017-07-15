@@ -107,8 +107,7 @@ public class HistoryDetailViewController : MonoBehaviour {
             act.type = GetRidingRecords.callType.HISTORY;
             gm.gameDispatcher.dispatch(act);
 
-            parentController.offPanel();
-            parentController.blockingCollPanel.SetActive(false);
+            parentController.gameObject.SetActive(false);
         }
 
         isReverse_tp = true;
@@ -196,6 +195,6 @@ public class HistoryDetailViewController : MonoBehaviour {
 
         map.SetActive(false);
 
-        parentController.panel.alpha = parentController.color;
+        //parentController.panel.alpha = parentController.color;
     }
 }
