@@ -7,7 +7,8 @@ using UnityEngine.UI;
 public class HistoryViewController : MonoBehaviour {
     public GameObject 
         container,
-        innerContainer;
+        innerContainer,
+        refreshContainer;
 
     public GameObject[] items;
     public GameObject scrollView;
@@ -29,6 +30,8 @@ public class HistoryViewController : MonoBehaviour {
 
     private TweenPosition tP;
     private bool isReverse_tp;
+
+    public GameObject refreshButton;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -113,6 +116,9 @@ public class HistoryViewController : MonoBehaviour {
     }
 
     public void makeList() {
+        if(refreshButton != null) {
+            Destroy(refreshButton);
+        }
         var data = ridingStore.ridingRecords;
         for (int i=0; i<data.Length; i++) {
             string[] tmp = data[i].createDate.Split('T');
@@ -155,6 +161,15 @@ public class HistoryViewController : MonoBehaviour {
             preDate = tmp[0];
             preItem = item;
         }
+
+        GameObject refreshPref = Instantiate(refreshContainer);
+        refreshPref.transform.SetParent(scrollView.transform, false);
+
+        refreshPref.transform.localPosition = Vector3.zero;
+        refreshPref.transform.localScale = Vector3.one;
+
+        refreshPref.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() => getRidingDataSets());
+        refreshButton = refreshPref;
     }
 
     void onDetail(GameObject obj) {

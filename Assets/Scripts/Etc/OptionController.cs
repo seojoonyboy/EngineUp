@@ -9,7 +9,6 @@ public class OptionController : MonoBehaviour {
     public GameObject[] modals;
 
     private TweenPosition tP;
-    public GameObject blockingCollPanel;
     private bool 
         isReverse_tp,
         isTweening = false;
@@ -24,8 +23,6 @@ public class OptionController : MonoBehaviour {
 
     void OnEnable() {
         tweenPos();
-
-        blockingCollPanel.SetActive(true);
         isReverse_tp = false;
     }
 
@@ -52,7 +49,6 @@ public class OptionController : MonoBehaviour {
     }
 
     public void tPFinished() {
-        blockingCollPanel.SetActive(false);
         isTweening = false;
 
         if (isReverse_tp) {
