@@ -57,13 +57,8 @@ public class MainViewController : MonoBehaviour {
     public void onUserListener() {
         if(userStore.eventType == ActionTypes.MYINFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
-                int charIndex = userStore.myData.represent_character.character_inventory.character;
-                int lv = userStore.myData.represent_character.character_inventory.lv;
-                charSprite.atlas = atlasArr[charIndex - 1];
-                charSprite.spriteName = charIndex + "-" + lv + "-main";
-                charSprite.MakePixelPerfect();
-                charSprite.width = (int)(charSprite.width * 0.4);
-                charSprite.height = (int)(charSprite.height * 0.4);
+                //int charIndex = userStore.myData.represent_character.character_inventory.character;
+                //int lv = userStore.myData.represent_character.character_inventory.lv;
             }
         }
     }
@@ -71,34 +66,34 @@ public class MainViewController : MonoBehaviour {
     public void onBicycleInvenListener() {
         if(bi.eventType == ActionTypes.ITEM_INIT) {
             if (bi.storeStatus == storeStatus.NORMAL) {
-                UISprite sprite = null;
+                //UISprite sprite = null;
 
-                sprite = bicycle.transform.Find("Wheel").GetComponent<UISprite>();
-                sprite.atlas = bicycleAtlas;
-                if (bi.equipedItemIndex[0] != null) {
-                    sprite.spriteName = bi.equipedItemIndex[0].item.id.ToString();
-                }
-                else {
-                    sprite.spriteName = "6";
-                }
+                //sprite = bicycle.transform.Find("Wheel").GetComponent<UISprite>();
+                //sprite.atlas = bicycleAtlas;
+                //if (bi.equipedItemIndex[0] != null) {
+                //    sprite.spriteName = bi.equipedItemIndex[0].item.id.ToString();
+                //}
+                //else {
+                //    sprite.spriteName = "6";
+                //}
 
-                sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
-                sprite.atlas = bicycleAtlas;
-                if (bi.equipedItemIndex[1] != null) {
-                    sprite.spriteName = bi.equipedItemIndex[1].item.id.ToString();
-                }
-                else {
-                    sprite.spriteName = "3";
-                }
+                //sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
+                //sprite.atlas = bicycleAtlas;
+                //if (bi.equipedItemIndex[1] != null) {
+                //    sprite.spriteName = bi.equipedItemIndex[1].item.id.ToString();
+                //}
+                //else {
+                //    sprite.spriteName = "3";
+                //}
 
-                sprite = bicycle.transform.Find("Engine").GetComponent<UISprite>();
-                sprite.atlas = bicycleAtlas;
-                if (bi.equipedItemIndex[2] != null) {
-                    sprite.spriteName = bi.equipedItemIndex[2].item.id.ToString();
-                }
-                else {
-                    sprite.spriteName = "9";
-                }
+                //sprite = bicycle.transform.Find("Engine").GetComponent<UISprite>();
+                //sprite.atlas = bicycleAtlas;
+                //if (bi.equipedItemIndex[2] != null) {
+                //    sprite.spriteName = bi.equipedItemIndex[2].item.id.ToString();
+                //}
+                //else {
+                //    sprite.spriteName = "9";
+                //}
             }
         }
     }

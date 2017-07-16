@@ -41,6 +41,7 @@ public class Box_Inventory : AjwStore {
                     strBuilder.Append(networkManager.baseUrl)
                     .Append("inventory/open_box/10");
                 }
+                Debug.Log(strBuilder.ToString());
                 networkManager.request("POST", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:

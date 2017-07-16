@@ -52,7 +52,7 @@ public class MainBtnController : MonoBehaviour {
                 sm.playEffectSound(0);
                 break;
             case MainButtonEnum.Type.BOX:
-                panels[3].GetComponent<BoxViewController>().onPanel();
+                panels[3].SetActive(true);
                 sm.playEffectSound(0);
                 break;
             case MainButtonEnum.Type.STORE:
@@ -60,7 +60,7 @@ public class MainBtnController : MonoBehaviour {
                 sm.playEffectSound(1);
                 break;
             case MainButtonEnum.Type.OPTION:
-                panels[5].GetComponent<OptionController>().onPanel();
+                panels[5].SetActive(true);
                 sm.playEffectSound(0);
                 break;
             case MainButtonEnum.Type.MYINFO:

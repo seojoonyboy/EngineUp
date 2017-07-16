@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Facebook.Unity;
-
+using UnityEngine.UI;
 public class OptionController : MonoBehaviour {
     GameManager gm;
     SoundManager sm;
@@ -15,32 +14,19 @@ public class OptionController : MonoBehaviour {
         isReverse_tp,
         isTweening = false;
 
-    public UISprite panel;
-    public float color;
-
     void Awake() {
         gm = GameManager.Instance;
         sm = SoundManager.Instance;
         ridingStore = gm.ridingStore;
 
-        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
-
-        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
-        color = panel.alpha;
-
-        panel.alpha = 0;
+        tP = GetComponent<TweenPosition>();
     }
 
-    public void onPanel() {
-        panel.alpha = color;
+    void OnEnable() {
         tweenPos();
 
         blockingCollPanel.SetActive(true);
         isReverse_tp = false;
-    }
-
-    void offPanel() {
-        panel.alpha = 0f;
     }
 
     public void tweenPos() {
@@ -70,7 +56,7 @@ public class OptionController : MonoBehaviour {
         isTweening = false;
 
         if (isReverse_tp) {
-            offPanel();
+            gameObject.SetActive(false);
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
         else {

@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BoxViewController : MonoBehaviour {
-    public UILabel 
+    public Text 
         numOfBoxLabel,
         singleModalBoxNum,
         multiModalBoxNum;
@@ -12,19 +13,16 @@ public class BoxViewController : MonoBehaviour {
     private Box_Inventory boxStore;
     private TweenPosition tP;
 
+    public Sprite defaultSlotImg;
+
     public User userStore;
 
     public GameObject 
-        loadingModal,
         notifyModal,
-        boxOpenModal,
-        singleOpenButton,
-        multiOpenButton;
+        singleOpenModal,
+        multiOpenModal;
 
-    public GameObject 
-        _openEffect,
-        multiOpenTable,
-        blockingCollPanel;
+    public GameObject _openEffect;
 
     public UIAtlas 
         bicycleAtlas,
@@ -32,31 +30,22 @@ public class BoxViewController : MonoBehaviour {
         uiAtlas;
     private bool isReverse_tp;
 
-    private UISprite panel;
-    private float color;
+    public MainViewController mV;
 
     void Awake() {
         gm = GameManager.Instance;
         boxStore = gm.boxInvenStore;
 
-        tP = gameObject.transform.Find("Background").GetComponent<TweenPosition>();
-
-        panel = gameObject.transform.Find("Background").GetComponent<UISprite>();
-        color = panel.alpha;
-
-        panel.alpha = 0;
+        tP = GetComponent<TweenPosition>();
     }
 
-    public void onPanel() {
-        panel.alpha = color;
+    void OnEnable() {
         tweenPos();
 
-        blockingCollPanel.SetActive(true);
         isReverse_tp = false;
     }
 
-    void offPanel() {
-        panel.alpha = 0f;
+    void OnDisable() {
         tP.ResetToBeginning();
     }
 
@@ -73,24 +62,13 @@ public class BoxViewController : MonoBehaviour {
 
             tP.ResetToBeginning();
             tP.PlayForward();
-
-            GameObject modal = boxOpenModal.transform.Find("SingleModal").gameObject;
-            modal.SetActive(false);
-
-            modal = boxOpenModal.transform.Find("MultipleModal").gameObject;
-            modal.SetActive(false);
-
-            boxOpenModal.SetActive(false);
-
             StopCoroutine("openEffect");
         }
     }
 
     public void tPFinished() {
-        blockingCollPanel.SetActive(false);
-
         if (isReverse_tp) {
-            offPanel();
+            gameObject.SetActive(false);
             gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
 
@@ -117,58 +95,47 @@ public class BoxViewController : MonoBehaviour {
 
     public void onBoxStoreListener() {
         if (boxStore.eventType == ActionTypes.BOX_OPEN) {
-            if (boxStore.storeStatus == storeStatus.WAITING_REQ) {
-                loadingModal.SetActive(true);
-            }
-
-            else if (boxStore.storeStatus == storeStatus.NORMAL) {
+            if (boxStore.storeStatus == storeStatus.NORMAL) {
                 //박스 열기 정상 동작시
-                loadingModal.SetActive(false);
-                boxOpenModal.SetActive(true);
 
                 var items = boxStore.openedItem;
                 int itemCount = items.Length;
 
                 if(itemCount == 1) {
-                    GameObject modal = boxOpenModal.transform.Find("SingleModal").gameObject;
-                    modal.SetActive(true);
-                    UILabel name = modal.transform.Find("Name").GetComponent<UILabel>();
-                    UISprite sprite = modal.transform.Find("Icon").GetComponent<UISprite>();
+                    singleOpenModal.SetActive(true);
+                    Text name = singleOpenModal.transform.Find("InnerModal/Name").GetComponent<Text>();
+                    Image image = singleOpenModal.transform.Find("InnerModal/Image").GetComponent<Image>();
 
                     var openedItem = boxStore.openedItem;
                     string type = openedItem[0].type;
                     if (type == "item") {
-                        string spriteName = openedItem[0].item.id + "-1";
-                        sprite.atlas = bicycleAtlas;
-                        sprite.spriteName = spriteName;
+                        Debug.Log("Item");
+                        image.sprite = mV.Bicycles_items_slot[openedItem[0].item.id - 1];
                         name.text = openedItem[0].item.name;
                     }
                     else if (type == "character") {
-                        string spriteName = openedItem[0].character.id.ToString();
-                        sprite.atlas = charAtlas;
-                        sprite.spriteName = spriteName;
+                        Debug.Log("CHAR");
+                        image.sprite = mV.characters_busts_sm[openedItem[0].character.id - 1].images[0];
                         name.text = openedItem[0].character.name;
                     }
                 }
                 
                 else {
-                    GameObject modal = boxOpenModal.transform.Find("MultipleModal").gameObject;
-                    modal.SetActive(true);
-                    UITable table = modal.transform.Find("Table").GetComponent<UITable>();
+                    multiOpenModal.SetActive(true);
+                    GameObject table = multiOpenModal.transform.Find("InnerModal/Grid").gameObject;
 
-                    table.repositionNow = true;
-                    table.Reposition();
+                    List<Transform> list = new List<Transform>();
 
-                    List<Transform> list = table.GetChildList();
-
-                    foreach(Transform item in list) {
-                        item.Find("Name").GetComponent<UILabel>().text = "";
-                        UISprite img = item.Find("Image").GetComponent<UISprite>();
-                        img.atlas = uiAtlas;
-                        img.spriteName = "boxOpen_slot_multi";
+                    foreach(Transform tr in table.transform) {
+                        list.Add(tr);
                     }
 
-                    StartCoroutine(openEffect(list, itemCount, items, modal));
+                    foreach (Transform item in list) {
+                        item.Find("Text").GetComponent<Text>().text = "";
+                        item.Find("Image").GetComponent<Image>().sprite = defaultSlotImg;
+                    }
+
+                    StartCoroutine(openEffect(list, itemCount, items, multiOpenModal));
                 }
             }
         }
@@ -178,7 +145,7 @@ public class BoxViewController : MonoBehaviour {
     //박스 열기 Action 이전 Animation 발생시킴
     //Animation 마지막에 open 함수 실행
     public void startAnim(GameObject obj) {
-        offBoxOpenModal();
+        offBoxOpenModal(obj);
         int index = obj.GetComponent<ButtonIndex>().index;
         open(index);
     }
@@ -201,11 +168,11 @@ public class BoxViewController : MonoBehaviour {
         if(boxNum >= openNum) {
             act.num = openNum;
             gm.gameDispatcher.dispatch(act);
-            singleOpenButton.GetComponent<UIPlaySound>().Play();
+            //singleOpenButton.GetComponent<UIPlaySound>().Play();
         }
         else {
             onNotifyModal();
-            notifyModal.GetComponent<UIPlaySound>().Play();
+            //notifyModal.GetComponent<UIPlaySound>().Play();
         }
     }
 
@@ -218,41 +185,33 @@ public class BoxViewController : MonoBehaviour {
         notifyModal.SetActive(false);
     }
 
-    public void offBoxOpenModal() {
-        boxOpenModal.transform.Find("MultipleModal").gameObject.SetActive(false);
-        boxOpenModal.transform.Find("SingleModal").gameObject.SetActive(false);
-
-        boxOpenModal.SetActive(false);
+    public void offBoxOpenModal(GameObject obj) {
+        obj.SetActive(false);
     }
 
     IEnumerator openEffect(List<Transform> list, int itemCount, Box_Inventory.boxOpenCallback[] items, GameObject modal) {
         int cnt = 0;
-        modal.transform.Find("Buttons/ConfirmButton").gameObject.GetComponent<UIButton>().enabled = false;
-        modal.transform.Find("Buttons/CancelButton").gameObject.GetComponent<UIButton>().enabled = false;
+        modal.transform.Find("BottonPanel/ConfirmButton").gameObject.GetComponent<Button>().enabled = false;
+        modal.transform.Find("BottonPanel/CancelButton").gameObject.GetComponent<Button>().enabled = false;
         foreach (Transform item in list) {
             if (cnt < itemCount) {
                 //effect
                 GameObject effect = Instantiate(_openEffect);
-                effect.transform.SetParent(item.transform);
-                effect.transform.localPosition = new Vector3(0f, 55f, 0f);
-                effect.transform.localScale = Vector3.one;
+                effect.transform.SetParent(item.transform, false);
+                //effect.transform.localPosition = new Vector3(0f, 55f, 0f);
+                //effect.transform.localScale = Vector3.one;
 
                 //setUI
                 string type = items[cnt].type;
-                UILabel label = item.Find("Name").GetComponent<UILabel>();
-                UISprite sprite = item.Find("Image").GetComponent<UISprite>();
+                Text label = item.Find("Text").GetComponent<Text>();
+                Image sprite = item.Find("Image").GetComponent<Image>();
                 
                 if (type == "item") {
-                    sprite.atlas = bicycleAtlas;
-                    string spriteName = items[cnt].item.id + "-1";
-                    sprite.spriteName = spriteName;
-
+                    sprite.sprite = mV.Bicycles_items_slot[items[cnt].item.id - 1];
                     label.text = items[cnt].item.name;
                 }
                 else if (type == "character") {
-                    sprite.atlas = charAtlas;
-                    string spriteName = items[cnt].character.id.ToString();
-                    sprite.spriteName = spriteName;
+                    sprite.sprite = mV.characters_busts_sm[items[cnt].character.id - 1].images[0];
                     label.text = items[cnt].character.name;
                 }
                 cnt++;
@@ -260,7 +219,7 @@ public class BoxViewController : MonoBehaviour {
 
             yield return new WaitForSeconds(1.0f);
         }
-        modal.transform.Find("Buttons/ConfirmButton").gameObject.GetComponent<UIButton>().enabled = true;
-        modal.transform.Find("Buttons/CancelButton").gameObject.GetComponent<UIButton>().enabled = true;
+        modal.transform.Find("BottonPanel/ConfirmButton").gameObject.GetComponent<Button>().enabled = true;
+        modal.transform.Find("BottonPanel/CancelButton").gameObject.GetComponent<Button>().enabled = true;
     }
 }
