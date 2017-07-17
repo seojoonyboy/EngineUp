@@ -157,7 +157,7 @@ public class Riding : AjwStore{
             break;
         case NetworkAction.statusTypes.FAIL:
             storeStatus = storeStatus.ERROR;
-            Debug.Log(act.response.data);
+            Debug.Log("라이딩 시작 : " + act.response.data);
             break;
         }
     }
@@ -276,7 +276,7 @@ public class Riding : AjwStore{
             if(totalTime != null) {
                 preTime = totalTime;
             }
-                Debug.Log(totalTime);
+            //Debug.Log(totalTime);
             _emitChange();
             break;
         case ActionTypes.RIDING_END:

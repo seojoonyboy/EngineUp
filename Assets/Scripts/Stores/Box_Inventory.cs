@@ -76,7 +76,7 @@ public class Box_Inventory : AjwStore {
         public int id;
         public string name;
         public string desc;
-        //public int grade;
+        public int grade;
         //public int gear;
         //public string parts;
         //public int limit_rank;

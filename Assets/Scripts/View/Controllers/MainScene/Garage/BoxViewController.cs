@@ -10,6 +10,7 @@ public class BoxViewController : MonoBehaviour {
         multiModalBoxNum;
 
     private GameManager gm;
+    private SoundManager sm;
     private Box_Inventory boxStore;
     private TweenPosition tP;
 
@@ -31,9 +32,11 @@ public class BoxViewController : MonoBehaviour {
     private bool isReverse_tp;
 
     public MainViewController mV;
-
+    public SpritesManager spriteManager;
     void Awake() {
         gm = GameManager.Instance;
+        sm = SoundManager.Instance;
+
         boxStore = gm.boxInvenStore;
 
         tP = GetComponent<TweenPosition>();
@@ -102,6 +105,7 @@ public class BoxViewController : MonoBehaviour {
                 int itemCount = items.Length;
 
                 if(itemCount == 1) {
+                    sm.playEffectSound(4);
                     singleOpenModal.SetActive(true);
                     Text name = singleOpenModal.transform.Find("InnerModal/Name").GetComponent<Text>();
                     Image image = singleOpenModal.transform.Find("InnerModal/Image").GetComponent<Image>();
@@ -110,7 +114,13 @@ public class BoxViewController : MonoBehaviour {
                     string type = openedItem[0].type;
                     if (type == "item") {
                         Debug.Log("Item");
-                        image.sprite = mV.Bicycles_items_slot[openedItem[0].item.id - 1];
+                        var tmp = spriteManager.slots_items[openedItem[0].item.id - 1];
+                        if(tmp == null) {
+                            image.sprite = spriteManager.default_slots[openedItem[0].item.grade];
+                        }
+                        else {
+                            image.sprite = spriteManager.slots_items[openedItem[0].item.id - 1];
+                        }
                         name.text = openedItem[0].item.name;
                     }
                     else if (type == "character") {
@@ -200,14 +210,20 @@ public class BoxViewController : MonoBehaviour {
                 effect.transform.SetParent(item.transform, false);
                 //effect.transform.localPosition = new Vector3(0f, 55f, 0f);
                 //effect.transform.localScale = Vector3.one;
-
+                sm.playEffectSound(4);
                 //setUI
                 string type = items[cnt].type;
                 Text label = item.Find("Text").GetComponent<Text>();
                 Image sprite = item.Find("Image").GetComponent<Image>();
                 
                 if (type == "item") {
-                    sprite.sprite = mV.Bicycles_items_slot[items[cnt].item.id - 1];
+                    var tmp = spriteManager.slots_items[items[cnt].item.id - 1];
+                    if (tmp == null) {
+                        sprite.sprite = spriteManager.default_slots[items[cnt].item.grade];
+                    }
+                    else {
+                        sprite.sprite = spriteManager.slots_items[items[cnt].item.id - 1];
+                    }
                     label.text = items[cnt].item.name;
                 }
                 else if (type == "character") {

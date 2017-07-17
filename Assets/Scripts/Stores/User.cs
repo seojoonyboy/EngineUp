@@ -183,6 +183,8 @@ public class User : AjwStore {
                     .Append("signin");
                 loginType = act.login_type;
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act), false);
+
+                Debug.Log(GameManager.Instance.deviceId);
                 break;
             case NetworkAction.statusTypes.SUCCESS:
 

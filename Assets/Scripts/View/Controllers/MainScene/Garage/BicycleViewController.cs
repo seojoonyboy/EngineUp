@@ -15,7 +15,7 @@ public class BicycleViewController : MonoBehaviour {
     public User userStore;
     public ScrollSnapRect[] sR;
     public MainViewController mV;
-
+    public SpritesManager spriteManager;
     //판매 버튼 클릭시
     private bool 
         isSellMode = false,
@@ -311,7 +311,14 @@ public class BicycleViewController : MonoBehaviour {
         modal.transform.Find("LimitLv").GetComponent<Text>().text = "제한 레벨 : " + info.limit_rank;
 
         Image img = modal.transform.Find("Image").GetComponent<Image>();
-        img.sprite = mV.Bicycles_items_slot[info.imageId - 1];
+
+        var tmp = spriteManager.slots_items[info.imageId - 1];
+        if (tmp != null) {
+            img.sprite = spriteManager.slots_items[info.imageId - 1];
+        }
+        else {
+            img.sprite = spriteManager.default_slots[info.grade - 1];
+        }
 
         //현재 장착중인 아이템인 경우
         //모달 내 해제하기 버튼 활성화
@@ -383,6 +390,17 @@ public class BicycleViewController : MonoBehaviour {
         float num = (float)frameItemCnt / pagePerSlotCount;
         int GN = (int)Mathf.Ceil(num);
         int cnt = 0;
+
+        if(GN == 0) {
+            GameObject grid = Instantiate(itemGrid);
+            GameObject _content = sR[0].transform.Find("Content").gameObject;
+
+            grid.transform.SetParent(_content.transform, false);
+            GameObject pageIcon = Instantiate(pagination_icon_pref);
+            pageIcon.name = "Icon";
+
+            pageIcon.transform.SetParent(sR[0].transform.parent.Find("PaginationIcons").transform, false);
+        }
         for(int i = 0; i < GN; i++) {
             GameObject grid = Instantiate(itemGrid);
             GameObject _content = sR[0].transform.Find("Content").gameObject;
@@ -426,7 +444,14 @@ public class BicycleViewController : MonoBehaviour {
                     }
 
                     Image sprite = item.GetComponent<Image>();
-                    sprite.sprite = mV.Bicycles_items_slot[info.imageId - 1];
+                    var tmp = spriteManager.slots_items[info.imageId - 1];
+                    if(tmp != null) {
+                        sprite.sprite = spriteManager.slots_items[info.imageId - 1];
+                    }
+                    else {
+                        sprite.sprite = spriteManager.default_slots[info.grade - 1];
+                    }
+                    
                     item.GetComponent<Button>().onClick.AddListener(() => selected(item));
                     cnt++;
                 }
@@ -480,7 +505,13 @@ public class BicycleViewController : MonoBehaviour {
                     }
 
                     Image sprite = item.GetComponent<Image>();
-                    sprite.sprite = mV.Bicycles_items_slot[info.imageId - 1];
+                    var tmp = spriteManager.slots_items[info.imageId - 1];
+                    if (tmp != null) {
+                        sprite.sprite = spriteManager.slots_items[info.imageId - 1];
+                    }
+                    else {
+                        sprite.sprite = spriteManager.default_slots[info.grade - 1];
+                    }
                     item.GetComponent<Button>().onClick.AddListener(() => selected(item));
 
                     cnt++;
@@ -535,7 +566,13 @@ public class BicycleViewController : MonoBehaviour {
                     }
 
                     Image sprite = item.GetComponent<Image>();
-                    sprite.sprite = mV.Bicycles_items_slot[info.imageId - 1];
+                    var tmp = spriteManager.slots_items[info.imageId - 1];
+                    if (tmp != null) {
+                        sprite.sprite = spriteManager.slots_items[info.imageId - 1];
+                    }
+                    else {
+                        sprite.sprite = spriteManager.default_slots[info.grade - 1];
+                    }
                     item.GetComponent<Button>().onClick.AddListener(() => selected(item));
 
                     cnt++;
@@ -618,21 +655,39 @@ public class BicycleViewController : MonoBehaviour {
         sprite = bicycle.transform.Find("Wheel").GetComponent<Image>();
         if (equipedItem != null) {
             RespItem _item = equipedItem.item;
-            sprite.sprite = mV.Bicycles_items_stage[_item.id - 1];
+            var tmp = spriteManager.stage_items[_item.id - 1];
+            if(tmp == null) {
+                sprite.sprite = mV.Bicycles_items_stage[3];
+            }
+            else {
+                sprite.sprite = spriteManager.stage_items[_item.id - 1];
+            }
         }
 
         equipedItem = bicycleItemStore.equipedItemIndex[1];
         sprite = bicycle.transform.Find("Frame").GetComponent<Image>();
         if (equipedItem != null) {
             RespItem _item = equipedItem.item;
-            sprite.sprite = mV.Bicycles_items_stage[_item.id - 1];
+            var tmp = spriteManager.stage_items[_item.id - 1];
+            if (tmp == null) {
+                sprite.sprite = mV.Bicycles_items_stage[0];
+            }
+            else {
+                sprite.sprite = spriteManager.stage_items[_item.id - 1];
+            }
         }
 
         equipedItem = bicycleItemStore.equipedItemIndex[2];
         sprite = bicycle.transform.Find("Engine").GetComponent<Image>();
         if (equipedItem != null) {
             RespItem _item = equipedItem.item;
-            sprite.sprite = mV.Bicycles_items_stage[_item.id - 1];
+            var tmp = spriteManager.stage_items[_item.id - 1];
+            if (tmp == null) {
+                sprite.sprite = mV.Bicycles_items_stage[6];
+            }
+            else {
+                sprite.sprite = spriteManager.stage_items[_item.id - 1];
+            }
         }
     }
 
@@ -655,12 +710,19 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.speed = _item.speed;
             sideBarInfo.strength = _item.strength;
             sideBarInfo.endurance = _item.endurance;
+            sideBarInfo.grade = _item.grade;
             sideBarInfo.recovery = _item.regeneration;
 
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
-            sideSprite.sprite = mV.Bicycles_items_slot[sideBarInfo.imageId - 1];
+            var tmp = spriteManager.slots_items[sideBarInfo.imageId - 1];
+            if (tmp != null) {
+                sideSprite.sprite = spriteManager.slots_items[sideBarInfo.imageId - 1];
+            }
+            else {
+                sideSprite.sprite = spriteManager.default_slots[sideBarInfo.grade - 1];
+            }
         }
         else {
             sideSprite.sprite = defaultSideSlotImg;
@@ -687,11 +749,17 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.strength = _item.strength;
             sideBarInfo.endurance = _item.endurance;
             sideBarInfo.recovery = _item.regeneration;
-
+            sideBarInfo.grade = _item.grade;
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
-            sideSprite.sprite = mV.Bicycles_items_slot[sideBarInfo.imageId - 1];
+            var tmp = spriteManager.slots_items[sideBarInfo.imageId - 1];
+            if (tmp != null) {
+                sideSprite.sprite = spriteManager.slots_items[sideBarInfo.imageId - 1];
+            }
+            else {
+                sideSprite.sprite = spriteManager.default_slots[sideBarInfo.grade - 1];
+            }
         }
         else {
             sideSprite.sprite = defaultSideSlotImg;
@@ -717,12 +785,19 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.speed = _item.speed;
             sideBarInfo.strength = _item.strength;
             sideBarInfo.endurance = _item.endurance;
+            sideBarInfo.grade = _item.grade;
             sideBarInfo.recovery = _item.regeneration;
 
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
-            sideSprite.sprite = mV.Bicycles_items_slot[sideBarInfo.imageId - 1];
+            var tmp = spriteManager.slots_items[sideBarInfo.imageId - 1];
+            if (tmp != null) {
+                sideSprite.sprite = spriteManager.slots_items[sideBarInfo.imageId - 1];
+            }
+            else {
+                sideSprite.sprite = spriteManager.default_slots[sideBarInfo.grade - 1];
+            }
         }
         else {
             sideSprite.sprite = defaultSideSlotImg;
