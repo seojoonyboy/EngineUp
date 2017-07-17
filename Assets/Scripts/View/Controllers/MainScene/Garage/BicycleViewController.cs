@@ -33,8 +33,7 @@ public class BicycleViewController : MonoBehaviour {
         sellButton,
         lockButton,
         bicycle,
-        itemGrid,
-        blockingCollPanel;
+        itemGrid;
 
     public GameObject 
         sellingModal,
@@ -104,13 +103,11 @@ public class BicycleViewController : MonoBehaviour {
     void OnEnable() {
         tweenPos();
 
-        blockingCollPanel.SetActive(true);
         isReverse_tp = false;
     }
 
     void offPanel() {
         gameObject.SetActive(false);
-        blockingCollPanel.SetActive(false);
         selectedItem = null;
         detailModal.SetActive(false);
 

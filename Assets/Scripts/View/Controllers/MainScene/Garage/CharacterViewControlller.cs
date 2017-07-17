@@ -31,8 +31,7 @@ public class CharacterViewControlller : MonoBehaviour {
         itemGrid,
         sideBarGrid,
         pageIconGrid,
-        descModal,
-        blockingCollPanel;
+        descModal;
 
     public Text[] 
         stats,
@@ -57,14 +56,12 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     void OnEnable() {
-        blockingCollPanel.SetActive(true);
         tweenPos();
         
         isReverse_tp = false;
     }
 
     void offPanel() {
-        blockingCollPanel.SetActive(false);
         gameObject.SetActive(false);
         selectedChar = null;
 
