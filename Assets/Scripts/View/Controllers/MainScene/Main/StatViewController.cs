@@ -53,8 +53,6 @@ public class StatViewController : MonoBehaviour {
     public bool InputFieldActive = false;
     public RectTransform childRectTransform;
 
-    public Collider[] colliders;
-
     SoundManager sm;
     void Awake() {
         gm = GameManager.Instance;
@@ -66,18 +64,10 @@ public class StatViewController : MonoBehaviour {
     void OnEnable() {
         tweenPos();
         isReverse_tp = false;
-
-        foreach(Collider coll in colliders) {
-            coll.enabled = false;
-        }
     }
 
     public void offPanel() {
         gameObject.SetActive(false);
-
-        foreach (Collider coll in colliders) {
-            coll.enabled = true;
-        }
     }
 
     void Update() {

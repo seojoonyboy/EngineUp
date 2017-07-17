@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MainViewController : MonoBehaviour {
+    public GameObject map;
     public UISprite charSprite;
     private GameManager gm;
     private User userStore;

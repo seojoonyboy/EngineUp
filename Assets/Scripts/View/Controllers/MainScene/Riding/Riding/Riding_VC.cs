@@ -17,8 +17,7 @@ public class Riding_VC : MonoBehaviour {
         beforeStartModal_AnimContainer,
         ridingPanel,
         pauseBtn,
-        exitBtn,
-        blockingCollPanel;
+        exitBtn;
 
     private GameObject gpsReceiver;
 
@@ -96,7 +95,6 @@ public class Riding_VC : MonoBehaviour {
             return;
         }
         isTweening = true;
-        blockingCollPanel.SetActive(true);
         if (!isReverse_tp) {
             tP.ResetToBeginning();
             tP.PlayForward();
@@ -115,7 +113,6 @@ public class Riding_VC : MonoBehaviour {
 
     public void tPFinished() {
         isTweening = false;
-        blockingCollPanel.SetActive(false);
 
         if (isReverse_tp) {
             gameObject.SetActive(false);

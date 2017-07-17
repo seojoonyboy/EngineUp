@@ -5,12 +5,15 @@ using System;
 using UnityEngine.UI;
 
 public class HistoryDetailViewController : MonoBehaviour {
-    public GameObject map;
-    private Vector3 preMapScale;
+    public GameObject 
+        map,
+        mapHeader;
+    private Vector3 
+        preMapScale,
+        preMapPos;
     public int id;
     private GameManager gm;
     private Riding ridingStore;
-    private Vector3 preMapPos;
 
     public Text
         dist,
@@ -29,7 +32,7 @@ public class HistoryDetailViewController : MonoBehaviour {
         isReverse_tp,
         isTweening = false;
 
-    public GameObject blockingCollPanel;
+    public CanvasGroup canvas;
     void Awake() {
         gm = GameManager.Instance;
         ridingStore = gm.ridingStore;
@@ -39,8 +42,6 @@ public class HistoryDetailViewController : MonoBehaviour {
 
     void OnEnable() {
         tweenPos();
-
-        blockingCollPanel.SetActive(true);
         isReverse_tp = false;
     }
 
@@ -49,7 +50,6 @@ public class HistoryDetailViewController : MonoBehaviour {
             return;
         }
         isTweening = true;
-        blockingCollPanel.SetActive(true);
         if (!isReverse_tp) {
             tP.PlayForward();
         }
@@ -68,7 +68,6 @@ public class HistoryDetailViewController : MonoBehaviour {
 
     public void tpFinished() {
         isTweening = false;
-        blockingCollPanel.SetActive(false);
         //패널 닫기시
         if (isReverse_tp) {
             gameObject.SetActive(false);
@@ -88,12 +87,22 @@ public class HistoryDetailViewController : MonoBehaviour {
     }
 
     public void setMap(RidingDetails data) {
+        canvas.blocksRaycasts = false;
+
+        mapHeader.SetActive(true);
         map.SetActive(true);
-        OnlineMaps _map = map.GetComponent<OnlineMaps>();
+
         preMapScale = map.transform.localScale;
-        map.transform.localScale = new Vector3(1.02f, 1.0f, 1.02f);
         preMapPos = map.transform.localPosition;
-        map.transform.localPosition = new Vector3(-1953f, 380f, -1179f);
+
+        map.transform.localScale = new Vector3(1f, 1f, 0.8f);
+        map.transform.localPosition = new Vector3(0.08f, 0, 1793.24f);
+
+        OnlineMaps _map = OnlineMaps.instance;
+        OnlineMapsControlBase.instance.OnMapZoom += zooming;
+
+        canvas.blocksRaycasts = false;
+
         innerRidingDetails[] coords = data.coords;
         if(coords.Length == 0) {
             _map.position = new Vector2(127.74437f, 37.87998f);
@@ -124,8 +133,6 @@ public class HistoryDetailViewController : MonoBehaviour {
             }
         }
         _map.zoom = 18;
-
-        OnlineMapsControlBase.instance.OnMapZoom += zooming;
     }
 
     public void setInfo(RidingDetails data) {
@@ -169,6 +176,7 @@ public class HistoryDetailViewController : MonoBehaviour {
 
         map.SetActive(false);
 
-        //parentController.panel.alpha = parentController.color;
+        canvas.blocksRaycasts = true;
+        mapHeader.SetActive(false);
     }
 }

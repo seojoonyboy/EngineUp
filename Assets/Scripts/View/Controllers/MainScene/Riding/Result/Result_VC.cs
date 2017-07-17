@@ -32,10 +32,10 @@ public class Result_VC : MonoBehaviour {
     OnlineMapsDrawingLine line;
     SoundManager sm;
 
-    public Collider[] colliders;
-
     private GameManager gm;
-    private Vector3 preMapScale;
+    private Vector3 
+        preMapScale,
+        preMapPos;
 
     public GameObject 
         mapViewBtn,
@@ -52,6 +52,8 @@ public class Result_VC : MonoBehaviour {
         LvExp,
         FrExp;
 
+    public CanvasGroup canvas;
+
     private UserData preData;
     private Exp[] exps;
 
@@ -59,12 +61,6 @@ public class Result_VC : MonoBehaviour {
         maxLv = 99,
         maxExp = 99000,
         maxCharLv = 3;
-
-    public GameObject
-        StrIcon,
-        EndIcon,
-        SpeedIcon,
-        RecoIcon;
 
     private TweenPosition tP;
 
@@ -86,17 +82,8 @@ public class Result_VC : MonoBehaviour {
         uphillDistanceLabel.text = "0";
         totalTime.text = null;
 
-        foreach (Collider coll in colliders) {
-            coll.enabled = true;
-        }
-
         mapViewBtn.SetActive(true);
         recordViewBtn.SetActive(false);
-
-        StrIcon.SetActive(true);
-        EndIcon.SetActive(true);
-        SpeedIcon.SetActive(true);
-        RecoIcon.SetActive(true);
 
         tP.ResetToBeginning();
 
@@ -132,10 +119,12 @@ public class Result_VC : MonoBehaviour {
             gm.gameDispatcher.dispatch(infoRefresh);
         }
 
-        if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
-            if (ridingStore.storeStatus == storeStatus.NORMAL) {
-                //_drawLine();
-                //_drawMarker();
+        if(gameObject.activeSelf) {
+            if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
+                if (ridingStore.storeStatus == storeStatus.NORMAL) {
+                    _drawLine();
+                    _drawMarker();
+                }
             }
         }
     }
@@ -215,7 +204,6 @@ public class Result_VC : MonoBehaviour {
         var stat = data.status;
         if(_preStr == stat.strength) {
             incStrength.text = "";
-            StrIcon.SetActive(false);
         }
         else {
             incStrength.text = "+ " + (stat.strength - _preStr);
@@ -224,7 +212,6 @@ public class Result_VC : MonoBehaviour {
 
         if(_preReco == stat.regeneration) {
             incRecovery.text = "";
-            RecoIcon.SetActive(false);
         }
         else {
             incRecovery.text = "+ " + (stat.regeneration - _preReco);
@@ -233,7 +220,6 @@ public class Result_VC : MonoBehaviour {
 
         if(_preSpeed == stat.speed) {
             incSpeed.text = "";
-            SpeedIcon.SetActive(false);
         }
         else {
             incSpeed.text = "+ " + (stat.speed - _preSpeed);
@@ -242,7 +228,6 @@ public class Result_VC : MonoBehaviour {
 
         if(_preEndur == stat.endurance) {
             incEndurance.text = "";
-            EndIcon.SetActive(false);
         }
         else {
             incEndurance.text = "+ " + (stat.endurance - _preEndur);
@@ -338,40 +323,39 @@ public class Result_VC : MonoBehaviour {
     }
 
     public void onMapPanel() {
-        //map.SetActive(true);
         mapPanel.SetActive(true);
+        map.SetActive(true);
 
-        //preMapScale = map.transform.localScale;
-        //map.transform.localScale = new Vector3(2.025f, 1.0f, 2.025f);
-        //map.transform.localPosition = new Vector3(-1953f, 380f, -1266f);
-        //OnlineMapsControlBase.instance.OnMapZoom += zooming;
+        preMapScale = map.transform.localScale;
+        preMapPos = map.transform.localPosition;
 
-        //GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
-        //act.id = ridingStore.ridingId;
-        //act.type = GetRidingRecords.callType.RIDING_RESULT;
-        //gm.gameDispatcher.dispatch(act);
+        map.transform.localScale = new Vector3(1.57f, 1f, 1.57f);
+        map.transform.localPosition = new Vector3(0, 0, 1724);
 
-        //foreach(Collider coll in colliders) {
-        //    coll.enabled = false;
-        //}
+        OnlineMapsControlBase.instance.OnMapZoom += zooming;
+        
+        canvas.blocksRaycasts = false;
+
+        GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
+        act.id = ridingStore.ridingId;
+        act.type = GetRidingRecords.callType.RIDING_RESULT;
+        gm.gameDispatcher.dispatch(act);
     }
 
     public void offMapPanel() {
         mapPanel.SetActive(false);
 
-        //if(OnlineMaps.instance != null) {
-        //    OnlineMaps.instance.RemoveAllDrawingElements();
-        //    OnlineMaps.instance.RemoveAllMarkers();
+        canvas.blocksRaycasts = true;
 
-        //    map.SetActive(false);
-        //    mapPanel.SetActive(false);
+        if (OnlineMaps.instance != null) {
+            OnlineMaps.instance.RemoveAllDrawingElements();
+            OnlineMaps.instance.RemoveAllMarkers();
 
-        //    map.transform.localScale = preMapScale;
-        //}
+            map.SetActive(false);
+            mapPanel.SetActive(false);
 
-        //foreach (Collider coll in colliders) {
-        //    coll.enabled = true;
-        //}
+            map.transform.localScale = preMapScale;
+        }
     }
 
     public void OnButtonPressed(GameObject obj) {
