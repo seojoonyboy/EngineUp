@@ -114,18 +114,14 @@ public class Result_VC : MonoBehaviour {
             gameObject.SetActive(true);
             setResult(ridingStore.totalDist, ridingStore.totalTime, ridingStore.avgSpeed, ridingStore.maxSpeed, ridingStore.uphillDistance, ridingStore.boxes);
 
+            GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
+            act.id = ridingStore.ridingId;
+            act.type = GetRidingRecords.callType.RIDING_RESULT;
+            gm.gameDispatcher.dispatch(act);
+
             MyInfo infoRefresh = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
             infoRefresh._type = MyInfo.type.RIDING_END;
             gm.gameDispatcher.dispatch(infoRefresh);
-        }
-
-        if(gameObject.activeSelf) {
-            if (ridingStore.eventType == ActionTypes.RIDING_DETAILS) {
-                if (ridingStore.storeStatus == storeStatus.NORMAL) {
-                    _drawLine();
-                    _drawMarker();
-                }
-            }
         }
     }
 
@@ -279,27 +275,30 @@ public class Result_VC : MonoBehaviour {
         OnlineMaps.instance.zoom = 18;
         
         RidingDetails details = ridingStore.ridingDetails;
-        innerRidingDetails[] coords = details.coords;
+        if(details != null) {
+            innerRidingDetails[] coords = details.coords;
 
-        if(coords.Length > 0) {
-            float endLat = coords[coords.Length - 1].latitude;
-            float endLon = coords[coords.Length - 1].longitude;
-            Vector2 endPos = new Vector2(endLat, endLon);
-            OnlineMaps.instance.position = endPos;
-        }
-        else {
-            OnlineMaps.instance.position = new Vector2(127.74437f, 37.87998f);
-        }
+            if (coords.Length > 0) {
+                float endLat = coords[coords.Length - 1].latitude;
+                float endLon = coords[coords.Length - 1].longitude;
+                Vector2 endPos = new Vector2(endLat, endLon);
+                OnlineMaps.instance.position = endPos;
+            }
+            else {
+                OnlineMaps.instance.position = new Vector2(127.74437f, 37.87998f);
+            }
 
-        List<Vector2> list = new List<Vector2>();
-        foreach(innerRidingDetails coord in coords) {
-            float lat = coord.latitude;
-            float lon = coord.longitude;
-            Vector2 val = new Vector2(lat, lon);
-            list.Add(val);
+            List<Vector2> list = new List<Vector2>();
+            foreach (innerRidingDetails coord in coords) {
+                float lat = coord.latitude;
+                float lon = coord.longitude;
+                Vector2 val = new Vector2(lat, lon);
+                list.Add(val);
+            }
+
+            line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
+            OnlineMaps.instance.AddDrawingElement(line);
         }
-        line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
-        OnlineMaps.instance.AddDrawingElement(line);
     }
 
     void _drawMarker() {
@@ -336,25 +335,22 @@ public class Result_VC : MonoBehaviour {
         
         canvas.blocksRaycasts = false;
 
-        GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
-        act.id = ridingStore.ridingId;
-        act.type = GetRidingRecords.callType.RIDING_RESULT;
-        gm.gameDispatcher.dispatch(act);
+        _drawLine();
+        _drawMarker();
     }
 
     public void offMapPanel() {
         mapPanel.SetActive(false);
+
+        map.SetActive(false);
+        map.transform.localScale = preMapScale;
 
         canvas.blocksRaycasts = true;
 
         if (OnlineMaps.instance != null) {
             OnlineMaps.instance.RemoveAllDrawingElements();
             OnlineMaps.instance.RemoveAllMarkers();
-
-            map.SetActive(false);
-            mapPanel.SetActive(false);
-
-            map.transform.localScale = preMapScale;
+            
         }
     }
 
@@ -376,6 +372,7 @@ public class Result_VC : MonoBehaviour {
                 mapViewBtn.SetActive(false);
                 break;
             case 1:
+                offMapPanel();
                 tweenPos();
                 break;
             case 2:

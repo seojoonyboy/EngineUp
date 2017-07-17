@@ -145,7 +145,7 @@ public class Riding_VC : MonoBehaviour {
         sm.playEffectSound(1);
 
         exitModal.SetActive(true);
-        exitModal.transform.Find("Modal/Description").GetComponent<UILabel>().text = "지금 종료하시면 \n총 " + boxNum + "개의 상자를 얻을 수 있습니다.";
+        exitModal.transform.Find("InnerModal/Description").GetComponent<Text>().text = "지금 종료하시면 총 " + boxNum + "개의 상자를 얻을 수 있습니다.";
         //라이딩 일시정지
         Time.timeScale = 0;
     }
@@ -264,6 +264,7 @@ public class Riding_VC : MonoBehaviour {
 
         switch (index) {
             case 0:
+                onRidingEndButton();
                 exitModal.SetActive(toggle.isOn);
                 break;
             case 1:
