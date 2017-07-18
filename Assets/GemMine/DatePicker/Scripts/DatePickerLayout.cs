@@ -63,8 +63,8 @@ public class DatePickerLayout : MonoBehaviour {
 
 		// create the elements
 		for (int i = 0; i < columns * rows; i++) {
-			GameObject go = Instantiate (button,Vector3.zero,Quaternion.identity) as GameObject;
-			go.transform.SetParent (this.transform);
+			GameObject go = Instantiate (button,Vector3.one,Quaternion.identity) as GameObject;
+			go.transform.SetParent (this.transform, false);
 			go.transform.localScale = Vector3.one;
 			go.name = name;
 		}

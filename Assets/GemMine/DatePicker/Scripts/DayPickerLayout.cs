@@ -74,7 +74,7 @@ public class DayPickerLayout : DatePickerLayout  {
 		}
 		calendar.ZoomOut ();
 
-        GameObject.Find("MyInfoPanel").GetComponent<StatViewController>().calenderSelEnd(calendar.SelectedDate.ToString());
+        GameObject.Find("Canvas/MyInfoPanel").GetComponent<StatViewController>().calenderSelEnd(calendar.SelectedDate.ToString());
         Destroy(gameObject.transform.parent.parent.parent.parent.gameObject);
     }
 
