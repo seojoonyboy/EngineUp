@@ -125,7 +125,7 @@ public class BoxViewController : MonoBehaviour {
                     }
                     else if (type == "character") {
                         Debug.Log("CHAR");
-                        image.sprite = mV.characters_busts_sm[openedItem[0].character.id - 1].images[0];
+                        image.sprite = mV.characters_slots[openedItem[0].character.id - 1].images[0];
                         name.text = openedItem[0].character.name;
                     }
                 }
@@ -227,7 +227,7 @@ public class BoxViewController : MonoBehaviour {
                     label.text = items[cnt].item.name;
                 }
                 else if (type == "character") {
-                    sprite.sprite = mV.characters_busts_sm[items[cnt].character.id - 1].images[0];
+                    sprite.sprite = mV.characters_slots[items[cnt].character.id - 1].images[0];
                     label.text = items[cnt].character.name;
                 }
                 cnt++;

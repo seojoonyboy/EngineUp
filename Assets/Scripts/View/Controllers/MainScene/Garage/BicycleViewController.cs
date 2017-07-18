@@ -657,7 +657,7 @@ public class BicycleViewController : MonoBehaviour {
             RespItem _item = equipedItem.item;
             var tmp = spriteManager.stage_items[_item.id - 1];
             if(tmp == null) {
-                sprite.sprite = mV.Bicycles_items_stage[3];
+                sprite.sprite = mV.Bicycles_items_stage[5];
             }
             else {
                 sprite.sprite = spriteManager.stage_items[_item.id - 1];
@@ -670,7 +670,7 @@ public class BicycleViewController : MonoBehaviour {
             RespItem _item = equipedItem.item;
             var tmp = spriteManager.stage_items[_item.id - 1];
             if (tmp == null) {
-                sprite.sprite = mV.Bicycles_items_stage[0];
+                sprite.sprite = spriteManager.stage_items[0];
             }
             else {
                 sprite.sprite = spriteManager.stage_items[_item.id - 1];
@@ -683,7 +683,7 @@ public class BicycleViewController : MonoBehaviour {
             RespItem _item = equipedItem.item;
             var tmp = spriteManager.stage_items[_item.id - 1];
             if (tmp == null) {
-                sprite.sprite = mV.Bicycles_items_stage[6];
+                sprite.sprite = spriteManager.stage_items[85];
             }
             else {
                 sprite.sprite = spriteManager.stage_items[_item.id - 1];

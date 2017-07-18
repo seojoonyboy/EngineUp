@@ -218,9 +218,9 @@ public class CharacterViewControlller : MonoBehaviour {
         if(lv == 0) {
             lv = 1;
         }
-        var imageArr = mV_controller.characters_busts_sm;
+        //var imageArr = mV_controller.characters_busts_sm;
         Image portrait = sideBarGrid.transform.Find("Lv1/Image").GetComponent<Image>();
-        portrait.sprite = imageArr[index - 1].images[lv - 1];
+        portrait.sprite = mV_controller.characters_slots[index - 1].images[lv - 1];
 
         GameObject tmp = sideBarGrid.transform.Find("Lv1").gameObject;
         Info _info;
@@ -246,7 +246,7 @@ public class CharacterViewControlller : MonoBehaviour {
         _info = null;
 
         portrait = sideBarGrid.transform.Find("Lv2/Image").GetComponent<Image>();
-        portrait.sprite = imageArr[index - 1].images[lv];
+        portrait.sprite = mV_controller.characters_slots[index - 1].images[lv];
 
         tmp = sideBarGrid.transform.Find("Lv2").gameObject;
         if (tmp.GetComponent<Info>() == null) {
@@ -266,7 +266,7 @@ public class CharacterViewControlller : MonoBehaviour {
         }
 
         portrait = sideBarGrid.transform.Find("Lv3/Image").GetComponent<Image>();
-        portrait.sprite = imageArr[index - 1].images[lv + 1];
+        portrait.sprite = mV_controller.characters_slots[index - 1].images[lv + 1];
         if (lv < 3) {
             sideBarGrid.transform.Find("Lv3/Image/Deactive").gameObject.SetActive(true);
         }
@@ -445,8 +445,8 @@ public class CharacterViewControlller : MonoBehaviour {
             }
             Image sprite = item.transform.Find("Image").GetComponent<Image>();
             int imgIndex = info.characterId - 1;
-            sprite.sprite = mV_controller.partner_busts_m[imgIndex];
-
+            sprite.sprite = mV_controller.characters_slots[imgIndex].images[0];
+            
             item.GetComponent<Button>().onClick.AddListener(() => charSelected(item));
         }
 

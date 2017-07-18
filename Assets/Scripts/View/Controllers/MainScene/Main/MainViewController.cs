@@ -23,7 +23,7 @@ public class MainViewController : MonoBehaviour {
         Bicycles_items_stage;
 
     public SpritesArr[] 
-        characters_busts_sm,
+        characters_slots,
         characters_entire_body;
 
     void Awake() {
