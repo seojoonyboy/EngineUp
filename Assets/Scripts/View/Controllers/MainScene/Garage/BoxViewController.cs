@@ -89,7 +89,7 @@ public class BoxViewController : MonoBehaviour {
         if(userStore.eventType == ActionTypes.MYINFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
                 string boxNum = userStore.myData.boxes.ToString();
-                numOfBoxLabel.text = boxNum;
+                numOfBoxLabel.text = "x " + boxNum;
                 singleModalBoxNum.text = "x " + boxNum;
                 multiModalBoxNum.text = "x " + boxNum;
             }
