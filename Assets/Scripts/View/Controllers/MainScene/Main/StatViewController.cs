@@ -46,28 +46,44 @@ public class StatViewController : MonoBehaviour {
 
     public Transform canvas;
     bool isSelWHNow = false;
-
-    private TweenPosition tP;
     private bool isReverse_tp;
 
     public bool InputFieldActive = false;
     public RectTransform childRectTransform;
+
+    private Animator animator;
 
     SoundManager sm;
     void Awake() {
         gm = GameManager.Instance;
         sm = SoundManager.Instance;
 
-        tP = GetComponent<TweenPosition>();
+        animator = GetComponent<Animator>();
     }
 
     void OnEnable() {
-        tweenPos();
+        //tweenPos();
+        animator.Play("SlideIn");
         isReverse_tp = false;
     }
 
-    public void offPanel() {
-        gameObject.SetActive(false);
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
+
+        //slider in
+        if(boolParm == 1) {
+            MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+            gm.gameDispatcher.dispatch(act);
+
+            //Debug.Log("슬라이드 인");
+        }
+
+        //slider out
+        else if(boolParm == 0) {
+            gameObject.SetActive(false);
+
+            //Debug.Log("슬라이드 아웃");
+        }
     }
 
     void Update() {
@@ -79,42 +95,45 @@ public class StatViewController : MonoBehaviour {
         }
     }
 
-    public void tweenPos() {
-        sm.playEffectSound(0);
-
-        if (!isReverse_tp) {
-            tP.PlayForward();
-        }
-        else {
-            //swap
-            Vector3 tmp;
-            tmp = tP.to;
-            tP.to = tP.from;
-            tP.from = tmp;
-
-            tP.ResetToBeginning();
-            tP.PlayForward();
-        }
+    public void onBackButton() {
+        animator.Play("SlideOut");
     }
+    //public void tweenPos() {
+    //    sm.playEffectSound(0);
 
-    public void tPFinished() {
-        if (isReverse_tp) {
-            offPanel();
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
-        }
-        else {
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
+    //    if (!isReverse_tp) {
+    //        tP.PlayForward();
+    //    }
+    //    else {
+    //        //swap
+    //        Vector3 tmp;
+    //        tmp = tP.to;
+    //        tP.to = tP.from;
+    //        tP.from = tmp;
 
-            MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
-            gm.gameDispatcher.dispatch(act);
-        }
+    //        tP.ResetToBeginning();
+    //        tP.PlayForward();
+    //    }
+    //}
 
-        isReverse_tp = true;
-    }
+    //public void tPFinished() {
+    //    if (isReverse_tp) {
+    //        offPanel();
+    //        gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
+    //    }
+    //    else {
+    //        gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
 
-    void OnDisable() {
-        tP.ResetToBeginning();
-    }
+    //        MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+    //        gm.gameDispatcher.dispatch(act);
+    //    }
+
+    //    isReverse_tp = true;
+    //}
+
+    //void OnDisable() {
+    //    tP.ResetToBeginning();
+    //}
 
     public void onUserListener() {
         int rank = userStore.myData.status.rank;
