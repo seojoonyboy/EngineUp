@@ -58,7 +58,7 @@ public class User : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 setMessage(2);
                 myData = UserData.fromJSON(payload.response.data);
-                Debug.Log(myData);
+                //Debug.Log(myData);
                 setUserTitle(myData.status.rank);
                 _emitChange();
                 break;

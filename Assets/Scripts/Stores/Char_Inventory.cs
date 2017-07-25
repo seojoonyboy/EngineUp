@@ -61,7 +61,7 @@ public class Char_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                Debug.Log(payload.response.data);
+                //Debug.Log(payload.response.data);
                 message = "캐릭터 아이템을 성공적으로 불러왔습니다.";
                 callbackGetchar callback = callbackGetchar.fromJSON(payload.response.data);
                 all_characters.Clear();

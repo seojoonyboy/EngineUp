@@ -76,7 +76,7 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                Debug.Log("아이템 목록 가져오기 : " + payload.response.data);
+                //Debug.Log("아이템 목록 가져오기 : " + payload.response.data);
                 message = "아이템을 성공적으로 불러왔습니다.";
                 allItems = JsonHelper.getJsonArray<RespGetItems>(payload.response.data);
 
