@@ -80,7 +80,7 @@ public class MainBtnController : MonoBehaviour {
     }
 
     IEnumerator OnPanel(int index) {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
         panels[index].SetActive(true);
     }
 }
