@@ -64,7 +64,7 @@ public class MainBtnController : MonoBehaviour {
                 sm.playEffectSound(0);
                 break;
             case MainButtonEnum.Type.MYINFO:
-                panels[4].SetActive(true);
+                StartCoroutine(OnPanel(4));
                 sm.playEffectSound(0);
                 break;
             case MainButtonEnum.Type.BATTLE:
@@ -77,5 +77,10 @@ public class MainBtnController : MonoBehaviour {
     public void offNotifyModal() {
         notifyModal.SetActive(false);
         sm.playEffectSound(0);
+    }
+
+    IEnumerator OnPanel(int index) {
+        yield return new WaitForSeconds(0.5f);
+        panels[index].SetActive(true);
     }
 }
