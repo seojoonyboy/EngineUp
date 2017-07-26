@@ -46,7 +46,6 @@ public class StatViewController : MonoBehaviour {
 
     public Transform canvas;
     bool isSelWHNow = false;
-    private bool isReverse_tp;
 
     public bool InputFieldActive = false;
     public RectTransform childRectTransform;
@@ -62,9 +61,11 @@ public class StatViewController : MonoBehaviour {
     }
 
     void OnEnable() {
-        //tweenPos();
+        Invoke("playSlideIn", 0.2f);
+    }
+
+    void playSlideIn() {
         animator.Play("SlideIn");
-        isReverse_tp = false;
     }
 
     public void slideFinished(AnimationEvent animationEvent) {
@@ -98,42 +99,6 @@ public class StatViewController : MonoBehaviour {
     public void onBackButton() {
         animator.Play("SlideOut");
     }
-    //public void tweenPos() {
-    //    sm.playEffectSound(0);
-
-    //    if (!isReverse_tp) {
-    //        tP.PlayForward();
-    //    }
-    //    else {
-    //        //swap
-    //        Vector3 tmp;
-    //        tmp = tP.to;
-    //        tP.to = tP.from;
-    //        tP.from = tmp;
-
-    //        tP.ResetToBeginning();
-    //        tP.PlayForward();
-    //    }
-    //}
-
-    //public void tPFinished() {
-    //    if (isReverse_tp) {
-    //        offPanel();
-    //        gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
-    //    }
-    //    else {
-    //        gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
-
-    //        MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
-    //        gm.gameDispatcher.dispatch(act);
-    //    }
-
-    //    isReverse_tp = true;
-    //}
-
-    //void OnDisable() {
-    //    tP.ResetToBeginning();
-    //}
 
     public void onUserListener() {
         int rank = userStore.myData.status.rank;

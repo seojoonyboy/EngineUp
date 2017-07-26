@@ -64,7 +64,8 @@ public class MainBtnController : MonoBehaviour {
                 sm.playEffectSound(0);
                 break;
             case MainButtonEnum.Type.MYINFO:
-                StartCoroutine(OnPanel(4));
+                //StartCoroutine(OnPanel(4));
+                panels[4].SetActive(true);
                 sm.playEffectSound(0);
                 break;
             case MainButtonEnum.Type.BATTLE:
