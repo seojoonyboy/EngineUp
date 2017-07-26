@@ -30,6 +30,8 @@ public class Result_VC : MonoBehaviour {
         resultPanel;
 
     OnlineMapsDrawingLine line;
+    OnlineMapsMarker endMarker;
+
     SoundManager sm;
 
     private GameManager gm;
@@ -63,6 +65,7 @@ public class Result_VC : MonoBehaviour {
         maxCharLv = 3;
 
     private TweenPosition tP;
+    public Texture2D markerTexture;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -102,9 +105,11 @@ public class Result_VC : MonoBehaviour {
         //Debug.Log("zoom Level : " + level);
         if(level > 10) {
             line.weight = 1.0f;
+            endMarker.scale = 0.3f;
         }
         if(level < 5) {
             line.weight = 3.0f;
+            endMarker.scale = 0.5f;
         }
     }
 
@@ -278,22 +283,30 @@ public class Result_VC : MonoBehaviour {
         if(details != null) {
             innerRidingDetails[] coords = details.coords;
 
-            if (coords.Length > 0) {
-                float endLat = coords[coords.Length - 1].latitude;
-                float endLon = coords[coords.Length - 1].longitude;
-                Vector2 endPos = new Vector2(endLat, endLon);
-                OnlineMaps.instance.position = endPos;
-            }
-            else {
-                OnlineMaps.instance.position = new Vector2(127.74437f, 37.87998f);
-            }
-
             List<Vector2> list = new List<Vector2>();
+
+            //좌표들의 평균값으로 맵 시작위치 지정
+            float sumLat = 0;
+            float sumLon = 0;
+
             foreach (innerRidingDetails coord in coords) {
                 float lat = coord.latitude;
                 float lon = coord.longitude;
+                sumLat += lat;
+                sumLon += lon;
                 Vector2 val = new Vector2(lat, lon);
                 list.Add(val);
+            }
+
+            if(coords.Length == 0) {
+                OnlineMaps.instance.position = new Vector2(127.74437f, 37.87998f);
+            }
+
+            else {
+                float avgLat = sumLat / (float)coords.Length;
+                float avgLon = sumLon / (float)coords.Length;
+                Vector2 mapPos = new Vector2(avgLat, avgLon);
+                OnlineMaps.instance.position = mapPos;
             }
 
             line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
@@ -304,6 +317,11 @@ public class Result_VC : MonoBehaviour {
     void _drawMarker() {
         //OnlineMaps.instance.AddMarker()
         RidingDetails details = ridingStore.ridingDetails;
+        Vector2 tmp = new Vector2(0, 0);
+        if (details == null) {
+            return;
+        }
+
         innerRidingDetails[] coords = details.coords;
 
         if (coords.Length > 0) {
@@ -311,13 +329,15 @@ public class Result_VC : MonoBehaviour {
             float lat = coords[coords.Length - 1].latitude;
             float lon = coords[coords.Length - 1].longitude;
             Vector2 pos = new Vector2(lat, lon);
-            OnlineMaps.instance.AddMarker(pos);
+
+            endMarker = OnlineMaps.instance.AddMarker(pos, markerTexture, "");
+            endMarker.scale = 0.5f;
 
             //시작점 마커
             lat = coords[0].latitude;
             lon = coords[0].longitude;
             pos = new Vector2(lat, lon);
-            OnlineMaps.instance.AddMarker(pos);
+            OnlineMaps.instance.AddMarker(pos, markerTexture, "");
         }
     }
 

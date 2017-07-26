@@ -397,7 +397,7 @@ public class CharacterViewControlller : MonoBehaviour {
         foreach (KeyValuePair<int, all_characters> dC in allChars) {
             GameObject item = Instantiate(itemPref);
 
-            Debug.Log("Page Index : " + pageIndex + ", Item Index : " + itemIndex);
+            //Debug.Log("Page Index : " + pageIndex + ", Item Index : " + itemIndex);
 
             item.transform.SetParent(pages[pageIndex].transform.GetChild(itemIndex).transform, false);
             item.transform.localPosition = Vector3.zero;
