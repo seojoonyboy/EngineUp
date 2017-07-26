@@ -210,7 +210,7 @@ public class TutotrialManager : MonoBehaviour {
 
     void tutorialEnd() {
         gameObject.SetActive(false);
-        mainViewController.charSprite.gameObject.SetActive(true);
+        mainViewController.tutorialChar.SetActive(true);
         PlayerPrefs.SetInt("isFirstPlay", 1);
     }
 

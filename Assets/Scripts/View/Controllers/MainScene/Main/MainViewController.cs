@@ -5,16 +5,20 @@ using UnityEngine.UI;
 
 public class MainViewController : MonoBehaviour {
     public GameObject map;
-    public UISprite charSprite;
+    public SpritesManager spriteManager;
+
+    //메인 화면 상의 캐릭터
+    public Image charSprite;
+
     private GameManager gm;
     private User userStore;
     private BicycleItem_Inventory bi;
-    public UIAtlas[] atlasArr;
-    public UIAtlas bicycleAtlas;
+    private Char_Inventory ci;
 
     public GameObject 
-        bicycle,
-        tutorial;
+        tutorial,
+        tutorialChar,                           //튜토리얼에 등장하는 캐릭터 이미지
+        bicycleSprite;                          //메인 화면 상의 자전거 객체(하위 : 프레임, 엔진, 바퀴)
 
     public Sprite[] 
         ranks,
@@ -30,9 +34,11 @@ public class MainViewController : MonoBehaviour {
         gm = GameManager.Instance;
         gm.userStore.addListener(onUserListener);
         gm.bicycleInventStore.addListener(onBicycleInvenListener);
+        gm.charInvenStore.addListener(onCharInvenListener);
 
         userStore = gm.userStore;
         bi = gm.bicycleInventStore;
+        ci = gm.charInvenStore;
 
         //Application.targetFrameRate = 60;
     }
@@ -50,11 +56,11 @@ public class MainViewController : MonoBehaviour {
         gm.gameDispatcher.dispatch(myInfoAct);
 
         //튜토리얼 진행 여부 확인
-        int isFirstPlay = PlayerPrefs.GetInt("isFirstPlay");
-        if (isFirstPlay != 1) {
-            tutorial.SetActive(true);
-            charSprite.gameObject.SetActive(false);
-        }
+        //int isFirstPlay = PlayerPrefs.GetInt("isFirstPlay");
+        //if (isFirstPlay != 1) {
+        //    tutorial.SetActive(true);
+        //    tutorialChar.SetActive(true);
+        //}
     }
 
     public void onUserListener() {
@@ -69,34 +75,45 @@ public class MainViewController : MonoBehaviour {
     public void onBicycleInvenListener() {
         if(bi.eventType == ActionTypes.ITEM_INIT) {
             if (bi.storeStatus == storeStatus.NORMAL) {
-                //UISprite sprite = null;
+                Image sprite = bicycleSprite.transform.Find("Wheel").GetComponent<Image>();
+                if (bi.equipedItemIndex[0] != null) {
+                    if(spriteManager.stage_items[bi.equipedItemIndex[0].item.id - 1] != null) {
+                        sprite.sprite = spriteManager.stage_items[bi.equipedItemIndex[0].item.id - 1];
+                    }
+                    else {
+                        sprite.sprite = Bicycles_items_stage[5];
+                    }
+                }
 
-                //sprite = bicycle.transform.Find("Wheel").GetComponent<UISprite>();
-                //sprite.atlas = bicycleAtlas;
-                //if (bi.equipedItemIndex[0] != null) {
-                //    sprite.spriteName = bi.equipedItemIndex[0].item.id.ToString();
-                //}
-                //else {
-                //    sprite.spriteName = "6";
-                //}
+                sprite = bicycleSprite.transform.Find("Frame").GetComponent<Image>();
+                if (bi.equipedItemIndex[1] != null) {
+                    if(spriteManager.stage_items[bi.equipedItemIndex[1].item.id - 1] != null) {
+                        sprite.sprite = spriteManager.stage_items[bi.equipedItemIndex[1].item.id - 1];
+                    }
 
-                //sprite = bicycle.transform.Find("Frame").GetComponent<UISprite>();
-                //sprite.atlas = bicycleAtlas;
-                //if (bi.equipedItemIndex[1] != null) {
-                //    sprite.spriteName = bi.equipedItemIndex[1].item.id.ToString();
-                //}
-                //else {
-                //    sprite.spriteName = "3";
-                //}
+                    else {
+                        sprite.sprite = spriteManager.stage_items[0];
+                    }
+                }
 
-                //sprite = bicycle.transform.Find("Engine").GetComponent<UISprite>();
-                //sprite.atlas = bicycleAtlas;
-                //if (bi.equipedItemIndex[2] != null) {
-                //    sprite.spriteName = bi.equipedItemIndex[2].item.id.ToString();
-                //}
-                //else {
-                //    sprite.spriteName = "9";
-                //}
+                sprite = bicycleSprite.transform.Find("Engine").GetComponent<Image>();
+                if (bi.equipedItemIndex[2] != null) {
+                    if (spriteManager.stage_items[bi.equipedItemIndex[2].item.id - 1] != null) {
+                        sprite.sprite = spriteManager.stage_items[bi.equipedItemIndex[2].item.id - 1];
+                    }
+
+                    else {
+                        sprite.sprite = spriteManager.stage_items[85];
+                    }
+                }
+            }
+        }
+    }
+
+    public void onCharInvenListener() {
+        if(ci.eventType == ActionTypes.ITEM_INIT) {
+            if(ci.storeStatus == storeStatus.NORMAL) {
+                charSprite.sprite = characters_entire_body[ci.repCharacter.character - 1].images[ci.repCharacter.lv - 1];
             }
         }
     }

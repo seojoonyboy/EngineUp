@@ -91,6 +91,13 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
             prevButton.GetComponent<Button>().onClick.AddListener(() => { PreviousScreen(); });
 	}
 
+    public void init() {
+        SetPagePositions();
+        SetPage(startingPage);
+        InitPageSelection();
+        SetPageSelection(startingPage);
+    }
+
     //------------------------------------------------------------------------
     void Update() {
         // if moving to target position
@@ -193,6 +200,8 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
                 // cache all Image components into list
                 for (int i = 0; i < pageSelectionIcons.childCount; i++) {
                     Image image = pageSelectionIcons.GetChild(i).transform.Find("Icon").GetComponent<Image>();
+                    pageSelectionIcons.GetChild(i).transform.localPosition = Vector3.zero;
+                    pageSelectionIcons.GetChild(i).transform.localScale = Vector3.one;
                     if (image == null) {
                         Debug.LogWarning("Page selection icon at position " + i + " is missing Image component");
                     }

@@ -25,6 +25,8 @@ public class CharacterViewControlller : MonoBehaviour {
         scroll_pagePref,
         scroll_pageIconPref;
 
+    public ScrollSnapRect sR;
+
     public GameObject 
         equipButton,
         nonepossessionButton,
@@ -123,6 +125,9 @@ public class CharacterViewControlller : MonoBehaviour {
             if (charStoreEventType == ActionTypes.ITEM_INIT) {
                 if (charInvenStore.storeStatus == storeStatus.NORMAL) {
                     makeList();
+
+                    sR.init();
+
                     character_inventory charInfo = charInvenStore.repCharacter;
                     setMainChar(charInfo.character, charInfo.lv);
                     setEquipButton(charInfo.character, charInfo.has_character);
