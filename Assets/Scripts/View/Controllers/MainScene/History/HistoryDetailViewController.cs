@@ -24,6 +24,7 @@ public class HistoryDetailViewController : MonoBehaviour {
         boxNum;
     public Text nickName, date;
     OnlineMapsDrawingLine _line;
+    OnlineMapsMarker endMarker;
 
     public HistoryViewController parentController;
 
@@ -33,6 +34,8 @@ public class HistoryDetailViewController : MonoBehaviour {
         isTweening = false;
 
     public CanvasGroup canvas;
+    public Texture2D markerTexture;
+
     void Awake() {
         gm = GameManager.Instance;
         ridingStore = gm.ridingStore;
@@ -108,13 +111,26 @@ public class HistoryDetailViewController : MonoBehaviour {
             _map.position = new Vector2(127.74437f, 37.87998f);
         }
         else {
-            _map.position = new Vector2(coords[0].latitude, coords[0].longitude);
             List<Vector2> list = new List<Vector2>();
+            //좌표들의 평균값으로 맵 시작위치 지정
+            float sumLat = 0;
+            float sumLon = 0;
 
             for(int i=0; i<coords.Length; i++) {
                 Vector2 coord = new Vector2(coords[i].latitude, coords[i].longitude);
                 list.Add(coord);
+
+                float lat = coords[i].latitude;
+                float lon = coords[i].longitude;
+                sumLat += lat;
+                sumLon += lon;
             }
+
+            float avgLat = sumLat / (float)coords.Length;
+            float avgLon = sumLon / (float)coords.Length;
+
+            _map.position = new Vector2(avgLat, avgLon);
+
             _line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
             _map.AddDrawingElement(_line);
 
@@ -129,7 +145,7 @@ public class HistoryDetailViewController : MonoBehaviour {
                 _map.AddMarker(startPos);
 
                 Vector2 endPos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
-                _map.AddMarker(endPos);
+                endMarker = _map.AddMarker(endPos, markerTexture, "");
             }
         }
         _map.zoom = 18;
@@ -159,9 +175,11 @@ public class HistoryDetailViewController : MonoBehaviour {
             int level = OnlineMaps.instance.zoom;
             if (level > 10) {
                 _line.weight = 1f;
+                endMarker.scale = 0.3f;
             }
             else {
                 _line.weight = 3f;
+                endMarker.scale = 0.5f;
             }
         }
     }

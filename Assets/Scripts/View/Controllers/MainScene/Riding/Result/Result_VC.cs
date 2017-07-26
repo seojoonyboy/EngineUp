@@ -107,7 +107,7 @@ public class Result_VC : MonoBehaviour {
             line.weight = 1.0f;
             endMarker.scale = 0.3f;
         }
-        if(level < 5) {
+        else {
             line.weight = 3.0f;
             endMarker.scale = 0.5f;
         }
