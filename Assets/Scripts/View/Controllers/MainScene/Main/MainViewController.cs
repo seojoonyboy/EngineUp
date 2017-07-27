@@ -15,10 +15,15 @@ public class MainViewController : MonoBehaviour {
     private BicycleItem_Inventory bi;
     private Char_Inventory ci;
 
-    public GameObject 
+    private bool 
+        isCharLoded = false,
+        isBicycleLoaded = false;
+
+    public GameObject
         tutorial,
         tutorialChar,                           //튜토리얼에 등장하는 캐릭터 이미지
-        bicycleSprite;                          //메인 화면 상의 자전거 객체(하위 : 프레임, 엔진, 바퀴)
+        bicycleSprite,                          //메인 화면 상의 자전거 객체(하위 : 프레임, 엔진, 바퀴)
+        loadingModal;                           //로딩 화면
 
     public Sprite[] 
         ranks,
@@ -64,12 +69,7 @@ public class MainViewController : MonoBehaviour {
     }
 
     public void onUserListener() {
-        if(userStore.eventType == ActionTypes.MYINFO) {
-            if(userStore.storeStatus == storeStatus.NORMAL) {
-                //int charIndex = userStore.myData.represent_character.character_inventory.character;
-                //int lv = userStore.myData.represent_character.character_inventory.lv;
-            }
-        }
+        
     }
 
     public void onBicycleInvenListener() {
@@ -106,6 +106,9 @@ public class MainViewController : MonoBehaviour {
                         sprite.sprite = spriteManager.stage_items[85];
                     }
                 }
+
+                isBicycleLoaded = true;
+                isAllLoaded();
             }
         }
     }
@@ -114,7 +117,16 @@ public class MainViewController : MonoBehaviour {
         if(ci.eventType == ActionTypes.ITEM_INIT) {
             if(ci.storeStatus == storeStatus.NORMAL) {
                 charSprite.sprite = characters_entire_body[ci.repCharacter.character - 1].images[ci.repCharacter.lv - 1];
+
+                isCharLoded = true;
+                isAllLoaded();
             }
+        }
+    }
+
+    private void isAllLoaded() {
+        if(isCharLoded && isBicycleLoaded) {
+            loadingModal.SetActive(false);
         }
     }
 }
