@@ -39,6 +39,8 @@ public class User : AjwStore {
     public SignupAction.loginType loginType;
 
     public ItemSpects itemSpects = new ItemSpects();
+    //첫 로그인 시도인지, 버튼을 누른 로그인 시도인지 구분
+    public bool isAutoLogin = false;
     //최신 내 정보 불러오기
     void myInfo(MyInfo payload) {
         switch (payload.status) {
@@ -160,7 +162,7 @@ public class User : AjwStore {
     void signin(SigninAction act) {
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
-
+                isAutoLogin = act.isAutoLogin;
                 storeStatus = storeStatus.WAITING_REQ;
                 setMessage(1);
 

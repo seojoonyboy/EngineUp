@@ -19,17 +19,18 @@ public class FacebookLogin : MonoBehaviour {
 
     private void InitCallback() {
         if (FB.IsLoggedIn) {
-            Debug.Log("Facebook logged in during init");
+            //Debug.Log("Facebook logged in during init");
             var aToken = Facebook.Unity.AccessToken.CurrentAccessToken;
             //로그인 상태인 경우 바로 Login Action 생성
             SigninAction signInAct = ActionCreator.createAction(ActionTypes.SIGNIN) as SigninAction;
             signInAct.login_type = SignupAction.loginType.FB;
             signInAct.token = aToken.TokenString;
+            signInAct.isAutoLogin = true;
             GameManager.Instance.gameDispatcher.dispatch(signInAct);
             //startLoadingSceneManager.loadMainScene();
            
-            Debug.Log("User Token : " + aToken.TokenString);
-            Debug.Log("User Id : " + aToken.UserId);
+            //Debug.Log("User Token : " + aToken.TokenString);
+            //Debug.Log("User Id : " + aToken.UserId);
         }
         else {
             //로그인을 한 상태가 아니라면...
@@ -95,13 +96,8 @@ public class FacebookLogin : MonoBehaviour {
                 signInAct.login_type = SignupAction.loginType.FB;
                 signInAct.token = aToken.TokenString;
                 GameManager.Instance.gameDispatcher.dispatch(signInAct);
-                //startLoadingSceneManager.loadMainScene();
-                //profileModal.SetActive(true);
-                //gameObject.transform.parent.gameObject.SetActive(false);
             }
             else {
-                //user 토큰이 존재하지 않는 경우
-                //sign up url
                 Debug.Log("User cancelled login");
             }
         }

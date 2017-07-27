@@ -184,7 +184,9 @@ public class EditProfileAction : NetworkAction {
     public object value;
 }
 
-public class SigninAction : SignupAction { }
+public class SigninAction : SignupAction {
+    public bool isAutoLogin = false;
+}
 
 public class GetDefaultCharInfo : NetworkAction { }
 

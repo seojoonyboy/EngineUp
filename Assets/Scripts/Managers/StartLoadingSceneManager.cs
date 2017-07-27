@@ -50,7 +50,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         }
         if(str == "NO") {
             Debug.Log("이전 Normal 로그인했음");
-            normalLogin.onLoginButton();
+            normalLogin.onLoginButton(true);
         }
         //Debug.Log(str);
     }
@@ -155,7 +155,12 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     void userListener() {
         if(userStore.eventType == ActionTypes.SIGNIN) {
             if(userStore.storeStatus == storeStatus.ERROR) {
-                onPolicyModal();
+                if(userStore.isAutoLogin) {
+                    buttonGroup.SetActive(true);
+                }
+                else {
+                    onPolicyModal();
+                }
             }
         }
 
