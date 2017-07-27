@@ -17,7 +17,8 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         NickNameCheckResultModal,
         buttonGroup,
         mobileServiceContainer,
-        privacyContainer;
+        privacyContainer,
+        loadingModal;
 
     public FacebookLogin facebooklogin;
     public NormalLogin normalLogin;
@@ -157,9 +158,12 @@ public class StartLoadingSceneManager : fbl_SceneManager {
             if(userStore.storeStatus == storeStatus.ERROR) {
                 if(userStore.isAutoLogin) {
                     buttonGroup.SetActive(true);
+                    loadingModal.SetActive(false);
                 }
                 else {
-                    onPolicyModal();
+                    if(userStore.loginType == SignupAction.loginType.NO) {
+                        onPolicyModal();
+                    }
                 }
             }
         }
