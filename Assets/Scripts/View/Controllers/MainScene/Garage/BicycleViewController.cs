@@ -204,6 +204,9 @@ public class BicycleViewController : MonoBehaviour {
 
     public void selected(GameObject obj) {
         Info info = obj.GetComponent<Info>();
+        if(info == null) {
+            return;
+        }
         if(info.id == 0) {
             return;
         }
@@ -725,6 +728,8 @@ public class BicycleViewController : MonoBehaviour {
             }
         }
         else {
+            Info tmp = sideSlot.GetComponent<Info>();
+            Destroy(tmp);
             sideSprite.sprite = defaultSideSlotImg;
         }
 
@@ -762,6 +767,8 @@ public class BicycleViewController : MonoBehaviour {
             }
         }
         else {
+            Info tmp = sideSlot.GetComponent<Info>();
+            Destroy(tmp);
             sideSprite.sprite = defaultSideSlotImg;
         }
 
@@ -800,6 +807,8 @@ public class BicycleViewController : MonoBehaviour {
             }
         }
         else {
+            Info tmp = sideSlot.GetComponent<Info>();
+            Destroy(tmp);
             sideSprite.sprite = defaultSideSlotImg;
         }
     }
