@@ -76,6 +76,8 @@ public class BicycleViewController : MonoBehaviour {
                 if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
                     //makeList();
                     setStat();
+                    setMainStageImage();
+                    setSideBar();
                 }
             }
 

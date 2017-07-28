@@ -7,12 +7,14 @@ public class BicycleListViewController : MonoBehaviour {
     public BicycleItem_Inventory bicycleItemStore;
     public BicycleViewController parent;
     public SpritesManager spriteManager;
+    public BicycleDetailViewController details;
 
     private Animator animator;
     public GameObject 
         content,
         rowContainer;           //스크롤 영역 한줄 Container
 
+    public GameObject selectedItem;
     void Awake() {
         animator = GetComponent<Animator>();
         bicycleItemStore = parent.bicycleItemStore;
@@ -123,7 +125,10 @@ public class BicycleListViewController : MonoBehaviour {
                     image = item.transform.Find("Grade").GetComponent<Image>();
                     image.enabled = true;
                     image.sprite = spriteManager.grade_items[info.grade];
-
+                    if(item.GetComponent<Button>() == null) {
+                        item.AddComponent<Button>();
+                    }
+                    item.GetComponent<Button>().onClick.AddListener(() => onDetail(item));
                     cnt++;
                 }
             }
@@ -136,22 +141,27 @@ public class BicycleListViewController : MonoBehaviour {
         }
     }
 
-    private class Info : MonoBehaviour {
-        public int id;
-        public bool is_equiped;
-        public bool is_locked;
-        public int imageId;
-
-        public string name;
-        public string desc;
-        public int grade;
-        public int gear;
-        public string parts;
-        public int limit_rank;
-
-        public int speed;
-        public int recovery;
-        public int strength;
-        public int endurance;
+    private void onDetail(GameObject obj) {
+        details.gameObject.SetActive(true);
+        selectedItem = obj;
     }
+}
+
+public class Info : MonoBehaviour {
+    public int id;
+    public bool is_equiped;
+    public bool is_locked;
+    public int imageId;
+
+    public string name;
+    public string desc;
+    public int grade;
+    public int gear;
+    public string parts;
+    public int limit_rank;
+
+    public int speed;
+    public int recovery;
+    public int strength;
+    public int endurance;
 }
