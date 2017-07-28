@@ -5,6 +5,8 @@ using UnityEngine;
 using System.Text;
 using UnityEngine.UI;
 
+public enum SelectedType { FR, EG, WH }
+
 public class BicycleViewController : MonoBehaviour {
     private GameManager gm;
     private SoundManager sm;
@@ -16,6 +18,7 @@ public class BicycleViewController : MonoBehaviour {
     public ScrollSnapRect[] sR;
     public MainViewController mV;
     public SpritesManager spriteManager;
+    public BicycleListViewController childPanel;
     //판매 버튼 클릭시
     private bool 
         isSellMode = false,
@@ -42,11 +45,12 @@ public class BicycleViewController : MonoBehaviour {
         notifyModal,
         pagination_icon_pref;
 
+    //차고지 리스트를 보여주는 패널
+    public GameObject listPanel;
+
     public int pagePerSlotCount;
 
-    public Text[] 
-        spects,
-        incSpects;
+    public Text[] spects;
 
     public int[] equipedItemIndex;
     public AudioClip[] audioClip;
@@ -54,19 +58,14 @@ public class BicycleViewController : MonoBehaviour {
     List<int> lockIdList = new List<int>();
     List<int> unlockList = new List<int>();
     List<Info> sellList = new List<Info>();
+    private Animator animator;
 
-    private TweenPosition tP;
-    private bool isReverse_tp;
-
-    private Sprite defaultSideSlotImg;
+    public SelectedType selectedType;
 
     void Awake() {
         gm = GameManager.Instance;
         sm = SoundManager.Instance;
-
-        tP = GetComponent<TweenPosition>();
-
-        defaultSideSlotImg = sideBar.transform.Find("WheelSlot/Item").GetComponent<Image>().sprite;
+        animator = GetComponent<Animator>();
     }
 
     public void onBicycleItemStoreListener() {
@@ -75,14 +74,14 @@ public class BicycleViewController : MonoBehaviour {
         if (gameObject.activeSelf) {
             if (bicycleItemStoreEventType == ActionTypes.ITEM_INIT) {
                 if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                    makeList();
+                    //makeList();
                     setStat();
                 }
             }
 
             if(bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
                 if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                    makeList();
+                    //makeList();
                     //Debug.Log("아이템 정렬");
                 }
             }
@@ -101,57 +100,79 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     void OnEnable() {
-        tweenPos();
-
-        isReverse_tp = false;
+        Invoke("playSlideIn", 0.2f);
     }
 
-    void offPanel() {
-        gameObject.SetActive(false);
-        selectedItem = null;
-        detailModal.SetActive(false);
-
-        tP.ResetToBeginning();
+    void playSlideIn() {
+        animator.Play("SlideIn");
     }
+
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
+
+        //slider in
+        if (boolParm == 1) {
+            setMainStageImage();
+            setSideBar();
+            setStat();
+        }
+
+        //slider out
+        else if (boolParm == 0) {
+            gameObject.SetActive(false);
+        }
+    }
+
+    public void onBackButton() {
+        animator.Play("SlideOut");
+    }
+
+    //void offPanel() {
+    //    gameObject.SetActive(false);
+    //    selectedItem = null;
+    //    detailModal.SetActive(false);
+
+    //    //tP.ResetToBeginning();
+    //}
 
     public void tweenPos() {
-        bool isTweening = tM.isTweening;
-        if (isTweening) {
-            return;
-        }
-        tM.isTweening = true;
-        if (!isReverse_tp) {
-            tP.PlayForward();
-        }
-        else {
-            sm.playEffectSound(0);
-            //swap
-            Vector3 tmp;
-            tmp = tP.to;
-            tP.to = tP.from;
-            tP.from = tmp;
+        //bool isTweening = tM.isTweening;
+        //if (isTweening) {
+        //    return;
+        //}
+        //tM.isTweening = true;
+        //if (!isReverse_tp) {
+        //    tP.PlayForward();
+        //}
+        //else {
+        //    sm.playEffectSound(0);
+        //    //swap
+        //    Vector3 tmp;
+        //    tmp = tP.to;
+        //    tP.to = tP.from;
+        //    tP.from = tmp;
 
-            tP.ResetToBeginning();
-            tP.PlayForward();
-        }
+        //    tP.ResetToBeginning();
+        //    tP.PlayForward();
+        //}
     }
 
     public void tpFinished() {
-        tM.isTweening = false;
+        //tM.isTweening = false;
 
-        if (isReverse_tp) {
-            offPanel();
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
-        }
+        //if (isReverse_tp) {
+        //    offPanel();
+        //    gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
+        //}
 
-        else {
-            //itemInitAct();
-            makeList();
-            setStat();
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
-        }
+        //else {
+        //    //itemInitAct();
+        //    makeList();
+        //    setStat();
+        //    gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
+        //}
 
-        isReverse_tp = true;
+        //isReverse_tp = true;
     }
 
     //판매 버튼 클릭시
@@ -203,55 +224,70 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     public void selected(GameObject obj) {
-        Info info = obj.GetComponent<Info>();
-        if(info == null) {
-            return;
+        int index = obj.GetComponent<ButtonIndex>().index;
+        switch(index) {
+            case 0:
+                selectedType = SelectedType.WH;
+                break;
+            case 1:
+                selectedType = SelectedType.FR;
+                break;
+            case 2:
+                selectedType = SelectedType.EG;
+                break;
         }
-        if(info.id == 0) {
-            return;
-        }
-        //판매모드인 경우
-        if (isSellMode) {
-            if (info.is_locked) { return; }
+        childPanel.gameObject.SetActive(true);
+        //Info info = obj.GetComponent<Info>();
+        //if(info == null) {
+        //    return;
+        //}
+        //if(info.id == 0) {
+        //    return;
+        //}
 
-            GameObject tmp = obj.transform.Find("Selected").gameObject;
-            tmp.SetActive(!tmp.activeSelf);
 
-            if(tmp.activeSelf) {
-                obj.tag = "selected";
-                sellList.Add(info);
-            }
-            else {
-                obj.tag = "unselected";
-            }
-        }
-        //잠금모드인 경우
-        else if (isLockMode) {
-            GameObject tmp = obj.transform.Find("LockIcon").gameObject;
-            tmp.SetActive(!tmp.activeSelf);
-            if(tmp.activeSelf) {
-                info.is_locked = true;
-                //int 리스트
-                //리스트에 id값(int)을 담는다. (button index 말고 실제 아이템 id)
-                lockIdList.Add(info.id);
-                if (unlockList.Contains(info.id)) {
-                    unlockList.Remove(info.id);
-                }
-            }
-            else {
-                info.is_locked = false;
-                //리스트에 담겨 있으면 제외시킨다.
-                unlockList.Add(info.id);
-                if (lockIdList.Contains(info.id)) {
-                    lockIdList.Remove(info.id);
-                }
-            }
-        }
-        else if(isLockMode == false && isSellMode == false) {
-            selectedItem = obj;
-            onDetailModal();
-            playEffectSound(1);
-        }
+        ////판매모드인 경우
+        //if (isSellMode) {
+        //    if (info.is_locked) { return; }
+
+        //    GameObject tmp = obj.transform.Find("Selected").gameObject;
+        //    tmp.SetActive(!tmp.activeSelf);
+
+        //    if(tmp.activeSelf) {
+        //        obj.tag = "selected";
+        //        sellList.Add(info);
+        //    }
+        //    else {
+        //        obj.tag = "unselected";
+        //    }
+        //}
+        ////잠금모드인 경우
+        //else if (isLockMode) {
+        //    GameObject tmp = obj.transform.Find("LockIcon").gameObject;
+        //    tmp.SetActive(!tmp.activeSelf);
+        //    if(tmp.activeSelf) {
+        //        info.is_locked = true;
+        //        //int 리스트
+        //        //리스트에 id값(int)을 담는다. (button index 말고 실제 아이템 id)
+        //        lockIdList.Add(info.id);
+        //        if (unlockList.Contains(info.id)) {
+        //            unlockList.Remove(info.id);
+        //        }
+        //    }
+        //    else {
+        //        info.is_locked = false;
+        //        //리스트에 담겨 있으면 제외시킨다.
+        //        unlockList.Add(info.id);
+        //        if (lockIdList.Contains(info.id)) {
+        //            lockIdList.Remove(info.id);
+        //        }
+        //    }
+        //}
+        //else if(isLockMode == false && isSellMode == false) {
+        //    selectedItem = obj;
+        //    onDetailModal();
+        //    playEffectSound(1);
+        //}
     }
 
     //아이템 상세보기 Modal
@@ -315,9 +351,9 @@ public class BicycleViewController : MonoBehaviour {
 
         Image img = modal.transform.Find("Image").GetComponent<Image>();
 
-        var tmp = spriteManager.slots_items[info.imageId - 1];
+        var tmp = spriteManager.stage_items[info.imageId - 1];
         if (tmp != null) {
-            img.sprite = spriteManager.slots_items[info.imageId - 1];
+            img.sprite = spriteManager.stage_items[info.imageId - 1];
         }
         else {
             img.sprite = spriteManager.default_slots[info.grade - 1];
@@ -447,9 +483,9 @@ public class BicycleViewController : MonoBehaviour {
                     }
 
                     Image sprite = item.GetComponent<Image>();
-                    var tmp = spriteManager.slots_items[info.imageId - 1];
+                    var tmp = spriteManager.stage_items[info.imageId - 1];
                     if(tmp != null) {
-                        sprite.sprite = spriteManager.slots_items[info.imageId - 1];
+                        sprite.sprite = spriteManager.stage_items[info.imageId - 1];
                     }
                     else {
                         sprite.sprite = spriteManager.default_slots[info.grade - 1];
@@ -508,9 +544,9 @@ public class BicycleViewController : MonoBehaviour {
                     }
 
                     Image sprite = item.GetComponent<Image>();
-                    var tmp = spriteManager.slots_items[info.imageId - 1];
+                    var tmp = spriteManager.stage_items[info.imageId - 1];
                     if (tmp != null) {
-                        sprite.sprite = spriteManager.slots_items[info.imageId - 1];
+                        sprite.sprite = spriteManager.stage_items[info.imageId - 1];
                     }
                     else {
                         sprite.sprite = spriteManager.default_slots[info.grade - 1];
@@ -569,9 +605,9 @@ public class BicycleViewController : MonoBehaviour {
                     }
 
                     Image sprite = item.GetComponent<Image>();
-                    var tmp = spriteManager.slots_items[info.imageId - 1];
+                    var tmp = spriteManager.stage_items[info.imageId - 1];
                     if (tmp != null) {
-                        sprite.sprite = spriteManager.slots_items[info.imageId - 1];
+                        sprite.sprite = spriteManager.stage_items[info.imageId - 1];
                     }
                     else {
                         sprite.sprite = spriteManager.default_slots[info.grade - 1];
@@ -591,15 +627,7 @@ public class BicycleViewController : MonoBehaviour {
         setSideBar();
     }
 
-    private void initStat() {
-        for(int i=0; i<incSpects.Length; i++) {
-            incSpects[i].gameObject.SetActive(true);
-        }
-    }
-
     private void setStat() {
-        initStat();
-
         //아이템 장착, 파트너 장착에 따른 Spec 변화
         var itemSpects = userStore.itemSpects;
 
@@ -615,40 +643,11 @@ public class BicycleViewController : MonoBehaviour {
         int item_speed = itemSpects.Item_speed;
         int item_reg = itemSpects.Item_regeneration;
 
-        //아이템 장착 효과 UI 반영
-        if(item_str == 0) {
-            incSpects[0].gameObject.SetActive(false);
-        }
-        else {
-            incSpects[0].text = "+ " + item_str.ToString();
-        }
-
-        if (item_speed == 0) {
-            incSpects[1].gameObject.SetActive(false);
-        }
-        else {
-            incSpects[1].text = "+ " + item_speed.ToString();
-        }
-
-        if (item_reg == 0) {
-            incSpects[2].gameObject.SetActive(false);
-        }
-        else {
-            incSpects[2].text = "+ " + item_reg.ToString();
-        }
-
-        if (item_end == 0) {
-            incSpects[3].gameObject.SetActive(false);
-        }
-        else {
-            incSpects[3].text = "+ " + item_end.ToString();
-        }
-
-        //파트너 장착 효과 UI 반영
-        spects[0].text = char_str.ToString();
-        spects[1].text = char_speed.ToString();
-        spects[2].text = char_reg.ToString();
-        spects[3].text = char_end.ToString();
+        //파트너 + 아이템 장착효과
+        spects[0].text = (char_str + item_str).ToString();
+        spects[1].text = (char_end + item_end).ToString();
+        spects[2].text = (char_speed + item_speed).ToString();
+        spects[3].text = (char_reg + item_reg).ToString();
     }
 
     private void setMainStageImage() {
@@ -695,15 +694,16 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     private void setSideBar() {
-        GameObject sideSlot = sideBar.transform.Find("WheelSlot/Item").gameObject;
+        GameObject sideSlot = sideBar.transform.Find("WheelSlot").gameObject;
         Info sideBarInfo = sideSlot.GetComponent<Info>();
         if(sideBarInfo == null) {
             sideBarInfo = sideSlot.AddComponent<Info>();
         }
         Image sideSprite;
         RespGetItems equipedItem = bicycleItemStore.equipedItemIndex[0];
-        sideSprite = sideSlot.GetComponent<Image>();
+        sideSprite = sideSlot.transform.Find("Image").GetComponent<Image>();
         if (equipedItem != null) {
+            sideSprite.enabled = true;
             RespItem _item = equipedItem.item;
             sideBarInfo.imageId = _item.id;
             sideBarInfo.desc = _item.desc;
@@ -719,9 +719,9 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
-            var tmp = spriteManager.slots_items[sideBarInfo.imageId - 1];
+            var tmp = spriteManager.stage_items[sideBarInfo.imageId - 1];
             if (tmp != null) {
-                sideSprite.sprite = spriteManager.slots_items[sideBarInfo.imageId - 1];
+                sideSprite.sprite = spriteManager.stage_items[sideBarInfo.imageId - 1];
             }
             else {
                 sideSprite.sprite = spriteManager.default_slots[sideBarInfo.grade - 1];
@@ -730,10 +730,10 @@ public class BicycleViewController : MonoBehaviour {
         else {
             Info tmp = sideSlot.GetComponent<Info>();
             Destroy(tmp);
-            sideSprite.sprite = defaultSideSlotImg;
+            sideSprite.enabled = false;
         }
 
-        sideSlot = sideBar.transform.Find("FrameSlot/Item").gameObject;
+        sideSlot = sideBar.transform.Find("FrameSlot").gameObject;
         sideBarInfo = sideSlot.GetComponent<Info>();
         if (sideBarInfo == null) {
             sideBarInfo = sideSlot.AddComponent<Info>();
@@ -741,9 +741,10 @@ public class BicycleViewController : MonoBehaviour {
 
         equipedItem = bicycleItemStore.equipedItemIndex[1];
 
-        sideSprite = sideSlot.GetComponent<Image>();
+        sideSprite = sideSlot.transform.Find("Image").GetComponent<Image>();
 
         if (equipedItem != null) {
+            sideSprite.enabled = true;
             RespItem _item = equipedItem.item;
             sideBarInfo.imageId = _item.id;
             sideBarInfo.desc = _item.desc;
@@ -758,9 +759,9 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
-            var tmp = spriteManager.slots_items[sideBarInfo.imageId - 1];
+            var tmp = spriteManager.stage_items[sideBarInfo.imageId - 1];
             if (tmp != null) {
-                sideSprite.sprite = spriteManager.slots_items[sideBarInfo.imageId - 1];
+                sideSprite.sprite = spriteManager.stage_items[sideBarInfo.imageId - 1];
             }
             else {
                 sideSprite.sprite = spriteManager.default_slots[sideBarInfo.grade - 1];
@@ -769,10 +770,10 @@ public class BicycleViewController : MonoBehaviour {
         else {
             Info tmp = sideSlot.GetComponent<Info>();
             Destroy(tmp);
-            sideSprite.sprite = defaultSideSlotImg;
+            sideSprite.enabled = false;
         }
 
-        sideSlot = sideBar.transform.Find("EngineSlot/Item").gameObject;
+        sideSlot = sideBar.transform.Find("EngineSlot").gameObject;
         sideBarInfo = sideSlot.GetComponent<Info>();
         if (sideBarInfo == null) {
             sideBarInfo = sideSlot.AddComponent<Info>();
@@ -780,9 +781,10 @@ public class BicycleViewController : MonoBehaviour {
 
         equipedItem = bicycleItemStore.equipedItemIndex[2];
 
-        sideSprite = sideSlot.GetComponent<Image>();
+        sideSprite = sideSlot.transform.Find("Image").GetComponent<Image>();
 
         if (equipedItem != null) {
+            sideSprite.enabled = true;
             RespItem _item = equipedItem.item;
             sideBarInfo.imageId = _item.id;
             sideBarInfo.desc = _item.desc;
@@ -798,9 +800,9 @@ public class BicycleViewController : MonoBehaviour {
             sideBarInfo.id = equipedItem.id;
             sideBarInfo.is_equiped = true;
 
-            var tmp = spriteManager.slots_items[sideBarInfo.imageId - 1];
+            var tmp = spriteManager.stage_items[sideBarInfo.imageId - 1];
             if (tmp != null) {
-                sideSprite.sprite = spriteManager.slots_items[sideBarInfo.imageId - 1];
+                sideSprite.sprite = spriteManager.stage_items[sideBarInfo.imageId - 1];
             }
             else {
                 sideSprite.sprite = spriteManager.default_slots[sideBarInfo.grade - 1];
@@ -809,7 +811,7 @@ public class BicycleViewController : MonoBehaviour {
         else {
             Info tmp = sideSlot.GetComponent<Info>();
             Destroy(tmp);
-            sideSprite.sprite = defaultSideSlotImg;
+            sideSprite.enabled = false;
         }
     }
 

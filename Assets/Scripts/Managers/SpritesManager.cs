@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class SpritesManager : MonoBehaviour {
     public Sprite[] 
         slots_chars,
-        slots_items,
         default_slots,
         stage_chars,
-        stage_items;
+        stage_items,
+        grade_items;
 }

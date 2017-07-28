@@ -114,12 +114,12 @@ public class BoxViewController : MonoBehaviour {
                     string type = openedItem[0].type;
                     if (type == "item") {
                         Debug.Log("Item");
-                        var tmp = spriteManager.slots_items[openedItem[0].item.id - 1];
+                        var tmp = spriteManager.stage_items[openedItem[0].item.id - 1];
                         if(tmp == null) {
                             image.sprite = spriteManager.default_slots[openedItem[0].item.grade];
                         }
                         else {
-                            image.sprite = spriteManager.slots_items[openedItem[0].item.id - 1];
+                            image.sprite = spriteManager.stage_items[openedItem[0].item.id - 1];
                         }
                         name.text = openedItem[0].item.name;
                     }
@@ -217,12 +217,12 @@ public class BoxViewController : MonoBehaviour {
                 Image sprite = item.Find("Image").GetComponent<Image>();
                 
                 if (type == "item") {
-                    var tmp = spriteManager.slots_items[items[cnt].item.id - 1];
+                    var tmp = spriteManager.stage_items[items[cnt].item.id - 1];
                     if (tmp == null) {
                         sprite.sprite = spriteManager.default_slots[items[cnt].item.grade];
                     }
                     else {
-                        sprite.sprite = spriteManager.slots_items[items[cnt].item.id - 1];
+                        sprite.sprite = spriteManager.stage_items[items[cnt].item.id - 1];
                     }
                     label.text = items[cnt].item.name;
                 }
