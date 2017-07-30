@@ -81,8 +81,11 @@ public class MainViewController : MonoBehaviour {
                         sprite.sprite = spriteManager.stage_items[bi.equipedItemIndex[0].item.id - 1];
                     }
                     else {
-                        sprite.sprite = Bicycles_items_stage[5];
+                        sprite.sprite = spriteManager.stage_items[53];
                     }
+                }
+                else {
+                    sprite.sprite = spriteManager.stage_items[53];
                 }
 
                 sprite = bicycleSprite.transform.Find("Frame").GetComponent<Image>();
@@ -95,6 +98,9 @@ public class MainViewController : MonoBehaviour {
                         sprite.sprite = spriteManager.stage_items[0];
                     }
                 }
+                else {
+                    sprite.sprite = spriteManager.stage_items[0];
+                }
 
                 sprite = bicycleSprite.transform.Find("Engine").GetComponent<Image>();
                 if (bi.equipedItemIndex[2] != null) {
@@ -105,6 +111,9 @@ public class MainViewController : MonoBehaviour {
                     else {
                         sprite.sprite = spriteManager.stage_items[85];
                     }
+                }
+                else {
+                    sprite.sprite = spriteManager.stage_items[85];
                 }
 
                 isBicycleLoaded = true;

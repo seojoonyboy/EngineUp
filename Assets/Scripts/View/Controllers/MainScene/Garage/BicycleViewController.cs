@@ -662,11 +662,14 @@ public class BicycleViewController : MonoBehaviour {
             RespItem _item = equipedItem.item;
             var tmp = spriteManager.stage_items[_item.id - 1];
             if(tmp == null) {
-                sprite.sprite = mV.Bicycles_items_stage[5];
+                sprite.sprite = spriteManager.stage_items[53];
             }
             else {
                 sprite.sprite = spriteManager.stage_items[_item.id - 1];
             }
+        }
+        else {
+            sprite.sprite = spriteManager.stage_items[53];
         }
 
         equipedItem = bicycleItemStore.equipedItemIndex[1];
@@ -681,6 +684,9 @@ public class BicycleViewController : MonoBehaviour {
                 sprite.sprite = spriteManager.stage_items[_item.id - 1];
             }
         }
+        else {
+            sprite.sprite = spriteManager.stage_items[0];
+        }
 
         equipedItem = bicycleItemStore.equipedItemIndex[2];
         sprite = bicycle.transform.Find("Engine").GetComponent<Image>();
@@ -693,6 +699,9 @@ public class BicycleViewController : MonoBehaviour {
             else {
                 sprite.sprite = spriteManager.stage_items[_item.id - 1];
             }
+        }
+        else {
+            sprite.sprite = spriteManager.stage_items[85];
         }
     }
 
@@ -731,6 +740,7 @@ public class BicycleViewController : MonoBehaviour {
             }
 
             sideSlot.transform.Find("Plus").gameObject.SetActive(false);
+            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = spriteManager.grade_items[sideBarInfo.grade];
         }
         else {
             Info tmp = sideSlot.GetComponent<Info>();
@@ -738,6 +748,7 @@ public class BicycleViewController : MonoBehaviour {
             sideSprite.enabled = false;
 
             sideSlot.transform.Find("Plus").gameObject.SetActive(true);
+            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = null;
         }
 
         sideSlot = sideBar.transform.Find("FrameSlot").gameObject;
@@ -775,6 +786,7 @@ public class BicycleViewController : MonoBehaviour {
             }
 
             sideSlot.transform.Find("Plus").gameObject.SetActive(false);
+            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = spriteManager.grade_items[sideBarInfo.grade];
         }
         else {
             Info tmp = sideSlot.GetComponent<Info>();
@@ -782,6 +794,7 @@ public class BicycleViewController : MonoBehaviour {
             sideSprite.enabled = false;
 
             sideSlot.transform.Find("Plus").gameObject.SetActive(true);
+            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = null;
         }
 
         sideSlot = sideBar.transform.Find("EngineSlot").gameObject;
@@ -820,6 +833,7 @@ public class BicycleViewController : MonoBehaviour {
             }
 
             sideSlot.transform.Find("Plus").gameObject.SetActive(false);
+            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = spriteManager.grade_items[sideBarInfo.grade];
         }
         else {
             Info tmp = sideSlot.GetComponent<Info>();
@@ -827,6 +841,7 @@ public class BicycleViewController : MonoBehaviour {
             sideSprite.enabled = false;
 
             sideSlot.transform.Find("Plus").gameObject.SetActive(true);
+            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = null;
         }
     }
 
