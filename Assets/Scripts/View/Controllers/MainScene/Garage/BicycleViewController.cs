@@ -78,6 +78,7 @@ public class BicycleViewController : MonoBehaviour {
                     setStat();
                     setMainStageImage();
                     setSideBar();
+                    childPanel.makeList();
                 }
             }
 
@@ -858,24 +859,24 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     public void selling() {
-        garage_sell_act act = ActionCreator.createAction(ActionTypes.GARAGE_SELL) as garage_sell_act;
-        int gears = 0;
+        //garage_sell_act act = ActionCreator.createAction(ActionTypes.GARAGE_SELL) as garage_sell_act;
+        //int gears = 0;
         
-        List<int> idLists = new List<int>();
+        //List<int> idLists = new List<int>();
         
-        foreach (Info info in sellList) {
-            idLists.Add(info.id);
-            gears += info.gear;
-            Debug.Log(info.id);
-        }
-        act.lists = idLists;
-        gm.gameDispatcher.dispatch(act);
+        //foreach (Info info in sellList) {
+        //    idLists.Add(info.id);
+        //    gears += info.gear;
+        //    Debug.Log(info.id);
+        //}
+        //act.lists = idLists;
+        //gm.gameDispatcher.dispatch(act);
 
-        isSingleSellOrLock = false;
-        notifyModal.SetActive(true);
-        notifyModal.transform.Find("InnerModal/Text").GetComponent<Text>().text = "총 " + gears + "개의 기어를 획득하였습니다.";
-        sm.playEffectSound(1);
-        sellList.Clear();
+        //isSingleSellOrLock = false;
+        //notifyModal.SetActive(true);
+        //notifyModal.transform.Find("InnerModal/Text").GetComponent<Text>().text = "총 " + gears + "개의 기어를 획득하였습니다.";
+        //sm.playEffectSound(1);
+        //sellList.Clear();
     }
 
     public void singleSelling() {

@@ -18,7 +18,10 @@ public class BicycleDetailViewController : MonoBehaviour {
 
     public GameObject[] specs;
 
-    public GameObject notifyModal;
+    public GameObject 
+        notifyModal,
+        equipButton,
+        unEquipButton;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -139,6 +142,13 @@ public class BicycleDetailViewController : MonoBehaviour {
             specs[1].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffRecovery).ToString();
             specs[2].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffSpeed).ToString();
             specs[3].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffEndurance).ToString();
+
+            if(info.is_equiped) {
+                unEquipButton.SetActive(true);
+            }
+            else {
+                equipButton.SetActive(true);
+            }
         }
 
         //slider out
@@ -161,10 +171,7 @@ public class BicycleDetailViewController : MonoBehaviour {
             act.id = info.id;
             gm.gameDispatcher.dispatch(act);
 
-            //상세 보기, 리스트 보기 닫기
-            //장착 Action
-            onBackButton();
-            parent.onBackButton();
+            close();
         }
         else {
             notifyModal.SetActive(true);
@@ -173,11 +180,33 @@ public class BicycleDetailViewController : MonoBehaviour {
     }
 
     public void OnSellButton() {
-        
+        Info info = parent.selectedItem.GetComponent<Info>();
+        garage_sell_act act = ActionCreator.createAction(ActionTypes.GARAGE_SELL) as garage_sell_act;
+        act.id = info.id;
+        gm.gameDispatcher.dispatch(act);
+
+        notifyModal.SetActive(true);
+        notifyModal.transform.Find("InnerModal/Text").GetComponent<Text>().text = "총 " + info.gear  + " 기어를 획득하였습니다.";
+    }
+
+    public void OnUnequipButton() {
+        unequip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_UNEQUIP) as unequip_act;
+        Info info = parent.selectedItem.GetComponent<Info>();
+        int index = info.id;
+        act.id = index;
+        gm.gameDispatcher.dispatch(act);
+
+        close();
+    }
+
+    public void close() {
+        onBackButton();
+        parent.onBackButton();
     }
 
     public void offNotifyModal() {
         notifyModal.SetActive(false);
+        close();
     }
 
     private void init() {
@@ -189,6 +218,10 @@ public class BicycleDetailViewController : MonoBehaviour {
             obj.transform.Find("Diff/Inc").gameObject.SetActive(false);
             obj.transform.Find("Diff/Dec").gameObject.SetActive(false);
         }
+
+        unEquipButton.SetActive(false);
+        equipButton.SetActive(false);
+        notifyModal.SetActive(false);
     }
 
     private spec diffSpec(Info info) {

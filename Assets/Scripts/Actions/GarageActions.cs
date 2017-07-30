@@ -13,9 +13,8 @@ public class unequip_act : equip_act { }
 public class garage_lock_act : equip_act {
     public string type;
 }
-public class garage_sell_act : NetworkAction {
-    public List<int> lists;
-}
+public class garage_sell_act : equip_act { }
+
 public class garage_unlock_char : equip_act { }
 
 //박스 관련

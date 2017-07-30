@@ -264,23 +264,25 @@ public class BicycleItem_Inventory : AjwStore {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
                 var strBuilder = GameManager.Instance.sb;
-                var parmStrBuilder = new StringBuilder();
+                //var parmStrBuilder = new StringBuilder();
                 strBuilder.Remove(0, strBuilder.Length);
-                parmStrBuilder.Remove(0, parmStrBuilder.Length);
-                List<int> lists = payload.lists;
-                int cnt = lists.Count;
-                foreach(int id in lists) {
-                    parmStrBuilder.Append(id);
-                    if (cnt > 1) {
-                        parmStrBuilder.Append(",");
-                    }
-                    cnt--;
-                }
+                //parmStrBuilder.Remove(0, parmStrBuilder.Length);
+                //List<int> lists = payload.lists;
+                //int cnt = lists.Count;
+                //foreach(int id in lists) {
+                //    parmStrBuilder.Append(id);
+                //    if (cnt > 1) {
+                //        parmStrBuilder.Append(",");
+                //    }
+                //    cnt--;
+                //}
                 WWWForm form = new WWWForm();
-                form.AddField("ids", parmStrBuilder.ToString());
+                //form.AddField("ids", parmStrBuilder.ToString());
 
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("inventory/items/sell");
+                    .Append("inventory/items/")
+                    .Append(payload.id)
+                    .Append("/sell");
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
@@ -294,6 +296,7 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
+                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
         }
