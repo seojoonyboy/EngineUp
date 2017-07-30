@@ -704,7 +704,7 @@ public class BicycleViewController : MonoBehaviour {
         }
         Image sideSprite;
         RespGetItems equipedItem = bicycleItemStore.equipedItemIndex[0];
-        sideSprite = sideSlot.transform.Find("Image").GetComponent<Image>();
+        sideSprite = sideSlot.transform.Find("Mask/Image").GetComponent<Image>();
         if (equipedItem != null) {
             sideSprite.enabled = true;
             RespItem _item = equipedItem.item;

@@ -108,7 +108,7 @@ public class BicycleListViewController : MonoBehaviour {
                         image = item.transform.Find("Image_FR").GetComponent<Image>();
                     }
                     else if(type == SelectedType.WH) {
-                        image = item.transform.Find("Image_WH").GetComponent<Image>();
+                        image = item.transform.Find("Image_WH_mask/Image_WH").GetComponent<Image>();
                     }
 
                     image.enabled = true;

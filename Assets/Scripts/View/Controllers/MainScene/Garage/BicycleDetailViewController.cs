@@ -69,7 +69,7 @@ public class BicycleDetailViewController : MonoBehaviour {
                 }
             }
             else if(type == "WH") {
-                Image img = gameObject.transform.Find("Image_WH").GetComponent<Image>();
+                Image img = gameObject.transform.Find("Image_WH_mask/Image_WH").GetComponent<Image>();
                 var tmp = spriteManager.stage_items[info.imageId - 1];
                 if(tmp != null) {
                     img.enabled = true;
@@ -212,7 +212,7 @@ public class BicycleDetailViewController : MonoBehaviour {
     private void init() {
         gameObject.transform.Find("Image_EG").GetComponent<Image>().enabled = false;
         gameObject.transform.Find("Image_FR").GetComponent<Image>().enabled = false;
-        gameObject.transform.Find("Image_WH").GetComponent<Image>().enabled = false;
+        gameObject.transform.Find("Image_WH_mask/Image_WH").GetComponent<Image>().enabled = false;
 
         foreach(GameObject obj in specs) {
             obj.transform.Find("Diff/Inc").gameObject.SetActive(false);
@@ -240,32 +240,43 @@ public class BicycleDetailViewController : MonoBehaviour {
         if (info.parts == "WH") {
             equipedItem = bicycleItemStore.equipedItemIndex[0];
             if (equipedItem != null) {
-                pre_str += equipedItem.item.strength;
-                pre_rec += equipedItem.item.regeneration;
-                pre_speed += equipedItem.item.speed;
-                pre_end += equipedItem.item.endurance;
+                pre_str = equipedItem.item.strength;
+                pre_rec = equipedItem.item.regeneration;
+                pre_speed = equipedItem.item.speed;
+                pre_end = equipedItem.item.endurance;
             }
         }
 
         else if(info.parts == "FR") {
             equipedItem = bicycleItemStore.equipedItemIndex[1];
             if (equipedItem != null) {
-                pre_str += equipedItem.item.strength;
-                pre_rec += equipedItem.item.regeneration;
-                pre_speed += equipedItem.item.speed;
-                pre_end += equipedItem.item.endurance;
+                pre_str = equipedItem.item.strength;
+                pre_rec = equipedItem.item.regeneration;
+                pre_speed = equipedItem.item.speed;
+                pre_end = equipedItem.item.endurance;
             }
         }
 
         else if(info.parts == "DS") {
             equipedItem = bicycleItemStore.equipedItemIndex[2];
             if (equipedItem != null) {
-                pre_str += equipedItem.item.strength;
-                pre_rec += equipedItem.item.regeneration;
-                pre_speed += equipedItem.item.speed;
-                pre_end += equipedItem.item.endurance;
+                pre_str = equipedItem.item.strength;
+                pre_rec = equipedItem.item.regeneration;
+                pre_speed = equipedItem.item.speed;
+                pre_end = equipedItem.item.endurance;
             }
         }
+        //Debug.Log("이전 장착 Spec");
+        //Debug.Log(pre_str);
+        //Debug.Log(pre_end);
+        //Debug.Log(pre_rec);
+        //Debug.Log(pre_speed);
+
+        //Debug.Log("선택한 아이템 Spec");
+        //Debug.Log(selected_spec_str);
+        //Debug.Log(selected_spec_end);
+        //Debug.Log(selected_spec_rec);
+        //Debug.Log(selected_spec_speed);
 
         specs.diff_strength = selected_spec_str - pre_str;
         specs.diff_endurance = selected_spec_end - pre_end;
