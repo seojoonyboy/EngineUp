@@ -19,6 +19,15 @@ public class BicycleViewController : MonoBehaviour {
     public MainViewController mV;
     public SpritesManager spriteManager;
     public BicycleListViewController childPanel;
+
+    public GameObject changeSpecViewButton;
+
+    public int 
+        per_str,
+        per_speed,
+        per_endurance,
+        per_recovery;
+
     //판매 버튼 클릭시
     private bool 
         isSellMode = false,
@@ -109,6 +118,10 @@ public class BicycleViewController : MonoBehaviour {
 
     void OnEnable() {
         Invoke("playSlideIn", 0.2f);
+    }
+
+    void OnDisable() {
+        init();
     }
 
     void playSlideIn() {
@@ -652,10 +665,45 @@ public class BicycleViewController : MonoBehaviour {
         int item_reg = itemSpects.Item_regeneration;
 
         //파트너 + 아이템 장착효과
-        spects[0].text = (char_str + item_str).ToString();
-        spects[1].text = (char_end + item_end).ToString();
-        spects[2].text = (char_speed + item_speed).ToString();
-        spects[3].text = (char_reg + item_reg).ToString();
+        per_endurance = char_end + item_end;
+        per_speed = char_speed + item_speed;
+        per_str = char_str + item_str;
+        per_recovery = char_reg + item_reg;
+
+        spects[0].text = (per_str).ToString();
+        spects[1].text = (per_endurance).ToString();
+        spects[2].text = (per_speed).ToString();
+        spects[3].text = (per_recovery).ToString();
+
+        for (int i = 0; i < 4; i++) {
+            spects[i].transform.parent.GetComponent<Text>().enabled = true;
+        }
+        changeSpecViewButton.GetComponent<boolIndex>().isOn = false;
+    }
+
+    public void changeSpecViewType() {
+        bool isOn = changeSpecViewButton.GetComponent<boolIndex>().isOn;
+        var mySpec = userStore.myData.status;
+
+        if (isOn) {
+            setStat();
+
+            for (int i = 0; i < 4; i++) {
+                spects[i].transform.parent.GetComponent<Text>().enabled = true;
+            }
+        }
+        else {
+            spects[0].text = ((int)(per_str * mySpec.strength / 100)).ToString();
+            spects[1].text = ((int)(per_endurance * mySpec.endurance / 100)).ToString();
+            spects[2].text = ((int)(per_speed * mySpec.speed / 100)).ToString();
+            spects[3].text = ((int)(per_recovery * mySpec.regeneration / 100)).ToString();
+
+            for(int i=0; i<4; i++) {
+                spects[i].transform.parent.GetComponent<Text>().enabled = false;
+            }
+        }
+
+        changeSpecViewButton.GetComponent<boolIndex>().isOn = !isOn;
     }
 
     private void setMainStageImage() {
@@ -863,6 +911,14 @@ public class BicycleViewController : MonoBehaviour {
         equipedItemIndex[2] = -1;
         lockIdList.Clear();
         sellList.Clear();
+
+        setStat();
+
+        for (int i = 0; i < 4; i++) {
+            spects[i].transform.parent.GetComponent<Text>().enabled = true;
+        }
+
+        changeSpecViewButton.GetComponent<boolIndex>().isOn = false;
     }
 
     public void locking() {

@@ -45,10 +45,6 @@ public class HistoryViewController : MonoBehaviour {
     }
 
     void OnDisable() {
-
-    }
-
-    public void onBackButton() {
         foreach (Transform obj in scrollView.transform) {
             Destroy(obj.gameObject);
         }
