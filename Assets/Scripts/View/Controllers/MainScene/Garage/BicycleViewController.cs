@@ -81,6 +81,12 @@ public class BicycleViewController : MonoBehaviour {
                 }
             }
         }
+
+        if(bicycleItemStore.eventType == ActionTypes.GARAGE_ITEM_SORT) {
+            if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+                childPanel.makeList();
+            }
+        }
     }
 
     public void onCharItemStoreListener() {

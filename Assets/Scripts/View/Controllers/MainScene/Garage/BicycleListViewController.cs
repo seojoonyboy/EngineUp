@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class BicycleListViewController : MonoBehaviour {
+    private GameManager gm;
     public BicycleItem_Inventory bicycleItemStore;
     public BicycleViewController parent;
     public SpritesManager spriteManager;
@@ -16,6 +17,8 @@ public class BicycleListViewController : MonoBehaviour {
 
     public GameObject selectedItem;
     void Awake() {
+        gm = GameManager.Instance;
+
         animator = GetComponent<Animator>();
         bicycleItemStore = parent.bicycleItemStore;
     }
@@ -144,6 +147,26 @@ public class BicycleListViewController : MonoBehaviour {
     private void onDetail(GameObject obj) {
         details.gameObject.SetActive(true);
         selectedItem = obj;
+    }
+
+    public void onFilterButton(GameObject obj) {
+        obj.SetActive(!obj.activeSelf);
+    }
+
+    public void filterSelected(int index) {
+        PlayerPrefs.SetInt("Filter", index);
+        itemSort act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_SORT) as itemSort;
+        switch (index) {
+            case 1:
+                Debug.Log("이름순 정렬");
+                act._type = itemSort.type.NAME;
+                break;
+            case 2:
+                Debug.Log("등급순 정렬");
+                act._type = itemSort.type.GRADE;
+                break;
+        }
+        gm.gameDispatcher.dispatch(act);
     }
 }
 
