@@ -49,14 +49,6 @@ public class MainViewController : MonoBehaviour {
     }
 
     void Start() {
-        item_init initItemAct = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
-        initItemAct._type = equip_act.type.ITEM;
-        gm.gameDispatcher.dispatch(initItemAct);
-
-        item_init _act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
-        _act._type = equip_act.type.CHAR;
-        gm.gameDispatcher.dispatch(_act);
-
         MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
         gm.gameDispatcher.dispatch(myInfoAct);
 
@@ -69,7 +61,15 @@ public class MainViewController : MonoBehaviour {
     }
 
     public void onUserListener() {
-        
+        if (ci.eventType == ActionTypes.MYINFO) {
+            //if (ci.storeStatus == storeStatus.NORMAL) {
+            //    Debug.Log("메인화면 캐릭터 갱신");
+            //    charSprite.sprite = characters_entire_body[userStore.myData.represent_character.character_inventory.character - 1].images[ci.repCharacter.lv - 1];
+
+            //    isCharLoded = true;
+            //    isAllLoaded();
+            //}
+        }
     }
 
     public void onBicycleInvenListener() {
@@ -123,9 +123,10 @@ public class MainViewController : MonoBehaviour {
     }
 
     public void onCharInvenListener() {
-        if(ci.eventType == ActionTypes.ITEM_INIT) {
-            if(ci.storeStatus == storeStatus.NORMAL) {
-                charSprite.sprite = characters_entire_body[ci.repCharacter.character - 1].images[ci.repCharacter.lv - 1];
+        if (ci.eventType == ActionTypes.ITEM_INIT) {
+            if (ci.storeStatus == storeStatus.NORMAL) {
+                Debug.Log("메인화면 캐릭터 갱신");
+                charSprite.sprite = characters_entire_body[userStore.myData.represent_character.character_inventory.character - 1].images[ci.repCharacter.lv - 1];
 
                 isCharLoded = true;
                 isAllLoaded();

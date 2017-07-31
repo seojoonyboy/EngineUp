@@ -32,7 +32,10 @@ public class Char_Inventory : AjwStore {
                 unlock(action as garage_unlock_char);
                 break;
             case ActionTypes.GARAGE_ITEM_EQUIP:
-                equip(action as equip_act);
+                equip_act equipAct = action as equip_act;
+                if (equipAct._type == equip_act.type.CHAR) {
+                    equip(action as equip_act);
+                }
                 break;
             case ActionTypes.ITEM_INIT:
                 item_init itemInitAct = action as item_init;
@@ -116,12 +119,8 @@ public class Char_Inventory : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 Debug.Log("캐릭터 장착 완료");
 
-                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
-                act._type = equip_act.type.CHAR;
-                dispatcher.dispatch(act);
-
                 MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
-                dispatcher.dispatch(myInfoAct);
+                gm.gameDispatcher.dispatch(myInfoAct);
 
                 break;
             case NetworkAction.statusTypes.FAIL:

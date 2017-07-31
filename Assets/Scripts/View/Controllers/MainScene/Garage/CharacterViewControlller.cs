@@ -47,20 +47,54 @@ public class CharacterViewControlller : MonoBehaviour {
 
     private TweenPosition tP;
     private bool isReverse_tp;
-
+    private Animator animator;
     void Awake() {
         gm = GameManager.Instance;
         sm = SoundManager.Instance;
+        animator = GetComponent<Animator>();
 
         charInvenStore = gm.charInvenStore;
 
-        tP = GetComponent<TweenPosition>();
+        //tP = GetComponent<TweenPosition>();
     }
 
     void OnEnable() {
-        tweenPos();
-        
-        isReverse_tp = false;
+        //tweenPos();
+        //isReverse_tp = false;
+        Invoke("playSlideIn", 0.2f);
+    }
+
+    void playSlideIn() {
+        animator.Play("SlideIn");
+    }
+
+    public void onBackButton() {
+        animator.Play("SlideOut");
+
+        selectedChar = null;
+        nonepossessionButton.SetActive(false);
+
+        scrollSnapRect.enabled = false;
+    }
+
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
+
+        //slider in
+        if (boolParm == 1) {
+            makeList();
+
+            character_inventory charInfo = charInvenStore.repCharacter;
+            setMainChar(charInfo.character, charInfo.lv);
+            setEquipButton(charInfo.character, charInfo.has_character);
+            setSideBar();
+            setStat();
+        }
+
+        //slider out
+        else if (boolParm == 0) {
+            gameObject.SetActive(false);
+        }
     }
 
     void offPanel() {
@@ -122,7 +156,7 @@ public class CharacterViewControlller : MonoBehaviour {
         if(gameObject.activeSelf) {
             ActionTypes charStoreEventType = charInvenStore.eventType;
 
-            if (charStoreEventType == ActionTypes.ITEM_INIT) {
+            if (charStoreEventType == ActionTypes.MYINFO) {
                 if (charInvenStore.storeStatus == storeStatus.NORMAL) {
                     makeList();
 

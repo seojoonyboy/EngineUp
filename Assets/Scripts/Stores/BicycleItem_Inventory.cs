@@ -33,7 +33,10 @@ public class BicycleItem_Inventory : AjwStore {
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             case ActionTypes.GARAGE_ITEM_EQUIP:
-                equip(action as equip_act);
+                equip_act equipAct = action as equip_act;
+                if(equipAct._type == equip_act.type.ITEM) {
+                    equip(action as equip_act);
+                }
                 break;
             case ActionTypes.GARAGE_ITEM_UNEQUIP:
                 unequip(action as unequip_act);
@@ -178,9 +181,11 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
-                act._type = equip_act.type.ITEM;
-                dispatcher.dispatch(act);
+
+                Debug.Log("아이템 장착 완료");
+
+                MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+                gm.gameDispatcher.dispatch(myInfoAct);
 
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -206,9 +211,9 @@ public class BicycleItem_Inventory : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 Debug.Log("아이템 해제 완료");
-                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
-                act._type = equip_act.type.ITEM;
-                dispatcher.dispatch(act);
+
+                MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+                gm.gameDispatcher.dispatch(myInfoAct);
 
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -287,11 +292,11 @@ public class BicycleItem_Inventory : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
+
                 Debug.Log("아이템 판매 완료");
 
-                item_init act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
-                act._type = equip_act.type.ITEM;
-                dispatcher.dispatch(act);
+                MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
+                gm.gameDispatcher.dispatch(myInfoAct);
 
                 break;
             case NetworkAction.statusTypes.FAIL:

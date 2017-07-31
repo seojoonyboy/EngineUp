@@ -71,21 +71,26 @@ public class BicycleViewController : MonoBehaviour {
     public void onBicycleItemStoreListener() {
         ActionTypes bicycleItemStoreEventType = bicycleItemStore.eventType;
 
-        if (gameObject.activeSelf) {
-            if (bicycleItemStoreEventType == ActionTypes.ITEM_INIT) {
-                if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                    //makeList();
+        if(gameObject.activeSelf) {
+            if(bicycleItemStore.eventType == ActionTypes.ITEM_INIT) {
+                if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+                    //Bicycle Item Store에서 Item_init 처리시, User Store에 장착 Spec 전달함
                     setStat();
                     setMainStageImage();
                     setSideBar();
-                    childPanel.makeList();
                 }
             }
+        }
+    }
 
-            if(bicycleItemStoreEventType == ActionTypes.GARAGE_ITEM_SORT) {
-                if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
-                    //makeList();
-                    //Debug.Log("아이템 정렬");
+    public void onCharItemStoreListener() {
+        ActionTypes bicycleItemStoreEventType = charItemStore.eventType;
+
+        if (gameObject.activeSelf) {
+            if (charItemStore.eventType == ActionTypes.ITEM_INIT) {
+                if (charItemStore.storeStatus == storeStatus.NORMAL) {
+                    //Character Item Store에서 Item_init 처리시, User Store에 장착(파트너) Spec 전달함
+                    setStat();
                 }
             }
         }
@@ -93,13 +98,7 @@ public class BicycleViewController : MonoBehaviour {
 
     public void onUserStoreListener() {
         ActionTypes userStoreEventType = userStore.eventType;
-        //lvLavel.text = "Lv. " + userStore.myData.status.rank.ToString();
-
-        //if(userStoreEventType == ActionTypes.MYINFO) {
-        //    if(userStore.storeStatus == storeStatus.NORMAL) {
-        //        setStat();
-        //    }
-        //}
+        ////lvLavel.text = "Lv. " + userStore.myData.status.rank.ToString();
     }
 
     void OnEnable() {
@@ -115,9 +114,9 @@ public class BicycleViewController : MonoBehaviour {
 
         //slider in
         if (boolParm == 1) {
+            setStat();
             setMainStageImage();
             setSideBar();
-            setStat();
         }
 
         //slider out

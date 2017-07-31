@@ -60,8 +60,17 @@ public class User : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 setMessage(2);
                 myData = UserData.fromJSON(payload.response.data);
-                //Debug.Log(myData);
+                Debug.Log("내 정보 초기화");
                 setUserTitle(myData.status.rank);
+
+                item_init _act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
+                _act._type = equip_act.type.CHAR;
+                gm.gameDispatcher.dispatch(_act);
+
+                item_init _itemInit = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
+                _itemInit._type = equip_act.type.ITEM;
+                gm.gameDispatcher.dispatch(_itemInit);
+
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
