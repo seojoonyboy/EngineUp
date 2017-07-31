@@ -21,7 +21,9 @@ public class BicycleDetailViewController : MonoBehaviour {
     public GameObject 
         notifyModal,
         equipButton,
-        unEquipButton;
+        unEquipButton,
+        tierImg,
+        tierGrid;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -54,6 +56,12 @@ public class BicycleDetailViewController : MonoBehaviour {
             if(info == null) { return; }
 
             id = info.id;
+            int grade = info.grade;
+            for(int i=0; i<grade; i++) {
+                GameObject tier = Instantiate(tierImg);
+                tier.transform.SetParent(tierGrid.transform, false);
+            }
+
             gameObject.transform.Find("Name").GetComponent<Text>().text = info.name;
             var type = info.parts;
 
@@ -222,6 +230,10 @@ public class BicycleDetailViewController : MonoBehaviour {
         unEquipButton.SetActive(false);
         equipButton.SetActive(false);
         notifyModal.SetActive(false);
+
+        foreach(Transform child in tierGrid.transform) {
+            Destroy(child.gameObject);
+        }
     }
 
     private spec diffSpec(Info info) {
