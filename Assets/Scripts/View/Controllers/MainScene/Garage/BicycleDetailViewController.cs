@@ -88,7 +88,7 @@ public class BicycleDetailViewController : MonoBehaviour {
                 }
 
             }
-            else if(type == "EG") {
+            else if(type == "DS") {
                 Image img = gameObject.transform.Find("Image_EG").GetComponent<Image>();
                 var tmp = spriteManager.stage_items[info.imageId - 1];
                 if (tmp != null) {
