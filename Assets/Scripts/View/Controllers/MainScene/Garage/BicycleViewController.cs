@@ -12,7 +12,6 @@ public class BicycleViewController : MonoBehaviour {
     private SoundManager sm;
 
     public BicycleItem_Inventory bicycleItemStore;
-    public TweenManager tM;
     public Char_Inventory charItemStore;
     public User userStore;
     public ScrollSnapRect[] sR;
@@ -117,35 +116,13 @@ public class BicycleViewController : MonoBehaviour {
     }
 
     void OnEnable() {
-        Invoke("playSlideIn", 0.2f);
+        setStat();
+        setMainStageImage();
+        setSideBar();
     }
 
     void OnDisable() {
-        init();
-    }
-
-    void playSlideIn() {
-        animator.Play("SlideIn");
-    }
-
-    public void slideFinished(AnimationEvent animationEvent) {
-        int boolParm = animationEvent.intParameter;
-
-        //slider in
-        if (boolParm == 1) {
-            setStat();
-            setMainStageImage();
-            setSideBar();
-        }
-
-        //slider out
-        else if (boolParm == 0) {
-            gameObject.SetActive(false);
-        }
-    }
-
-    public void onBackButton() {
-        animator.Play("SlideOut");
+        //init();
     }
 
     public void selected(GameObject obj) {

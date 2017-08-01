@@ -1,80 +1,70 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MyHomeViewController : MonoBehaviour {
     public GameObject[] subPanels;
-    private TweenPosition tP;
-    private SoundManager sm;
-
-    private TweenManager tm;
-    private bool
-        isReverse_tp;
+    private Animator animator;
+    private ToggleGroup tg;
 
     void Awake() {
-        tP = GetComponent<TweenPosition>();
-        tm = GetComponent<TweenManager>();
-        sm = SoundManager.Instance;
+        animator = GetComponent<Animator>();
+        tg = transform.Find("TogglePanel").GetComponent<ToggleGroup>();
     }
 
     void OnEnable() {
-        tweenPos();
-        isReverse_tp = false;
+        Invoke("playSlideIn", 0.2f);
     }
 
-    public void tweenPos() {
-        sm.playEffectSound(0);
-        bool isTweening = tm.isTweening;
-        if (isTweening) {
-            return;
-        }
-        tm.isTweening = true;
-
-        if (!isReverse_tp) {
-            tP.PlayForward();
-        }
-        else {
-            //swap
-            Vector3 tmp;
-            tmp = tP.to;
-            tP.to = tP.from;
-            tP.from = tmp;
-
-            tP.ResetToBeginning();
-            tP.PlayForward();
-        }
+    void playSlideIn() {
+        animator.Play("SlideIn");
     }
 
-    public void tPFinished() {
-        tm.isTweening = false;
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
 
-        if(isReverse_tp) {
+        //slider in
+        if (boolParm == 1) {
+            subPanels[0].SetActive(true);
+        }
+
+        //slider out
+        else if (boolParm == 0) {
             gameObject.SetActive(false);
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
-        }
-        else {
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
-        }
 
-        isReverse_tp = true;
+            initToggle();
+        }
     }
 
-    public void onClick(GameObject obj) {
-        sm.playEffectSound(0);
-        int index = obj.GetComponent<ButtonIndex>().index;
-        switch(index) {
-            //차고지(자전거)
-            case 0:
-                subPanels[1].SetActive(true);
-                break;
-            //서재(기록실)
-            case 1:
-                subPanels[2].SetActive(true);
-                break;
-            //파트너룸(캐릭터)
-            case 2:
-                subPanels[0].SetActive(true);
-                break;
+    public void onBackButton() {
+        animator.Play("SlideOut");
+    }
+
+    public void OnToggle(GameObject obj) {
+        bool isOn = obj.GetComponent<Toggle>().isOn;
+
+        obj.transform.Find("DeactiveImg").gameObject.SetActive(!isOn);
+        obj.transform.Find("DeactiveLabel").gameObject.SetActive(!isOn);
+        obj.transform.Find("ActiveImg").gameObject.SetActive(isOn);
+        obj.transform.Find("ActiveLabel").gameObject.SetActive(isOn);
+    }
+
+    private void initToggle() {
+        var tmp = transform.Find("TogglePanel/GarageButton").gameObject;
+        tmp.GetComponent<Toggle>().isOn = true;
+        OnToggle(tmp);
+
+        foreach(GameObject panel in subPanels) {
+            panel.SetActive(false);
         }
+
+        tmp = transform.Find("TogglePanel/PartnerButton").gameObject;
+        tmp.GetComponent<Toggle>().isOn = false;
+        OnToggle(tmp);
+
+        tmp = transform.Find("TogglePanel/RecordButton").gameObject;
+        tmp.GetComponent<Toggle>().isOn = false;
+        OnToggle(tmp);
     }
 }

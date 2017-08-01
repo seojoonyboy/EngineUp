@@ -47,11 +47,9 @@ public class CharacterViewControlller : MonoBehaviour {
 
     private TweenPosition tP;
     private bool isReverse_tp;
-    private Animator animator;
     void Awake() {
         gm = GameManager.Instance;
         sm = SoundManager.Instance;
-        animator = GetComponent<Animator>();
 
         charInvenStore = gm.charInvenStore;
 
@@ -59,98 +57,75 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     void OnEnable() {
-        //tweenPos();
-        //isReverse_tp = false;
-        Invoke("playSlideIn", 0.2f);
+        makeList();
+
+        character_inventory charInfo = charInvenStore.repCharacter;
+        setMainChar(charInfo.character, charInfo.lv);
+        setEquipButton(charInfo.character, charInfo.has_character);
+        setSideBar();
+        setStat();
     }
 
-    void playSlideIn() {
-        animator.Play("SlideIn");
-    }
-
-    public void onBackButton() {
-        animator.Play("SlideOut");
-
+    void OnDisable() {
         selectedChar = null;
         nonepossessionButton.SetActive(false);
-
         scrollSnapRect.enabled = false;
     }
 
-    public void slideFinished(AnimationEvent animationEvent) {
-        int boolParm = animationEvent.intParameter;
+    //void offPanel() {
+    //    gameObject.SetActive(false);
+    //    selectedChar = null;
 
-        //slider in
-        if (boolParm == 1) {
-            makeList();
+    //    tP.ResetToBeginning();
+    //    nonepossessionButton.SetActive(false);
 
-            character_inventory charInfo = charInvenStore.repCharacter;
-            setMainChar(charInfo.character, charInfo.lv);
-            setEquipButton(charInfo.character, charInfo.has_character);
-            setSideBar();
-            setStat();
-        }
+    //    scrollSnapRect.enabled = false;
+    //}
 
-        //slider out
-        else if (boolParm == 0) {
-            gameObject.SetActive(false);
-        }
-    }
+    //public void tweenPos() {
+    //    bool isTweening = tM.isTweening;
+    //    if(isTweening) {
+    //        return;
+    //    }
+    //    tM.isTweening = true;
+    //    if (!isReverse_tp) {
+    //        tP.PlayForward();
+    //    }
+    //    else {
+    //        //swap
+    //        Vector3 tmp;
+    //        tmp = tP.to;
+    //        tP.to = tP.from;
+    //        tP.from = tmp;
 
-    void offPanel() {
-        gameObject.SetActive(false);
-        selectedChar = null;
+    //        tP.ResetToBeginning();
+    //        tP.PlayForward();
 
-        tP.ResetToBeginning();
-        nonepossessionButton.SetActive(false);
+    //        sm.playEffectSound(0);
+    //    }
+    //}
 
-        scrollSnapRect.enabled = false;
-    }
+    //public void tpFinished() {
+    //    tM.isTweening = false;
 
-    public void tweenPos() {
-        bool isTweening = tM.isTweening;
-        if(isTweening) {
-            return;
-        }
-        tM.isTweening = true;
-        if (!isReverse_tp) {
-            tP.PlayForward();
-        }
-        else {
-            //swap
-            Vector3 tmp;
-            tmp = tP.to;
-            tP.to = tP.from;
-            tP.from = tmp;
+    //    if (isReverse_tp) {
+    //        offPanel();
+    //        gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
+    //    }
 
-            tP.ResetToBeginning();
-            tP.PlayForward();
+    //    else {
+    //        gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
 
-            sm.playEffectSound(0);
-        }
-    }
+    //        makeList();
+    //        character_inventory charInfo = charInvenStore.repCharacter;
+    //        setMainChar(charInfo.character, charInfo.lv);
+    //        setEquipButton(charInfo.character, charInfo.has_character);
+    //        setSideBar();
+    //        setStat();
+    //    }
 
-    public void tpFinished() {
-        tM.isTweening = false;
-
-        if (isReverse_tp) {
-            offPanel();
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
-        }
-
-        else {
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
-
-            makeList();
-            character_inventory charInfo = charInvenStore.repCharacter;
-            setMainChar(charInfo.character, charInfo.lv);
-            setEquipButton(charInfo.character, charInfo.has_character);
-            setSideBar();
-            setStat();
-        }
-
-        isReverse_tp = true;
-    }
+    //    isReverse_tp = true;
+    //}
 
     public void onCharInvenStore() {
         if(gameObject.activeSelf) {

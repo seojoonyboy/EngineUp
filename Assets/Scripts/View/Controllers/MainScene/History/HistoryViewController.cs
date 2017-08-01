@@ -27,21 +27,14 @@ public class HistoryViewController : MonoBehaviour {
             item = null,
             preItem = null;
     private string preDate = null;
-
-    private TweenPosition tP;
-    private bool isReverse_tp;
-
     public GameObject refreshButton;
 
     void Awake() {
         gm = GameManager.Instance;
-        tP = GetComponent<TweenPosition>();
     }
 
     void OnEnable() {
-        tweenPos();
-
-        isReverse_tp = false;
+        getRidingDataSets();
     }
 
     void OnDisable() {
@@ -53,43 +46,6 @@ public class HistoryViewController : MonoBehaviour {
         preItem = null;
         preDate = null;
         isFirstGetRidingData = true;
-    }
-
-    public void tweenPos() {
-        bool isTweening = tM.isTweening;
-        if (isTweening) {
-            return;
-        }
-        tM.isTweening = true;
-
-        if (!isReverse_tp) {
-            tP.PlayForward();
-        }
-        else {
-            //swap
-            Vector3 tmp;
-            tmp = tP.to;
-            tP.to = tP.from;
-            tP.from = tmp;
-
-            tP.ResetToBeginning();
-            tP.PlayForward();
-        }
-    }
-
-    public void tpFinished() {
-        tM.isTweening = false;
-
-        if (isReverse_tp) {
-            gameObject.SetActive(false);
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
-        }
-        else {
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
-            getRidingDataSets();
-        }
-
-        isReverse_tp = true;
     }
 
     public void ridingStoreListener() {
