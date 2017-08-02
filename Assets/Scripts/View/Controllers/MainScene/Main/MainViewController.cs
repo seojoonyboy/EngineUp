@@ -62,13 +62,14 @@ public class MainViewController : MonoBehaviour {
 
     public void onUserListener() {
         if (ci.eventType == ActionTypes.MYINFO) {
-            //if (ci.storeStatus == storeStatus.NORMAL) {
-            //    Debug.Log("메인화면 캐릭터 갱신");
-            //    charSprite.sprite = characters_entire_body[userStore.myData.represent_character.character_inventory.character - 1].images[ci.repCharacter.lv - 1];
+            if (ci.storeStatus == storeStatus.NORMAL) {
+                Debug.Log("메인화면 캐릭터 갱신");
+                var tmp = userStore.myData.represent_character.character_inventory;
+                charSprite.sprite = characters_entire_body[tmp.character - 1].images[tmp.lv - 1];
 
-            //    isCharLoded = true;
-            //    isAllLoaded();
-            //}
+                isCharLoded = true;
+                isAllLoaded();
+            }
         }
     }
 
@@ -125,8 +126,8 @@ public class MainViewController : MonoBehaviour {
     public void onCharInvenListener() {
         if (ci.eventType == ActionTypes.ITEM_INIT) {
             if (ci.storeStatus == storeStatus.NORMAL) {
-                Debug.Log("메인화면 캐릭터 갱신");
-                charSprite.sprite = characters_entire_body[userStore.myData.represent_character.character_inventory.character - 1].images[ci.repCharacter.lv - 1];
+                //Debug.Log("메인화면 캐릭터 갱신");
+                //charSprite.sprite = characters_entire_body[userStore.myData.represent_character.character_inventory.character - 1].images[ci.repCharacter.lv - 1];
 
                 isCharLoded = true;
                 isAllLoaded();

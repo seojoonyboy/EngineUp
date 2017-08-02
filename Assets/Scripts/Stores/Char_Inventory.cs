@@ -10,7 +10,6 @@ public class Char_Inventory : AjwStore {
     public string message;
 
     public Char_Inventory(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher) { }
-    public represent_character representChar;
 
     private GameManager gm = GameManager.Instance;
     private User userStore = GameManager.Instance.userStore;
@@ -18,13 +17,14 @@ public class Char_Inventory : AjwStore {
     NetworkManager networkManager = NetworkManager.Instance;
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
-    public character_inventory[] my_characters;
-    public Dictionary<int, all_characters> all_characters = new Dictionary<int, all_characters>();
+    //public character_inventory[] my_characters;
+    //public Dictionary<int, all_characters> all_characters = new Dictionary<int, all_characters>();
+    public ArrayList myCharacters = new ArrayList();
     public ActionTypes eventType;
 
     //현재 보유하지 않은 캐릭터 역시 파트너룸에서 보여주기 위한 임시 배열
     public charStat[] allStats;
-    public character_inventory repCharacter;
+    public Character_inventory repCharacter;
 
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
@@ -66,28 +66,51 @@ public class Char_Inventory : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 //Debug.Log(payload.response.data);
                 message = "캐릭터 아이템을 성공적으로 불러왔습니다.";
+
+                myCharacters.Clear();
+
                 callbackGetchar callback = callbackGetchar.fromJSON(payload.response.data);
-                all_characters.Clear();
-                all_characters[] tmp = callback.all_characters;
-                for(int i=0; i<tmp.Length; i++) {
-                    all_characters.Add(tmp[i].id, tmp[i]);
-                }
+                callback_allChars[] allCharacters = callback.all_characters;
+                callback_CharInventory[] callback_myCharacters = callback.character_inventory;
+                int repId = userStore.myData.represent_character.character_inventory.character;
+                for(int i=0; i<allCharacters.Length; i++) {
+                    Character_inventory _myCharacter = new Character_inventory();
+                    foreach (callback_CharInventory myCharater in callback_myCharacters) {
+                        if(allCharacters[i].id == myCharater.character) {
+                            _myCharacter.imageId = allCharacters[i].id;
+                            _myCharacter.desc = allCharacters[i].desc;
+                            _myCharacter.lvup_exps = allCharacters[i].lvup_exps;
+                            _myCharacter.name = allCharacters[i].name;
 
-                my_characters = callback.character_inventory;
-                int repCharId = userStore.myData.represent_character.character_inventory.character;
+                            _myCharacter.id = myCharater.id;
+                            _myCharacter.paid = myCharater.paid;
+                            _myCharacter.exp = myCharater.exp;
+                            _myCharacter.lv = myCharater.lv;
 
-                foreach(character_inventory charInven in my_characters) {
-                    if(charInven.character == repCharId) {
-                        var status = charInven.status;
-                        userStore.itemSpects.Char_endurance = status.endurance;
-                        userStore.itemSpects.Char_regeneration = status.regeneration;
-                        userStore.itemSpects.Char_speed = status.speed;
-                        userStore.itemSpects.Char_strength = status.strength;
+                            _myCharacter.strength = myCharater.status.strength;
+                            _myCharacter.speed = myCharater.status.speed;
+                            _myCharacter.regeneration = myCharater.status.regeneration;
+                            _myCharacter.endurance = myCharater.status.endurance;
+                        }
 
-                        //대표 캐릭터 정보 저장
-                        repCharacter = charInven;
+                        if(repId == _myCharacter.imageId) {
+                            repCharacter = _myCharacter;
+                        }
                     }
+
+                    if(_myCharacter.id == 0) {
+                        _myCharacter.imageId = allCharacters[i].id;
+                        _myCharacter.name = allCharacters[i].name;
+                        _myCharacter.desc = allCharacters[i].desc;
+                        _myCharacter.cost = allCharacters[i].cost;
+                        _myCharacter.lvup_exps = allCharacters[i].lvup_exps;
+                    }
+                    myCharacters.Add(_myCharacter);
+                    //if (_myCharacter.id == 0) {
+                    //    Debug.Log("해당 캐릭터 없음");
+                    //}
                 }
+                Sorting.itemSort(myCharacters, 1);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
@@ -161,7 +184,7 @@ public class Char_Inventory : AjwStore {
 }
 
 [System.Serializable]
-public class character_inventory {
+public class callback_CharInventory {
     public int id;
     public int character;
     public int paid;
@@ -169,7 +192,6 @@ public class character_inventory {
     public int exp;
     public string has_character;
     public charStat status;
-
 }
 
 [System.Serializable]
@@ -181,7 +203,7 @@ public class charStat {
 }
 
 [System.Serializable]
-public class all_characters {
+public class callback_allChars {
     public int id;
     public string name;
     public string desc;
@@ -191,10 +213,27 @@ public class all_characters {
 
 [System.Serializable]
 public class callbackGetchar {
-    public all_characters[] all_characters;
-    public character_inventory[] character_inventory;
+    public callback_allChars[] all_characters;
+    public callback_CharInventory[] character_inventory;
 
     public static callbackGetchar fromJSON(string json) {
         return JsonUtility.FromJson<callbackGetchar>(json);
     }
+}
+
+public class Character_inventory {
+    public int id;              //고유식별 번호
+    public string name;         //이름
+    public string desc;         //설명
+    public int cost;            //필요 조각 갯수
+    public int[] lvup_exps;     //레벨업 필요 경험치
+    public int lv;              //현재 레벨
+    public int imageId;         //해당 이미지 id
+    public int paid;            //보유 조각 갯수
+    public int exp;             //현재 경험치
+
+    public int strength;        //능력치
+    public int speed;
+    public int endurance;
+    public int regeneration;
 }

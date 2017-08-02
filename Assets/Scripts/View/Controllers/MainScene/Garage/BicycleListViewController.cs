@@ -154,7 +154,7 @@ public class BicycleListViewController : MonoBehaviour {
     }
 
     public void filterSelected(int index) {
-        PlayerPrefs.SetInt("Filter", index);
+        PlayerPrefs.SetInt("Filter_BICYCLE", index);
         itemSort act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_SORT) as itemSort;
         switch (index) {
             case 1:

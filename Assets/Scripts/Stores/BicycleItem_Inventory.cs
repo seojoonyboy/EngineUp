@@ -54,7 +54,10 @@ public class BicycleItem_Inventory : AjwStore {
                 }
                 break;
             case ActionTypes.GARAGE_ITEM_SORT:
-                itemSort();
+                Sorting.itemSort(wheelItems, 0);
+                Sorting.itemSort(frameItems, 0);
+                Sorting.itemSort(engineItems, 0);
+
                 _emitChange();
                 break;
             case ActionTypes.BOX_OPEN:
@@ -85,7 +88,10 @@ public class BicycleItem_Inventory : AjwStore {
 
                 init();
                 itemCategorization(allItems);
-                itemSort();
+
+                Sorting.itemSort(wheelItems, 0);
+                Sorting.itemSort(frameItems, 0);
+                Sorting.itemSort(engineItems, 0);
 
                 _emitChange();
                 break;
@@ -146,24 +152,6 @@ public class BicycleItem_Inventory : AjwStore {
         userStore.itemSpects.Item_speed = totalSpeed;
         userStore.itemSpects.Item_regeneration = totalRecovery;
         userStore.itemSpects.Item_endurance = totalEndurance;
-    }
-
-    //아이템 정렬
-    private void itemSort() {
-        int index = PlayerPrefs.GetInt("Filter");
-        //Debug.Log("Sorting index : " + index);
-        switch (index) {
-            case 1:
-                wheelItems.Sort(new SortByName());
-                frameItems.Sort(new SortByName());
-                engineItems.Sort(new SortByName());
-                break;
-            case 2:
-                wheelItems.Sort(new SortByGrade());
-                frameItems.Sort(new SortByGrade());
-                engineItems.Sort(new SortByGrade());
-                break;
-        }
     }
 
     //아이템 장착
@@ -304,56 +292,6 @@ public class BicycleItem_Inventory : AjwStore {
                 Debug.Log(payload.response.data);
                 _emitChange();
                 break;
-        }
-    }
-
-    private class SortByGrade : IComparer, IComparer<RespGetItems> {
-        public int Compare(RespGetItems x, RespGetItems y) {
-            //throw new NotImplementedException();
-            int xGrade = x.item.grade;
-            int yGrade = y.item.grade;
-
-            if(xGrade == yGrade) {
-                return x.id.CompareTo(y.id);
-            }
-            else {
-                return xGrade.CompareTo(yGrade);
-            }
-        }
-
-        public int Compare(object x, object y) {
-            //throw new NotImplementedException();
-            RespGetItems _x = x as RespGetItems;
-            RespGetItems _y = y as RespGetItems;
-
-            if(_x.id == _y.id) {
-                return _x.id.CompareTo(_y.id);
-            }
-            return Compare(_x, _y);
-        }
-    }
-
-    private class SortByName : IComparer, IComparer<RespGetItems> {
-        public int Compare(RespGetItems x, RespGetItems y) {
-            string xName = x.item.name;
-            string yName = y.item.name;
-
-            if(xName == yName) {
-                return x.id.CompareTo(y.id);
-            }
-            else {
-                return x.item.name.CompareTo(y.item.name);
-            }
-        }
-
-        public int Compare(object x, object y) {
-            RespGetItems _x = x as RespGetItems;
-            RespGetItems _y = y as RespGetItems;
-
-            if (_x.id == _y.id) {
-                return _x.id.CompareTo(_y.id);
-            }
-            return Compare(_x, _y);
         }
     }
 

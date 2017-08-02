@@ -60,7 +60,8 @@ public class User : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 setMessage(2);
                 myData = UserData.fromJSON(payload.response.data);
-                Debug.Log("내 정보 초기화");
+                //Debug.Log("내 정보 초기화");
+                //Debug.Log(payload.response.data);
                 setUserTitle(myData.status.rank);
 
                 item_init _act = ActionCreator.createAction(ActionTypes.ITEM_INIT) as item_init;
@@ -75,7 +76,6 @@ public class User : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
-                Debug.Log(myData);
                 _emitChange();
                 break;
         }
@@ -469,8 +469,18 @@ class SubLoginCallBack {
 public class represent_character {
     public int user;
     public int selectedLv;
-    public character_inventory character_inventory;
+    public repChar character_inventory;
     public status status;
+}
+
+[System.Serializable]
+public class repChar {
+    public int id;
+    public int paid;
+    public int lv;
+    public int exp;
+    public int user;
+    public int character;
 }
 
 [System.Serializable]
