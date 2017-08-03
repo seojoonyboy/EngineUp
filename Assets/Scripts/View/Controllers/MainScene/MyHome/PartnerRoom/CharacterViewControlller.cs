@@ -9,49 +9,24 @@ public class CharacterViewControlller : MonoBehaviour {
     Char_Inventory charInvenStore;
     public User userStore;
     public MainViewController mV_controller;
-    public ScrollSnapRect scrollSnapRect;
 
     SoundManager sm;
 
-    public GameObject
-        mainStage,
-        lv1Slot,
-        lv2Slot,
-        lv3Slot,
-        itemPref,
-        selectedChar,
-        scroll_pagePref,
-        scroll_pageIconPref,
-        specs;
-
-    public ScrollSnapRect sR;
-
-    public GameObject 
-        equipButton,
-        nonepossessionButton,
-        itemGrid,
-        sideBarGrid,
-        pageIconGrid,
-        descModal;
-
-    public Text[] stats;
-
-    public Text 
-        lvLabel,
-        charName;
+    public GameObject mainStage;
 
     public Slider friendlySlider;
-
-    public int
-        per_str,
-        per_speed,
-        per_endurance,
-        per_recovery;
+    public CharacterListViewController childPanel;
 
     public GameObject changeSpecViewButton;
 
     public string rep_name;
     public int rep_id;
+    public Text[] stats;
+    public int
+        per_str,
+        per_speed,
+        per_endurance,
+        per_recovery;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -62,14 +37,8 @@ public class CharacterViewControlller : MonoBehaviour {
 
     void OnEnable() {
         setInfo(true);
-        setStat();
-        setMainChar(charInvenStore.repCharacter.imageId, charInvenStore.repCharacter.lv);
-    }
-
-    void OnDisable() {
-        selectedChar = null;
-        nonepossessionButton.SetActive(false);
-        scrollSnapRect.enabled = false;
+        Character_inventory charInfo = charInvenStore.repCharacter;
+        setMainChar(charInfo.imageId, charInfo.lv);
     }
 
     //친밀도 Slider
@@ -85,14 +54,17 @@ public class CharacterViewControlller : MonoBehaviour {
             if (charStoreEventType == ActionTypes.ITEM_INIT) {
                 if (charInvenStore.storeStatus == storeStatus.NORMAL) {
                     //makeList();
-
-                    sR.init();
                     setInfo(true);
-                    //character_inventory charInfo = charInvenStore.repCharacter;
-                    //setMainChar(charInfo.character, charInfo.lv);
+                    Character_inventory charInfo = charInvenStore.repCharacter;
+                    setMainChar(charInfo.imageId, charInfo.lv);
                     //setEquipButton(charInfo.character, charInfo.has_character);
                     //setSideBar();
                     setStat();
+                }
+            }
+            if (charStoreEventType == ActionTypes.ITEM_INIT) {
+                if (charInvenStore.storeStatus == storeStatus.NORMAL) {
+                    childPanel.makeList();
                 }
             }
         }
@@ -155,10 +127,9 @@ public class CharacterViewControlller : MonoBehaviour {
         int item_speed = itemSpects.Item_speed;
         int item_reg = itemSpects.Item_regeneration;
 
-        //파트너 + 아이템 장착효과
+        per_str = char_str + item_str;
         per_endurance = char_end + item_end;
         per_speed = char_speed + item_speed;
-        per_str = char_str + item_str;
         per_recovery = char_reg + item_reg;
 
         stats[0].text = (per_str).ToString();

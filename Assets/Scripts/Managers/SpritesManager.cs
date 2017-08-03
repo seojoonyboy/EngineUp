@@ -7,7 +7,8 @@ public class SpritesManager : MonoBehaviour {
     public Sprite[] 
         slots_chars,
         default_slots,
-        stage_chars,
         stage_items,
         grade_items;
+
+    public SpritesArr[] Stage_chars;
 }

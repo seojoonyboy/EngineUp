@@ -14,7 +14,7 @@ public enum ActionTypes {
     MYINFO, GET_RIDING_RECORDS, RIDING_DETAILS, RIDING_RECORDS_REMOVE,
     EDIT_PROFILE,
     COUNTRIES, USER_BICYCLETYPES,
-    ITEM_INIT
+    ITEM_INIT, CHAR_SORT
 }
 
 public class Actions{
@@ -128,6 +128,7 @@ public static class ActionCreator{
             _return = new unequip_act();
             break;
         case ActionTypes.GARAGE_ITEM_SORT:
+        case ActionTypes.CHAR_SORT:
             _return = new itemSort();
             break;
         case ActionTypes.GARAGE_LOCK:

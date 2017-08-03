@@ -48,6 +48,11 @@ public class Char_Inventory : AjwStore {
                 act._type = equip_act.type.CHAR;
                 dispatcher.dispatch(act);
                 break;
+            case ActionTypes.CHAR_SORT:
+                Sorting.itemSort(myCharacters, 1);
+
+                _emitChange();
+                break;
         }
         eventType = action.type;
     }
@@ -81,6 +86,7 @@ public class Char_Inventory : AjwStore {
                             _myCharacter.desc = allCharacters[i].desc;
                             _myCharacter.lvup_exps = allCharacters[i].lvup_exps;
                             _myCharacter.name = allCharacters[i].name;
+                            _myCharacter.cost = allCharacters[i].cost;
 
                             _myCharacter.id = myCharater.id;
                             _myCharacter.paid = myCharater.paid;
@@ -91,10 +97,16 @@ public class Char_Inventory : AjwStore {
                             _myCharacter.speed = myCharater.status.speed;
                             _myCharacter.regeneration = myCharater.status.regeneration;
                             _myCharacter.endurance = myCharater.status.endurance;
+                            _myCharacter.hasCharacter = true;
                         }
 
                         if(repId == _myCharacter.imageId) {
                             repCharacter = _myCharacter;
+
+                            userStore.itemSpects.Char_strength = _myCharacter.strength;
+                            userStore.itemSpects.Char_speed = _myCharacter.speed;
+                            userStore.itemSpects.Char_regeneration = _myCharacter.regeneration;
+                            userStore.itemSpects.Char_endurance = _myCharacter.endurance;
                         }
                     }
 
@@ -102,8 +114,8 @@ public class Char_Inventory : AjwStore {
                         _myCharacter.imageId = allCharacters[i].id;
                         _myCharacter.name = allCharacters[i].name;
                         _myCharacter.desc = allCharacters[i].desc;
-                        _myCharacter.cost = allCharacters[i].cost;
                         _myCharacter.lvup_exps = allCharacters[i].lvup_exps;
+                        _myCharacter.hasCharacter = false;
                     }
                     myCharacters.Add(_myCharacter);
                     //if (_myCharacter.id == 0) {
@@ -236,4 +248,6 @@ public class Character_inventory {
     public int speed;
     public int endurance;
     public int regeneration;
+
+    public bool hasCharacter;
 }
