@@ -28,65 +28,69 @@ public class HistoryDetailViewController : MonoBehaviour {
 
     public HistoryViewController parentController;
 
-    private TweenPosition tP;
-    private bool 
-        isReverse_tp,
-        isTweening = false;
-
     public CanvasGroup canvas;
     public Texture2D markerTexture;
+    private Animator animator;
 
     void Awake() {
         gm = GameManager.Instance;
         ridingStore = gm.ridingStore;
 
-        tP = GetComponent<TweenPosition>();
+        animator = GetComponent<Animator>();
     }
 
     void OnEnable() {
-        tweenPos();
-        isReverse_tp = false;
+        Invoke("playSlideIn", 0.2f);
     }
 
-    public void tweenPos() {
-        if (isTweening) {
-            return;
-        }
-        isTweening = true;
-        if (!isReverse_tp) {
-            tP.PlayForward();
-        }
-        else {
-            offMap();
-            //swap
-            Vector3 tmp;
-            tmp = tP.to;
-            tP.to = tP.from;
-            tP.from = tmp;
-
-            tP.ResetToBeginning();
-            tP.PlayForward();
-        }
+    void playSlideIn() {
+        animator.Play("SlideIn");
     }
 
-    public void tpFinished() {
-        isTweening = false;
-        //패널 닫기시
-        if (isReverse_tp) {
-            gameObject.SetActive(false);
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
-        }
-        //패널 활성화시
-        else {
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
+    public void onBackButton() {
+        animator.Play("SlideOut");
+        offMap();
+    }
 
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
+
+        //slider in
+        if (boolParm == 1) {
             GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
             act.id = id;
             act.type = GetRidingRecords.callType.HISTORY;
             gm.gameDispatcher.dispatch(act);
         }
 
-        isReverse_tp = true;
+        //slider out
+        else if (boolParm == 0) {
+            gameObject.SetActive(false);
+        }
+    }
+
+    public void tweenPos() {
+        
+    }
+
+    public void tpFinished() {
+        //isTweening = false;
+        ////패널 닫기시
+        //if (isReverse_tp) {
+        //    gameObject.SetActive(false);
+        //    gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
+        //}
+        ////패널 활성화시
+        //else {
+        //    gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
+
+        //    GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
+        //    act.id = id;
+        //    act.type = GetRidingRecords.callType.HISTORY;
+        //    gm.gameDispatcher.dispatch(act);
+        //}
+
+        //isReverse_tp = true;
     }
 
     public void setMap(RidingDetails data) {
@@ -103,8 +107,6 @@ public class HistoryDetailViewController : MonoBehaviour {
 
         OnlineMaps _map = OnlineMaps.instance;
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
-
-        canvas.blocksRaycasts = false;
 
         innerRidingDetails[] coords = data.coords;
         if(coords.Length == 0) {
