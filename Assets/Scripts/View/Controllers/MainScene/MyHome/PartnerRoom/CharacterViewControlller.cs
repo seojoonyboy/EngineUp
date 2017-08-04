@@ -39,12 +39,12 @@ public class CharacterViewControlller : MonoBehaviour {
         setInfo(true);
         Character_inventory charInfo = charInvenStore.repCharacter;
         setMainChar(charInfo.imageId, charInfo.lv);
+        setStat();
     }
 
     //친밀도 Slider
-    public void OnSliderChanged(GameObject slider) {
-        Slider _slider = slider.GetComponent<Slider>();
-        slider.transform.Find("Percentage").GetComponent<Text>().text = (_slider.value / _slider.maxValue).ToString() + "%";
+    public void OnSliderChanged(Slider slider) {
+        slider.transform.Find("Percentage").GetComponent<Text>().text = (slider.value / slider.maxValue).ToString() + "%";
     }
 
     public void onCharInvenStore() {
@@ -82,18 +82,11 @@ public class CharacterViewControlller : MonoBehaviour {
         Text frLv = slider.transform.Find("Header").GetComponent<Text>();
         Text frPercentage = slider.transform.Find("Percentage").GetComponent<Text>();
 
-        int lv = 0;
-        if (isRepChar) {
-            name.text = charInvenStore.repCharacter.name;
-            lv = charInvenStore.repCharacter.lv;
-            slider.maxValue = charInvenStore.repCharacter.lvup_exps[lv - 1];
-            slider.value = charInvenStore.repCharacter.exp;
+        name.text = charInvenStore.repCharacter.name;
+        int lv = charInvenStore.repCharacter.lv;
+        slider.maxValue = charInvenStore.repCharacter.lvup_exps[lv - 1];
+        slider.value = charInvenStore.repCharacter.exp;
 
-            //Debug.Log("대표 캐릭터 정보 갱신");
-        }
-        else {
-            
-        }
         frLv.text = "친밀도 Lv" + lv;
         frPercentage.text = ((slider.value / slider.maxValue) * 100f).ToString() + "%";
     }
