@@ -127,7 +127,7 @@ public class BicycleListViewController : MonoBehaviour {
 
                     image = item.transform.Find("Grade").GetComponent<Image>();
                     image.enabled = true;
-                    image.sprite = spriteManager.grade_items[info.grade];
+                    image.sprite = spriteManager.grade_items[info.grade - 1];
                     if(item.GetComponent<Button>() == null) {
                         item.AddComponent<Button>();
                     }
