@@ -79,7 +79,7 @@ public class HistoryDetailViewController : MonoBehaviour {
         preMapPos = map.transform.localPosition;
 
         map.transform.localScale = new Vector3(1f, 1f, 0.8f);
-        map.transform.localPosition = new Vector3(0.08f, 0, 1793.24f);
+        map.transform.localPosition = new Vector3(0.08f, 0, 1791f);
 
         OnlineMaps _map = OnlineMaps.instance;
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
