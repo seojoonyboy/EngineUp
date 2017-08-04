@@ -167,31 +167,34 @@ public class Result_VC : MonoBehaviour {
 
         //친밀도 증가량 계산
         twSlider = friendlySlider.GetComponent<TweenSlider>();
-        //int currCharLv = data.represent_character.character_inventory.lv;
-        //int currCharExp = data.represent_character.character_inventory.exp;
-        //int[] maxExps = { 200, 500 };
+        int currCharLv = data.represent_character.character_inventory.lv;
+        int currCharExp = data.represent_character.character_inventory.exp;
+        int[] maxExps = { 10, 20 };
 
-        //int preCharLv = preData.represent_character.character_inventory.lv;
-        //int preExp = preData.represent_character.character_inventory.exp;
+        int preCharLv = preData.represent_character.character_inventory.lv;
+        int preExp = preData.represent_character.character_inventory.exp;
 
         float friendlyOffset = 0;
-        //if (currCharLv == 1) {
-        //    friendlyOffset = maxExps[0];
-        //}
-        //else if (currCharLv == 2) {
-        //    friendlyOffset = maxExps[1];
-        //}
+        if (currCharLv == 1) {
+            friendlyOffset = maxExps[0];
+        }
+        else if (currCharLv == 2) {
+            friendlyOffset = maxExps[1];
+        }
 
-        //twSlider.GetComponent<Slider>().value = (float)currCharExp / friendlyOffset; 
+        FrHeader.text = "친밀도 " + currCharLv;
+        LvHeader.text = "레벨 " + currLv;
 
-        ////레벨업
-        //if (preCharLv != currCharLv) {
-        //    twSlider.from = 0;
-        //}
-        //else {
-        //    twSlider.from = preExp / friendlyOffset;
-        //}
-        //twSlider.to = currCharExp / friendlyOffset;
+        twSlider.GetComponent<Slider>().value = (float)currCharExp / friendlyOffset;
+
+        //레벨업
+        if (preCharLv != currCharLv) {
+            twSlider.from = 0;
+        }
+        else {
+            twSlider.from = preExp / friendlyOffset;
+        }
+        twSlider.to = currCharExp / friendlyOffset;
         twSlider.ResetToBeginning();
 
         //능력치 증가량
@@ -249,12 +252,12 @@ public class Result_VC : MonoBehaviour {
             LvExp.text = data.status.exp + " / " + lvSliderOffset;
         }
 
-        //if(currLv == maxCharLv && currCharExp == maxExps[1]) {
-        //    FrExp.text = "MAX";
-        //}
-        //else {
-        //    FrExp.text = currCharExp + " / " + friendlyOffset;
-        //}
+        if (currLv == maxCharLv && currCharExp == maxExps[1]) {
+            FrExp.text = "MAX";
+        }
+        else {
+            FrExp.text = currCharExp + " / " + friendlyOffset;
+        }
     }
 
     public void setResult(float mDist, string mTime, float mAvgSpeed, float mMaxSpeed, float uphillDist, int boxNum) {
