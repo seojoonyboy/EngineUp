@@ -30,7 +30,9 @@ public class Result_VC : MonoBehaviour {
         resultPanel;
 
     OnlineMapsDrawingLine line;
-    OnlineMapsMarker endMarker;
+    OnlineMapsMarker 
+        endMarker,
+        startMarker;
 
     SoundManager sm;
 
@@ -106,10 +108,12 @@ public class Result_VC : MonoBehaviour {
         if(level > 10) {
             line.weight = 1.0f;
             endMarker.scale = 0.3f;
+            startMarker.scale = 0.3f;
         }
         else {
             line.weight = 3.0f;
             endMarker.scale = 0.5f;
+            startMarker.scale = 0.5f;
         }
     }
 
@@ -337,7 +341,8 @@ public class Result_VC : MonoBehaviour {
             lat = coords[0].latitude;
             lon = coords[0].longitude;
             pos = new Vector2(lat, lon);
-            OnlineMaps.instance.AddMarker(pos, markerTexture, "");
+            startMarker = OnlineMaps.instance.AddMarker(pos, markerTexture, "");
+            startMarker.scale = 0.5f;
         }
     }
 
