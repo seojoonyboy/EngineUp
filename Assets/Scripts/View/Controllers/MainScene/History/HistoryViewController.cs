@@ -114,14 +114,16 @@ public class HistoryViewController : MonoBehaviour {
             preItem = item;
         }
 
-        GameObject refreshPref = Instantiate(refreshContainer);
-        refreshPref.transform.SetParent(scrollView.transform, false);
+        if(data.Length > 0) {
+            GameObject refreshPref = Instantiate(refreshContainer);
+            refreshPref.transform.SetParent(scrollView.transform, false);
 
-        refreshPref.transform.localPosition = Vector3.zero;
-        refreshPref.transform.localScale = Vector3.one;
+            refreshPref.transform.localPosition = Vector3.zero;
+            refreshPref.transform.localScale = Vector3.one;
 
-        refreshPref.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() => getRidingDataSets());
-        refreshButton = refreshPref;
+            refreshPref.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() => getRidingDataSets());
+            refreshButton = refreshPref;
+        }
     }
 
     void onDetail(GameObject obj) {

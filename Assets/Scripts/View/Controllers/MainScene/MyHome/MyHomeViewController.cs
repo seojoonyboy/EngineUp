@@ -48,6 +48,17 @@ public class MyHomeViewController : MonoBehaviour {
         obj.transform.Find("DeactiveLabel").gameObject.SetActive(!isOn);
         obj.transform.Find("ActiveImg").gameObject.SetActive(isOn);
         obj.transform.Find("ActiveLabel").gameObject.SetActive(isOn);
+
+        Text header = gameObject.transform.Find("TopPanel/Header").GetComponent<Text>();
+        if(obj.name == "GarageButton") {
+            header.text = "차고지";
+        }
+        else if(obj.name == "PartnerButton") {
+            header.text = "파트너룸";
+        }
+        else if(obj.name == "RecordButton") {
+            header.text = "기록실";
+        }
     }
 
     private void initToggle() {

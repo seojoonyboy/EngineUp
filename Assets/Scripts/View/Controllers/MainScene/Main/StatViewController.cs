@@ -103,7 +103,13 @@ public class StatViewController : MonoBehaviour {
     public void onUserListener() {
         int rank = userStore.myData.status.rank;
         int iconRank = (int)Mathf.Ceil((float)rank / 5);
-        mainRankIcon.sprite = mainViewController.ranks[iconRank - 1];
+        if(iconRank == 0) {
+            mainRankIcon.sprite = mainViewController.ranks[0];
+        }
+        else {
+            mainRankIcon.sprite = mainViewController.ranks[iconRank - 1];
+        }
+        
 
         nickNameLabel.text = userStore.nickName;
 
@@ -197,7 +203,13 @@ public class StatViewController : MonoBehaviour {
         stats[3].text = statArr[1].ToString();
 
         int iconRank = (int)Mathf.Ceil((float)rank / 5);
-        rankIcon.sprite = mainViewController.ranks[iconRank - 1];
+
+        if(iconRank == 0) {
+            rankIcon.sprite = mainViewController.ranks[0];
+        }
+        else {
+            rankIcon.sprite = mainViewController.ranks[iconRank - 1];
+        }
 
         //방사형 차트 기준값 지정(stat중 최댓값)
         int radarChart_standard = 0;
