@@ -69,30 +69,6 @@ public class HistoryDetailViewController : MonoBehaviour {
         }
     }
 
-    public void tweenPos() {
-        
-    }
-
-    public void tpFinished() {
-        //isTweening = false;
-        ////패널 닫기시
-        //if (isReverse_tp) {
-        //    gameObject.SetActive(false);
-        //    gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
-        //}
-        ////패널 활성화시
-        //else {
-        //    gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
-
-        //    GetRidingRecords act = ActionCreator.createAction(ActionTypes.RIDING_DETAILS) as GetRidingRecords;
-        //    act.id = id;
-        //    act.type = GetRidingRecords.callType.HISTORY;
-        //    gm.gameDispatcher.dispatch(act);
-        //}
-
-        //isReverse_tp = true;
-    }
-
     public void setMap(RidingDetails data) {
         canvas.blocksRaycasts = false;
 
