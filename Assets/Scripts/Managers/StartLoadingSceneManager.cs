@@ -44,6 +44,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         if (string.IsNullOrEmpty(str)) {
             Debug.Log("이전 로그인 기록 없음");
             buttonGroup.SetActive(true);
+            loadingModal.SetActive(false);
         }
         if(str == "FB") {
             Debug.Log("이전 Facebook 로그인했음");
