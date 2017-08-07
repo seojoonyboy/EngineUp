@@ -27,6 +27,7 @@ public class BicycleDetailViewController : MonoBehaviour {
 
     private Color32 increaseColor = new Color32(249, 168, 37, 255);
     private Color32 decreaseColor = new Color32(2, 154, 173, 255);
+    private int[] limitRank = new int[4] { 1, 10, 20, 30 };
 
     void Awake() {
         gm = GameManager.Instance;
@@ -189,7 +190,7 @@ public class BicycleDetailViewController : MonoBehaviour {
         Info info = parent.selectedItem.GetComponent<Info>();
         int itemGrade = info.grade;
         int myGrade = userStore.myData.status.rank;
-        if (myGrade >= itemGrade) {
+        if(canEquip(itemGrade, myGrade)) {
             equip_act act = ActionCreator.createAction(ActionTypes.GARAGE_ITEM_EQUIP) as equip_act;
             act._type = equip_act.type.ITEM;
             act.id = info.id;
@@ -201,6 +202,17 @@ public class BicycleDetailViewController : MonoBehaviour {
             notifyModal.SetActive(true);
             notifyModal.transform.Find("InnerModal/Text").GetComponent<Text>().text = "등급이 낮아 장착할 수 없습니다.";
         }
+    }
+
+    private bool canEquip(int grade, int userRank) {
+        bool result = false;
+        if(limitRank[grade - 1] <= userRank) {
+            result = true;
+        }
+        else {
+            result = false;
+        }
+        return result;
     }
 
     public void OnSellButton() {

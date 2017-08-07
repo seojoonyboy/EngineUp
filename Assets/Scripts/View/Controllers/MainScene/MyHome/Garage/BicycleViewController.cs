@@ -286,7 +286,7 @@ public class BicycleViewController : MonoBehaviour {
             }
 
             sideSlot.transform.Find("Plus").gameObject.SetActive(false);
-            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = spriteManager.grade_items[sideBarInfo.grade];
+            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = spriteManager.grade_items[sideBarInfo.grade - 1];
         }
         else {
             Info tmp = sideSlot.GetComponent<Info>();
@@ -332,7 +332,7 @@ public class BicycleViewController : MonoBehaviour {
             }
 
             sideSlot.transform.Find("Plus").gameObject.SetActive(false);
-            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = spriteManager.grade_items[sideBarInfo.grade];
+            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = spriteManager.grade_items[sideBarInfo.grade - 1];
         }
         else {
             Info tmp = sideSlot.GetComponent<Info>();
@@ -379,7 +379,7 @@ public class BicycleViewController : MonoBehaviour {
             }
 
             sideSlot.transform.Find("Plus").gameObject.SetActive(false);
-            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = spriteManager.grade_items[sideBarInfo.grade];
+            sideSlot.transform.Find("Grade").GetComponent<Image>().sprite = spriteManager.grade_items[sideBarInfo.grade - 1];
         }
         else {
             Info tmp = sideSlot.GetComponent<Info>();
