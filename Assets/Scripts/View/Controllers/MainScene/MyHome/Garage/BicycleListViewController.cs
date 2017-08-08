@@ -16,6 +16,7 @@ public class BicycleListViewController : MonoBehaviour {
         rowContainer;           //스크롤 영역 한줄 Container
 
     public GameObject selectedItem;
+    private SelectedType type;
     void Awake() {
         gm = GameManager.Instance;
 
@@ -25,6 +26,20 @@ public class BicycleListViewController : MonoBehaviour {
 
     void OnEnable() {
         Invoke("playSlideIn", 0.2f);
+        type = parent.selectedType;
+        Text topHeader = transform.Find("TopPanel/Header").GetComponent<Text>();
+
+        switch (type) {
+            case SelectedType.EG:
+                topHeader.text = "구동계";
+                break;
+            case SelectedType.FR:
+                topHeader.text = "프레임";
+                break;
+            case SelectedType.WH:
+                topHeader.text = "바퀴";
+                break;
+        }
     }
 
     void playSlideIn() {
@@ -46,14 +61,12 @@ public class BicycleListViewController : MonoBehaviour {
         //slider out
         else if (boolParm == 0) {
             gameObject.SetActive(false);
+            removeList();
         }
     }
 
     public void makeList() {
-        removeList();
-
         //아이템 갯수를 통해 몇줄 컨테이너 필요한지 계산
-        var type = parent.selectedType;
         ArrayList items = null;
         switch(type) {
             case SelectedType.EG:

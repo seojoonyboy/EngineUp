@@ -69,7 +69,7 @@ public class BicycleDetailViewController : MonoBehaviour {
             gameObject.transform.Find("Name").GetComponent<Text>().text = info.name;
             var type = info.parts;
 
-            if(type == "FR") {
+            if (type == "FR") {
                 Image img = gameObject.transform.Find("Image_FR").GetComponent<Image>();
                 var tmp = spriteManager.stage_items[info.imageId - 1];
                 if (tmp != null) {
@@ -90,7 +90,6 @@ public class BicycleDetailViewController : MonoBehaviour {
                 else {
                     img.enabled = false;
                 }
-
             }
             else if(type == "DS") {
                 Image img = gameObject.transform.Find("Image_EG").GetComponent<Image>();
