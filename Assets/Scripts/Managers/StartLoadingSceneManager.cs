@@ -20,20 +20,17 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         privacyContainer,
         loadingModal;
 
-    public Sprite[] defaultChars;
-
     public FacebookLogin facebooklogin;
     public NormalLogin normalLogin;
-
     public InputField modalInput;
-    public int charIndex;
-
     private string newNickName;
 
     public Toggle
         mobileServiceCheckBox,
         privacyCollectCheckBox;
 
+    private int selectIndex;
+    public Sprite[] charPortraits;
     void Awake() {
         //Debug.Log("StartLoadingScene Awake");
         gm = GameManager.Instance;
@@ -56,7 +53,6 @@ public class StartLoadingSceneManager : fbl_SceneManager {
             Debug.Log("이전 Normal 로그인했음");
             normalLogin.onLoginButton(true);
         }
-        //Debug.Log(str);
     }
 
     public void loadMainScene() {
@@ -65,12 +61,18 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
     //생성하기 버튼 클릭시
     public void okInNicknameModal() {
-        Debug.Log("type : " + userStore.loginType);
+        //Debug.Log("type : " + userStore.loginType);
         newNickName = modalInput.text;
-        Debug.Log("nickName : " + newNickName);
-
+        //Debug.Log("nickName : " + newNickName);
+        int index = 0;
+        if(selectIndex == 1) {
+            index = 1;
+        }
+        else if(selectIndex == 0) {
+            index = 2;
+        }
         SignupAction signUpAct = ActionCreator.createAction(ActionTypes.SIGNUP) as SignupAction;
-        signUpAct.charIndex = charIndex;
+        signUpAct.charIndex = index;
         signUpAct.nickName = newNickName;
         signUpAct.login_type = userStore.loginType;
 
@@ -183,29 +185,8 @@ public class StartLoadingSceneManager : fbl_SceneManager {
 
         if(userStore.eventType == ActionTypes.GET_DEFAULT_CHAR_INFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
-                //charselectModal.transform.Find("LoadingPanel").gameObject.SetActive(false);
-                charselectModal.transform.Find("LeftBox/Button/Text").GetComponent<Text>().text = "회사원 " + userStore.basicCharacters[0].name;
-                charselectModal.transform.Find("RightBox/Button/Text").GetComponent<Text>().text = "회사원 " + userStore.basicCharacters[1].name;
-
-                GameObject charBtn = charselectModal.transform.Find("LeftBox").gameObject;
-                charBtn.GetComponent<ButtonIndex>().index = userStore.basicCharacters[0].id;
-
-                charBtn = charselectModal.transform.Find("RightBox").gameObject;
-                charBtn.GetComponent<ButtonIndex>().index = userStore.basicCharacters[1].id;
-
-                charIndex = userStore.basicCharacters[0].id;
-
-                Text label = charselectModal.transform.Find("Description/Text").GetComponent<Text>();
-                label.text = userStore.basicCharacters[0].desc;
-
-                Text header = charselectModal.transform.Find("DescHeader").GetComponent<Text>();
-                header.text = userStore.basicCharacters[0].name + "의 이야기";
-                //charselectModal.transform.Find("Desc/Description").GetComponent<UILabel>().text = 
-                Image img = charselectModal.transform.Find("LeftBox/Portrait").GetComponent<Image>();
-                img.sprite = defaultChars[userStore.basicCharacters[0].id - 1];
-
-                img = charselectModal.transform.Find("RightBox/Portrait").GetComponent<Image>();
-                img.sprite = defaultChars[userStore.basicCharacters[1].id - 1];
+                selectIndex = userStore.basicCharacters[0].id - 1;
+                setInitCharSelect();
             }
         }
 
@@ -221,7 +202,6 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     }
 
     public void offNickNameCheckResultModal() {
-        //modal.SetActive(false);
         NickNameCheckResultModal.SetActive(false);
     }
 
@@ -229,22 +209,32 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         modal.SetActive(false);
     }
 
-    public void toggleGroupListener() {
-        IEnumerable<Toggle> activeToggles = charselectModal.GetComponent<ToggleGroup>().ActiveToggles();
-        foreach (Toggle tg in activeToggles) {
-            //Debug.Log("active toggle" + tg.name);
-            charIndex = tg.gameObject.GetComponent<ButtonIndex>().index;
-
-            Text label = charselectModal.transform.Find("Description/Text").GetComponent<Text>();
-            Text header = charselectModal.transform.Find("DescHeader").GetComponent<Text>();
-            if (charIndex == 1) {
-                label.text = userStore.basicCharacters[0].desc;
-                header.text = userStore.basicCharacters[0].name + "의 이야기";
-            }
-            else if (charIndex == 2) {
-                label.text = userStore.basicCharacters[1].desc;
-                header.text = userStore.basicCharacters[1].name + "의 이야기";
+    //캐릭터 선택 좌우 버튼
+    public void charSelArrowClicked(int type) {
+        int basicCharLength = userStore.basicCharacters.Length;
+        //좌측 버튼 클릭시
+        
+        if (type == 0) {
+            selectIndex--;
+            if(selectIndex < 0) {
+                selectIndex = basicCharLength - 1;
             }
         }
+        else if(type == 1) {
+            selectIndex++;
+            if(selectIndex > basicCharLength - 1) {
+                selectIndex = 0;
+            }
+        }
+        Debug.Log(selectIndex);
+        setInitCharSelect();
+    }
+
+    private void setInitCharSelect() {
+        Image img = charselectModal.transform.Find("Image").GetComponent<Image>();
+        img.sprite = charPortraits[selectIndex];
+
+        Text name = charselectModal.transform.Find("SelectButton/Name").GetComponent<Text>();
+        name.text = userStore.basicCharacters[selectIndex].name;
     }
 }
