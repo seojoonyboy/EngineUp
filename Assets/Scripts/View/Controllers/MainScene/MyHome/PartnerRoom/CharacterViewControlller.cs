@@ -27,7 +27,6 @@ public class CharacterViewControlller : MonoBehaviour {
         per_speed,
         per_endurance,
         per_recovery;
-
     void Awake() {
         gm = GameManager.Instance;
         sm = SoundManager.Instance;

@@ -20,6 +20,8 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         privacyContainer,
         loadingModal;
 
+    public Sprite[] defaultChars;
+
     public FacebookLogin facebooklogin;
     public NormalLogin normalLogin;
 
@@ -199,6 +201,11 @@ public class StartLoadingSceneManager : fbl_SceneManager {
                 Text header = charselectModal.transform.Find("DescHeader").GetComponent<Text>();
                 header.text = userStore.basicCharacters[0].name + "의 이야기";
                 //charselectModal.transform.Find("Desc/Description").GetComponent<UILabel>().text = 
+                Image img = charselectModal.transform.Find("LeftBox/Portrait").GetComponent<Image>();
+                img.sprite = defaultChars[userStore.basicCharacters[0].id - 1];
+
+                img = charselectModal.transform.Find("RightBox/Portrait").GetComponent<Image>();
+                img.sprite = defaultChars[userStore.basicCharacters[1].id - 1];
             }
         }
 

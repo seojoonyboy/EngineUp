@@ -115,84 +115,70 @@ public class CharacterDetailViewController : MonoBehaviour {
             tier.transform.Find("Tier").GetComponent<Text>().enabled = true;
         }
 
-        if(info.has_character) {
-            var itemSpects = userStore.itemSpects;
+        var itemSpects = userStore.itemSpects;
 
-            int pre_endurance = itemSpects.Char_endurance + itemSpects.Item_endurance;
-            int pre_speed = itemSpects.Char_speed + itemSpects.Item_speed;
-            int pre_str = itemSpects.Char_strength + itemSpects.Item_strength;
-            int pre_recovery = itemSpects.Char_regeneration + itemSpects.Item_regeneration;
+        int pre_endurance = itemSpects.Char_endurance + itemSpects.Item_endurance;
+        int pre_speed = itemSpects.Char_speed + itemSpects.Item_speed;
+        int pre_str = itemSpects.Char_strength + itemSpects.Item_strength;
+        int pre_recovery = itemSpects.Char_regeneration + itemSpects.Item_regeneration;
 
-            spec diffSpecs = diffSpec(info, itemSpects.Char_endurance, itemSpects.Char_speed, itemSpects.Char_strength, itemSpects.Char_regeneration);
-            int diffStr = diffSpecs.diff_strength;
-            int diffSpeed = diffSpecs.diff_speed;
-            int diffEndurance = diffSpecs.diff_endurance;
-            int diffRecovery = diffSpecs.diff_recovery;
+        spec diffSpecs = diffSpec(info, itemSpects.Char_endurance, itemSpects.Char_speed, itemSpects.Char_strength, itemSpects.Char_regeneration);
+        int diffStr = diffSpecs.diff_strength;
+        int diffSpeed = diffSpecs.diff_speed;
+        int diffEndurance = diffSpecs.diff_endurance;
+        int diffRecovery = diffSpecs.diff_recovery;
 
-            Text incStr = specs[0].transform.Find("Diff").GetComponent<Text>();
-            Text incRec = specs[1].transform.Find("Diff").GetComponent<Text>();
-            Text incSpeed = specs[2].transform.Find("Diff").GetComponent<Text>();
-            Text incEnd = specs[3].transform.Find("Diff").GetComponent<Text>();
+        Text incStr = specs[0].transform.Find("Diff").GetComponent<Text>();
+        Text incRec = specs[1].transform.Find("Diff").GetComponent<Text>();
+        Text incSpeed = specs[2].transform.Find("Diff").GetComponent<Text>();
+        Text incEnd = specs[3].transform.Find("Diff").GetComponent<Text>();
 
-            //이전보다 근력 증가
-            if (diffStr >= 0) {
-                specs[0].transform.Find("Diff/Inc").gameObject.SetActive(true);
-                incStr.color = increaseColor;
-            }
-            else {
-                specs[0].transform.Find("Diff/Dec").gameObject.SetActive(true);
-                incStr.color = decreaseColor;
-            }
-
-            if (diffRecovery >= 0) {
-                specs[1].transform.Find("Diff/Inc").gameObject.SetActive(true);
-                incRec.color = increaseColor;
-            }
-            else {
-                specs[1].transform.Find("Diff/Dec").gameObject.SetActive(true);
-                incRec.color = decreaseColor;
-            }
-
-            if (diffSpeed >= 0) {
-                specs[2].transform.Find("Diff/Inc").gameObject.SetActive(true);
-                incSpeed.color = increaseColor;
-            }
-            else {
-                specs[2].transform.Find("Diff/Dec").gameObject.SetActive(true);
-                incSpeed.color = decreaseColor;
-            }
-
-            if (diffEndurance >= 0) {
-                specs[3].transform.Find("Diff/Inc").gameObject.SetActive(true);
-                incEnd.color = increaseColor;
-            }
-            else {
-                specs[3].transform.Find("Diff/Dec").gameObject.SetActive(true);
-                incEnd.color = decreaseColor;
-            }
-
-            incStr.transform.Find("Val").GetComponent<Text>().text = pre_str.ToString();
-            incRec.transform.Find("Val").GetComponent<Text>().text = pre_recovery.ToString();
-            incSpeed.transform.Find("Val").GetComponent<Text>().text = pre_speed.ToString();
-            incEnd.transform.Find("Val").GetComponent<Text>().text = pre_endurance.ToString();
-
-            specs[0].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffStr).ToString();
-            specs[1].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffRecovery).ToString();
-            specs[2].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffSpeed).ToString();
-            specs[3].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffEndurance).ToString();
+        //이전보다 근력 증가
+        if (diffStr >= 0) {
+            specs[0].transform.Find("Diff/Inc").gameObject.SetActive(true);
+            incStr.color = increaseColor;
         }
-
         else {
-            specs[0].transform.Find("Diff/Val").GetComponent<Text>().text = "";
-            specs[1].transform.Find("Diff/Val").GetComponent<Text>().text = "";
-            specs[2].transform.Find("Diff/Val").GetComponent<Text>().text = "";
-            specs[3].transform.Find("Diff/Val").GetComponent<Text>().text = "";
-
-            specs[0].transform.Find("Diff").GetComponent<Text>().text = "";
-            specs[1].transform.Find("Diff").GetComponent<Text>().text = "";
-            specs[2].transform.Find("Diff").GetComponent<Text>().text = "";
-            specs[3].transform.Find("Diff").GetComponent<Text>().text = "";
+            specs[0].transform.Find("Diff/Dec").gameObject.SetActive(true);
+            incStr.color = decreaseColor;
         }
+
+        if (diffRecovery >= 0) {
+            specs[1].transform.Find("Diff/Inc").gameObject.SetActive(true);
+            incRec.color = increaseColor;
+        }
+        else {
+            specs[1].transform.Find("Diff/Dec").gameObject.SetActive(true);
+            incRec.color = decreaseColor;
+        }
+
+        if (diffSpeed >= 0) {
+            specs[2].transform.Find("Diff/Inc").gameObject.SetActive(true);
+            incSpeed.color = increaseColor;
+        }
+        else {
+            specs[2].transform.Find("Diff/Dec").gameObject.SetActive(true);
+            incSpeed.color = decreaseColor;
+        }
+
+        if (diffEndurance >= 0) {
+            specs[3].transform.Find("Diff/Inc").gameObject.SetActive(true);
+            incEnd.color = increaseColor;
+        }
+        else {
+            specs[3].transform.Find("Diff/Dec").gameObject.SetActive(true);
+            incEnd.color = decreaseColor;
+        }
+
+        incStr.transform.Find("Val").GetComponent<Text>().text = pre_str.ToString();
+        incRec.transform.Find("Val").GetComponent<Text>().text = pre_recovery.ToString();
+        incSpeed.transform.Find("Val").GetComponent<Text>().text = pre_speed.ToString();
+        incEnd.transform.Find("Val").GetComponent<Text>().text = pre_endurance.ToString();
+
+        specs[0].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffStr).ToString();
+        specs[1].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffRecovery).ToString();
+        specs[2].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffSpeed).ToString();
+        specs[3].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffEndurance).ToString();
     }
 
     private void setStat() {

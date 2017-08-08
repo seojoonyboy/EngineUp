@@ -19,11 +19,16 @@ public class CharacterListViewController : MonoBehaviour {
     public CharacterDetailViewController childController;
 
     private Animator animator;
+    public tmpCharStat[] tmpCharacterStats;
+
     void Awake() {
         gm = GameManager.Instance;
         charInvenStore = gm.charInvenStore;
 
         animator = GetComponent<Animator>();
+
+        TextAsset file = (TextAsset)Resources.Load("CharStat");
+        tmpCharacterStats = JsonHelper.getJsonArray<tmpCharStat>(file.text);
     }
 
     void OnEnable() {
@@ -51,48 +56,6 @@ public class CharacterListViewController : MonoBehaviour {
         else if (boolParm == 0) {
             gameObject.SetActive(false);
         }
-    }
-
-    //내 캐릭터중 하나 선택시
-    public void charSelected(GameObject obj) {
-        //sm.playEffectSound(0);
-
-        //selectedChar = obj;
-
-        //Info info = obj.GetComponent<Info>();
-        //sbInfo sbInfo = obj.GetComponent<sbInfo>();
-        //setMainChar(info.characterId, info.lv);
-        ////setSideBar(info.characterId, info.lv);
-        //setSideBar();
-        //setSideBarName(sbInfo.name);
-        //setEquipButton(info.characterId, info.has_character);
-
-        //lvLabel.text = "친밀도 Lv " + info.lv.ToString();
-        //charName.text = sbInfo.name;
-        //setFriendlySlider(info.lv, sbInfo.lvup_exps, info.exp);
-
-        //stats[0].text = info.strength.ToString();
-        //stats[1].text = info.enurance.ToString();
-        //stats[2].text = info.speed.ToString();
-        //stats[3].text = info.recovery.ToString();
-    }
-
-    public void setEquipButton(int index, string hasChar) {
-        //if (hasChar == "true") {
-        //    equipButton.SetActive(true);
-        //    nonepossessionButton.SetActive(false);
-        //    character_inventory charInfo = userStore.myData.represent_character.character_inventory;
-        //    if (index == charInfo.character) {
-        //        equipButton.transform.Find("Check").gameObject.SetActive(true);
-        //    }
-        //    else {
-        //        equipButton.transform.Find("Check").gameObject.SetActive(false);
-        //    }
-        //}
-        //else {
-        //    equipButton.SetActive(false);
-        //    nonepossessionButton.SetActive(true);
-        //}
     }
 
     public void makeList() {
@@ -133,6 +96,10 @@ public class CharacterListViewController : MonoBehaviour {
                     }
                     else {
                         img.sprite = mV.characters_entire_body[info.imageId - 1].images[0];
+                        info.endurance = tmpCharacterStats[info.imageId - 1].character[0].status.endurance;
+                        info.strength = tmpCharacterStats[info.imageId - 1].character[0].status.strength;
+                        info.speed = tmpCharacterStats[info.imageId - 1].character[0].status.speed;
+                        info.regeneration = tmpCharacterStats[info.imageId - 1].character[0].status.regeneration;
                     }
                     
 
@@ -203,6 +170,27 @@ public class CharInfo : MonoBehaviour {
     public int cost;
 
     public int strength;        //능력치
+    public int speed;
+    public int endurance;
+    public int regeneration;
+}
+
+[System.Serializable]
+public class tmpCharStat {
+    public int id;
+    public string name;
+    public tmpCharacter[] character;
+}
+
+[System.Serializable]
+public class tmpCharacter {
+    public int lv;
+    public tmpStatus status;
+}
+
+[System.Serializable]
+public class tmpStatus {
+    public int strength;
     public int speed;
     public int endurance;
     public int regeneration;

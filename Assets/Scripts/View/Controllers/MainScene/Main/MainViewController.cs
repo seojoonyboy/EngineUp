@@ -63,7 +63,7 @@ public class MainViewController : MonoBehaviour {
     public void onUserListener() {
         if (ci.eventType == ActionTypes.MYINFO) {
             if (ci.storeStatus == storeStatus.NORMAL) {
-                Debug.Log("메인화면 캐릭터 갱신");
+                //Debug.Log("메인화면 캐릭터 갱신");
                 var tmp = userStore.myData.represent_character.character_inventory;
                 charSprite.sprite = characters_entire_body[tmp.character - 1].images[tmp.lv - 1];
 

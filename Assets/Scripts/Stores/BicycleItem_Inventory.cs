@@ -170,7 +170,7 @@ public class BicycleItem_Inventory : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
 
-                Debug.Log("아이템 장착 완료");
+                //Debug.Log("아이템 장착 완료");
 
                 MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
                 gm.gameDispatcher.dispatch(myInfoAct);
