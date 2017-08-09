@@ -462,6 +462,14 @@ public class BicycleViewController : MonoBehaviour {
         gm.gameDispatcher.dispatch(act);
     }
 
+    public void onClickSlot() {
+        GameObject effect = Instantiate(mV.touchEffectPref);
+        effect.transform.SetParent(transform, false);
+        Vector3 screenPoint = Input.mousePosition;
+        Vector3 resultPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10.0f);
+        effect.transform.position = Camera.main.ScreenToWorldPoint(resultPos);
+    }
+
     private class Info : MonoBehaviour {
         public int id;
         public bool is_equiped;

@@ -27,13 +27,13 @@ public class MainViewController : MonoBehaviour {
 
     public Sprite[] 
         ranks,
-        partner_busts_m,
-        Bicycles_items_slot,
-        Bicycles_items_stage;
+        partner_busts_m;
 
     public SpritesArr[] 
         characters_slots,
         characters_entire_body;
+
+    public GameObject touchEffectPref;
 
     void Awake() {
         gm = GameManager.Instance;
