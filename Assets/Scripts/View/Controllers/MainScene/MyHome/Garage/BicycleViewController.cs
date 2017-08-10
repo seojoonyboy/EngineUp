@@ -20,7 +20,7 @@ public class BicycleViewController : MonoBehaviour {
     public BicycleListViewController childPanel;
 
     public GameObject changeSpecViewButton;
-
+    public Text specHeader;
     public int 
         per_str,
         per_speed,
@@ -168,9 +168,8 @@ public class BicycleViewController : MonoBehaviour {
         spects[2].text = (per_speed).ToString();
         spects[3].text = (per_recovery).ToString();
 
-        for (int i = 0; i < 4; i++) {
-            spects[i].transform.parent.GetComponent<Text>().enabled = true;
-        }
+        specHeader.text = "자전거 능력치 %";
+
         changeSpecViewButton.GetComponent<boolIndex>().isOn = false;
     }
 
@@ -180,10 +179,7 @@ public class BicycleViewController : MonoBehaviour {
 
         if (isOn) {
             setStat();
-
-            for (int i = 0; i < 4; i++) {
-                spects[i].transform.parent.GetComponent<Text>().enabled = true;
-            }
+            specHeader.text = "자전거 능력치 %";
         }
         else {
             spects[0].text = ((int)(per_str * mySpec.strength / 100)).ToString();
@@ -191,9 +187,7 @@ public class BicycleViewController : MonoBehaviour {
             spects[2].text = ((int)(per_speed * mySpec.speed / 100)).ToString();
             spects[3].text = ((int)(per_recovery * mySpec.regeneration / 100)).ToString();
 
-            for(int i=0; i<4; i++) {
-                spects[i].transform.parent.GetComponent<Text>().enabled = false;
-            }
+            specHeader.text = "자전거 능력치";
         }
 
         changeSpecViewButton.GetComponent<boolIndex>().isOn = !isOn;
@@ -213,9 +207,11 @@ public class BicycleViewController : MonoBehaviour {
             else {
                 sprite.sprite = spriteManager.stage_items[_item.id - 1];
             }
+            sideBar.transform.Find("WheelSlot/Name").GetComponent<Text>().text = _item.name;
         }
         else {
             sprite.sprite = spriteManager.stage_items[53];
+            sideBar.transform.Find("WheelSlot/Name").GetComponent<Text>().text = "바퀴";
         }
 
         equipedItem = bicycleItemStore.equipedItemIndex[1];
@@ -229,9 +225,11 @@ public class BicycleViewController : MonoBehaviour {
             else {
                 sprite.sprite = spriteManager.stage_items[_item.id - 1];
             }
+            sideBar.transform.Find("FrameSlot/Name").GetComponent<Text>().text = _item.name;
         }
         else {
             sprite.sprite = spriteManager.stage_items[0];
+            sideBar.transform.Find("FrameSlot/Name").GetComponent<Text>().text = "프레임";
         }
 
         equipedItem = bicycleItemStore.equipedItemIndex[2];
@@ -245,9 +243,11 @@ public class BicycleViewController : MonoBehaviour {
             else {
                 sprite.sprite = spriteManager.stage_items[_item.id - 1];
             }
+            sideBar.transform.Find("EngineSlot/Name").GetComponent<Text>().text = _item.name;
         }
         else {
             sprite.sprite = spriteManager.stage_items[85];
+            sideBar.transform.Find("EngineSlot/Name").GetComponent<Text>().text = "구동계";
         }
     }
 
@@ -407,9 +407,7 @@ public class BicycleViewController : MonoBehaviour {
 
         setStat();
 
-        for (int i = 0; i < 4; i++) {
-            spects[i].transform.parent.GetComponent<Text>().enabled = true;
-        }
+        specHeader.text = "자전거 능력치 %";
 
         changeSpecViewButton.GetComponent<boolIndex>().isOn = false;
     }

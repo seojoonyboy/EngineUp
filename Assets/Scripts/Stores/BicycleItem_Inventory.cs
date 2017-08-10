@@ -148,6 +148,7 @@ public class BicycleItem_Inventory : AjwStore {
                 totalEndurance += item.endurance;
             }
         }
+
         userStore.itemSpects.Item_strength = totalStr;
         userStore.itemSpects.Item_speed = totalSpeed;
         userStore.itemSpects.Item_regeneration = totalRecovery;

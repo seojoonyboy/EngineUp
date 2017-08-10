@@ -25,8 +25,10 @@ public class BicycleDetailViewController : MonoBehaviour {
         tierImg,
         tierGrid;
 
-    private Color32 increaseColor = new Color32(249, 168, 37, 255);
-    private Color32 decreaseColor = new Color32(2, 154, 173, 255);
+    private Color32 increaseColor = new Color32(31, 196, 97, 255);
+    private Color32 decreaseColor = new Color32(201, 48, 48, 255);
+    private Color32 defaultColor = new Color32(255, 255, 255, 255);
+
     private int[] limitRank = new int[4] { 1, 10, 20, 30 };
 
     void Awake() {
@@ -55,6 +57,14 @@ public class BicycleDetailViewController : MonoBehaviour {
 
         //slider in
         if (boolParm == 1) {
+            var itemStatus = userStore.itemSpects;
+
+            int new_str = itemStatus.Char_strength;
+            int new_speed = itemStatus.Char_speed;
+            int new_end = itemStatus.Char_endurance;
+            int new_rec = itemStatus.Char_regeneration;
+
+            Debug.Log("캐릭터 스피드 : " + itemStatus.Char_speed);
             Info info = parent.selectedItem.GetComponent<Info>();
 
             if(info == null) { return; }
@@ -102,72 +112,93 @@ public class BicycleDetailViewController : MonoBehaviour {
                     img.enabled = false;
                 }
             }
+            int pre_str = itemStatus.Char_strength + itemStatus.Item_strength;
+            int pre_speed = itemStatus.Char_speed + itemStatus.Item_speed;
+            int pre_end = itemStatus.Char_endurance + itemStatus.Item_endurance;
+            int pre_rec = itemStatus.Char_regeneration + itemStatus.Item_regeneration;
+            
+            for(int i=0; i<bicycleItemStore.equipedItemIndex.Length; i++) {
+                if (bicycleItemStore.equipedItemIndex[i].item.parts == type) {
+                    continue;
+                }
+                new_str += bicycleItemStore.equipedItemIndex[i].item.strength;
+                new_end += bicycleItemStore.equipedItemIndex[i].item.endurance;
+                new_rec += bicycleItemStore.equipedItemIndex[i].item.regeneration;
+                new_speed += bicycleItemStore.equipedItemIndex[i].item.speed;
+            }
 
-            spec diffSpecs = diffSpec(info);
+            new_str += info.strength;
+            new_end += info.endurance;
+            new_rec += info.recovery;
+            new_speed += info.speed;
 
-            int diffStr = diffSpecs.diff_strength;
-            int diffSpeed = diffSpecs.diff_speed;
-            int diffEndurance = diffSpecs.diff_endurance;
-            int diffRecovery = diffSpecs.diff_recovery;
+            int diff_str = new_str - pre_str;
+            int diff_speed = new_speed - pre_speed;
+            int diff_end = new_end - pre_end;
+            int diff_rec = new_rec - pre_rec;
 
-            int pre_str = diffSpecs.pre_str;
-            int pre_speed = diffSpecs.pre_speed;
-            int pre_end = diffSpecs.pre_end;
-            int pre_rec = diffSpecs.pre_rec;
+            Text pre_str_text = specs[0].transform.Find("PreVal").GetComponent<Text>();
+            Text pre_end_text = specs[1].transform.Find("PreVal").GetComponent<Text>();
+            Text pre_rec_text = specs[2].transform.Find("PreVal").GetComponent<Text>();
+            Text pre_speed_text = specs[3].transform.Find("PreVal").GetComponent<Text>();
 
-            Text incStr = specs[0].transform.Find("Diff").GetComponent<Text>();
-            Text incRec = specs[1].transform.Find("Diff").GetComponent<Text>();
-            Text incSpeed = specs[2].transform.Find("Diff").GetComponent<Text>();
-            Text incEnd = specs[3].transform.Find("Diff").GetComponent<Text>();
+            pre_str_text.text = pre_str.ToString();
+            pre_end_text.text = pre_end.ToString();
+            pre_rec_text.text = pre_rec.ToString();
+            pre_speed_text.text = pre_speed.ToString();
+
+            Text new_str_text = specs[0].transform.Find("ChangeVal").GetComponent<Text>();
+            Text new_end_text = specs[1].transform.Find("ChangeVal").GetComponent<Text>();
+            Text new_rec_text = specs[2].transform.Find("ChangeVal").GetComponent<Text>();
+            Text new_speed_text = specs[3].transform.Find("ChangeVal").GetComponent<Text>();
+
+            new_str_text.text = new_str.ToString();
+            new_end_text.text = new_end.ToString();
+            new_rec_text.text = new_rec.ToString();
+            new_speed_text.text = new_speed.ToString();
 
             //이전보다 근력 증가
-            if (diffStr >= 0) {
-                specs[0].transform.Find("Diff/Inc").gameObject.SetActive(true);
-                incStr.color = increaseColor;
+            if (diff_str > 0) {
+                new_str_text.color = increaseColor;
             }
-            else {
-                specs[0].transform.Find("Diff/Dec").gameObject.SetActive(true);
-                incStr.color = decreaseColor;
+            else if(diff_str == 0) {
+                new_str_text.color = defaultColor;
             }
-
-            if(diffRecovery >= 0) {
-                specs[1].transform.Find("Diff/Inc").gameObject.SetActive(true);
-                incRec.color = increaseColor;
-            }
-            else {
-                specs[1].transform.Find("Diff/Dec").gameObject.SetActive(true);
-                incRec.color = decreaseColor;
+            else if(diff_str < 0) {
+                new_str_text.color = decreaseColor;
             }
 
-            if (diffSpeed >= 0) {
-                specs[2].transform.Find("Diff/Inc").gameObject.SetActive(true);
-                incSpeed.color = increaseColor;
+            if (diff_speed > 0) {
+                new_speed_text.color = increaseColor;
             }
-            else {
-                specs[2].transform.Find("Diff/Dec").gameObject.SetActive(true);
-                incSpeed.color = decreaseColor;
+            else if(diff_speed == 0) {
+                new_speed_text.color = defaultColor;
             }
-
-            if (diffEndurance >= 0) {
-                specs[3].transform.Find("Diff/Inc").gameObject.SetActive(true);
-                incEnd.color = increaseColor;
-            }
-            else {
-                specs[3].transform.Find("Diff/Dec").gameObject.SetActive(true);
-                incEnd.color = decreaseColor;
+            else if(diff_speed < 0) {
+                new_speed_text.color = decreaseColor;
             }
 
-            incStr.transform.Find("Val").GetComponent<Text>().text = pre_str.ToString();
-            incRec.transform.Find("Val").GetComponent<Text>().text = pre_rec.ToString();
-            incSpeed.transform.Find("Val").GetComponent<Text>().text = pre_speed.ToString();
-            incEnd.transform.Find("Val").GetComponent<Text>().text = pre_end.ToString();
+            if (diff_end > 0) {
+                new_end_text.color = increaseColor;
+            }
+            else if(diff_end == 0) {
+                new_end_text.color = defaultColor;
+            }
+            else if(diff_end < 0) {
+                new_end_text.color = decreaseColor;
+            }
 
-            specs[0].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffStr).ToString();
-            specs[1].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffRecovery).ToString();
-            specs[2].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffSpeed).ToString();
-            specs[3].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffEndurance).ToString();
+            if (diff_rec > 0) {
+                new_rec_text.color = increaseColor;
+            }
+            else if(diff_rec == 0) {
+                new_rec_text.color = defaultColor;
+            }
+            else if(diff_rec < 0) {
+                new_rec_text.color = decreaseColor;
+            }
 
-            if(info.is_equiped) {
+            if (info.is_equiped) {
                 unEquipButton.SetActive(true);
             }
             else {
@@ -250,8 +281,13 @@ public class BicycleDetailViewController : MonoBehaviour {
         gameObject.transform.Find("Image_WH_mask/Image_WH").GetComponent<Image>().enabled = false;
 
         foreach(GameObject obj in specs) {
-            obj.transform.Find("Diff/Inc").gameObject.SetActive(false);
-            obj.transform.Find("Diff/Dec").gameObject.SetActive(false);
+            Text text = obj.transform.Find("PreVal").GetComponent<Text>();
+            text.text = "";
+            text.color = defaultColor;
+
+            text = obj.transform.Find("ChangeVal").GetComponent<Text>();
+            text.text = "";
+            text.color = defaultColor;
         }
 
         unEquipButton.SetActive(false);
@@ -261,73 +297,6 @@ public class BicycleDetailViewController : MonoBehaviour {
         foreach(Transform child in tierGrid.transform) {
             Destroy(child.gameObject);
         }
-    }
-
-    private spec diffSpec(Info info) {
-        spec specs = new spec();
-        int selected_spec_str = info.strength;
-        int selected_spec_end = info.endurance;
-        int selected_spec_speed = info.speed;
-        int selected_spec_rec = info.recovery;
-
-        int pre_str = 0;
-        int pre_end = 0;
-        int pre_speed = 0;
-        int pre_rec = 0;
-
-        RespGetItems equipedItem;
-        if (info.parts == "WH") {
-            equipedItem = bicycleItemStore.equipedItemIndex[0];
-            if (equipedItem != null) {
-                pre_str = equipedItem.item.strength;
-                pre_rec = equipedItem.item.regeneration;
-                pre_speed = equipedItem.item.speed;
-                pre_end = equipedItem.item.endurance;
-            }
-        }
-
-        else if(info.parts == "FR") {
-            equipedItem = bicycleItemStore.equipedItemIndex[1];
-            if (equipedItem != null) {
-                pre_str = equipedItem.item.strength;
-                pre_rec = equipedItem.item.regeneration;
-                pre_speed = equipedItem.item.speed;
-                pre_end = equipedItem.item.endurance;
-            }
-        }
-
-        else if(info.parts == "DS") {
-            equipedItem = bicycleItemStore.equipedItemIndex[2];
-            if (equipedItem != null) {
-                pre_str = equipedItem.item.strength;
-                pre_rec = equipedItem.item.regeneration;
-                pre_speed = equipedItem.item.speed;
-                pre_end = equipedItem.item.endurance;
-            }
-        }
-        //Debug.Log("이전 장착 Spec");
-        //Debug.Log(pre_str);
-        //Debug.Log(pre_end);
-        //Debug.Log(pre_rec);
-        //Debug.Log(pre_speed);
-
-        //Debug.Log("선택한 아이템 Spec");
-        //Debug.Log(selected_spec_str);
-        //Debug.Log(selected_spec_end);
-        //Debug.Log(selected_spec_rec);
-        //Debug.Log(selected_spec_speed);
-
-        specs.diff_strength = selected_spec_str - pre_str;
-        specs.diff_endurance = selected_spec_end - pre_end;
-        specs.diff_recovery = selected_spec_rec - pre_rec;
-        specs.diff_speed = selected_spec_speed - pre_speed;
-
-        specs.pre_str = pre_str;
-        specs.pre_speed = pre_speed;
-        specs.pre_rec = pre_rec;
-        specs.pre_end = pre_end;
-
-        return specs;
     }
 
     private class spec {

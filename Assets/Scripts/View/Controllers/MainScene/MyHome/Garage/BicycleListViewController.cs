@@ -25,7 +25,7 @@ public class BicycleListViewController : MonoBehaviour {
     }
 
     void OnEnable() {
-        Invoke("playSlideIn", 0.2f);
+        Invoke("playSlideIn", 0.0f);
         type = parent.selectedType;
         Text topHeader = transform.Find("TopPanel/Header").GetComponent<Text>();
 
@@ -81,7 +81,7 @@ public class BicycleListViewController : MonoBehaviour {
         }
 
         int itemNum = items.Count;
-        int containerNum = (int)System.Math.Ceiling(itemNum / 4.0f);
+        int containerNum = (int)System.Math.Ceiling(itemNum / 3.0f);
         //Debug.Log(itemNum);
         //Debug.Log(containerNum);
         int cnt = 0;
