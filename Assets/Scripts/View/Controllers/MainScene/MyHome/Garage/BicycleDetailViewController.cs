@@ -118,7 +118,7 @@ public class BicycleDetailViewController : MonoBehaviour {
             int pre_rec = itemStatus.Char_regeneration + itemStatus.Item_regeneration;
             
             for(int i=0; i<bicycleItemStore.equipedItemIndex.Length; i++) {
-                if (bicycleItemStore.equipedItemIndex[i].item.parts == type) {
+                if(bicycleItemStore.equipedItemIndex[i] == null || bicycleItemStore.equipedItemIndex[i].item.parts == type) {
                     continue;
                 }
                 new_str += bicycleItemStore.equipedItemIndex[i].item.strength;
