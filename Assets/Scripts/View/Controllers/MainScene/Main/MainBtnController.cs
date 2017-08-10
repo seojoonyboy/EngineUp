@@ -72,6 +72,10 @@ public class MainBtnController : MonoBehaviour {
                 notifyModal.SetActive(true);
                 sm.playEffectSound(1);
                 break;
+            case MainButtonEnum.Type.CHALLENGE:
+                notifyModal.SetActive(true);
+                sm.playEffectSound(1);
+                break;
         }
     }
 
