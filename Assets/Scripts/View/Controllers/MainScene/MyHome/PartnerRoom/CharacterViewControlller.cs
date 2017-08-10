@@ -27,6 +27,7 @@ public class CharacterViewControlller : MonoBehaviour {
         per_speed,
         per_endurance,
         per_recovery;
+    public Text specHeader;
     void Awake() {
         gm = GameManager.Instance;
         sm = SoundManager.Instance;
@@ -103,8 +104,7 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     public void setStat() {
-        initStat();
-
+        //아이템 장착, 파트너 장착에 따른 Spec 변화
         var itemSpects = userStore.itemSpects;
 
         //파트너 장착 효과
@@ -119,9 +119,10 @@ public class CharacterViewControlller : MonoBehaviour {
         int item_speed = itemSpects.Item_speed;
         int item_reg = itemSpects.Item_regeneration;
 
-        per_str = char_str + item_str;
+        //파트너 + 아이템 장착효과
         per_endurance = char_end + item_end;
         per_speed = char_speed + item_speed;
+        per_str = char_str + item_str;
         per_recovery = char_reg + item_reg;
 
         stats[0].text = (per_str).ToString();
@@ -129,9 +130,8 @@ public class CharacterViewControlller : MonoBehaviour {
         stats[2].text = (per_speed).ToString();
         stats[3].text = (per_recovery).ToString();
 
-        for (int i = 0; i < 4; i++) {
-            stats[i].transform.parent.GetComponent<Text>().enabled = true;
-        }
+        specHeader.text = "자전거 능력치 %";
+
         changeSpecViewButton.GetComponent<boolIndex>().isOn = false;
     }
 
@@ -141,10 +141,7 @@ public class CharacterViewControlller : MonoBehaviour {
 
         if (isOn) {
             setStat();
-
-            for (int i = 0; i < 4; i++) {
-                stats[i].transform.parent.GetComponent<Text>().enabled = true;
-            }
+            specHeader.text = "파트너 능력치 %";
         }
         else {
             stats[0].text = ((int)(per_str * mySpec.strength / 100)).ToString();
@@ -152,15 +149,9 @@ public class CharacterViewControlller : MonoBehaviour {
             stats[2].text = ((int)(per_speed * mySpec.speed / 100)).ToString();
             stats[3].text = ((int)(per_recovery * mySpec.regeneration / 100)).ToString();
 
-            for (int i = 0; i < 4; i++) {
-                stats[i].transform.parent.GetComponent<Text>().enabled = false;
-            }
+            specHeader.text = "파트너 능력치";
         }
 
         changeSpecViewButton.GetComponent<boolIndex>().isOn = !isOn;
-    }
-
-    private void initStat() {
-        
     }
 }

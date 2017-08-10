@@ -16,8 +16,10 @@ public class CharacterDetailViewController : MonoBehaviour {
     public SpritesManager spriteManager;
 
     public GameObject[] specs;
-    private Color32 increaseColor = new Color32(249, 168, 37, 255);
-    private Color32 decreaseColor = new Color32(2, 154, 173, 255);
+
+    private Color32 increaseColor = new Color32(31, 196, 97, 255);
+    private Color32 decreaseColor = new Color32(201, 48, 48, 255);
+    private Color32 defaultColor = new Color32(255, 255, 255, 255);
     void Awake() {
         gm = GameManager.Instance;
         userStore = gm.userStore;
@@ -73,11 +75,6 @@ public class CharacterDetailViewController : MonoBehaviour {
             img.color = Color.white;
             img.transform.parent.Find("Unlocked").gameObject.SetActive(false);
         }
-
-        foreach (GameObject obj in specs) {
-            obj.transform.Find("Diff/Inc").gameObject.SetActive(false);
-            obj.transform.Find("Diff/Dec").gameObject.SetActive(false);
-        }
     }
 
     private void setInfo() {
@@ -122,63 +119,76 @@ public class CharacterDetailViewController : MonoBehaviour {
         int pre_str = itemSpects.Char_strength + itemSpects.Item_strength;
         int pre_recovery = itemSpects.Char_regeneration + itemSpects.Item_regeneration;
 
-        spec diffSpecs = diffSpec(info, itemSpects.Char_endurance, itemSpects.Char_speed, itemSpects.Char_strength, itemSpects.Char_regeneration);
-        int diffStr = diffSpecs.diff_strength;
-        int diffSpeed = diffSpecs.diff_speed;
-        int diffEndurance = diffSpecs.diff_endurance;
-        int diffRecovery = diffSpecs.diff_recovery;
+        int new_endurance = info.endurance + itemSpects.Item_endurance;
+        int new_str = info.strength + itemSpects.Item_strength;
+        int new_recovery = info.regeneration + itemSpects.Item_regeneration;
+        int new_speed = info.speed + itemSpects.Item_speed;
 
-        Text incStr = specs[0].transform.Find("Diff").GetComponent<Text>();
-        Text incRec = specs[1].transform.Find("Diff").GetComponent<Text>();
-        Text incSpeed = specs[2].transform.Find("Diff").GetComponent<Text>();
-        Text incEnd = specs[3].transform.Find("Diff").GetComponent<Text>();
+        int diffStr = new_str - pre_str;
+        int diffRecovery = new_recovery - pre_recovery;
+        int diffSpeed = new_speed - pre_speed;
+        int diffEndurance = new_endurance - pre_endurance;
+
+        Text pre_str_text = specs[0].transform.Find("PreVal").GetComponent<Text>();
+        Text pre_end_text = specs[1].transform.Find("PreVal").GetComponent<Text>();
+        Text pre_rec_text = specs[2].transform.Find("PreVal").GetComponent<Text>();
+        Text pre_speed_text = specs[3].transform.Find("PreVal").GetComponent<Text>();
+
+        pre_str_text.text = pre_str.ToString();
+        pre_end_text.text = pre_endurance.ToString();
+        pre_rec_text.text = pre_recovery.ToString();
+        pre_speed_text.text = pre_speed.ToString();
+
+        Text new_str_text = specs[0].transform.Find("ChangeVal").GetComponent<Text>();
+        Text new_end_text = specs[1].transform.Find("ChangeVal").GetComponent<Text>();
+        Text new_rec_text = specs[2].transform.Find("ChangeVal").GetComponent<Text>();
+        Text new_speed_text = specs[3].transform.Find("ChangeVal").GetComponent<Text>();
+
+        new_str_text.text = new_str.ToString();
+        new_end_text.text = new_endurance.ToString();
+        new_rec_text.text = new_recovery.ToString();
+        new_speed_text.text = new_speed.ToString();
 
         //이전보다 근력 증가
-        if (diffStr >= 0) {
-            specs[0].transform.Find("Diff/Inc").gameObject.SetActive(true);
-            incStr.color = increaseColor;
+        if (diffStr > 0) {
+            new_str_text.color = increaseColor;
         }
-        else {
-            specs[0].transform.Find("Diff/Dec").gameObject.SetActive(true);
-            incStr.color = decreaseColor;
+        else if (diffStr == 0) {
+            new_str_text.color = defaultColor;
         }
-
-        if (diffRecovery >= 0) {
-            specs[1].transform.Find("Diff/Inc").gameObject.SetActive(true);
-            incRec.color = increaseColor;
-        }
-        else {
-            specs[1].transform.Find("Diff/Dec").gameObject.SetActive(true);
-            incRec.color = decreaseColor;
+        else if (diffStr < 0) {
+            new_str_text.color = decreaseColor;
         }
 
-        if (diffSpeed >= 0) {
-            specs[2].transform.Find("Diff/Inc").gameObject.SetActive(true);
-            incSpeed.color = increaseColor;
+        if (diffSpeed > 0) {
+            new_speed_text.color = increaseColor;
         }
-        else {
-            specs[2].transform.Find("Diff/Dec").gameObject.SetActive(true);
-            incSpeed.color = decreaseColor;
+        else if (diffSpeed == 0) {
+            new_speed_text.color = defaultColor;
         }
-
-        if (diffEndurance >= 0) {
-            specs[3].transform.Find("Diff/Inc").gameObject.SetActive(true);
-            incEnd.color = increaseColor;
-        }
-        else {
-            specs[3].transform.Find("Diff/Dec").gameObject.SetActive(true);
-            incEnd.color = decreaseColor;
+        else if (diffSpeed < 0) {
+            new_speed_text.color = decreaseColor;
         }
 
-        incStr.transform.Find("Val").GetComponent<Text>().text = pre_str.ToString();
-        incRec.transform.Find("Val").GetComponent<Text>().text = pre_recovery.ToString();
-        incSpeed.transform.Find("Val").GetComponent<Text>().text = pre_speed.ToString();
-        incEnd.transform.Find("Val").GetComponent<Text>().text = pre_endurance.ToString();
+        if (diffEndurance > 0) {
+            new_end_text.color = increaseColor;
+        }
+        else if (diffEndurance == 0) {
+            new_end_text.color = defaultColor;
+        }
+        else if (diffEndurance < 0) {
+            new_end_text.color = decreaseColor;
+        }
 
-        specs[0].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffStr).ToString();
-        specs[1].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffRecovery).ToString();
-        specs[2].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffSpeed).ToString();
-        specs[3].transform.Find("Diff").GetComponent<Text>().text = System.Math.Abs(diffEndurance).ToString();
+        if (diffRecovery > 0) {
+            new_rec_text.color = increaseColor;
+        }
+        else if (diffRecovery == 0) {
+            new_rec_text.color = defaultColor;
+        }
+        else if (diffRecovery < 0) {
+            new_rec_text.color = decreaseColor;
+        }
     }
 
     private void setStat() {

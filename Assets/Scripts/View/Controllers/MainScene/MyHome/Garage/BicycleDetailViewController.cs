@@ -64,7 +64,7 @@ public class BicycleDetailViewController : MonoBehaviour {
             int new_end = itemStatus.Char_endurance;
             int new_rec = itemStatus.Char_regeneration;
 
-            Debug.Log("캐릭터 스피드 : " + itemStatus.Char_speed);
+            //Debug.Log("캐릭터 스피드 : " + itemStatus.Char_speed);
             Info info = parent.selectedItem.GetComponent<Info>();
 
             if(info == null) { return; }
