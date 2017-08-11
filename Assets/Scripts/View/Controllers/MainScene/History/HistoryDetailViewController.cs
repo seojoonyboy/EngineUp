@@ -109,7 +109,7 @@ public class HistoryDetailViewController : MonoBehaviour {
 
             _map.position = new Vector2(avgLat, avgLon);
 
-            _line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
+            _line = new OnlineMapsDrawingLine(list, Color.red, 3.0f);
             _map.AddDrawingElement(_line);
 
             if(coords.Length == 1) {
@@ -152,12 +152,12 @@ public class HistoryDetailViewController : MonoBehaviour {
         if (_line != null) {
             int level = OnlineMaps.instance.zoom;
             if (level > 10) {
-                _line.weight = 1f;
+                _line.weight = 3f;
                 endMarker.scale = 0.3f;
                 startMarker.scale = 0.3f;
             }
             else {
-                _line.weight = 3f;
+                _line.weight = 5f;
                 endMarker.scale = 0.5f;
                 startMarker.scale = 0.5f;
             }

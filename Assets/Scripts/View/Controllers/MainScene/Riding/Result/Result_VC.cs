@@ -106,12 +106,12 @@ public class Result_VC : MonoBehaviour {
         int level = OnlineMaps.instance.zoom;
         //Debug.Log("zoom Level : " + level);
         if(level > 10) {
-            line.weight = 1.0f;
+            line.weight = 3f;
             endMarker.scale = 0.3f;
             startMarker.scale = 0.3f;
         }
         else {
-            line.weight = 3.0f;
+            line.weight = 5f;
             endMarker.scale = 0.5f;
             startMarker.scale = 0.5f;
         }
@@ -316,7 +316,7 @@ public class Result_VC : MonoBehaviour {
                 OnlineMaps.instance.position = mapPos;
             }
 
-            line = new OnlineMapsDrawingLine(list, Color.red, 2.0f);
+            line = new OnlineMapsDrawingLine(list, Color.red, 3.0f);
             OnlineMaps.instance.AddDrawingElement(line);
         }
     }
