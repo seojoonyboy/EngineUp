@@ -24,7 +24,7 @@ public class HistoryDetailViewController : MonoBehaviour {
         boxNum;
     public Text nickName, date;
     OnlineMapsDrawingLine _line;
-    OnlineMapsMarker endMarker;
+    OnlineMapsMarker endMarker, startMarker;
 
     public HistoryViewController parentController;
 
@@ -115,12 +115,12 @@ public class HistoryDetailViewController : MonoBehaviour {
             if(coords.Length == 1) {
                 //도착마크만 표시
                 Vector2 markerPos = new Vector2(coords[0].latitude, coords[0].longitude);
-                _map.AddMarker(markerPos);
+                endMarker = _map.AddMarker(markerPos);
             }
             else {
                 //출발 도착 마커 모두 표시
                 Vector2 startPos = new Vector2(coords[0].latitude, coords[0].longitude);
-                _map.AddMarker(startPos);
+                startMarker = _map.AddMarker(startPos, markerTexture, "");
 
                 Vector2 endPos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
                 endMarker = _map.AddMarker(endPos, markerTexture, "");
@@ -154,10 +154,12 @@ public class HistoryDetailViewController : MonoBehaviour {
             if (level > 10) {
                 _line.weight = 1f;
                 endMarker.scale = 0.3f;
+                startMarker.scale = 0.3f;
             }
             else {
                 _line.weight = 3f;
                 endMarker.scale = 0.5f;
+                startMarker.scale = 0.5f;
             }
         }
     }
