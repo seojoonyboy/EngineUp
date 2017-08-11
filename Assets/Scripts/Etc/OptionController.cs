@@ -8,6 +8,8 @@ public class OptionController : MonoBehaviour {
     Riding ridingStore;
     public GameObject[] modals;
 
+    private Animator animator;
+
     private TweenPosition tP;
     private bool 
         isReverse_tp,
@@ -18,48 +20,33 @@ public class OptionController : MonoBehaviour {
         sm = SoundManager.Instance;
         ridingStore = gm.ridingStore;
 
-        tP = GetComponent<TweenPosition>();
+        animator = GetComponent<Animator>();
     }
 
     void OnEnable() {
-        tweenPos();
-        isReverse_tp = false;
+        animator.Play("SlideIn");
     }
 
-    public void tweenPos() {
-        sm.playEffectSound(0);
-        if(isTweening) {
-            return;
-        }
-
-        if (!isReverse_tp) {
-            tP.PlayForward();
-        }
-        else {
-            //swap
-            Vector3 tmp;
-            tmp = tP.to;
-            tP.to = tP.from;
-            tP.from = tmp;
-
-            tP.ResetToBeginning();
-            tP.PlayForward();
-        }
-        isTweening = true;
+    void playSlideIn() {
+        animator.Play("SlideIn");
     }
 
-    public void tPFinished() {
-        isTweening = false;
+    public void onBackButton() {
+        animator.Play("SlideOut");
+    }
 
-        if (isReverse_tp) {
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
+
+        //slider in
+        if (boolParm == 1) {
+            
+        }
+
+        //slider out
+        else if (boolParm == 0) {
             gameObject.SetActive(false);
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(false);
         }
-        else {
-            gameObject.transform.Find("TopPanel").gameObject.SetActive(true);
-        }
-
-        isReverse_tp = true;
     }
 
     public void onModal(GameObject obj) {
