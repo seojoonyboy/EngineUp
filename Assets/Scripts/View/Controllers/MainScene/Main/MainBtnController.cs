@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.EventSystems;
 public class MainBtnController : MonoBehaviour {
     public GameObject[] 
         activeImages,
@@ -16,6 +16,8 @@ public class MainBtnController : MonoBehaviour {
 
     void Awake() {
         sm = SoundManager.Instance;
+        int defaultValue = EventSystem.current.pixelDragThreshold;
+        EventSystem.current.pixelDragThreshold = Mathf.Max(defaultValue, (int)(defaultValue * Screen.dpi / 160f));
     }
 
     public void buttonPressListener(GameObject obj) {
