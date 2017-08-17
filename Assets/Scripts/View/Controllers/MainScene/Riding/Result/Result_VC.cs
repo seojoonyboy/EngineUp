@@ -11,15 +11,7 @@ public class Result_VC : MonoBehaviour {
         avgSpeed,
         maxSpeed,
         uphillDistanceLabel,
-        boxNum,
-        preStrength,
-        incStrength,
-        preEndurance,
-        incEndurance,
-        preSpeed,
-        incSpeed,
-        preRecovery,
-        incRecovery;
+        boxNum;
 
     public Riding ridingStore;
     public User userStore;
@@ -56,10 +48,14 @@ public class Result_VC : MonoBehaviour {
         LvExp,
         FrExp;
 
+    public Text[] specs;
+
     public CanvasGroup canvas;
 
     private UserData preData;
-    private Exp[] exps;
+    private Exp[]
+        exps,
+        AccExps;
 
     private static int 
         maxLv = 99,
@@ -79,7 +75,11 @@ public class Result_VC : MonoBehaviour {
         exps = JsonHelper.getJsonArray<Exp>(file.text);
 
         tP = GetComponent<TweenPosition>();
+
+        file = (TextAsset)Resources.Load("AccExp");
+        AccExps = JsonHelper.getJsonArray<Exp>(file.text);
     }
+
     void offPanel() {
         totalDist.text = "0";
         avgSpeed.text = "0";
@@ -148,25 +148,56 @@ public class Result_VC : MonoBehaviour {
     }
 
     void difference(UserData data) {
+        TweenSlider tS = lvSlider.GetComponent<TweenSlider>();
+        tS.ResetToBeginning();
         //레벨 증가량 계산
         int preLv = preData.status.rank;
         int currLv = data.status.rank;
-        float lvSliderOffset = exps[currLv].exp;
-        TweenSlider twSlider = lvSlider.GetComponent<TweenSlider>();
 
-        twSlider.GetComponent<Slider>().value = (float)data.status.exp / lvSliderOffset;
-        //레벨 업
-        if (preLv != currLv) {
-            twSlider.from = 0;
+        //누적경험치가 아닌 현재 레벨업 구간에서의 경험치
+        int preRefineExp = 0;
+        int refineExp = 0;
+        //레벨업에 필요한 경험치(기준)
+        int standardExp = 0;
+        //레벨업이 일어나지 않은 경우
+        if(currLv > 10) {
+            standardExp = AccExps[AccExps.Length - 1].exp + 100 * (currLv - AccExps[AccExps.Length - 1].lv + 1);
+            refineExp = data.status.exp - (AccExps[AccExps.Length - 1].exp + 100 * (currLv - AccExps[AccExps.Length - 1].lv));
+        }
+        else if (currLv == 10) {
+            standardExp = exps[exps.Length - 1].exp;
+            refineExp = data.status.exp - AccExps[currLv].exp;
         }
         else {
-            twSlider.from = preData.status.exp / lvSliderOffset;
+            standardExp = exps[currLv + 1].exp;
+            refineExp = data.status.exp - AccExps[currLv].exp;
         }
-        twSlider.to = data.status.exp / lvSliderOffset;
-        twSlider.ResetToBeginning();
 
+        lvSlider.maxValue = standardExp;
+
+        if(preLv == currLv) {
+            if(currLv > 10) {
+                preRefineExp = preData.status.exp - (AccExps[AccExps.Length - 1].exp + 100 * (currLv - AccExps[AccExps.Length - 1].lv));
+            }
+            else {
+                preRefineExp = preData.status.exp - AccExps[currLv].exp;
+            }
+        }
+
+        //레벨업이 일어난 경우
+        else {
+            refineExp = data.status.exp - AccExps[currLv].exp;
+        }
+
+        tS.to = refineExp;
+        tS.from = preRefineExp;
+        tS.PlayForward();
+
+        LvHeader.text = "Rank " + currLv;
+        LvExp.text = preRefineExp + " + " + (refineExp - preRefineExp);
+
+        tS = friendlySlider.GetComponent<TweenSlider>();
         //친밀도 증가량 계산
-        twSlider = friendlySlider.GetComponent<TweenSlider>();
         int currCharLv = data.represent_character.character_inventory.lv;
         int currCharExp = data.represent_character.character_inventory.exp;
         int[] maxExps = { 10, 20 };
@@ -178,85 +209,69 @@ public class Result_VC : MonoBehaviour {
         if (currCharLv == 1) {
             friendlyOffset = maxExps[0];
         }
-        else if (currCharLv == 2) {
+        else if (currCharLv >= 2) {
             friendlyOffset = maxExps[1];
         }
 
-        FrHeader.text = "친밀도 " + currCharLv;
-        LvHeader.text = "레벨 " + currLv;
+        preRefineExp = 0;
+        refineExp = 0;
 
-        twSlider.GetComponent<Slider>().value = (float)currCharExp / friendlyOffset;
-
-        //레벨업
-        if (preCharLv != currCharLv) {
-            twSlider.from = 0;
+        //레벨업 발생하지 않음
+        if(currCharLv == preCharLv) {
+            if(currCharLv == 1) {
+                preRefineExp = preExp;
+                refineExp = currCharExp;
+            }
+            else if(currCharLv > 1) {
+                preRefineExp = (int)(preExp - maxExps[currCharLv - 2]);
+                refineExp = (int)(currCharExp - maxExps[currCharLv - 2]);
+            }
         }
+        //레벨업 발생
         else {
-            twSlider.from = preExp / friendlyOffset;
-        }
-        twSlider.to = currCharExp / friendlyOffset;
-        twSlider.ResetToBeginning();
-
-        //능력치 증가량
-        //근력, 지구력, 스피드, 회복력
-        int _preStr = preData.status.strength;
-        int _preEndur = preData.status.endurance;
-        int _preSpeed = preData.status.speed;
-        int _preReco = preData.status.regeneration;
-
-        preStrength.text = _preStr.ToString();
-        preRecovery.text = _preReco.ToString();
-        preSpeed.text = _preSpeed.ToString();
-        preEndurance.text = _preEndur.ToString();
-
-        var stat = data.status;
-        if(_preStr == stat.strength) {
-            incStrength.text = "";
-        }
-        else {
-            incStrength.text = "+ " + (stat.strength - _preStr);
-            Debug.Log("근력 증가");
+            preRefineExp = 0;
         }
 
-        if(_preReco == stat.regeneration) {
-            incRecovery.text = "";
-        }
-        else {
-            incRecovery.text = "+ " + (stat.regeneration - _preReco);
-            Debug.Log("회복력 증가");
-        }
+        friendlySlider.maxValue = friendlyOffset;
 
-        if(_preSpeed == stat.speed) {
-            incSpeed.text = "";
-        }
-        else {
-            incSpeed.text = "+ " + (stat.speed - _preSpeed);
-            Debug.Log("스피드 증가");
-        }
+        tS.from = preRefineExp;
+        tS.to = refineExp;
+        tS.PlayForward();
 
-        if(_preEndur == stat.endurance) {
-            incEndurance.text = "";
-        }
-        else {
-            incEndurance.text = "+ " + (stat.endurance - _preEndur);
-            Debug.Log("지구력 증가");
-        }
-
-        //레벨 및 경험치 라벨 설정
-        LvHeader.text = "레벨 " + currLv;
-        //FrHeader.text = "친밀도 " + currCharLv;
-        if(currLv == maxLv && data.status.exp == maxExp) {
-            LvExp.text = "MAX";
-        }
-        else {
-            LvExp.text = data.status.exp + " / " + lvSliderOffset;
-        }
-
-        if (currLv == maxCharLv && currCharExp == maxExps[1]) {
+        if(currCharExp == maxExps[1]) {
             FrExp.text = "MAX";
         }
         else {
-            FrExp.text = currCharExp + " / " + friendlyOffset;
+            FrExp.text = preRefineExp + " + " + (refineExp - preRefineExp);
+        }
+        FrHeader.text = "친밀도 Lv " + currCharLv;
+
+        if(data.status.strength == 0) {
+            specs[0].text = "00";
+        }
+        else {
+            specs[0].text = data.status.strength.ToString();
+        }
+
+        if(data.status.endurance == 0) {
+            specs[1].text = "00";
+        }
+        else {
+            specs[1].text = data.status.endurance.ToString();
+        }
+
+        if(data.status.regeneration == 0) {
+            specs[2].text = "00";
+        }
+        else {
+            specs[2].text = data.status.regeneration.ToString();
+        }
+
+        if(data.status.speed == 0) {
+            specs[3].text = "00";
+        }
+        else {
+            specs[3].text = data.status.speed.ToString();
         }
     }
 
@@ -356,7 +371,7 @@ public class Result_VC : MonoBehaviour {
         preMapScale = map.transform.localScale;
         preMapPos = map.transform.localPosition;
 
-        map.transform.localScale = new Vector3(1.57f, 1f, 1.57f);
+        map.transform.localScale = new Vector3(1.617f, 1f, 1.617f);
         map.transform.localPosition = new Vector3(0, 0, 1724);
 
         OnlineMapsControlBase.instance.OnMapZoom += zooming;

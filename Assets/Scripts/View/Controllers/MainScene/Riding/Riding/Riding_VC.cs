@@ -40,7 +40,6 @@ public class Riding_VC : MonoBehaviour {
     public User userStore;
 
     public Slider slider;
-    public int sliderMaxValue;
 
     private int boxNum = 0;
 
@@ -78,11 +77,14 @@ public class Riding_VC : MonoBehaviour {
         tP.from = new Vector3(0, -1920, 0);
         tP.to = Vector3.zero;
         
-        avgSpeedLabel.text = "0";
-        distLabel.text = "0";
-        maxLabel.text = "0";
-        uphillDistanceLabel.text = "0";
-        
+        avgSpeedLabel.text = "0.0";
+        distLabel.text = "0.0";
+        maxLabel.text = "0.0";
+        uphillDistanceLabel.text = "00";
+        timeLabel.text = "00:00:00";
+        slider.value = 0;
+        slider.transform.Find("Num").GetComponent<Text>().text = 0 + "/" + slider.maxValue;
+
         ridingStart_questionLabel.text = "라이딩을 시작할까요?";
 
         isReverse_tp = false;
@@ -153,24 +155,56 @@ public class Riding_VC : MonoBehaviour {
     public void refreshTxt(float currSpeed, float avgSpeed,double dist, string time, float maxSpeed, float uphillDist, int boxNum) {
         //Debug.Log("RIDING LISTENER");
         //currSpeedLabel.text = (Math.Round(currSpeed, 2, MidpointRounding.AwayFromZero)).ToString() + " KM/H";
-        avgSpeedLabel.text = (Math.Round(avgSpeed,2,MidpointRounding.AwayFromZero)).ToString();
-        distLabel.text = (Math.Round(dist,2,MidpointRounding.AwayFromZero)).ToString();
-        timeLabel.text = time;
-        maxLabel.text = (Math.Round(maxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
-        uphillDistanceLabel.text = (Math.Round(uphillDist, 2, MidpointRounding.AwayFromZero)).ToString();
-        boxLabel.text = "X " + boxNum;
+        if(avgSpeed == 0) {
+            avgSpeedLabel.text = "0.0";
+        }
+        else {
+            avgSpeedLabel.text = (Math.Round(avgSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
+        }
+        
+        if(dist == 0) {
+            distLabel.text = "0.0";
+        }
+        else {
+            distLabel.text = (Math.Round(dist, 2, MidpointRounding.AwayFromZero)).ToString();
+        }
+        
+        if(String.IsNullOrEmpty(time)) {
+            timeLabel.text = "00:00:00";
+        }
+        else {
+            timeLabel.text = time;
+        }
+
+        if(maxSpeed == 0) {
+            maxLabel.text = "0.0";
+        }
+        else {
+            maxLabel.text = (Math.Round(maxSpeed, 2, MidpointRounding.AwayFromZero)).ToString();
+        }
+        
+        if(uphillDist == 0) {
+            uphillDistanceLabel.text = "00";
+        }
+        else {
+            uphillDistanceLabel.text = (Math.Round(uphillDist, 2, MidpointRounding.AwayFromZero)).ToString();
+        }
+        boxLabel.text = boxNum.ToString();
         this.boxNum = boxNum;
     }
 
     private void sliderRefresh(double dist) {
         float _dist = (float)dist;
-        if(_dist < sliderMaxValue) {
-            slider.value = _dist / sliderMaxValue;
+        if(_dist < slider.maxValue) {
+            slider.value = _dist;
         }
         else {
-            float remainder = (_dist % sliderMaxValue) / sliderMaxValue;
+            float remainder = _dist % slider.maxValue;
             slider.value = remainder;
         }
+
+        int val = (int)slider.value;
+        slider.transform.Find("Num").GetComponent<Text>().text = val + "/" + slider.maxValue;
     }
 
     //최종적으로 종료 모달에서 종료 버튼을 눌렀을 때
@@ -247,8 +281,12 @@ public class Riding_VC : MonoBehaviour {
         double dist = Math.Round(ridingStore.totalDist, 2);
         int boxNum = ridingStore.boxes;
         char delimeter = '.';
-        //string time = ridingStore.totalTime.ToString().Split(delimeter)[0];
+
         string time = ridingStore.preTime;
+        if (String.IsNullOrEmpty(ridingStore.preTime)) {
+            time = "00:00:00";
+        }
+        
         refreshTxt(currSpeed, avgSpeed, dist, time, maxSpeed, uphillDistance, boxNum);
         sliderRefresh(dist);
     }
