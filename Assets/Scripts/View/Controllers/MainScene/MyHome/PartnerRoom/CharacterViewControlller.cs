@@ -76,19 +76,19 @@ public class CharacterViewControlller : MonoBehaviour {
     }
 
     private void setInfo(bool isRepChar = false) {
-        Slider slider = mainStage.transform.Find("FR_Slider").GetComponent<Slider>();
-        
+        int[] maxExps = { 0, 10, 20 };
+
         Text name = mainStage.transform.Find("Name").GetComponent<Text>();
-        Text frLv = slider.transform.Find("Header").GetComponent<Text>();
-        Text frPercentage = slider.transform.Find("Percentage").GetComponent<Text>();
+        Text frLv = friendlySlider.transform.Find("Header").GetComponent<Text>();
+        Text frPercentage = friendlySlider.transform.Find("Percentage").GetComponent<Text>();
 
         name.text = charInvenStore.repCharacter.name;
         int lv = charInvenStore.repCharacter.lv;
-        slider.maxValue = charInvenStore.repCharacter.lvup_exps[lv - 1];
-        slider.value = charInvenStore.repCharacter.exp;
+        friendlySlider.maxValue = charInvenStore.repCharacter.lvup_exps[lv - 1];
+        friendlySlider.value = charInvenStore.repCharacter.exp - maxExps[lv - 1];
 
         frLv.text = "친밀도 Lv" + lv;
-        frPercentage.text = ((slider.value / slider.maxValue) * 100f).ToString() + "%";
+        frPercentage.text = ((friendlySlider.value / friendlySlider.maxValue) * 100f).ToString() + "%";
     }
 
     public void setMainChar(int index, int lv) {
