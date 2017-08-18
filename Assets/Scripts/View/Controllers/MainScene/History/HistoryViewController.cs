@@ -8,7 +8,8 @@ public class HistoryViewController : MonoBehaviour {
     public GameObject 
         container,
         innerContainer,
-        refreshContainer;
+        refreshContainer,
+        message;
 
     public GameObject[] items;
     public GameObject scrollView;
@@ -46,6 +47,7 @@ public class HistoryViewController : MonoBehaviour {
         preItem = null;
         preDate = null;
         isFirstGetRidingData = true;
+        message.SetActive(false);
     }
 
     public void ridingStoreListener() {
@@ -72,6 +74,11 @@ public class HistoryViewController : MonoBehaviour {
             Destroy(refreshButton);
         }
         var data = ridingStore.ridingRecords;
+       
+        if(data.Length == 0) {
+            message.SetActive(true);
+        }
+
         for (int i=0; i<data.Length; i++) {
             string[] tmp = data[i].createDate.Split('T');
             string[] date = tmp[0].Split('-');
@@ -114,7 +121,7 @@ public class HistoryViewController : MonoBehaviour {
             preItem = item;
         }
 
-        if(data.Length > 0) {
+        if (data.Length > 0) {
             GameObject refreshPref = Instantiate(refreshContainer);
             refreshPref.transform.SetParent(scrollView.transform, false);
 
@@ -124,6 +131,7 @@ public class HistoryViewController : MonoBehaviour {
             refreshPref.transform.Find("Button").GetComponent<Button>().onClick.AddListener(() => getRidingDataSets());
             refreshButton = refreshPref;
         }
+
     }
 
     void onDetail(GameObject obj) {
