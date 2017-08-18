@@ -40,7 +40,8 @@ public class Result_VC : MonoBehaviour {
 
     public Slider 
         lvSlider,
-        friendlySlider;
+        friendlySlider,
+        boxSlider;
 
     public Text
         LvHeader,
@@ -64,6 +65,7 @@ public class Result_VC : MonoBehaviour {
 
     private TweenPosition tP;
     public Texture2D markerTexture;
+    private bool tmp = false;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -272,6 +274,39 @@ public class Result_VC : MonoBehaviour {
         }
         else {
             specs[3].text = data.status.speed.ToString();
+        }
+
+        //공구함 슬라이더
+        int expIncreased = data.status.exp - preData.status.exp;
+        
+        tS = boxSlider.GetComponent<TweenSlider>();
+
+        int remainderExp = data.status.exp % 10;
+        if (expIncreased == 0) {
+            boxSlider.value = remainderExp;
+        }
+        else {
+            if(remainderExp == 0) {
+                tS.from = preData.status.exp;
+                tS.to = boxSlider.maxValue;
+                boxSlider.value = 0;
+                tmp = true;
+            }
+            else {
+                tS.from = preData.status.exp;
+                tS.to = data.status.exp;
+            }
+        }
+
+        tS.PlayForward();
+
+        Text sliderText = boxSlider.transform.Find("Num").GetComponent<Text>();
+        sliderText.text = remainderExp + "/10";
+    }
+
+    public void needResetSlider() {
+        if(tmp) {
+            boxSlider.value = 0;
         }
     }
 

@@ -43339,6 +43339,7 @@ MonoBehaviour:
   recordViewBtn: {fileID: 999576885}
   lvSlider: {fileID: 1178211734}
   friendlySlider: {fileID: 1118204225}
+  boxSlider: {fileID: 1995285571}
   LvHeader: {fileID: 615878275}
   FrHeader: {fileID: 1593051886}
   LvExp: {fileID: 210593386}
@@ -107399,6 +107400,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1995285570}
   - component: {fileID: 1995285571}
+  - component: {fileID: 1995285572}
   m_Layer: 5
   m_Name: Slider
   m_TagString: Untagged
@@ -107475,6 +107477,52 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Slider+SliderEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &1995285572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1995285569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f914020fec736e34c810b134c363b378, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  method: 0
+  style: 0
+  animationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  ignoreTimeScale: 1
+  delay: 0
+  duration: 3
+  steeperCurves: 0
+  tweenGroup: 0
+  useFixedUpdate: 0
+  onFinished:
+  - mTarget: {fileID: 758208948}
+    mMethodName: needResetSlider
+    mParameters: []
+    oneShot: 0
+  eventReceiver: {fileID: 0}
+  callWhenFinished: 
+  from: 0
+  to: 0
 --- !u!1 &1996696068
 GameObject:
   m_ObjectHideFlags: 0
