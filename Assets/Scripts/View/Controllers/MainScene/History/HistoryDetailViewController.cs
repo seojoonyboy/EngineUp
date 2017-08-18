@@ -153,13 +153,23 @@ public class HistoryDetailViewController : MonoBehaviour {
             int level = OnlineMaps.instance.zoom;
             if (level > 10) {
                 _line.weight = 3f;
-                endMarker.scale = 0.3f;
-                startMarker.scale = 0.3f;
+                if(endMarker != null) {
+                    endMarker.scale = 0.3f;
+                }
+
+                if(startMarker != null) {
+                    startMarker.scale = 0.3f;
+                }
             }
             else {
                 _line.weight = 5f;
-                endMarker.scale = 0.5f;
-                startMarker.scale = 0.5f;
+                if (endMarker != null) {
+                    endMarker.scale = 0.5f;
+                }
+
+                if (startMarker != null) {
+                    startMarker.scale = 0.5f;
+                }
             }
         }
     }
