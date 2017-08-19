@@ -61,12 +61,14 @@ public class BicycleListViewController : MonoBehaviour {
         //slider out
         else if (boolParm == 0) {
             gameObject.SetActive(false);
+            transform.Find("DropMenu").gameObject.SetActive(false);
             removeList();
         }
     }
 
     public void makeList() {
         //아이템 갯수를 통해 몇줄 컨테이너 필요한지 계산
+        removeList();
         ArrayList items = null;
         switch(type) {
             case SelectedType.EG:
@@ -180,6 +182,7 @@ public class BicycleListViewController : MonoBehaviour {
                 break;
         }
         gm.gameDispatcher.dispatch(act);
+        transform.Find("DropMenu").gameObject.SetActive(false);
     }
 }
 
