@@ -391,7 +391,11 @@ public class StatViewController : MonoBehaviour {
         //지역 상세 선택
         switch(index) {
             case 0:
-                editModals[index].transform.Find("District").GetComponent<Text>().text = userStore.myData.district;
+                var district = userStore.myData.district;
+                Text text = editModals[index].transform.Find("District").GetComponent<Text>();
+                if (!string.IsNullOrEmpty(district)) {
+                    text.text = userStore.myData.district;
+                }
                 break;
             //자전거 종류
             case 1:
@@ -407,8 +411,19 @@ public class StatViewController : MonoBehaviour {
                 break;
             //WH
             case 3:
-                editModals[index].transform.Find("Height").GetComponent<Text>().text = userStore.myData.height;
-                editModals[index].transform.Find("Weight").GetComponent<Text>().text = userStore.myData.weight;
+                var height = userStore.myData.height;
+                var height_text = editModals[index].transform.Find("Height").GetComponent<Text>();
+                if (string.IsNullOrEmpty(height)) {
+                    height = "000";
+                }
+                height_text.text = height;
+
+                var weight = userStore.myData.weight;
+                var weight_text = editModals[index].transform.Find("Weight").GetComponent<Text>();
+                if (string.IsNullOrEmpty(weight)) {
+                    weight = "000";
+                }
+                weight_text.text = weight;
                 break;
             case 5:
                 editModals[0].SetActive(false);
