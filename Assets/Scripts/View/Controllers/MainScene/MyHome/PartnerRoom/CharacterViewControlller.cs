@@ -130,7 +130,7 @@ public class CharacterViewControlller : MonoBehaviour {
         stats[2].text = (per_speed).ToString();
         stats[3].text = (per_recovery).ToString();
 
-        specHeader.text = "자전거 능력치 %";
+        specHeader.text = "파트너 능력치 %";
 
         changeSpecViewButton.GetComponent<boolIndex>().isOn = false;
     }
