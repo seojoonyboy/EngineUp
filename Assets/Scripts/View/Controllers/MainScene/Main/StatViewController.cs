@@ -52,6 +52,8 @@ public class StatViewController : MonoBehaviour {
 
     private Animator animator;
 
+    private int modalIndex;
+    private GameObject calenderPref;
     SoundManager sm;
     void Awake() {
         gm = GameManager.Instance;
@@ -383,16 +385,16 @@ public class StatViewController : MonoBehaviour {
 
     //지역, 자전거종류, 생년월일, 몸무게 / 키, 성별 입력(수정)
     public void onProfileEdit(GameObject obj) {
-        int index = obj.GetComponent<ButtonIndex>().index;
-        if(index != 2) {
-            editModals[index].transform.parent.gameObject.SetActive(true);
-            editModals[index].SetActive(true);
+        modalIndex = obj.GetComponent<ButtonIndex>().index;
+        if(modalIndex != 2) {
+            editModals[modalIndex].transform.parent.gameObject.SetActive(true);
+            editModals[modalIndex].SetActive(true);
         }
         //지역 상세 선택
-        switch(index) {
+        switch(modalIndex) {
             case 0:
                 var district = userStore.myData.district;
-                Text text = editModals[index].transform.Find("District").GetComponent<Text>();
+                Text text = editModals[modalIndex].transform.Find("District").GetComponent<Text>();
                 if (!string.IsNullOrEmpty(district)) {
                     text.text = userStore.myData.district;
                 }
@@ -405,21 +407,21 @@ public class StatViewController : MonoBehaviour {
             //생년월일
             case 2:
                 editModals[6].SetActive(true);
-                GameObject calender = Instantiate(callenderPref);
-                calender.transform.SetParent(editModals[6].transform, false);
-                calender.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 340f);
+                calenderPref = Instantiate(callenderPref);
+                calenderPref.transform.SetParent(editModals[6].transform, false);
+                calenderPref.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 340f);
                 break;
             //WH
             case 3:
                 var height = userStore.myData.height;
-                var height_text = editModals[index].transform.Find("Height").GetComponent<Text>();
+                var height_text = editModals[modalIndex].transform.Find("Height").GetComponent<Text>();
                 if (string.IsNullOrEmpty(height)) {
                     height = "000";
                 }
                 height_text.text = height;
 
                 var weight = userStore.myData.weight;
-                var weight_text = editModals[index].transform.Find("Weight").GetComponent<Text>();
+                var weight_text = editModals[modalIndex].transform.Find("Weight").GetComponent<Text>();
                 if (string.IsNullOrEmpty(weight)) {
                     weight = "000";
                 }
@@ -433,10 +435,15 @@ public class StatViewController : MonoBehaviour {
         }
     }
 
-    public void offProfileEdit(GameObject obj) {
-        int index = obj.GetComponent<ButtonIndex>().index;
-        editModals[index].transform.parent.gameObject.SetActive(false);
-        editModals[index].SetActive(false);
+    public void offProfileEdit() {
+        if(modalIndex != 2) {
+            editModals[modalIndex].transform.parent.gameObject.SetActive(false);
+            editModals[modalIndex].SetActive(false);
+        }
+        else {
+            Destroy(calenderPref);
+            editModals[6].SetActive(false);
+        }
     }
 
     public void offInput(GameObject obj) {
