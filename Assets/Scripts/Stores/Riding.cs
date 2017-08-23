@@ -36,6 +36,10 @@ public class Riding : AjwStore{
     public string postsCallbackHeader;
     public GetRidingRecords.callType callRecType;
 
+    public _Rect
+        maxCoord,
+        minCoord;
+
     public Riding(QueueDispatcher<Actions> _dispatcher):base(_dispatcher){
         postBuffer = new coordData[10];
         postBufferCounter = 0;
@@ -109,7 +113,21 @@ public class Riding : AjwStore{
         //if (!_filter(loc)) { return; } // 필터 적용
         postBuffer[postBufferCounter] = loc;
         postBufferCounter++;
-        Debug.Log(loc.latitude);
+
+        if(loc.altitude < minCoord.x) {
+            minCoord.x = loc.altitude;
+        }
+        if (loc.latitude < minCoord.y) {
+            minCoord.y = loc.latitude;
+        }
+        if (loc.altitude > maxCoord.x) {
+            maxCoord.x = loc.altitude;
+        }
+        if(loc.latitude < maxCoord.y) {
+            maxCoord.y = loc.latitude;
+        }
+
+        //Debug.Log(loc.latitude);
         //coordData data = new coordData(loc.longitude,loc.latitude);
         //coordList.Add(data);
 
@@ -136,7 +154,11 @@ public class Riding : AjwStore{
 
     void ridingStart(RidingStartAction act){
         coordList.Clear();
-        switch(act.status){
+
+        minCoord = new _Rect();
+        maxCoord = new _Rect();
+
+        switch (act.status){
         case NetworkAction.statusTypes.REQUEST:
             storeStatus = storeStatus.WAITING_REQ;
             
@@ -368,4 +390,9 @@ public class filteredCoords {
 public class innerRidingDetails : filteredCoords {
     public string isPaused;
     public string createDate;
+}
+
+public class _Rect {
+    public float x = 0;
+    public float y = 0;
 }

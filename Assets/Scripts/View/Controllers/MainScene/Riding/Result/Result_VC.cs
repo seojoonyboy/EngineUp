@@ -355,20 +355,34 @@ public class Result_VC : MonoBehaviour {
                 list.Add(val);
             }
 
+            //입력받은 좌표가 없는 경우
             if(coords.Length == 0) {
                 OnlineMaps.instance.position = new Vector2(127.74437f, 37.87998f);
             }
-
+            //입력받은 좌표가 있는 경우
             else {
-                float avgLat = sumLat / (float)coords.Length;
-                float avgLon = sumLon / (float)coords.Length;
-                Vector2 mapPos = new Vector2(avgLat, avgLon);
-                OnlineMaps.instance.position = mapPos;
+                var maxRect = ridingStore.maxCoord;
+                var minRect = ridingStore.minCoord;
+
+                if (IsRectCoordValid(minRect, maxRect)) {
+                    float centerX = (maxRect.x + minRect.x) / 2.0f;
+                    float centerY = (maxRect.y + minRect.y) / 2.0f;
+
+                    OnlineMaps.instance.position = new Vector2(centerX, centerY);
+                }
             }
 
             line = new OnlineMapsDrawingLine(list, Color.red, 3.0f);
             OnlineMaps.instance.AddDrawingElement(line);
         }
+    }
+
+    bool IsRectCoordValid(_Rect min, _Rect max) {
+        bool result = true;
+        if(min.x == 0 || min.y == 0 || max.x == 0 || max.y == 0) {
+            result = false;
+        }
+        return result;
     }
 
     void _drawMarker() {
@@ -397,6 +411,9 @@ public class Result_VC : MonoBehaviour {
             startMarker = OnlineMaps.instance.AddMarker(pos, markerTexture, "");
             startMarker.scale = 0.5f;
         }
+
+        var testMarker = OnlineMaps.instance.AddMarker(new Vector2(127.74437f, 37.87998f), markerTexture, "");
+        testMarker.scale = 0.5f;
     }
 
     public void onMapPanel() {

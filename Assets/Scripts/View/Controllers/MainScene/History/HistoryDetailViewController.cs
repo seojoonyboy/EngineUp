@@ -32,12 +32,22 @@ public class HistoryDetailViewController : MonoBehaviour {
     public Texture2D markerTexture;
     private Animator animator;
 
+    public float markerOffset;
+
+    private _Rect
+        minCoord,
+        maxCoord;
+
     void Awake() {
         gm = GameManager.Instance;
         ridingStore = gm.ridingStore;
 
         animator = GetComponent<Animator>();
+
+        minCoord = new _Rect();
+        maxCoord = new _Rect();
     }
+
 
     void OnEnable() {
         Invoke("playSlideIn", 0.2f);
@@ -85,29 +95,42 @@ public class HistoryDetailViewController : MonoBehaviour {
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
 
         innerRidingDetails[] coords = data.coords;
-        if(coords.Length == 0) {
+
+        var testMarker = OnlineMaps.instance.AddMarker(new Vector2(127.74437f, 37.87998f));
+        testMarker.texture = markerTexture;
+        //testMarker.scale = 0.5f;
+        //OnlineMaps.instance.markers[0].align = OnlineMapsAlign.Top;
+        OnlineMaps.instance.OnChangePosition += changePos;
+        if (coords.Length == 0) {
             _map.position = new Vector2(127.74437f, 37.87998f);
         }
         else {
             List<Vector2> list = new List<Vector2>();
             //좌표들의 평균값으로 맵 시작위치 지정
-            float sumLat = 0;
-            float sumLon = 0;
-
             for(int i=0; i<coords.Length; i++) {
                 Vector2 coord = new Vector2(coords[i].latitude, coords[i].longitude);
                 list.Add(coord);
 
-                float lat = coords[i].latitude;
-                float lon = coords[i].longitude;
-                sumLat += lat;
-                sumLon += lon;
+                if(coords[i].altitude < minCoord.x) {
+                    minCoord.x = coords[i].altitude;
+                }
+                if(coords[i].latitude < minCoord.y) {
+                    minCoord.y = coords[i].latitude;
+                }
+                if(coords[i].altitude > maxCoord.x) {
+                    maxCoord.x = coords[i].altitude;
+                }
+                if(coords[i].latitude > maxCoord.y) {
+                    maxCoord.y = coords[i].latitude;
+                }
             }
 
-            float avgLat = sumLat / (float)coords.Length;
-            float avgLon = sumLon / (float)coords.Length;
+            if(IsRectCoordValid(minCoord, maxCoord)) {
+                float centerX = (minCoord.x + maxCoord.x) / 2.0f;
+                float centerY = (minCoord.y + maxCoord.y) / 2.0f;
 
-            _map.position = new Vector2(avgLat, avgLon);
+                _map.position = new Vector2(centerX, centerY);
+            }
 
             _line = new OnlineMapsDrawingLine(list, Color.red, 3.0f);
             _map.AddDrawingElement(_line);
@@ -127,6 +150,14 @@ public class HistoryDetailViewController : MonoBehaviour {
             }
         }
         _map.zoom = 18;
+    }
+
+    bool IsRectCoordValid(_Rect min, _Rect max) {
+        bool result = true;
+        if (min.x == 0 || min.y == 0 || max.x == 0 || max.y == 0) {
+            result = false;
+        }
+        return result;
     }
 
     public void setInfo(RidingDetails data) {
@@ -186,5 +217,27 @@ public class HistoryDetailViewController : MonoBehaviour {
 
         canvas.blocksRaycasts = true;
         mapHeader.SetActive(false);
+    }
+
+    private void changePos() {
+        double marker_lng;
+        double marker_lat;
+        OnlineMaps.instance.markers[0].GetPosition(out marker_lng, out marker_lat);
+
+        double tlx; //좌측 상단 x
+        double tly; //좌측 상단 y
+        double brx; //우측 하단 x
+        double bry; //우측 하단 y
+
+        OnlineMaps.instance.GetCorners(out tlx, out tly, out brx, out bry);
+        Debug.Log(tlx + " , " + tly);
+
+        if (tlx + markerOffset * 0.0001 >= marker_lng || tly - markerOffset * 0.0001 <= marker_lat || brx - markerOffset * 0.0001 <= marker_lng || bry + markerOffset * 0.0001 >= marker_lat) {
+            //Debug.Log("영역밖");
+            OnlineMaps.instance.markers[0].enabled = false;
+        }
+        else {
+            OnlineMaps.instance.markers[0].enabled = true;
+        }
     }
 }
