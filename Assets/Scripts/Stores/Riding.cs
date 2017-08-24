@@ -114,19 +114,29 @@ public class Riding : AjwStore{
         postBuffer[postBufferCounter] = loc;
         postBufferCounter++;
 
-        if(loc.altitude < minCoord.x) {
-            minCoord.x = loc.altitude;
+        if (minCoord.x == 0) {
+            minCoord.x = loc.longitude;
         }
-        if (loc.latitude < minCoord.y) {
+        else {
+            if (loc.longitude < minCoord.x) {
+                minCoord.x = loc.longitude;
+            }
+        }
+        if (minCoord.y == 0) {
             minCoord.y = loc.latitude;
         }
-        if (loc.altitude > maxCoord.x) {
-            maxCoord.x = loc.altitude;
-        }
-        if(loc.latitude < maxCoord.y) {
-            maxCoord.y = loc.latitude;
+        else {
+            if (loc.latitude < minCoord.y) {
+                minCoord.y = loc.latitude;
+            }
         }
 
+        if (loc.longitude > maxCoord.x) {
+            maxCoord.x = loc.longitude;
+        }
+        if (loc.latitude > maxCoord.y) {
+            maxCoord.y = loc.latitude;
+        }
         //Debug.Log(loc.latitude);
         //coordData data = new coordData(loc.longitude,loc.latitude);
         //coordList.Add(data);

@@ -341,22 +341,15 @@ public class Result_VC : MonoBehaviour {
             innerRidingDetails[] coords = details.coords;
 
             List<Vector2> list = new List<Vector2>();
-
-            //좌표들의 평균값으로 맵 시작위치 지정
-            float sumLat = 0;
-            float sumLon = 0;
-
             foreach (innerRidingDetails coord in coords) {
                 float lat = coord.latitude;
                 float lon = coord.longitude;
-                sumLat += lat;
-                sumLon += lon;
                 Vector2 val = new Vector2(lat, lon);
                 list.Add(val);
             }
-
+            var _map = OnlineMaps.instance;
             //입력받은 좌표가 없는 경우
-            if(coords.Length == 0) {
+            if (coords.Length == 0) {
                 OnlineMaps.instance.position = new Vector2(127.74437f, 37.87998f);
             }
             //입력받은 좌표가 있는 경우
@@ -368,7 +361,35 @@ public class Result_VC : MonoBehaviour {
                     float centerX = (maxRect.x + minRect.x) / 2.0f;
                     float centerY = (maxRect.y + minRect.y) / 2.0f;
 
-                    OnlineMaps.instance.position = new Vector2(centerX, centerY);
+                    _map.position = new Vector2(centerY, centerX);
+
+                    double dx;
+                    double dy;
+                    OnlineMapsUtils.DistanceBetweenPoints(minRect.x, minRect.y, maxRect.x, maxRect.y, out dx, out dy);
+                    //1km 이하인 경우
+                    double maxDist = dx;
+                    if (dx < dy) {
+                        maxDist = dy;
+                    }
+                    Debug.Log("Dist X : " + dx);
+                    int zoomLv = 18;
+                    int offset = (int)(maxDist / 0.2);
+                    if (offset <= 1) {
+                        _map.zoom = zoomLv;
+                    }
+                    else {
+                        zoomLv = zoomLv - (offset - 1);
+                        if (zoomLv <= 10) {
+                            zoomLv = 10;
+                        }
+                        else {
+                            _map.zoom = zoomLv;
+                        }
+                    }
+                }
+                else {
+                    Vector2 pos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
+                    _map.position = pos;
                 }
             }
 

@@ -43,9 +43,6 @@ public class HistoryDetailViewController : MonoBehaviour {
         ridingStore = gm.ridingStore;
 
         animator = GetComponent<Animator>();
-
-        minCoord = new _Rect();
-        maxCoord = new _Rect();
     }
 
 
@@ -80,6 +77,9 @@ public class HistoryDetailViewController : MonoBehaviour {
     }
 
     public void setMap(RidingDetails data) {
+        minCoord = new _Rect();
+        maxCoord = new _Rect();
+
         canvas.blocksRaycasts = false;
 
         mapHeader.SetActive(true);
@@ -96,8 +96,8 @@ public class HistoryDetailViewController : MonoBehaviour {
 
         innerRidingDetails[] coords = data.coords;
 
-        var testMarker = OnlineMaps.instance.AddMarker(new Vector2(127.74437f, 37.87998f));
-        testMarker.texture = markerTexture;
+        //var testMarker = OnlineMaps.instance.AddMarker(new Vector2(127.74437f, 37.87998f));
+        //testMarker.texture = markerTexture;
         //testMarker.scale = 0.5f;
         //OnlineMaps.instance.markers[0].align = OnlineMapsAlign.Top;
         OnlineMaps.instance.OnChangePosition += changePos;
@@ -111,25 +111,72 @@ public class HistoryDetailViewController : MonoBehaviour {
                 Vector2 coord = new Vector2(coords[i].latitude, coords[i].longitude);
                 list.Add(coord);
 
-                if(coords[i].altitude < minCoord.x) {
-                    minCoord.x = coords[i].altitude;
+                if(minCoord.x == 0) {
+                    minCoord.x = coords[i].longitude;
                 }
-                if(coords[i].latitude < minCoord.y) {
+                else {
+                    if (coords[i].longitude < minCoord.x) {
+                        minCoord.x = coords[i].longitude;
+                    }
+                }
+                if(minCoord.y == 0) {
                     minCoord.y = coords[i].latitude;
                 }
-                if(coords[i].altitude > maxCoord.x) {
-                    maxCoord.x = coords[i].altitude;
+                else {
+                    if (coords[i].latitude < minCoord.y) {
+                        minCoord.y = coords[i].latitude;
+                    }
+                }
+
+                if(coords[i].longitude > maxCoord.x) {
+                    maxCoord.x = coords[i].longitude;
                 }
                 if(coords[i].latitude > maxCoord.y) {
                     maxCoord.y = coords[i].latitude;
                 }
             }
 
-            if(IsRectCoordValid(minCoord, maxCoord)) {
-                float centerX = (minCoord.x + maxCoord.x) / 2.0f;
-                float centerY = (minCoord.y + maxCoord.y) / 2.0f;
+            //Debug.Log("최소 X값 : " + minCoord.x);
+            //Debug.Log("최소 y값 : " + minCoord.y);
+            //Debug.Log("최대 X값 : " + maxCoord.x);
+            //Debug.Log("최대 y값 : " + maxCoord.y);
 
-                _map.position = new Vector2(centerX, centerY);
+            if (IsRectCoordValid(minCoord, maxCoord)) {
+                float centerX = (float)((minCoord.x + maxCoord.x) / 2.0f);
+                float centerY = (float)((minCoord.y + maxCoord.y) / 2.0f);
+
+                _map.position = new Vector2(centerY, centerX);
+
+                double dx;
+                double dy;
+                OnlineMapsUtils.DistanceBetweenPoints(minCoord.x, minCoord.y, maxCoord.x, maxCoord.y, out dx, out dy);
+                //1km 이하인 경우
+                double maxDist = dx;
+                if (dx < dy) {
+                    maxDist = dy;
+                }
+                //Debug.Log("Dist X : " + dx);
+                int zoomLv = 18;
+                int offset = (int)(maxDist / 0.2);
+                if (offset <= 1) {
+                    _map.zoom = zoomLv;
+                }
+                else {
+                    zoomLv = zoomLv - (offset - 1);
+                    if (zoomLv <= 10) {
+                        zoomLv = 10;
+                    }
+                    else {
+                        _map.zoom = zoomLv;
+                    }
+                }
+                //Vector2 pos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
+                //_map.position = pos;
+                //_map.zoom = 18;
+            }
+            else {
+                Vector2 pos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
+                _map.position = pos;
             }
 
             _line = new OnlineMapsDrawingLine(list, Color.red, 3.0f);
@@ -139,17 +186,19 @@ public class HistoryDetailViewController : MonoBehaviour {
                 //도착마크만 표시
                 Vector2 markerPos = new Vector2(coords[0].latitude, coords[0].longitude);
                 endMarker = _map.AddMarker(markerPos);
+                endMarker.align = OnlineMapsAlign.BottomLeft;
             }
             else {
                 //출발 도착 마커 모두 표시
                 Vector2 startPos = new Vector2(coords[0].latitude, coords[0].longitude);
                 startMarker = _map.AddMarker(startPos, markerTexture, "");
+                startMarker.align = OnlineMapsAlign.BottomLeft;
 
                 Vector2 endPos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
                 endMarker = _map.AddMarker(endPos, markerTexture, "");
+                endMarker.align = OnlineMapsAlign.BottomLeft;
             }
         }
-        _map.zoom = 18;
     }
 
     bool IsRectCoordValid(_Rect min, _Rect max) {
@@ -184,23 +233,9 @@ public class HistoryDetailViewController : MonoBehaviour {
             int level = OnlineMaps.instance.zoom;
             if (level > 10) {
                 _line.weight = 3f;
-                if(endMarker != null) {
-                    endMarker.scale = 0.3f;
-                }
-
-                if(startMarker != null) {
-                    startMarker.scale = 0.3f;
-                }
             }
             else {
                 _line.weight = 5f;
-                if (endMarker != null) {
-                    endMarker.scale = 0.5f;
-                }
-
-                if (startMarker != null) {
-                    startMarker.scale = 0.5f;
-                }
             }
         }
     }
@@ -222,7 +257,7 @@ public class HistoryDetailViewController : MonoBehaviour {
     private void changePos() {
         double marker_lng;
         double marker_lat;
-        OnlineMaps.instance.markers[0].GetPosition(out marker_lng, out marker_lat);
+        //OnlineMaps.instance.markers[0].GetPosition(out marker_lng, out marker_lat);
 
         double tlx; //좌측 상단 x
         double tly; //좌측 상단 y
@@ -230,14 +265,13 @@ public class HistoryDetailViewController : MonoBehaviour {
         double bry; //우측 하단 y
 
         OnlineMaps.instance.GetCorners(out tlx, out tly, out brx, out bry);
-        Debug.Log(tlx + " , " + tly);
 
-        if (tlx + markerOffset * 0.0001 >= marker_lng || tly - markerOffset * 0.0001 <= marker_lat || brx - markerOffset * 0.0001 <= marker_lng || bry + markerOffset * 0.0001 >= marker_lat) {
-            //Debug.Log("영역밖");
-            OnlineMaps.instance.markers[0].enabled = false;
-        }
-        else {
-            OnlineMaps.instance.markers[0].enabled = true;
-        }
+        //if (tlx + markerOffset * 0.0001 >= marker_lng || tly - markerOffset * 0.0001 <= marker_lat || brx - markerOffset * 0.0001 <= marker_lng || bry + markerOffset * 0.0001 >= marker_lat) {
+        //    //Debug.Log("영역밖");
+        //    OnlineMaps.instance.markers[0].enabled = false;
+        //}
+        //else {
+        //    OnlineMaps.instance.markers[0].enabled = true;
+        //}
     }
 }

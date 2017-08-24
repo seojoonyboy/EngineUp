@@ -187,6 +187,7 @@ public class User : AjwStore {
                         break;
                     case SignupAction.loginType.NO:
                         form.AddField("type", "NO");
+                        //form.AddField("deviceId", "bdf8933f12a907c0486be74ea94822c7");
                         form.AddField("deviceId", GameManager.Instance.deviceId);
                         break;
                 }
