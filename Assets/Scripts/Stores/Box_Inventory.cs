@@ -77,9 +77,9 @@ public class Box_Inventory : AjwStore {
         public string name;
         public string desc;
         public int grade;
-        //public int gear;
-        //public string parts;
-        //public int limit_rank;
+        public int gear;
+        public string parts;
+        public int limit_rank;
     }
 
     [System.Serializable]

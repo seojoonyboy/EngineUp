@@ -24,12 +24,9 @@ public class BoxViewController : MonoBehaviour {
         multiOpenModal;
 
     public GameObject _openEffect;
-
-    public UIAtlas 
-        bicycleAtlas,
-        charAtlas,
-        uiAtlas;
-    private bool isReverse_tp;
+    private bool 
+        isReverse_tp,
+        canClick = true;
 
     public MainViewController mV;
     public SpritesManager spriteManager;
@@ -108,14 +105,27 @@ public class BoxViewController : MonoBehaviour {
                     sm.playEffectSound(4);
                     singleOpenModal.SetActive(true);
                     Text name = singleOpenModal.transform.Find("InnerModal/Name").GetComponent<Text>();
-                    Image image = singleOpenModal.transform.Find("InnerModal/Image").GetComponent<Image>();
+                    Image image = null;
+
+                    init();
 
                     var openedItem = boxStore.openedItem;
                     string type = openedItem[0].type;
                     if (type == "item") {
                         Debug.Log("Item");
                         var tmp = spriteManager.stage_items[openedItem[0].item.id - 1];
-                        if(tmp == null) {
+                        if (openedItem[0].item.parts == "FR") {
+                            image = singleOpenModal.transform.Find("InnerModal/Frame").GetComponent<Image>();
+                        }
+                        else if (openedItem[0].item.parts == "WH") {
+                            image = singleOpenModal.transform.Find("InnerModal/Wheel/Image").GetComponent<Image>();
+                        }
+                        else if (openedItem[0].item.parts == "DS") {
+                            image = singleOpenModal.transform.Find("InnerModal/Engine").GetComponent<Image>();
+                        }
+                        image.enabled = true;
+
+                        if (tmp == null) {
                             image.sprite = spriteManager.default_slots[openedItem[0].item.grade];
                         }
                         else {
@@ -125,26 +135,26 @@ public class BoxViewController : MonoBehaviour {
                     }
                     else if (type == "character") {
                         Debug.Log("CHAR");
+                        image = singleOpenModal.transform.Find("InnerModal/Character").GetComponent<Image>();
+                        image.enabled = true;
+
                         image.sprite = mV.characters_slots[openedItem[0].character.id - 1].images[0];
                         name.text = openedItem[0].character.name;
                     }
+
+                    canClick = true;
                 }
                 
+                //다중 열기
                 else {
                     multiOpenModal.SetActive(true);
                     GameObject table = multiOpenModal.transform.Find("InnerModal/Grid").gameObject;
-
                     List<Transform> list = new List<Transform>();
 
                     foreach(Transform tr in table.transform) {
                         list.Add(tr);
                     }
-
-                    foreach (Transform item in list) {
-                        item.Find("Text").GetComponent<Text>().text = "";
-                        item.Find("Image").GetComponent<Image>().sprite = defaultSlotImg;
-                    }
-
+                    init(list);
                     StartCoroutine(openEffect(list, itemCount, items, multiOpenModal));
                 }
             }
@@ -163,6 +173,11 @@ public class BoxViewController : MonoBehaviour {
     //박스 열기 Action 전송
     public void open(int index) {
         //button index 판별
+        if(!canClick) {
+            return;
+        }
+        canClick = false;
+
         int boxNum = userStore.myData.boxes;
         int openNum = 0;
         garage_box_open act = ActionCreator.createAction(ActionTypes.BOX_OPEN) as garage_box_open;
@@ -178,6 +193,10 @@ public class BoxViewController : MonoBehaviour {
         if(boxNum >= openNum) {
             act.num = openNum;
             gm.gameDispatcher.dispatch(act);
+            if(openNum == 10) {
+                multiOpenModal.transform.Find("BottonPanel/ConfirmButton").gameObject.GetComponent<Button>().enabled = false;
+                multiOpenModal.transform.Find("BottonPanel/CancelButton").gameObject.GetComponent<Button>().enabled = false;
+            }
             //singleOpenButton.GetComponent<UIPlaySound>().Play();
         }
         else {
@@ -201,8 +220,6 @@ public class BoxViewController : MonoBehaviour {
 
     IEnumerator openEffect(List<Transform> list, int itemCount, Box_Inventory.boxOpenCallback[] items, GameObject modal) {
         int cnt = 0;
-        modal.transform.Find("BottonPanel/ConfirmButton").gameObject.GetComponent<Button>().enabled = false;
-        modal.transform.Find("BottonPanel/CancelButton").gameObject.GetComponent<Button>().enabled = false;
         foreach (Transform item in list) {
             if (cnt < itemCount) {
                 //effect
@@ -213,20 +230,36 @@ public class BoxViewController : MonoBehaviour {
                 sm.playEffectSound(4);
                 //setUI
                 string type = items[cnt].type;
-                Text label = item.Find("Text").GetComponent<Text>();
-                Image sprite = item.Find("Image").GetComponent<Image>();
-                
+                Text label = item.Find("Name").GetComponent<Text>();
+                Image sprite = null;
+                string parts = items[cnt].item.parts;
                 if (type == "item") {
                     var tmp = spriteManager.stage_items[items[cnt].item.id - 1];
                     if (tmp == null) {
+                        sprite = item.Find("Frame").GetComponent<Image>();
+                        sprite.enabled = true;
                         sprite.sprite = spriteManager.default_slots[items[cnt].item.grade];
                     }
                     else {
+                        if(parts == "FR") {
+                            sprite = item.Find("Frame").GetComponent<Image>();
+                            
+                        }
+                        else if(parts == "DS") {
+                            sprite = item.Find("Engine").GetComponent<Image>();
+                        }
+                        else if(parts == "WH") {
+                            sprite = item.Find("Wheel/Image").GetComponent<Image>();
+                        }
+                        sprite.enabled = true;
                         sprite.sprite = spriteManager.stage_items[items[cnt].item.id - 1];
                     }
                     label.text = items[cnt].item.name;
                 }
                 else if (type == "character") {
+                    sprite = item.Find("Character").GetComponent<Image>();
+                    sprite.enabled = true;
+
                     sprite.sprite = mV.characters_slots[items[cnt].character.id - 1].images[0];
                     label.text = items[cnt].character.name;
                 }
@@ -237,5 +270,25 @@ public class BoxViewController : MonoBehaviour {
         }
         modal.transform.Find("BottonPanel/ConfirmButton").gameObject.GetComponent<Button>().enabled = true;
         modal.transform.Find("BottonPanel/CancelButton").gameObject.GetComponent<Button>().enabled = true;
+
+        canClick = true;
+    }
+
+    public void init(List<Transform> list = null) {
+        if(list != null) {
+            foreach (Transform item in list) {
+                item.Find("Frame").GetComponent<Image>().enabled = false;
+                item.Find("Wheel/Image").GetComponent<Image>().enabled = false;
+                item.Find("Engine").GetComponent<Image>().enabled = false;
+                item.Find("Character").GetComponent<Image>().enabled = false;
+                item.Find("Name").GetComponent<Text>().text = "";
+            }
+        }
+        else {
+            singleOpenModal.transform.Find("InnerModal/Frame").GetComponent<Image>().enabled = false;
+            singleOpenModal.transform.Find("InnerModal/Wheel/Image").GetComponent<Image>().enabled = false;
+            singleOpenModal.transform.Find("InnerModal/Engine").GetComponent<Image>().enabled = false;
+            singleOpenModal.transform.Find("InnerModal/Character").GetComponent<Image>().enabled = false;
+        }
     }
 }
