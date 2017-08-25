@@ -166,7 +166,9 @@ public class BicycleItem_Inventory : AjwStore {
                     .Append(payload.id)
                     .Append("/equip");
                 WWWForm form = new WWWForm();
+                storeStatus = storeStatus.WAITING_REQ;
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
@@ -175,7 +177,7 @@ public class BicycleItem_Inventory : AjwStore {
 
                 MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
                 gm.gameDispatcher.dispatch(myInfoAct);
-
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;

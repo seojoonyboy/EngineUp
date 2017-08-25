@@ -89,9 +89,6 @@ public class User : AjwStore {
                 setMessage(1);
 
                 if (act.nickName.Length == 0) {
-                    //UserCreateError noneNickNameError = ActionCreator.createAction(ActionTypes.USER_CREATE_ERROR) as UserCreateError;
-                    //noneNickNameError.msg = "닉네임을 입력하세요.";
-                    //dispatcher.dispatch(noneNickNameError);
                     storeStatus = storeStatus.ERROR;
                     message = "닉네임을 입력하세요.";
                     _emitChange();
@@ -355,8 +352,6 @@ public class User : AjwStore {
                 myInfo(action as MyInfo);
                 break;
             case ActionTypes.GAME_START:
-                MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
-                dispatcher.dispatch(act);
                 _emitChange();
                 break;
             case ActionTypes.EDIT_PROFILE:

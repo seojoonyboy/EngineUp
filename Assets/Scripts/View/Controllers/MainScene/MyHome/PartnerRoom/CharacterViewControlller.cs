@@ -18,6 +18,7 @@ public class CharacterViewControlller : MonoBehaviour {
     public CharacterListViewController childPanel;
 
     public GameObject changeSpecViewButton;
+    public MainViewController mV;
 
     public string rep_name;
     public int rep_id;
@@ -67,6 +68,12 @@ public class CharacterViewControlller : MonoBehaviour {
                     childPanel.makeList();
                 }
             }
+
+            if(charStoreEventType == ActionTypes.GARAGE_ITEM_EQUIP) {
+                if(charInvenStore.storeStatus == storeStatus.WAITING_REQ) {
+                    mV.loadingModal.SetActive(true);
+                }
+            }
         }
     }
 
@@ -101,6 +108,8 @@ public class CharacterViewControlller : MonoBehaviour {
         var character = mainStage.transform.Find("Image").gameObject;
         var charImg = character.GetComponent<Image>();
         charImg.sprite = mV_controller.characters_entire_body[arrIndex].images[arrSubIndex];
+
+        mV.loadingModal.SetActive(false);
     }
 
     public void setStat() {

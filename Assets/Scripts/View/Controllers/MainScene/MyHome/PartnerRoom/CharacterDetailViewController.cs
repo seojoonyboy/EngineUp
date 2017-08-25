@@ -235,7 +235,7 @@ public class CharacterDetailViewController : MonoBehaviour {
                 act.id = info.id;
                 gm.gameDispatcher.dispatch(act);
 
-                onNotifyModal("파트너를 교체합니다.");
+                onNotifyModal("파트너를 교체하였습니다.");
             }
             else {
                 onNotifyModal("보유하고 있지 않은 파트너입니다.");

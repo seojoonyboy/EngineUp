@@ -81,11 +81,16 @@ public class BicycleViewController : MonoBehaviour {
 
         if(gameObject.activeSelf) {
             if(bicycleItemStore.eventType == ActionTypes.ITEM_INIT) {
-                if(bicycleItemStore.storeStatus == storeStatus.NORMAL) {
+                if (bicycleItemStore.storeStatus == storeStatus.NORMAL) {
                     //Bicycle Item Store에서 Item_init 처리시, User Store에 장착 Spec 전달함
                     setStat();
                     setMainStageImage();
                     setSideBar();
+                }
+            }
+            if(bicycleItemStore.eventType == ActionTypes.GARAGE_ITEM_EQUIP) {
+                if(bicycleItemStore.storeStatus == storeStatus.WAITING_REQ) {
+                    mV.loadingModal.SetActive(true);
                 }
             }
         }
@@ -249,6 +254,7 @@ public class BicycleViewController : MonoBehaviour {
             sprite.sprite = spriteManager.stage_items[85];
             sideBar.transform.Find("EngineSlot/Name").GetComponent<Text>().text = "구동계";
         }
+        mV.loadingModal.SetActive(false);
     }
 
     private void setSideBar() {

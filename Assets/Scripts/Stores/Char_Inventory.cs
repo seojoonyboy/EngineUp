@@ -141,6 +141,7 @@ public class Char_Inventory : AjwStore {
         }
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -149,6 +150,7 @@ public class Char_Inventory : AjwStore {
                     .Append("/equip");
                 WWWForm form = new WWWForm();
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
@@ -156,7 +158,7 @@ public class Char_Inventory : AjwStore {
 
                 MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
                 gm.gameDispatcher.dispatch(myInfoAct);
-
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;

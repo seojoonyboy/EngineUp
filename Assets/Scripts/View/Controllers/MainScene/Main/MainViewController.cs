@@ -68,7 +68,6 @@ public class MainViewController : MonoBehaviour {
                 charSprite.sprite = characters_entire_body[tmp.character - 1].images[tmp.lv - 1];
 
                 isCharLoded = true;
-                isAllLoaded();
             }
         }
     }
@@ -118,7 +117,7 @@ public class MainViewController : MonoBehaviour {
                 }
 
                 isBicycleLoaded = true;
-                isAllLoaded();
+                loadingModal.SetActive(false);
             }
         }
     }
@@ -130,14 +129,7 @@ public class MainViewController : MonoBehaviour {
                 //charSprite.sprite = characters_entire_body[userStore.myData.represent_character.character_inventory.character - 1].images[ci.repCharacter.lv - 1];
 
                 isCharLoded = true;
-                isAllLoaded();
             }
-        }
-    }
-
-    private void isAllLoaded() {
-        if(isCharLoded && isBicycleLoaded) {
-            loadingModal.SetActive(false);
         }
     }
 }
