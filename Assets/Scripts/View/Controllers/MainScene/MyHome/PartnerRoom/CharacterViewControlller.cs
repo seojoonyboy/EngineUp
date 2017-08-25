@@ -91,7 +91,7 @@ public class CharacterViewControlller : MonoBehaviour {
 
         name.text = charInvenStore.repCharacter.name;
         int lv = charInvenStore.repCharacter.lv;
-        friendlySlider.maxValue = charInvenStore.repCharacter.lvup_exps[lv - 1];
+        friendlySlider.maxValue = maxExps[lv - 1];
         friendlySlider.value = charInvenStore.repCharacter.exp - maxExps[lv - 1];
 
         frLv.text = "친밀도 Lv" + lv;
