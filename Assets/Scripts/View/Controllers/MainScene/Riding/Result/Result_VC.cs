@@ -109,13 +109,9 @@ public class Result_VC : MonoBehaviour {
         //Debug.Log("zoom Level : " + level);
         if(level > 10) {
             line.weight = 3f;
-            endMarker.scale = 0.3f;
-            startMarker.scale = 0.3f;
         }
         else {
             line.weight = 5f;
-            endMarker.scale = 0.5f;
-            startMarker.scale = 0.5f;
         }
     }
 
@@ -415,7 +411,6 @@ public class Result_VC : MonoBehaviour {
         }
 
         innerRidingDetails[] coords = details.coords;
-
         if (coords.Length > 0) {
             //도착점 마커
             float lat = coords[coords.Length - 1].latitude;
@@ -423,18 +418,15 @@ public class Result_VC : MonoBehaviour {
             Vector2 pos = new Vector2(lat, lon);
 
             endMarker = OnlineMaps.instance.AddMarker(pos, markerTexture, "");
-            endMarker.scale = 0.5f;
+            endMarker.align = OnlineMapsAlign.BottomLeft;
 
             //시작점 마커
             lat = coords[0].latitude;
             lon = coords[0].longitude;
             pos = new Vector2(lat, lon);
             startMarker = OnlineMaps.instance.AddMarker(pos, markerTexture, "");
-            startMarker.scale = 0.5f;
+            startMarker.align = OnlineMapsAlign.BottomLeft;
         }
-
-        var testMarker = OnlineMaps.instance.AddMarker(new Vector2(127.74437f, 37.87998f), markerTexture, "");
-        testMarker.scale = 0.5f;
     }
 
     public void onMapPanel() {

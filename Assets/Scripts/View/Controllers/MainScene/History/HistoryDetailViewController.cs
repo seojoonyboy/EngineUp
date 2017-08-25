@@ -100,6 +100,7 @@ public class HistoryDetailViewController : MonoBehaviour {
         //testMarker.texture = markerTexture;
         //testMarker.scale = 0.5f;
         //OnlineMaps.instance.markers[0].align = OnlineMapsAlign.Top;
+        OnlineMaps.instance.RemoveAllMarkers();
         OnlineMaps.instance.OnChangePosition += changePos;
         if (coords.Length == 0) {
             _map.position = new Vector2(127.74437f, 37.87998f);
