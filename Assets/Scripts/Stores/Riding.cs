@@ -291,6 +291,7 @@ public class Riding : AjwStore{
         maxSpeed = 0;
         avgSpeed = 0;
         uphillDistance = 0;
+        preTime = "00:00:00";
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         ridingId = 0;
     }
