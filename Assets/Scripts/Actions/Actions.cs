@@ -5,7 +5,7 @@ using System.Text;
 public enum ActionTypes {
     SIGNUP, SIGNIN, GAME_START, GET_DEFAULT_CHAR_INFO, GAME_END,
     GET_GPS_DATA, RIDING_START, RIDING_END,
-    COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST, ADD_COMMUNITY_FRIEND_PREFAB, DELETE_COMMUNITY_FRIEND_PREFAB,
+    COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST,
     GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ADD, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT, GROUP_POSTS, GROUP_ADD_POST, GROUP_DEL_POST, GROUP_MODIFY_POST,
     GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DESTROY, MY_GROUP_PANEL,
     GPS_SEND,
@@ -60,12 +60,6 @@ public static class ActionCreator{
             break;
         case ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST:
             _return = new GetAcceptWaitingListAction();
-            break;
-        case ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB:
-            _return = new AddFriendPrefab();
-            break;
-        case ActionTypes.DELETE_COMMUNITY_FRIEND_PREFAB:
-            _return = new DelFriendPrefab();
             break;
         case ActionTypes.GROUP_GET_MEMBERS:
             _return = new Group_getMemberAction();
@@ -253,26 +247,24 @@ public class CommunitySearchAction : NetworkAction {
 
 public class CommunityDeleteAction : NetworkAction {
     public enum deleteType { GROUP, FRIEND };
+    public enum detailType { SENDING, MYLIST, RECEIVE };
     public deleteType _type;
-    public GameObject targetGameObj;
+    public detailType _detailType;
     public int id;
 }
 
 public class AddFriendAction : NetworkAction {
     public int id;
-    public enum friendType { MYFRIEND, WAITING, REQUEST };
-    public friendType mType;
+    public enum friendType { SEARCH, ACCEPT };
+    public friendType _type;
 }
-
-public class AddFriendPrefab : AddFriendAction { }
 
 //수락 대기 목록 불러오는 액션
 public class GetAcceptWaitingListAction : NetworkAction { }
 //내 친구 목록 불러오는 액션
-public class GetMyFriendListAction : NetworkAction { }
-
-public class DelFriendPrefab : Actions {
-    public GameObject targetObj;
+public class GetMyFriendListAction : NetworkAction {
+    public enum type { WAITING, FRIEND };
+    public type _type;
 }
 
 public class GetDistrictsData : NetworkAction {

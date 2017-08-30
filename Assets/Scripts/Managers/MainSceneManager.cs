@@ -26,9 +26,11 @@ public class MainSceneManager : fbl_SceneManager {
 
         ridingViewCtrler.ridingStore = gm.ridingStore;
         ridingViewCtrler.userStore = gm.userStore;
+
+        friendViewCtrler.gameManager = gm;
         friendViewCtrler.friendsStore = gm.friendsStore;
-        groupViewCtrler.groupStore = gm.groupStore;
-        groupViewCtrler.locationStore = gm.locationStore;
+        //groupViewCtrler.groupStore = gm.groupStore;
+        //groupViewCtrler.locationStore = gm.locationStore;
         statViewCtrler.userStore = gm.userStore;
         statViewCtrler.locationStore = gm.locationStore;
 
@@ -44,8 +46,8 @@ public class MainSceneManager : fbl_SceneManager {
         gm.friendsStore.addListener(friendViewCtrler.OnFriendsStoreListener);
         gm.ridingStore.addListener(resultViewCtrler.onRidingListener);
         gm.ridingStore.addListener(ridingViewCtrler.onRidingListener);
-        gm.groupStore.addListener(groupViewCtrler.onGroupStoreListener);
-        gm.locationStore.addListener(groupViewCtrler.onGroupStoreListener);
+        //gm.groupStore.addListener(groupViewCtrler.onGroupStoreListener);
+        //gm.locationStore.addListener(groupViewCtrler.onGroupStoreListener);
         gm.userStore.addListener(statViewCtrler.onUserListener);
         gm.locationStore.addListener(statViewCtrler.onLocationStore);
 

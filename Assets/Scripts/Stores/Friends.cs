@@ -6,13 +6,16 @@ using System;
 using System.Text;
 
 public class Friends : AjwStore {
+    //store status
+    public storeStatus storeStatus = storeStatus.NORMAL;
+
     public Friends(QueueDispatcher<Actions> _dispatcher) : base(_dispatcher) { }
     NetworkManager networkManager = NetworkManager.Instance;
 
-    public Friend[]
-        waitingAcceptLists,
-        myFriends,
-        friendReqLists;
+    public ArrayList
+        waitingAcceptLists = new ArrayList(),
+        myFriends = new ArrayList(),
+        friendReqLists = new ArrayList();
 
     //검색된 친구
     public SearchedFriend[] searchedFriend;
@@ -22,16 +25,14 @@ public class Friends : AjwStore {
         keyword;
 
     public ActionTypes eventType;
+    //요청 취소인지, 내 친구 삭제인지 구분을 위한 enum
+    public CommunityDeleteAction.detailType detailType;
+    //요청 대기목록 불러오기인지, 내 친구 목록 불러오기인지 구분을 위한 enum
+    public GetMyFriendListAction.type getReqType;
     public GameObject targetObj;
     public int toUserId;
     //요청 식별번호(삭제 시 필요)
     public int queryId;
-
-    public AddFriendPrefab.friendType addFriendType;
-
-    public bool
-        addResult = false,
-        searchResult = false;
 
     NetworkCallbackExtention ncExt = new NetworkCallbackExtention();
 
@@ -59,19 +60,8 @@ public class Friends : AjwStore {
                 }
                 break;
             case ActionTypes.ADD_FRIEND:
-                Debug.Log("Add Friend 액션");
                 AddFriendAction addAct = action as AddFriendAction;
                 addFriend(addAct);
-                break;
-
-            case ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB:
-                AddFriendPrefab addPrefabAct = action as AddFriendPrefab;
-                addFriendPrefab(addPrefabAct);
-                break;
-
-            case ActionTypes.DELETE_COMMUNITY_FRIEND_PREFAB:
-                DelFriendPrefab delPrefabAct = action as DelFriendPrefab;
-                delFriendPrefab(delPrefabAct);
                 break;
         }
         eventType = action.type;
@@ -81,6 +71,7 @@ public class Friends : AjwStore {
     private void getMyFriendLists(GetMyFriendListAction payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -88,37 +79,41 @@ public class Friends : AjwStore {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
                 Friend[] data = JsonHelper.getJsonArray<Friend>(payload.response.data);
-
-                ArrayList tmpListWaiting = new ArrayList();
-                ArrayList tmpListFriend = new ArrayList();
-                Debug.Log(payload.response.data);
-                foreach(Friend friend in data) {
-                    if (friend.friendState == "WAITING") {
-                        tmpListWaiting.Add(friend);
-                        Debug.Log("수락대기중");
-                    }
-                    else if (friend.friendState == "FRIEND") {
-                        tmpListFriend.Add(friend);
+                if (payload._type == GetMyFriendListAction.type.FRIEND) {
+                    //myFriends.Clear();
+                    myFriends = new ArrayList();
+                    foreach (Friend friend in data) {
+                        if (friend.friendState == "FRIEND") {
+                            myFriends.Add(friend);
+                        }
                     }
                 }
-                friendReqLists = (Friend[])tmpListWaiting.ToArray(typeof(Friend));
-                myFriends = (Friend[])tmpListFriend.ToArray(typeof(Friend));
-                GetAcceptWaitingListAction getWaitingListAction = ActionCreator.createAction(ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST) as GetAcceptWaitingListAction;
-                dispatcher.dispatch(getWaitingListAction);
-                //_emitChange();
+                else if(payload._type == GetMyFriendListAction.type.WAITING) {
+                    //friendReqLists.Clear();
+                    friendReqLists = new ArrayList();
+                    foreach (Friend friend in data) {
+                        if (friend.friendState == "WAITING") {
+                            friendReqLists.Add(friend);
+                        }
+                    }
+                }
+                getReqType = payload._type;
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
                 Debug.Log(payload.response.data);
-                //_emitChange();
                 break;
         }
+        _emitChange();
     }
 
     //수락 대기 중인 목록을 가져온다.
     private void getWaitingAcceptLists(GetAcceptWaitingListAction payload) {
         switch (payload.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -126,20 +121,21 @@ public class Friends : AjwStore {
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                ArrayList list = new ArrayList();
+                storeStatus = storeStatus.NORMAL;
                 Friend[] data = JsonHelper.getJsonArray<Friend>(payload.response.data);
                 Debug.Log(payload.response.data);
-                foreach(Friend friend in data) {
-                    list.Add(friend);
+                waitingAcceptLists = new ArrayList();
+                foreach (Friend friend in data) {
+                    waitingAcceptLists.Add(friend);
                 }
-                waitingAcceptLists = (Friend[])list.ToArray(typeof(Friend));
-                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
                 Debug.Log(payload.response.data);
                 //_emitChange();
                 break;
         }
+        _emitChange();
     }
 
     //친구 검색
@@ -147,12 +143,11 @@ public class Friends : AjwStore {
         keyword = act.keyword;
 
         msg = null;
-        searchResult = false;
-        addResult = false;
         searchedFriend = null;
 
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -160,25 +155,32 @@ public class Friends : AjwStore {
                     .Append(WWW.EscapeURL(act.keyword, Encoding.UTF8));
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 Debug.Log("Search URL : " + strBuilder.ToString());
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                Debug.Log(act.response.data);
+                storeStatus = storeStatus.NORMAL;
+                //Debug.Log(act.response.data);
                 searchedFriend = JsonHelper.getJsonArray<SearchedFriend>(act.response.data);
                 if(searchedFriend.Length == 0) {
                     msg = "존재하지 않는 아이디입니다.";
-                    searchResult = false;
                     Debug.Log("존재하지 않는 아이디");
+                    storeStatus = storeStatus.ERROR;
                     _emitChange();
                     return;
                 }
+
+                msg = "친구 요청을 하였습니다.";
+
                 AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
                 addFriendAct.id = searchedFriend[0].id;
-                addFriendAct.mType = AddFriendAction.friendType.REQUEST;
+                addFriendAct._type = AddFriendAction.friendType.SEARCH;
                 dispatcher.dispatch(addFriendAct);
-                searchResult = true;
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
-                Debug.Log(act.response.data);
+                storeStatus = storeStatus.ERROR;
+                msg = "서버와의 통신간 장애가 발생하였습니다.";
+                _emitChange();
                 break;
         }
     }
@@ -187,6 +189,7 @@ public class Friends : AjwStore {
     private void addFriend(AddFriendAction act) {
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
@@ -197,20 +200,29 @@ public class Friends : AjwStore {
                 Debug.Log("친구 요청 URL : " + strBuilder);
                 Debug.Log("친구 요청 ID : " + act.id);
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, act));
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                //친구 프리팹 생성 액션
-                Debug.Log("친구 추가에 대한 response data : " + act.response.data);
-                addedFriend = Friend.fromJSON(act.response.data);
-                AddFriendPrefab addPrefAct = ActionCreator.createAction(ActionTypes.ADD_COMMUNITY_FRIEND_PREFAB) as AddFriendPrefab;
-                queryId = addedFriend.id;
-                addPrefAct.mType = act.mType;
-
-                msg = "친구 신청을 완료하였습니다.";
-                dispatcher.dispatch(addPrefAct);
-                addResult = true;
+                storeStatus = storeStatus.NORMAL;
+                var _act = ActionCreator.createAction(ActionTypes.GET_MY_FRIEND_LIST) as GetMyFriendListAction;
+                if (act._type == AddFriendAction.friendType.ACCEPT) {
+                    _act._type = GetMyFriendListAction.type.FRIEND;
+                    Friend[] arr = waitingAcceptLists.ToArray(typeof(Friend)) as Friend[];
+                    foreach (Friend fr in arr) {
+                        if(fr.fromUser.id == act.id) {
+                            waitingAcceptLists.Remove(fr);
+                        }
+                    }
+                    var acceptRef = ActionCreator.createAction(ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST);
+                    dispatcher.dispatch(acceptRef);
+                }
+                else if(act._type == AddFriendAction.friendType.SEARCH) {
+                    _act._type = GetMyFriendListAction.type.WAITING;
+                }
+                dispatcher.dispatch(_act);
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
                 Debug.Log(act.response.data);
                 if (act.response.data.Contains("non_field_errors")) {
                     msg = "이미 친구 신청이 완료된 상태입니다.";
@@ -218,53 +230,40 @@ public class Friends : AjwStore {
                 if (act.response.data.Contains("self_friend_error")) {
                     msg = "자신에게는 친구 신청을 할 수 없습니다.";
                 }
-                //errorMessage message = errorMessage.fromJSON(act.response.data);
-                //if(message.non_field_errors != null) {
-                //    msg = "이미 친구 신청이 완료된 상태입니다.";
-                //}
-                //if(message.self_friend_error != null) {
-                //    msg = "자신에게는 친구 신청을 할 수 없습니다.";
-                //}
-                addResult = false;
-                addedFriend = null;
                 _emitChange();
                 break;
         }
     }
 
-    private void addFriendPrefab(AddFriendPrefab act) {
-        addFriendType = act.mType;
-        _emitChange();
-        //초기화
-        //msg = null;
-        //searchResult = false;
-        //addResult = false;
-    }
-
-    private void delFriendPrefab(DelFriendPrefab act) {
-        _emitChange();
-    }
-
     private void delete(CommunityDeleteAction act) {
-        //Debug.Log(act.response.data);
         switch (act.status) {
             case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("friends/")
                     .Append(act.id);
+                detailType = act._detailType;
                 networkManager.request("DELETE", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
-                Debug.Log("DELETE REQUEST URL : " + strBuilder.ToString());
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.SUCCESS:
-                Debug.Log("delete success");
-                targetObj = act.targetGameObj;
-                DelFriendPrefab delPrefabAct = ActionCreator.createAction(ActionTypes.DELETE_COMMUNITY_FRIEND_PREFAB) as DelFriendPrefab;
-                dispatcher.dispatch(delPrefabAct);
-                //msg = keyword + " 로 검색 결과";
+                storeStatus = storeStatus.NORMAL;
+                var _act = ActionCreator.createAction(ActionTypes.GET_MY_FRIEND_LIST) as GetMyFriendListAction;
+                if(detailType == CommunityDeleteAction.detailType.SENDING) {
+                    _act._type = GetMyFriendListAction.type.WAITING;
+                    msg = "친구요청을 취소하였습니다.";
+                }
+                else if(detailType == CommunityDeleteAction.detailType.MYLIST) {
+                    _act._type = GetMyFriendListAction.type.FRIEND;
+                    msg = "친구를 삭제하였습니다.";
+                }
+                dispatcher.dispatch(_act);
                 break;
             case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                Debug.Log(act.response.data);
                 _emitChange();
                 break;
         }

@@ -46,7 +46,7 @@ public class MainBtnController : MonoBehaviour {
                 panels[0].SetActive(true);
                 break;
             case MainButtonEnum.Type.COMMUNITY:
-                notifyModal.SetActive(true);
+                panels[1].SetActive(true);
                 sm.playEffectSound(1);
                 break;
             case MainButtonEnum.Type.RIDING:
