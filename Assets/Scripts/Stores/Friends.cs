@@ -179,7 +179,7 @@ public class Friends : AjwStore {
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
-                msg = "서버와의 통신간 장애가 발생하였습니다.";
+                msg = "서버통신간 문재가 발생하였습니다.";
                 _emitChange();
                 break;
         }
@@ -220,6 +220,8 @@ public class Friends : AjwStore {
                     _act._type = GetMyFriendListAction.type.WAITING;
                 }
                 dispatcher.dispatch(_act);
+                msg = "친구를 추가하였습니다.";
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
@@ -260,10 +262,12 @@ public class Friends : AjwStore {
                     msg = "친구를 삭제하였습니다.";
                 }
                 dispatcher.dispatch(_act);
+                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 Debug.Log(act.response.data);
+                msg = "서버통신간 문제가 발생하였습니다.";
                 _emitChange();
                 break;
         }

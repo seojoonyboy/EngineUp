@@ -16,10 +16,6 @@ public class CommunityVC : MonoBehaviour {
         Invoke("playSlideIn", 0.2f);
     }
 
-    void Start() {
-        
-    }
-
     void playSlideIn() {
         animator.Play("SlideIn");
     }
@@ -80,5 +76,10 @@ public class CommunityVC : MonoBehaviour {
         tmp = transform.Find("TogglePanel/Group").gameObject;
         tmp.GetComponent<Toggle>().isOn = false;
         OnToggle(tmp);
+    }
+
+    public void offNotifyModal() {
+        notifyModal.SetActive(false);
+        notifyModal.transform.Find("InnerModal/Text").GetComponent<Text>().text = null;
     }
 }

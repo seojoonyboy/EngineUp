@@ -5,48 +5,45 @@ using UnityEngine.UI;
 
 public class FR_SendingsView : MonoBehaviour {
     public GameObject container;
-    public GameObject sendFriendEmptyLabel;
-    public GameObject content;
     public FriendsViewController parent;
 
     public GameManager gameManager;
     public Friends friendsStore;
 
-    void OnEnable() {
-        //요청 목록
-        var act = ActionCreator.createAction(ActionTypes.GET_MY_FRIEND_LIST) as GetMyFriendListAction;
-        act._type = GetMyFriendListAction.type.WAITING;
-        gameManager.gameDispatcher.dispatch(act);
-    }
-
-    void OnDisable() {
-        sendFriendEmptyLabel.SetActive(false);
-    }
-
     //요청 대기중 목록 생성
     public void makeMyFriendList() {
         removeList();
         if (friendsStore.friendReqLists == null || friendsStore.friendReqLists.Count == 0) {
-            sendFriendEmptyLabel.SetActive(true);
+            gameObject.SetActive(false);
             return;
+        }
+        else {
+            gameObject.SetActive(true);
         }
 
         Friend[] lists = friendsStore.friendReqLists.ToArray(typeof(Friend)) as Friend[];
 
         for (int i = 0; i < lists.Length; i++) {
             GameObject item = Instantiate(container);
-            item.transform.SetParent(content.transform, false);
+            item.transform.SetParent(transform, false);
             item.GetComponent<ButtonIndex>().index = lists[i].id;
             item.transform.Find("Name").GetComponent<Text>().text = lists[i].toUser.nickName;
             //containerInit(item, myFriendGrid);
             Button cancelBtn = item.transform.Find("CancelButton").GetComponent<Button>();
             cancelBtn.onClick.AddListener(() => cancelReq(item));
         }
+        parent.content.GetComponent<ContentSizeFitter>().enabled = true;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
 
     public void removeList() {
-        foreach (Transform item in content.transform) {
-            Destroy(item.gameObject);
+        foreach (Transform item in transform) {
+            if (item.tag == "locked") {
+                continue;
+            }
+            else {
+                Destroy(item.gameObject);
+            }
         }
     }
 
@@ -56,5 +53,8 @@ public class FR_SendingsView : MonoBehaviour {
         action._detailType = CommunityDeleteAction.detailType.SENDING;
         action.id = obj.GetComponent<ButtonIndex>().index;
         gameManager.gameDispatcher.dispatch(action);
+
+        string msg = "친구요청을 취소합니다.";
+        parent.onNotifyModal(msg);
     }
 }

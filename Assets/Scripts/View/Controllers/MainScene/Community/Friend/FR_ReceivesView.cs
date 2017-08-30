@@ -5,36 +5,27 @@ using UnityEngine.UI;
 
 public class FR_ReceivesView : MonoBehaviour {
     public GameObject container;
-    public GameObject sendFriendEmptyLabel;
-    public Transform content;
     public FriendsViewController parent;
 
     public GameManager gameManager;
     public Friends friendsStore;
 
-    void OnEnable() {
-        //친구 목록 요청
-        var act = ActionCreator.createAction(ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST);
-        gameManager.gameDispatcher.dispatch(act);
-    }
-
-    void OnDisable() {
-        sendFriendEmptyLabel.SetActive(false);
-    }
-
     //수락 대기 목록 생성
     public void makeMyFriendList() {
         removeList();
         if(friendsStore.waitingAcceptLists == null || friendsStore.waitingAcceptLists.Count == 0) {
-            sendFriendEmptyLabel.SetActive(true);
+            gameObject.SetActive(false);
             return;
+        }
+        else {
+            gameObject.SetActive(true);
         }
 
         Friend[] lists = friendsStore.waitingAcceptLists.ToArray(typeof(Friend)) as Friend[];
 
         for (int i = 0; i < lists.Length; i++) {
             GameObject item = Instantiate(container);
-            item.transform.SetParent(content, false);
+            item.transform.SetParent(transform, false);
 
             item.GetComponent<ButtonIndex>().index = lists[i].id;
             item.GetComponent<ButtonIndex>().fromUserId = lists[i].fromUser.id;
@@ -47,11 +38,18 @@ public class FR_ReceivesView : MonoBehaviour {
             Button acceptBtn = item.transform.Find("AcceptButton").GetComponent<Button>();
             acceptBtn.onClick.AddListener(() => accept(item));
         }
+        parent.content.GetComponent<ContentSizeFitter>().enabled = true;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
 
     public void removeList() {
-        foreach (Transform item in content) {
-            Destroy(item.gameObject);
+        foreach (Transform item in transform) {
+            if(item.tag == "locked") {
+                continue;
+            }
+            else {
+                Destroy(item.gameObject);
+            }
         }
     }
 
