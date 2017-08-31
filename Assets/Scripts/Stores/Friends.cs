@@ -19,6 +19,8 @@ public class Friends : AjwStore {
 
     //검색된 친구
     public SearchedFriend[] searchedFriend;
+    public UserData[] selectedFriend;
+
     public Friend addedFriend;
     public string
         msg,
@@ -65,6 +67,10 @@ public class Friends : AjwStore {
                 break;
             case ActionTypes.SEARCH_RESULT:
                 _emitChange();
+                break;
+            case ActionTypes.GET_FR_INFO:
+                GetFriendInfoAction infoAct = action as GetFriendInfoAction;
+                getFriendInfo(infoAct);
                 break;
         }
         eventType = action.type;
@@ -126,7 +132,6 @@ public class Friends : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 Friend[] data = JsonHelper.getJsonArray<Friend>(payload.response.data);
-                Debug.Log(payload.response.data);
                 waitingAcceptLists = new ArrayList();
                 foreach (Friend friend in data) {
                     waitingAcceptLists.Add(friend);
@@ -248,6 +253,31 @@ public class Friends : AjwStore {
                 _emitChange();
                 break;
         }
+    }
+
+    private void getFriendInfo(GetFriendInfoAction act) {
+        switch (act.status) {
+            case NetworkAction.statusTypes.REQUEST:
+                storeStatus = storeStatus.WAITING_REQ;
+                var strBuilder = GameManager.Instance.sb;
+                strBuilder.Remove(0, strBuilder.Length);
+                strBuilder.Append(networkManager.baseUrl)
+                    .Append("users?nickName=")
+                    .Append(WWW.EscapeURL(act.nickName, Encoding.UTF8));
+                networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
+                msg = "친구 정보를 불러오는 중";
+                break;
+            case NetworkAction.statusTypes.SUCCESS:
+                storeStatus = storeStatus.NORMAL;
+                selectedFriend = JsonHelper.getJsonArray<UserData>(act.response.data);
+                break;
+            case NetworkAction.statusTypes.FAIL:
+                storeStatus = storeStatus.ERROR;
+                msg = "친구정보를 불러오는 과정에서 문제가 발생하였습니다.";
+                Debug.Log(act.response.data);
+                break;
+        }
+        _emitChange();
     }
 
     private void delete(CommunityDeleteAction act) {

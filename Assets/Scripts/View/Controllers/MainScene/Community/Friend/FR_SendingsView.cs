@@ -31,6 +31,9 @@ public class FR_SendingsView : MonoBehaviour {
             //containerInit(item, myFriendGrid);
             Button cancelBtn = item.transform.Find("CancelButton").GetComponent<Button>();
             cancelBtn.onClick.AddListener(() => cancelReq(item));
+
+            item.GetComponent<FriendIndex>().nickName = lists[i].toUser.nickName;
+            item.GetComponent<Button>().onClick.AddListener(() => showProfile(item));
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
@@ -55,5 +58,14 @@ public class FR_SendingsView : MonoBehaviour {
 
         string msg = "친구요청을 취소합니다.";
         parent.onNotifyModal(msg);
+    }
+
+    //친구 프로필 보기
+    private void showProfile(GameObject obj) {
+        string nickName = obj.GetComponent<FriendIndex>().nickName;
+
+        GetFriendInfoAction act = ActionCreator.createAction(ActionTypes.GET_FR_INFO) as GetFriendInfoAction;
+        act.nickName = nickName;
+        gameManager.gameDispatcher.dispatch(act);
     }
 }

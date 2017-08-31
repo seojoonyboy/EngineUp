@@ -30,13 +30,16 @@ public class FR_ReceivesView : MonoBehaviour {
             item.GetComponent<ButtonIndex>().index = lists[i].id;
             item.GetComponent<ButtonIndex>().fromUserId = lists[i].fromUser.id;
 
-            item.transform.Find("Name").GetComponent<Text>().text = lists[i].toUser.nickName;
+            item.transform.Find("Name").GetComponent<Text>().text = lists[i].fromUser.nickName;
             //containerInit(item, myFriendGrid);
             Button delBtn = item.transform.Find("DenyButton").GetComponent<Button>();
             delBtn.onClick.AddListener(() => reject(item));
 
             Button acceptBtn = item.transform.Find("AcceptButton").GetComponent<Button>();
             acceptBtn.onClick.AddListener(() => accept(item));
+
+            item.GetComponent<FriendIndex>().nickName = lists[i].fromUser.nickName;
+            item.GetComponent<Button>().onClick.AddListener(() => showProfile(item));
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
@@ -68,5 +71,14 @@ public class FR_ReceivesView : MonoBehaviour {
         addFriendAct._type = AddFriendAction.friendType.ACCEPT;
 
         gameManager.gameDispatcher.dispatch(addFriendAct);
+    }
+
+    //친구 프로필 보기
+    private void showProfile(GameObject obj) {
+        string nickName = obj.GetComponent<FriendIndex>().nickName;
+
+        GetFriendInfoAction act = ActionCreator.createAction(ActionTypes.GET_FR_INFO) as GetFriendInfoAction;
+        act.nickName = nickName;
+        gameManager.gameDispatcher.dispatch(act);
     }
 }

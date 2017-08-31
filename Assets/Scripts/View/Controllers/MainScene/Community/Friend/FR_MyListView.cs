@@ -37,6 +37,9 @@ public class FR_MyListView : MonoBehaviour {
             //containerInit(item, myFriendGrid);
             Button delBtn = item.transform.Find("DeleteButton").GetComponent<Button>();
             delBtn.onClick.AddListener(() => delFriend(item));
+
+            item.GetComponent<FriendIndex>().nickName = lists[i].toUser.nickName;
+            item.GetComponent<Button>().onClick.AddListener(() => showProfile(item));
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
@@ -58,5 +61,14 @@ public class FR_MyListView : MonoBehaviour {
                 Destroy(item.gameObject);
             }
         }
+    }
+
+    //친구 프로필 보기
+    private void showProfile(GameObject obj) {
+        string nickName = obj.GetComponent<FriendIndex>().nickName;
+
+        GetFriendInfoAction act = ActionCreator.createAction(ActionTypes.GET_FR_INFO) as GetFriendInfoAction;
+        act.nickName = nickName;
+        gameManager.gameDispatcher.dispatch(act);
     }
 }

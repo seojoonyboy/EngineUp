@@ -14,6 +14,7 @@ public class FriendsViewController : MonoBehaviour {
     public GameObject label;
     public InputField input;
 
+    public FR_FriendProfileView fr_profile_view;
     void Awake() {
         notifyModal = transform.parent.GetComponent<CommunityVC>().notifyModal;
 
@@ -80,6 +81,15 @@ public class FriendsViewController : MonoBehaviour {
             Debug.Log("검색 결과");
             subPanels[3].SetActive(true);
             subPanels[3].GetComponent<FR_SearchedView>().makeList();
+        }
+
+        if(friendsStore.eventType == ActionTypes.GET_FR_INFO) {
+            if(friendsStore.storeStatus == storeStatus.ERROR) {
+                onNotifyModal(friendsStore.msg);
+            }
+            else if(friendsStore.storeStatus == storeStatus.NORMAL) {
+                fr_profile_view.gameObject.SetActive(true);
+            }
         }
     }
 
