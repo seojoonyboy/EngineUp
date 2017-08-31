@@ -32,7 +32,6 @@ public class FR_SendingsView : MonoBehaviour {
             Button cancelBtn = item.transform.Find("CancelButton").GetComponent<Button>();
             cancelBtn.onClick.AddListener(() => cancelReq(item));
         }
-        parent.content.GetComponent<ContentSizeFitter>().enabled = true;
         LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
 

@@ -63,6 +63,9 @@ public class Friends : AjwStore {
                 AddFriendAction addAct = action as AddFriendAction;
                 addFriend(addAct);
                 break;
+            case ActionTypes.SEARCH_RESULT:
+                _emitChange();
+                break;
         }
         eventType = action.type;
     }
@@ -168,14 +171,19 @@ public class Friends : AjwStore {
                     _emitChange();
                     return;
                 }
-
-                msg = "친구 요청을 하였습니다.";
-
-                AddFriendAction addFriendAct = ActionCreator.createAction(ActionTypes.ADD_FRIEND) as AddFriendAction;
-                addFriendAct.id = searchedFriend[0].id;
-                addFriendAct._type = AddFriendAction.friendType.SEARCH;
-                dispatcher.dispatch(addFriendAct);
-                _emitChange();
+                //User Store의 id와 대조
+                //같으면 오류 메세지
+                int myId = GameManager.Instance.userStore.userId;
+                Debug.Log(myId);
+                if(searchedFriend[0].id == myId) {
+                    storeStatus = storeStatus.ERROR;
+                    msg = "자기 자신을 검색하였습니다.";
+                    _emitChange();
+                }
+                else {
+                    var searchAct = ActionCreator.createAction(ActionTypes.SEARCH_RESULT) as GetSearchListAction;
+                    dispatcher.dispatch(searchAct);
+                }
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
@@ -204,6 +212,7 @@ public class Friends : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
+
                 var _act = ActionCreator.createAction(ActionTypes.GET_MY_FRIEND_LIST) as GetMyFriendListAction;
                 if (act._type == AddFriendAction.friendType.ACCEPT) {
                     _act._type = GetMyFriendListAction.type.FRIEND;
@@ -215,13 +224,17 @@ public class Friends : AjwStore {
                     }
                     var acceptRef = ActionCreator.createAction(ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST);
                     dispatcher.dispatch(acceptRef);
+
+                    msg = "친구 요청을 수락하였습니다.";
+                    _emitChange();
                 }
                 else if(act._type == AddFriendAction.friendType.SEARCH) {
+                    //친구 요청 버튼을 클릭한 경우
                     _act._type = GetMyFriendListAction.type.WAITING;
+                    msg = "친구 요청을 하였습니다.";
+                    _emitChange();
                 }
                 dispatcher.dispatch(_act);
-                msg = "친구를 추가하였습니다.";
-                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;

@@ -16,11 +16,15 @@ public class FriendsViewController : MonoBehaviour {
 
     void Awake() {
         notifyModal = transform.parent.GetComponent<CommunityVC>().notifyModal;
+
         subPanels[2].GetComponent<FR_SendingsView>().gameManager = gameManager;
         subPanels[2].GetComponent<FR_SendingsView>().friendsStore = friendsStore;
 
         subPanels[0].GetComponent<FR_ReceivesView>().gameManager = gameManager;
         subPanels[0].GetComponent<FR_ReceivesView>().friendsStore = friendsStore;
+
+        subPanels[3].GetComponent<FR_SearchedView>().gameManager = gameManager;
+        subPanels[3].GetComponent<FR_SearchedView>().friendsStore = friendsStore;
     }
 
     void OnEnable() {
@@ -34,8 +38,6 @@ public class FriendsViewController : MonoBehaviour {
         else {
             label.SetActive(false);
         }
-
-        content.GetComponent<ContentSizeFitter>().enabled = false;
         if (friendsStore.eventType == ActionTypes.GET_MY_FRIEND_LIST) {
             if(friendsStore.storeStatus == storeStatus.NORMAL) {
                 if(friendsStore.getReqType == GetMyFriendListAction.type.FRIEND) {
@@ -54,8 +56,11 @@ public class FriendsViewController : MonoBehaviour {
         }
 
         if(friendsStore.eventType == ActionTypes.COMMUNITY_SEARCH) {
-            if(friendsStore.storeStatus == storeStatus.NORMAL || friendsStore.storeStatus == storeStatus.ERROR) {
+            if(friendsStore.storeStatus == storeStatus.ERROR) {
                 onNotifyModal(friendsStore.msg);
+            }
+            else if(friendsStore.storeStatus == storeStatus.NORMAL) {
+                
             }
         }
 
@@ -69,6 +74,12 @@ public class FriendsViewController : MonoBehaviour {
             if(friendsStore.storeStatus == storeStatus.NORMAL || friendsStore.storeStatus == storeStatus.ERROR) {
                 onNotifyModal(friendsStore.msg);
             }
+        }
+
+        if(friendsStore.eventType == ActionTypes.SEARCH_RESULT) {
+            Debug.Log("검색 결과");
+            subPanels[3].SetActive(true);
+            subPanels[3].GetComponent<FR_SearchedView>().makeList();
         }
     }
 

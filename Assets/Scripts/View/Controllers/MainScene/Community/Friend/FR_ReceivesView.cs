@@ -38,7 +38,6 @@ public class FR_ReceivesView : MonoBehaviour {
             Button acceptBtn = item.transform.Find("AcceptButton").GetComponent<Button>();
             acceptBtn.onClick.AddListener(() => accept(item));
         }
-        parent.content.GetComponent<ContentSizeFitter>().enabled = true;
         LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
 

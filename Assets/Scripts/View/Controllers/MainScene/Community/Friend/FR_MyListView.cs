@@ -38,7 +38,7 @@ public class FR_MyListView : MonoBehaviour {
             Button delBtn = item.transform.Find("DeleteButton").GetComponent<Button>();
             delBtn.onClick.AddListener(() => delFriend(item));
         }
-        parent.content.GetComponent<ContentSizeFitter>().enabled = true;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
 
     private void delFriend(GameObject obj) {

@@ -8,7 +8,7 @@ public enum ActionTypes {
     COMMUNITY_SEARCH, COMMUNITY_DELETE, ADD_FRIEND, GET_MY_FRIEND_LIST, GET_WAITING_FRIEND_ACCEPT_LIST,
     GROUP_GET_MEMBERS, GROUP_SEARCH, GROUP_ADD, GROUP_DETAIL, GROUP_CHECK_MY_STATUS, GROUP_JOIN, GROUP_EDIT, GROUP_POSTS, GROUP_ADD_POST, GROUP_DEL_POST, GROUP_MODIFY_POST,
     GET_DISTRICT_DATA, GET_CITY_DATA, GROUP_MEMBER_ACCEPT, GROUP_BAN, GROUP_DESTROY, MY_GROUP_PANEL,
-    GPS_SEND,
+    GPS_SEND, SEARCH_RESULT,
     GARAGE_ITEM_EQUIP, GARAGE_ITEM_UNEQUIP, GARAGE_LOCK, GARAGE_SELL, GARAGE_ITEM_SORT, 
     BOX_OPEN, CHAR_OPEN,
     MYINFO, GET_RIDING_RECORDS, RIDING_DETAILS, RIDING_RECORDS_REMOVE,
@@ -61,8 +61,11 @@ public static class ActionCreator{
         case ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST:
             _return = new GetAcceptWaitingListAction();
             break;
+        case ActionTypes.SEARCH_RESULT:
+            _return = new GetSearchListAction();
+            break;
         case ActionTypes.GROUP_GET_MEMBERS:
-            _return = new Group_getMemberAction();
+             _return = new Group_getMemberAction();
             break;
         case ActionTypes.GROUP_DETAIL:
             _return = new Group_detail();
@@ -258,6 +261,8 @@ public class AddFriendAction : NetworkAction {
     public enum friendType { SEARCH, ACCEPT };
     public friendType _type;
 }
+
+public class GetSearchListAction : NetworkAction { }
 
 //수락 대기 목록 불러오는 액션
 public class GetAcceptWaitingListAction : NetworkAction { }
