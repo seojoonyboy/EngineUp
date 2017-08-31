@@ -411,7 +411,6 @@ public class User : AjwStore {
     }
 }
 
-[System.Serializable]
 public class UserData {
     public int id;
     public string nickName;

@@ -19,7 +19,7 @@ public class Friends : AjwStore {
 
     //검색된 친구
     public SearchedFriend[] searchedFriend;
-    public UserData[] selectedFriend;
+    public fr_info_callback selectedFriend;
 
     public Friend addedFriend;
     public string
@@ -262,14 +262,14 @@ public class Friends : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("users?nickName=")
-                    .Append(WWW.EscapeURL(act.nickName, Encoding.UTF8));
+                    .Append("friends/")
+                    .Append(act.id);
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 msg = "친구 정보를 불러오는 중";
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                selectedFriend = JsonHelper.getJsonArray<UserData>(act.response.data);
+                selectedFriend = fr_info_callback.fromJSON(act.response.data);
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
@@ -356,4 +356,20 @@ class errorMessage {
     public static errorMessage fromJSON(string json) {
         return JsonUtility.FromJson<errorMessage>(json);
     }
+}
+
+[System.Serializable]
+public class fr_info_callback {
+    public int id;
+    public userInfo fromUser;
+    public toUser toUser;
+
+    public static fr_info_callback fromJSON(string json) {
+        return JsonUtility.FromJson<fr_info_callback>(json);
+    }
+}
+
+[System.Serializable]
+public class toUser : UserData {
+    public RespGetItems[] equiped_items;
 }

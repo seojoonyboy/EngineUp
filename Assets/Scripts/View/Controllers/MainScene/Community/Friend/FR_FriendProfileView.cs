@@ -7,6 +7,7 @@ public class FR_FriendProfileView : MonoBehaviour {
     private GameManager gm;
     private Friends friendsStore;
     private Animator animator;
+    public SpritesManager sm;
 
     public Image character;
     public GameObject 
@@ -17,7 +18,6 @@ public class FR_FriendProfileView : MonoBehaviour {
     private void Awake() {
         gm = GameManager.Instance;
         friendsStore = gm.friendsStore;
-
         animator = GetComponent<Animator>();
     }
 
@@ -64,20 +64,66 @@ public class FR_FriendProfileView : MonoBehaviour {
             return;
         }
 
-        UserData friend = friendsStore.selectedFriend[0];
-        status status = friend.status;
+        fr_info_callback friend = friendsStore.selectedFriend;
+        status status = friend.toUser.status;
 
-        string nickName = friend.nickName;
+        string nickName = friend.fromUser.nickName;
         int rank = status.rank;
         int strength = status.strength;
         int speed = status.speed;
         int endurance = status.endurance;
         int regeneration = status.regeneration;
 
-        record_this_month record = friend.record_this_month;
+        record_this_month record = friend.toUser.record_this_month;
         int ridingCount = record.count;
         int distance = record.total_distance;
-        string ridingTime = record.riding_time.Split('.')[0];
+        string ridingTime = record.riding_time;
+
+        int character_img_id = friend.toUser.represent_character.character_inventory.character;
+        int character_lv = friend.toUser.represent_character.character_inventory.lv - 1;
+
+        int fr_img_id = -1;
+        int wh_img_id = -1;
+        int ds_img_id = -1;
+
+        foreach (RespGetItems item in friend.toUser.equiped_items) {
+            if(item.item.parts == "FR") {
+                fr_img_id = item.item.id;
+            }
+            else if(item.item.parts == "WH") {
+                wh_img_id = item.item.id;
+            }
+            else if(item.item.parts == "DS") {
+                ds_img_id = item.item.id;
+            }
+        }
+
+        Image targetImg = bicycle.transform.Find("Frame").GetComponent<Image>();
+        if (fr_img_id == -1 || sm.stage_items[fr_img_id] == null) {
+            targetImg.sprite = sm.stage_items[0];
+        }
+        else {
+            targetImg.sprite = sm.stage_items[fr_img_id];
+        }
+
+        targetImg = bicycle.transform.Find("Wheel").GetComponent<Image>();
+        if (wh_img_id == -1 || sm.stage_items[wh_img_id] == null) {
+            targetImg.sprite = sm.stage_items[53];
+        }
+        else {
+            targetImg.sprite = sm.stage_items[wh_img_id];
+        }
+
+        targetImg = bicycle.transform.Find("Engine").GetComponent<Image>();
+        if(ds_img_id == -1 || sm.stage_items[ds_img_id] == null) {
+            targetImg.sprite = sm.stage_items[85];
+        }
+        else {
+            targetImg.sprite = sm.stage_items[ds_img_id];
+        }
+
+        targetImg = character.GetComponent<Image>();
+        targetImg.sprite = sm.Stage_chars[character_img_id].images[character_lv];
     }
 
     public void onNotifyModal(string msg) {

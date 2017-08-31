@@ -32,7 +32,6 @@ public class FR_SendingsView : MonoBehaviour {
             Button cancelBtn = item.transform.Find("CancelButton").GetComponent<Button>();
             cancelBtn.onClick.AddListener(() => cancelReq(item));
 
-            item.GetComponent<FriendIndex>().nickName = lists[i].toUser.nickName;
             item.GetComponent<Button>().onClick.AddListener(() => showProfile(item));
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
@@ -62,10 +61,9 @@ public class FR_SendingsView : MonoBehaviour {
 
     //친구 프로필 보기
     private void showProfile(GameObject obj) {
-        string nickName = obj.GetComponent<FriendIndex>().nickName;
-
+        int id = obj.GetComponent<ButtonIndex>().index;
         GetFriendInfoAction act = ActionCreator.createAction(ActionTypes.GET_FR_INFO) as GetFriendInfoAction;
-        act.nickName = nickName;
+        act.id = id;
         gameManager.gameDispatcher.dispatch(act);
     }
 }
