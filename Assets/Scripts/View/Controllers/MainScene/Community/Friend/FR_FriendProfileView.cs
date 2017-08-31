@@ -38,6 +38,10 @@ public class FR_FriendProfileView : MonoBehaviour {
         animator.Play("SlideIn");
     }
 
+    public void onBackButton() {
+        animator.Play("SlideOut");
+    }
+
     public void slideFinished(AnimationEvent animationEvent) {
         int boolParm = animationEvent.intParameter;
 
