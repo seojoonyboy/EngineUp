@@ -90,13 +90,13 @@ public class FR_FriendProfileView : MonoBehaviour {
 
             foreach (RespGetItems item in friend.toUser.equiped_items) {
                 if (item.item.parts == "FR") {
-                    fr_img_id = item.item.id;
+                    fr_img_id = item.item.id - 1;
                 }
                 else if (item.item.parts == "WH") {
-                    wh_img_id = item.item.id;
+                    wh_img_id = item.item.id - 1;
                 }
                 else if (item.item.parts == "DS") {
-                    ds_img_id = item.item.id;
+                    ds_img_id = item.item.id - 1;
                 }
             }
 
@@ -128,7 +128,7 @@ public class FR_FriendProfileView : MonoBehaviour {
             }
 
             targetImg = character.GetComponent<Image>();
-            targetImg.sprite = sm.Stage_chars[character_img_id].images[character_lv];
+            targetImg.sprite = sm.Stage_chars[character_img_id - 1].images[character_lv];
 
             specs[0].text = strength.ToString();
             specs[1].text = endurance.ToString();
@@ -184,13 +184,13 @@ public class FR_FriendProfileView : MonoBehaviour {
 
             foreach (RespGetItems item in friend.equiped_items) {
                 if (item.item.parts == "FR") {
-                    fr_img_id = item.item.id;
+                    fr_img_id = item.item.id - 1;
                 }
                 else if (item.item.parts == "WH") {
-                    wh_img_id = item.item.id;
+                    wh_img_id = item.item.id - 1;
                 }
                 else if (item.item.parts == "DS") {
-                    ds_img_id = item.item.id;
+                    ds_img_id = item.item.id - 1;
                 }
             }
 
@@ -222,7 +222,7 @@ public class FR_FriendProfileView : MonoBehaviour {
             }
 
             targetImg = character.GetComponent<Image>();
-            targetImg.sprite = sm.Stage_chars[character_img_id].images[character_lv];
+            targetImg.sprite = sm.Stage_chars[character_img_id - 1].images[character_lv];
 
             specs[0].text = strength.ToString();
             specs[1].text = endurance.ToString();
