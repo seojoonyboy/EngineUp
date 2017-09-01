@@ -64,6 +64,7 @@ public class FR_SendingsView : MonoBehaviour {
         int id = obj.GetComponent<ButtonIndex>().index;
         GetFriendInfoAction act = ActionCreator.createAction(ActionTypes.GET_FR_INFO) as GetFriendInfoAction;
         act.id = id;
+        act._type = GetFriendInfoAction.type.MYFRIEND;
         gameManager.gameDispatcher.dispatch(act);
     }
 }

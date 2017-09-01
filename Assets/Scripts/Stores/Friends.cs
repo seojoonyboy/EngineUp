@@ -20,8 +20,9 @@ public class Friends : AjwStore {
     //검색된 친구
     public SearchedFriend[] searchedFriend;
     public fr_info_callback selectedFriend;
-
+    public UserData selectedWaitingAccept;
     public Friend addedFriend;
+    public GetFriendInfoAction.type profileReqType;
     public string
         msg,
         keyword;
@@ -261,15 +262,29 @@ public class Friends : AjwStore {
                 storeStatus = storeStatus.WAITING_REQ;
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
-                strBuilder.Append(networkManager.baseUrl)
+                if(act._type == GetFriendInfoAction.type.MYFRIEND) {
+                    strBuilder.Append(networkManager.baseUrl)
                     .Append("friends/")
                     .Append(act.id);
+                }
+                else if(act._type == GetFriendInfoAction.type.WAITINGACCEPT) {
+                    strBuilder.Append(networkManager.baseUrl)
+                    .Append("users?nickName=")
+                    .Append(act.nickname);
+                }
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, act));
                 msg = "친구 정보를 불러오는 중";
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-                selectedFriend = fr_info_callback.fromJSON(act.response.data);
+                if(act._type == GetFriendInfoAction.type.MYFRIEND) {
+                    selectedFriend = fr_info_callback.fromJSON(act.response.data);
+                }
+                else if(act._type == GetFriendInfoAction.type.WAITINGACCEPT) {
+                    UserData[] arr = JsonHelper.getJsonArray<UserData>(act.response.data);
+                    selectedWaitingAccept = arr[0];
+                }
+                profileReqType = act._type;
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;

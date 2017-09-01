@@ -411,12 +411,14 @@ public class User : AjwStore {
     }
 }
 
+[System.Serializable]
 public class UserData {
     public int id;
     public string nickName;
     public int gears;
     public int boxes;
     public represent_character represent_character;
+    public RespGetItems[] equiped_items;
     public status status;
     public string country;
     public string district;

@@ -39,6 +39,8 @@ public class FR_ReceivesView : MonoBehaviour {
             acceptBtn.onClick.AddListener(() => accept(item));
 
             item.GetComponent<Button>().onClick.AddListener(() => showProfile(item));
+
+            item.GetComponent<FriendIndex>().nickName = lists[i].fromUser.nickName;
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
@@ -76,7 +78,8 @@ public class FR_ReceivesView : MonoBehaviour {
     private void showProfile(GameObject obj) {
         int id = obj.GetComponent<ButtonIndex>().index;
         GetFriendInfoAction act = ActionCreator.createAction(ActionTypes.GET_FR_INFO) as GetFriendInfoAction;
-        act.id = id;
+        act.nickname = obj.GetComponent<FriendIndex>().nickName;
+        act._type = GetFriendInfoAction.type.WAITINGACCEPT;
         gameManager.gameDispatcher.dispatch(act);
     }
 }

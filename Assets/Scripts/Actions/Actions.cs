@@ -266,6 +266,9 @@ public class AddFriendAction : NetworkAction {
 public class GetSearchListAction : NetworkAction { }
 
 public class GetFriendInfoAction : NetworkAction {
+    public enum type { MYFRIEND, WAITINGACCEPT };
+    public type _type;
+    public string nickname;
     public int id;
 }
 //수락 대기 목록 불러오는 액션
