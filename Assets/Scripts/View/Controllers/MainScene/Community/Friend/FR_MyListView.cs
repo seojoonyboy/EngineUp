@@ -9,7 +9,9 @@ public class FR_MyListView : MonoBehaviour {
 
     private GameManager gameManager;
     private Friends friendsStore;
-    
+
+    public MainViewController mV;
+
     void Awake() {
         gameManager = parent.gameManager;
         friendsStore = parent.friendsStore;
@@ -39,6 +41,20 @@ public class FR_MyListView : MonoBehaviour {
             delBtn.onClick.AddListener(() => delFriend(item));
 
             item.GetComponent<Button>().onClick.AddListener(() => showProfile(item));
+
+            Image rankImg = item.transform.Find("Rank").GetComponent<Image>();
+
+            int rank = lists[i].toUser.rank;
+
+            int iconRank = (int)Mathf.Ceil((float)rank / 5);
+
+            if (iconRank == 0) {
+                rankImg.sprite = mV.ranks[0];
+            }
+            else {
+                rankImg.sprite = mV.ranks[iconRank - 1];
+            }
+            rankImg.transform.Find("Text").GetComponent<Text>().text = "랭크 " + rank;
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }

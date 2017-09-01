@@ -9,6 +9,7 @@ public class FR_ReceivesView : MonoBehaviour {
 
     public GameManager gameManager;
     public Friends friendsStore;
+    public MainViewController mV;
 
     //수락 대기 목록 생성
     public void makeMyFriendList() {
@@ -41,6 +42,20 @@ public class FR_ReceivesView : MonoBehaviour {
             item.GetComponent<Button>().onClick.AddListener(() => showProfile(item));
 
             item.GetComponent<FriendIndex>().nickName = lists[i].fromUser.nickName;
+
+            Image rankImg = item.transform.Find("Rank").GetComponent<Image>();
+
+            int rank = lists[i].fromUser.rank;
+
+            int iconRank = (int)Mathf.Ceil((float)rank / 5);
+
+            if (iconRank == 0) {
+                rankImg.sprite = mV.ranks[0];
+            }
+            else {
+                rankImg.sprite = mV.ranks[iconRank - 1];
+            }
+            rankImg.transform.Find("Text").GetComponent<Text>().text = "랭크 " + rank;
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
@@ -59,6 +74,7 @@ public class FR_ReceivesView : MonoBehaviour {
     private void reject(GameObject obj) {
         CommunityDeleteAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_DELETE) as CommunityDeleteAction;
         action._type = CommunityDeleteAction.deleteType.FRIEND;
+        action._detailType = CommunityDeleteAction.detailType.RECEIVE;
         int index = obj.GetComponent<ButtonIndex>().index;
         action.id = index;
         gameManager.gameDispatcher.dispatch(action);

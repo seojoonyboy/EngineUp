@@ -12,6 +12,7 @@ public class FR_SearchedView : MonoBehaviour {
     public GameManager gameManager;
     public Friends friendsStore;
     public GameObject label;
+    public MainViewController mV;
 
     void OnDisable() {
         removeList();
@@ -37,6 +38,20 @@ public class FR_SearchedView : MonoBehaviour {
 
             Button AddBtn = item.transform.Find("AddButton").GetComponent<Button>();
             AddBtn.onClick.AddListener(() => add(item));
+
+            Image rankImg = item.transform.Find("Rank").GetComponent<Image>();
+
+            int rank = list[i].status.rank;
+
+            int iconRank = (int)Mathf.Ceil((float)rank / 5);
+
+            if (iconRank == 0) {
+                rankImg.sprite = mV.ranks[0];
+            }
+            else {
+                rankImg.sprite = mV.ranks[iconRank - 1];
+            }
+            rankImg.transform.Find("Text").GetComponent<Text>().text = "랭크 " + rank;
         }
     }
 

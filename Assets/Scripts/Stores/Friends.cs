@@ -171,7 +171,7 @@ public class Friends : AjwStore {
                 //Debug.Log(act.response.data);
                 searchedFriend = JsonHelper.getJsonArray<SearchedFriend>(act.response.data);
                 if(searchedFriend.Length == 0) {
-                    msg = "존재하지 않는 아이디입니다.";
+                    msg = "일치하는 사용자가 없어\n친구추에 실패했습니다.";
                     Debug.Log("존재하지 않는 아이디");
                     storeStatus = storeStatus.ERROR;
                     _emitChange();
@@ -237,7 +237,7 @@ public class Friends : AjwStore {
                 else if(act._type == AddFriendAction.friendType.SEARCH) {
                     //친구 요청 버튼을 클릭한 경우
                     _act._type = GetMyFriendListAction.type.WAITING;
-                    msg = "친구 요청을 하였습니다.";
+                    msg = "친구추가 신청이 발송 되었습니다.";
                     _emitChange();
                 }
                 dispatcher.dispatch(_act);
@@ -319,6 +319,17 @@ public class Friends : AjwStore {
                     _act._type = GetMyFriendListAction.type.FRIEND;
                     msg = "친구를 삭제하였습니다.";
                 }
+                else if(detailType == CommunityDeleteAction.detailType.RECEIVE) {
+                    Friend[] arr = waitingAcceptLists.ToArray(typeof(Friend)) as Friend[];
+                    foreach (Friend fr in arr) {
+                        if (fr.fromUser.id == act.id) {
+                            waitingAcceptLists.Remove(fr);
+                        }
+                    }
+                    var getWaitingListAct = ActionCreator.createAction(ActionTypes.GET_WAITING_FRIEND_ACCEPT_LIST) as GetAcceptWaitingListAction;
+                    dispatcher.dispatch(getWaitingListAct);
+                    msg = "친구요청을 거절하였습니다.";
+                }
                 dispatcher.dispatch(_act);
                 _emitChange();
                 break;
@@ -340,7 +351,7 @@ public class Friends : AjwStore {
 public class Friend {
     public int id;
     public userInfo toUser;
-    public userInfo fromUser;
+    public fromUser fromUser;
     public string friendState;
 
     public static Friend fromJSON(string json) {
@@ -352,12 +363,21 @@ public class Friend {
 public class userInfo {
     public int id;
     public string nickName;
+    public int rank;
+}
+
+[System.Serializable]
+public class fromUser {
+    public int id;
+    public string nickName;
+    public int rank;
 }
 
 [System.Serializable]
 public class SearchedFriend {
     public int id;
     public string nickName;
+    public status status;
 
     public static SearchedFriend fromJSON(string json) {
         return JsonUtility.FromJson<SearchedFriend>(json);

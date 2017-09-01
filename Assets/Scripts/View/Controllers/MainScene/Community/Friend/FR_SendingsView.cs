@@ -9,6 +9,7 @@ public class FR_SendingsView : MonoBehaviour {
 
     public GameManager gameManager;
     public Friends friendsStore;
+    public MainViewController mV;
 
     //요청 대기중 목록 생성
     public void makeMyFriendList() {
@@ -33,6 +34,20 @@ public class FR_SendingsView : MonoBehaviour {
             cancelBtn.onClick.AddListener(() => cancelReq(item));
 
             item.GetComponent<Button>().onClick.AddListener(() => showProfile(item));
+
+            Image rankImg = item.transform.Find("Rank").GetComponent<Image>();
+
+            int rank = lists[i].toUser.rank;
+
+            int iconRank = (int)Mathf.Ceil((float)rank / 5);
+
+            if (iconRank == 0) {
+                rankImg.sprite = mV.ranks[0];
+            }
+            else {
+                rankImg.sprite = mV.ranks[iconRank - 1];
+            }
+            rankImg.transform.Find("Text").GetComponent<Text>().text = "랭크 " + rank;
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(parent.content.GetComponent<RectTransform>());
     }
