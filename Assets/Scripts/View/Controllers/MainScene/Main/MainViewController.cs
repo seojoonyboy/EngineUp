@@ -44,8 +44,6 @@ public class MainViewController : MonoBehaviour {
         userStore = gm.userStore;
         bi = gm.bicycleInventStore;
         ci = gm.charInvenStore;
-
-        //Application.targetFrameRate = 60;
     }
 
     void Start() {
