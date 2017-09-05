@@ -518,9 +518,9 @@ public class record {
     public int user;
     public int count;
     public string riding_time;
-    public int total_distance;
-    public int max_speed;
-    public int avg_speed;
+    public float total_distance;
+    public float max_speed;
+    public float avg_speed;
 }
 
 [System.Serializable]
