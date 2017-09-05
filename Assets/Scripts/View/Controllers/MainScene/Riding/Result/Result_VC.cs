@@ -330,8 +330,6 @@ public class Result_VC : MonoBehaviour {
     }
 
     void _drawLine() {
-        OnlineMaps.instance.zoom = 18;
-        
         RidingDetails details = ridingStore.ridingDetails;
         if(details != null) {
             innerRidingDetails[] coords = details.coords;
@@ -403,7 +401,6 @@ public class Result_VC : MonoBehaviour {
     }
 
     void _drawMarker() {
-        //OnlineMaps.instance.AddMarker()
         RidingDetails details = ridingStore.ridingDetails;
         Vector2 tmp = new Vector2(0, 0);
         if (details == null) {
@@ -433,32 +430,24 @@ public class Result_VC : MonoBehaviour {
         mapPanel.SetActive(true);
         map.SetActive(true);
 
-        preMapScale = map.transform.localScale;
-        preMapPos = map.transform.localPosition;
+        map.transform.Find("Texture").GetComponent<RectTransform>().sizeDelta = new Vector2(1024, 1024);
 
-        map.transform.localScale = new Vector3(1.617f, 1f, 1.617f);
-        map.transform.localPosition = new Vector3(0, 0, 1724);
+        map.GetComponent<RectTransform>().offsetMin = new Vector2(0, 146);
+        map.GetComponent<RectTransform>().offsetMax = new Vector2(0, 0);
 
         OnlineMapsControlBase.instance.OnMapZoom += zooming;
-        
-        canvas.blocksRaycasts = false;
 
         _drawLine();
         _drawMarker();
     }
 
     public void offMapPanel() {
-        mapPanel.SetActive(false);
-
         map.SetActive(false);
-        map.transform.localScale = preMapScale;
-
-        canvas.blocksRaycasts = true;
+        mapPanel.SetActive(false);
 
         if (OnlineMaps.instance != null) {
             OnlineMaps.instance.RemoveAllDrawingElements();
             OnlineMaps.instance.RemoveAllMarkers();
-            
         }
     }
 

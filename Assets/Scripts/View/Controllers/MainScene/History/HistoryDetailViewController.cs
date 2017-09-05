@@ -8,9 +8,6 @@ public class HistoryDetailViewController : MonoBehaviour {
     public GameObject 
         map,
         mapHeader;
-    private Vector3 
-        preMapScale,
-        preMapPos;
     public int id;
     private GameManager gm;
     private Riding ridingStore;
@@ -37,6 +34,7 @@ public class HistoryDetailViewController : MonoBehaviour {
     private _Rect
         minCoord,
         maxCoord;
+    public int standard_zoom_lv;
 
     void Awake() {
         gm = GameManager.Instance;
@@ -80,30 +78,22 @@ public class HistoryDetailViewController : MonoBehaviour {
         minCoord = new _Rect();
         maxCoord = new _Rect();
 
-        canvas.blocksRaycasts = false;
-
         mapHeader.SetActive(true);
         map.SetActive(true);
 
-        preMapScale = map.transform.localScale;
-        preMapPos = map.transform.localPosition;
+        map.GetComponent<RectTransform>().sizeDelta = new Vector2(512, 512);
 
-        map.transform.localScale = new Vector3(1f, 1f, 0.8f);
-        map.transform.localPosition = new Vector3(0.08f, 0, 1791f);
+        map.GetComponent<RectTransform>().offsetMin = new Vector2(0, 897.5f);
+        map.GetComponent<RectTransform>().offsetMax = new Vector2(0, -143.5f);
 
         OnlineMaps _map = OnlineMaps.instance;
-        OnlineMapsControlBase.instance.OnMapZoom += zooming;
 
         innerRidingDetails[] coords = data.coords;
-
-        //var testMarker = OnlineMaps.instance.AddMarker(new Vector2(127.74437f, 37.87998f));
-        //testMarker.texture = markerTexture;
-        //testMarker.scale = 0.5f;
-        //OnlineMaps.instance.markers[0].align = OnlineMapsAlign.Top;
         OnlineMaps.instance.RemoveAllMarkers();
-        OnlineMaps.instance.OnChangePosition += changePos;
         if (coords.Length == 0) {
             _map.position = new Vector2(127.74437f, 37.87998f);
+
+            _map.zoom = standard_zoom_lv;
         }
         else {
             List<Vector2> list = new List<Vector2>();
@@ -137,11 +127,6 @@ public class HistoryDetailViewController : MonoBehaviour {
                 }
             }
 
-            //Debug.Log("최소 X값 : " + minCoord.x);
-            //Debug.Log("최소 y값 : " + minCoord.y);
-            //Debug.Log("최대 X값 : " + maxCoord.x);
-            //Debug.Log("최대 y값 : " + maxCoord.y);
-
             if (IsRectCoordValid(minCoord, maxCoord)) {
                 float centerX = (float)((minCoord.x + maxCoord.x) / 2.0f);
                 float centerY = (float)((minCoord.y + maxCoord.y) / 2.0f);
@@ -151,54 +136,58 @@ public class HistoryDetailViewController : MonoBehaviour {
                 double dx;
                 double dy;
                 OnlineMapsUtils.DistanceBetweenPoints(minCoord.x, minCoord.y, maxCoord.x, maxCoord.y, out dx, out dy);
-                //1km 이하인 경우
+
                 double maxDist = dx;
+                
                 if (dx < dy) {
                     maxDist = dy;
                 }
-                //Debug.Log("Dist X : " + dx);
-                int zoomLv = 18;
-                int offset = (int)(maxDist / 0.2);
-                if (offset <= 1) {
+
+                Debug.Log("Max Dist : " + maxDist);
+
+                int zoomLv = standard_zoom_lv;
+
+                if(maxDist >= 15) {
+                    _map.zoom = 10;
+                }
+                else if(14 <= maxDist && maxDist < 15) {
+                    _map.zoom = 12;
+                }
+                else if(maxDist < 14) {
+                    int offset = (int)(maxDist / 0.2);
+                    zoomLv = zoomLv - (offset - 1);
                     _map.zoom = zoomLv;
                 }
-                else {
-                    zoomLv = zoomLv - (offset - 1);
-                    if (zoomLv <= 10) {
-                        zoomLv = 10;
-                    }
-                    else {
-                        _map.zoom = zoomLv;
-                    }
-                }
-                //Vector2 pos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
-                //_map.position = pos;
-                //_map.zoom = 18;
             }
             else {
                 Vector2 pos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
                 _map.position = pos;
+
+                _map.zoom = standard_zoom_lv;
             }
 
             _line = new OnlineMapsDrawingLine(list, Color.red, 3.0f);
             _map.AddDrawingElement(_line);
 
-            if(coords.Length == 1) {
+            OnlineMapsControlBase.instance.OnMapZoom += zooming;
+
+            if (coords.Length == 1) {
                 //도착마크만 표시
                 Vector2 markerPos = new Vector2(coords[0].latitude, coords[0].longitude);
                 endMarker = _map.AddMarker(markerPos);
-                endMarker.align = OnlineMapsAlign.BottomLeft;
+                endMarker.align = OnlineMapsAlign.Center;
             }
             else {
                 //출발 도착 마커 모두 표시
                 Vector2 startPos = new Vector2(coords[0].latitude, coords[0].longitude);
                 startMarker = _map.AddMarker(startPos, markerTexture, "");
-                startMarker.align = OnlineMapsAlign.BottomLeft;
+                startMarker.align = OnlineMapsAlign.Center;
 
                 Vector2 endPos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
                 endMarker = _map.AddMarker(endPos, markerTexture, "");
-                endMarker.align = OnlineMapsAlign.BottomLeft;
+                endMarker.align = OnlineMapsAlign.Center;
             }
+
         }
     }
 
@@ -242,16 +231,13 @@ public class HistoryDetailViewController : MonoBehaviour {
     }
 
     private void offMap() {
-        OnlineMaps _map = map.GetComponent<OnlineMaps>();
-        map.transform.localScale = Vector3.one;
-        map.transform.localPosition = preMapPos;
+        OnlineMaps _map = OnlineMaps.instance;
 
         _map.RemoveAllDrawingElements();
         _map.RemoveAllMarkers();
 
         map.SetActive(false);
 
-        canvas.blocksRaycasts = true;
         mapHeader.SetActive(false);
     }
 
