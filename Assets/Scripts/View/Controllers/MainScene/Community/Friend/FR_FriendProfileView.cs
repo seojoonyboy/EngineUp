@@ -78,7 +78,7 @@ public class FR_FriendProfileView : MonoBehaviour {
 
             record_this_month record = friend.toUser.record_this_month;
             int ridingCount = record.count;
-            int distance = record.total_distance;
+            float distance = record.total_distance;
             string ridingTime = record.riding_time;
 
             int character_img_id = friend.toUser.represent_character.character_inventory.character;
@@ -135,8 +135,8 @@ public class FR_FriendProfileView : MonoBehaviour {
             specs[2].text = regeneration.ToString();
             specs[3].text = speed.ToString();
 
-            records[0].text = ridingTime;
-            records[1].text = distance.ToString();
+            records[0].text = ridingTime.Split('.')[0];
+            records[1].text = (System.Math.Round(distance, 2, System.MidpointRounding.AwayFromZero)).ToString();
             records[2].text = ridingCount.ToString();
 
             profiles[0].text = nickName;
@@ -172,7 +172,7 @@ public class FR_FriendProfileView : MonoBehaviour {
 
             record_this_month record = friend.record_this_month;
             int ridingCount = record.count;
-            int distance = record.total_distance;
+            float distance = record.total_distance;
             string ridingTime = record.riding_time;
 
             int character_img_id = friend.represent_character.character_inventory.character;
@@ -229,8 +229,8 @@ public class FR_FriendProfileView : MonoBehaviour {
             specs[2].text = regeneration.ToString();
             specs[3].text = speed.ToString();
 
-            records[0].text = ridingTime;
-            records[1].text = distance.ToString();
+            records[0].text = ridingTime.Split('.')[0];
+            records[1].text = (System.Math.Round(distance, 2, System.MidpointRounding.AwayFromZero)).ToString();
             records[2].text = ridingCount.ToString();
 
             profiles[0].text = nickName;
