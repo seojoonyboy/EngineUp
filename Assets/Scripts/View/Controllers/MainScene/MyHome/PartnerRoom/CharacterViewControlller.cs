@@ -95,7 +95,12 @@ public class CharacterViewControlller : MonoBehaviour {
         friendlySlider.value = charInvenStore.repCharacter.exp - maxExps[lv - 1];
 
         frLv.text = "친밀도 Lv" + lv;
-        frPercentage.text = ((friendlySlider.value / friendlySlider.maxValue) * 100f).ToString() + "%";
+        if(friendlySlider.maxValue == 0) {
+            frPercentage.text = friendlySlider.value + "%";
+        }
+        else {
+            frPercentage.text = ((friendlySlider.value / friendlySlider.maxValue) * 100f).ToString() + "%";
+        }
     }
 
     public void setMainChar(int index, int lv) {
