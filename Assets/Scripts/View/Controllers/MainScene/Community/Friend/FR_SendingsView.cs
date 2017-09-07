@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UIWidgets;
 
 public class FR_SendingsView : MonoBehaviour {
     public GameObject container;
@@ -28,14 +29,21 @@ public class FR_SendingsView : MonoBehaviour {
             GameObject item = Instantiate(container);
             item.transform.SetParent(transform, false);
             item.GetComponent<ButtonIndex>().index = lists[i].id;
-            item.transform.Find("Name").GetComponent<Text>().text = lists[i].toUser.nickName;
+
+            GameObject innerContainer = item.transform.Find("InnerContainer").gameObject;
+
+            innerContainer.transform.Find("Name").GetComponent<Text>().text = lists[i].toUser.nickName;
+
+            item.transform.Find("SideMenu").GetComponent<Sidebar>().Content = innerContainer.GetComponent<RectTransform>();
+            item.transform.Find("SideMenu").GetComponent<Sidebar>().OptionalHandle = innerContainer;
+
             //containerInit(item, myFriendGrid);
-            Button cancelBtn = item.transform.Find("CancelButton").GetComponent<Button>();
+            Button cancelBtn = item.transform.Find("SideMenu/CancelButton").GetComponent<Button>();
             cancelBtn.onClick.AddListener(() => cancelReq(item));
 
             item.GetComponent<Button>().onClick.AddListener(() => showProfile(item));
 
-            Image rankImg = item.transform.Find("Rank").GetComponent<Image>();
+            Image rankImg = innerContainer.transform.Find("Rank").GetComponent<Image>();
 
             int rank = lists[i].toUser.rank;
 

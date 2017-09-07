@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UIWidgets;
 
 public class FR_ReceivesView : MonoBehaviour {
     public GameObject container;
@@ -31,7 +32,9 @@ public class FR_ReceivesView : MonoBehaviour {
             item.GetComponent<ButtonIndex>().index = lists[i].id;
             item.GetComponent<ButtonIndex>().fromUserId = lists[i].fromUser.id;
 
-            item.transform.Find("Name").GetComponent<Text>().text = lists[i].fromUser.nickName;
+            GameObject innerContainer = item.transform.Find("InnerContainer").gameObject;
+
+            innerContainer.transform.Find("Name").GetComponent<Text>().text = lists[i].fromUser.nickName;
             //containerInit(item, myFriendGrid);
             Button delBtn = item.transform.Find("DenyButton").GetComponent<Button>();
             delBtn.onClick.AddListener(() => reject(item));
@@ -43,7 +46,7 @@ public class FR_ReceivesView : MonoBehaviour {
 
             item.GetComponent<FriendIndex>().nickName = lists[i].fromUser.nickName;
 
-            Image rankImg = item.transform.Find("Rank").GetComponent<Image>();
+            Image rankImg = innerContainer.transform.Find("Rank").GetComponent<Image>();
 
             int rank = lists[i].fromUser.rank;
 

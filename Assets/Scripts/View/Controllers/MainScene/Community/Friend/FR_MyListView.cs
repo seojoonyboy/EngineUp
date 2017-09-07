@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UIWidgets;
 
 public class FR_MyListView : MonoBehaviour {
     public GameObject container;
@@ -34,15 +35,21 @@ public class FR_MyListView : MonoBehaviour {
             GameObject item = Instantiate(container);
             item.transform.SetParent(transform, false);
 
+            GameObject innerContainer = item.transform.Find("InnerContainer").gameObject;
+
             item.GetComponent<ButtonIndex>().index = lists[i].id;
-            item.transform.Find("Name").GetComponent<Text>().text = lists[i].toUser.nickName;
+            innerContainer.transform.Find("Name").GetComponent<Text>().text = lists[i].toUser.nickName;
+
+            item.transform.Find("SideMenu").GetComponent<Sidebar>().Content = innerContainer.GetComponent<RectTransform>();
+            item.transform.Find("SideMenu").GetComponent<Sidebar>().OptionalHandle = innerContainer;
+
             //containerInit(item, myFriendGrid);
-            Button delBtn = item.transform.Find("DeleteButton").GetComponent<Button>();
+            Button delBtn = item.transform.Find("SideMenu/DeleteButton").GetComponent<Button>();
             delBtn.onClick.AddListener(() => delFriend(item));
 
             item.GetComponent<Button>().onClick.AddListener(() => showProfile(item));
 
-            Image rankImg = item.transform.Find("Rank").GetComponent<Image>();
+            Image rankImg = innerContainer.transform.Find("Rank").GetComponent<Image>();
 
             int rank = lists[i].toUser.rank;
 
