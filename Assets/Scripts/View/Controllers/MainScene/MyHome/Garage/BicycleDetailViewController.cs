@@ -29,6 +29,13 @@ public class BicycleDetailViewController : MonoBehaviour {
     private Color32 decreaseColor = new Color32(201, 48, 48, 255);
     private Color32 defaultColor = new Color32(255, 255, 255, 255);
 
+    private Color32[] gradesColors = new Color32[]{
+        new Color32(166, 166, 166, 255),
+        new Color32(151, 197, 58, 255),
+        new Color32(58, 133, 197, 255),
+        new Color32(166, 98, 185, 255)
+        };
+
     private int[] limitRank = new int[4] { 1, 10, 20, 30 };
 
     void Awake() {
@@ -74,6 +81,7 @@ public class BicycleDetailViewController : MonoBehaviour {
             for(int i=0; i<grade; i++) {
                 GameObject tier = Instantiate(tierImg);
                 tier.transform.SetParent(tierGrid.transform, false);
+                tier.GetComponent<Image>().color = gradesColors[grade - 1];
             }
 
             gameObject.transform.Find("Name").GetComponent<Text>().text = info.name;
