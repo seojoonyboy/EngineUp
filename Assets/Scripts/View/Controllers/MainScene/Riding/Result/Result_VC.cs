@@ -415,16 +415,16 @@ public class Result_VC : MonoBehaviour {
             Vector2 pos = new Vector2(lat, lon);
 
             endMarker = OnlineMaps.instance.AddMarker(pos, markerTextures[1], "");
-            endMarker.align = OnlineMapsAlign.Bottom;
-            endMarker.scale = 0.5f;
+            endMarker.align = OnlineMapsAlign.Center;
+            endMarker.scale = 0.8f;
 
             //시작점 마커
             lat = coords[0].latitude;
             lon = coords[0].longitude;
             pos = new Vector2(lat, lon);
             startMarker = OnlineMaps.instance.AddMarker(pos, markerTextures[0], "");
-            startMarker.align = OnlineMapsAlign.Bottom;
-            startMarker.scale = 0.5f;
+            startMarker.align = OnlineMapsAlign.Center;
+            startMarker.scale = 0.8f;
         }
     }
 

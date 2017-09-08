@@ -142,6 +142,9 @@ public class HistoryDetailViewController : MonoBehaviour {
                 if (dx < dy) {
                     maxDist = dy;
                 }
+                else {
+                    maxDist = dx;
+                }
 
                 Debug.Log("Max Dist : " + maxDist);
 
@@ -173,20 +176,20 @@ public class HistoryDetailViewController : MonoBehaviour {
                 //도착마크만 표시
                 Vector2 markerPos = new Vector2(coords[0].latitude, coords[0].longitude);
                 endMarker = _map.AddMarker(markerPos, markerTextures[1], "");
-                endMarker.scale = 0.5f;
-                endMarker.align = OnlineMapsAlign.Bottom;
+                endMarker.scale = 0.8f;
+                endMarker.align = OnlineMapsAlign.Center;
             }
             else {
                 //출발 도착 마커 모두 표시
                 Vector2 startPos = new Vector2(coords[0].latitude, coords[0].longitude);
                 startMarker = _map.AddMarker(startPos, markerTextures[0], "");
-                startMarker.align = OnlineMapsAlign.Bottom;
-                startMarker.scale = 0.5f;
+                startMarker.align = OnlineMapsAlign.Center;
+                startMarker.scale = 0.8f;
 
                 Vector2 endPos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
                 endMarker = _map.AddMarker(endPos, markerTextures[1], "");
-                endMarker.align = OnlineMapsAlign.Bottom;
-                endMarker.scale = 0.5f;
+                endMarker.align = OnlineMapsAlign.Center;
+                endMarker.scale = 0.8f;
             }
 
         }
