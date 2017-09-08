@@ -51,9 +51,8 @@ namespace UIWidgets {
         public void OnDrag(PointerEventData eventData) {
             transform.parent.parent.parent.parent.parent.GetComponent<ScrollRect>().OnDrag(eventData);
             if (eventData.pointerEnter == gameObject) {
-                if (eventData.delta.y == 0) {
-                    DragEvent.Invoke(eventData);
-                }
+                DragEvent.Invoke(eventData);
+                Debug.Log("Delta : " + eventData.delta);
             }
         }
     }
