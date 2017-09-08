@@ -149,6 +149,7 @@ public class BoxViewController : MonoBehaviour {
                     Image grade_img = singleOpenModal.transform.Find("InnerModal/Grade").GetComponent<Image>();
                     int grade = openedItem[0].item.grade;
                     grade_img.color = grades[grade];
+                    name.color = grades[grade];
 
                     canClick = true;
                 }
@@ -275,7 +276,7 @@ public class BoxViewController : MonoBehaviour {
                 Image grade_img = item.transform.Find("Grade").GetComponent<Image>();
                 int grade = items[cnt].item.grade;
                 grade_img.color = grades[grade];
-
+                label.color = grades[grade];
                 cnt++;
             }
 
