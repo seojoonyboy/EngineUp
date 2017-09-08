@@ -7,7 +7,9 @@ public class FriendsViewController : MonoBehaviour {
     public GameManager gameManager;
     public Friends friendsStore;
 
-    public GameObject[] subPanels;
+    public GameObject[] 
+        subPanels,
+        subHeaders;
     private GameObject notifyModal;
 
     public GameObject content;

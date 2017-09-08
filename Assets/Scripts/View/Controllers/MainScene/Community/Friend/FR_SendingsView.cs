@@ -17,10 +17,12 @@ public class FR_SendingsView : MonoBehaviour {
         removeList();
         if (friendsStore.friendReqLists == null || friendsStore.friendReqLists.Count == 0) {
             gameObject.SetActive(false);
+            parent.subHeaders[2].SetActive(false);
             return;
         }
         else {
             gameObject.SetActive(true);
+            parent.subHeaders[2].SetActive(true);
         }
 
         Friend[] lists = friendsStore.friendReqLists.ToArray(typeof(Friend)) as Friend[];

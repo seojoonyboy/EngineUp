@@ -17,10 +17,12 @@ public class FR_ReceivesView : MonoBehaviour {
         removeList();
         if(friendsStore.waitingAcceptLists == null || friendsStore.waitingAcceptLists.Count == 0) {
             gameObject.SetActive(false);
+            parent.subHeaders[0].SetActive(false);
             return;
         }
         else {
             gameObject.SetActive(true);
+            parent.subHeaders[0].SetActive(true);
         }
 
         Friend[] lists = friendsStore.waitingAcceptLists.ToArray(typeof(Friend)) as Friend[];

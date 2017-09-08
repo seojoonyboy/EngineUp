@@ -23,10 +23,12 @@ public class FR_MyListView : MonoBehaviour {
         removeList();
         if (friendsStore.myFriends == null || friendsStore.myFriends.Count == 0) {
             gameObject.SetActive(false);
+            parent.subHeaders[1].SetActive(false);
             return;
         }
         else {
             gameObject.SetActive(true);
+            parent.subHeaders[1].SetActive(true);
         }
 
         Friend[] lists = friendsStore.myFriends.ToArray(typeof(Friend)) as Friend[];
