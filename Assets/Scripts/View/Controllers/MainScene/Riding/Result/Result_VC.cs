@@ -64,7 +64,7 @@ public class Result_VC : MonoBehaviour {
         maxCharLv = 3;
 
     private TweenPosition tP;
-    public Texture2D markerTexture;
+    public Texture2D[] markerTextures;
     private bool tmp = false;
 
     void Awake() {
@@ -414,15 +414,17 @@ public class Result_VC : MonoBehaviour {
             float lon = coords[coords.Length - 1].longitude;
             Vector2 pos = new Vector2(lat, lon);
 
-            endMarker = OnlineMaps.instance.AddMarker(pos, markerTexture, "");
-            endMarker.align = OnlineMapsAlign.BottomLeft;
+            endMarker = OnlineMaps.instance.AddMarker(pos, markerTextures[1], "");
+            endMarker.align = OnlineMapsAlign.Bottom;
+            endMarker.scale = 0.5f;
 
             //시작점 마커
             lat = coords[0].latitude;
             lon = coords[0].longitude;
             pos = new Vector2(lat, lon);
-            startMarker = OnlineMaps.instance.AddMarker(pos, markerTexture, "");
-            startMarker.align = OnlineMapsAlign.BottomLeft;
+            startMarker = OnlineMaps.instance.AddMarker(pos, markerTextures[0], "");
+            startMarker.align = OnlineMapsAlign.Bottom;
+            startMarker.scale = 0.5f;
         }
     }
 

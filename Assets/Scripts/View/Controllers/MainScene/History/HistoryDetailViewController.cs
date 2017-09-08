@@ -26,7 +26,7 @@ public class HistoryDetailViewController : MonoBehaviour {
     public HistoryViewController parentController;
 
     public CanvasGroup canvas;
-    public Texture2D markerTexture;
+    public Texture2D[] markerTextures;
     private Animator animator;
 
     public float markerOffset;
@@ -169,23 +169,24 @@ public class HistoryDetailViewController : MonoBehaviour {
             _line = new OnlineMapsDrawingLine(list, Color.red, 3.0f);
             _map.AddDrawingElement(_line);
 
-            OnlineMapsControlBase.instance.OnMapZoom += zooming;
-
             if (coords.Length == 1) {
                 //도착마크만 표시
                 Vector2 markerPos = new Vector2(coords[0].latitude, coords[0].longitude);
-                endMarker = _map.AddMarker(markerPos);
-                endMarker.align = OnlineMapsAlign.Center;
+                endMarker = _map.AddMarker(markerPos, markerTextures[1], "");
+                endMarker.scale = 0.5f;
+                endMarker.align = OnlineMapsAlign.Bottom;
             }
             else {
                 //출발 도착 마커 모두 표시
                 Vector2 startPos = new Vector2(coords[0].latitude, coords[0].longitude);
-                startMarker = _map.AddMarker(startPos, markerTexture, "");
-                startMarker.align = OnlineMapsAlign.Center;
+                startMarker = _map.AddMarker(startPos, markerTextures[0], "");
+                startMarker.align = OnlineMapsAlign.Bottom;
+                startMarker.scale = 0.5f;
 
                 Vector2 endPos = new Vector2(coords[coords.Length - 1].latitude, coords[coords.Length - 1].longitude);
-                endMarker = _map.AddMarker(endPos, markerTexture, "");
-                endMarker.align = OnlineMapsAlign.Center;
+                endMarker = _map.AddMarker(endPos, markerTextures[1], "");
+                endMarker.align = OnlineMapsAlign.Bottom;
+                endMarker.scale = 0.5f;
             }
 
         }
@@ -216,18 +217,6 @@ public class HistoryDetailViewController : MonoBehaviour {
         string[] split = time.Split('T');
         string[] _date = split[0].Split('-');
         date.text = _date[0] + " . " + _date[1] + " . " + _date[2];
-    }
-
-    private void zooming() {
-        if (_line != null) {
-            int level = OnlineMaps.instance.zoom;
-            if (level > 10) {
-                _line.weight = 3f;
-            }
-            else {
-                _line.weight = 5f;
-            }
-        }
     }
 
     private void offMap() {
