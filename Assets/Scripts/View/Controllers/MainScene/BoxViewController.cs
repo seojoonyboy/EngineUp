@@ -4,10 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class BoxViewController : MonoBehaviour {
-    public Text 
-        numOfBoxLabel,
-        singleModalBoxNum,
-        multiModalBoxNum;
+    public Text numOfBoxLabel;
 
     private GameManager gm;
     private SoundManager sm;
@@ -18,18 +15,26 @@ public class BoxViewController : MonoBehaviour {
 
     public User userStore;
 
-    public GameObject 
+    public GameObject
         notifyModal,
         singleOpenModal,
         multiOpenModal;
 
     public GameObject _openEffect;
-    private bool 
+    private bool
         isReverse_tp,
         canClick = true;
 
     public MainViewController mV;
     public SpritesManager spriteManager;
+
+    private Color32[] grades = new Color32[]{
+        new Color32(166, 166, 166, 255), 
+        new Color32(151, 197, 58, 255),
+        new Color32(58, 133, 197, 255),
+        new Color32(166, 98, 185, 255)
+        };
+
     void Awake() {
         gm = GameManager.Instance;
         sm = SoundManager.Instance;
@@ -86,9 +91,7 @@ public class BoxViewController : MonoBehaviour {
         if(userStore.eventType == ActionTypes.MYINFO) {
             if(userStore.storeStatus == storeStatus.NORMAL) {
                 string boxNum = userStore.myData.boxes.ToString();
-                numOfBoxLabel.text = "x " + boxNum;
-                singleModalBoxNum.text = "x " + boxNum;
-                multiModalBoxNum.text = "x " + boxNum;
+                numOfBoxLabel.text = boxNum;
             }
         }
     }
@@ -101,6 +104,7 @@ public class BoxViewController : MonoBehaviour {
                 var items = boxStore.openedItem;
                 int itemCount = items.Length;
 
+                //박스 1개 열기
                 if(itemCount == 1) {
                     sm.playEffectSound(4);
                     singleOpenModal.SetActive(true);
@@ -141,6 +145,10 @@ public class BoxViewController : MonoBehaviour {
                         image.sprite = mV.characters_slots[openedItem[0].character.id - 1].images[0];
                         name.text = openedItem[0].character.name;
                     }
+
+                    Image grade_img = singleOpenModal.transform.Find("InnerModal/Grade").GetComponent<Image>();
+                    int grade = openedItem[0].item.grade;
+                    grade_img.color = grades[grade];
 
                     canClick = true;
                 }
@@ -194,8 +202,8 @@ public class BoxViewController : MonoBehaviour {
             act.num = openNum;
             gm.gameDispatcher.dispatch(act);
             if(openNum == 10) {
-                multiOpenModal.transform.Find("BottonPanel/ConfirmButton").gameObject.GetComponent<Button>().enabled = false;
-                multiOpenModal.transform.Find("BottonPanel/CancelButton").gameObject.GetComponent<Button>().enabled = false;
+                multiOpenModal.transform.Find("InnerModal/BottonPanel/ConfirmButton").gameObject.GetComponent<Button>().enabled = false;
+                multiOpenModal.transform.Find("InnerModal/BottonPanel/CancelButton").gameObject.GetComponent<Button>().enabled = false;
             }
             //singleOpenButton.GetComponent<UIPlaySound>().Play();
         }
@@ -263,13 +271,18 @@ public class BoxViewController : MonoBehaviour {
                     sprite.sprite = mV.characters_slots[items[cnt].character.id - 1].images[0];
                     label.text = items[cnt].character.name;
                 }
+
+                Image grade_img = item.transform.Find("Grade").GetComponent<Image>();
+                int grade = items[cnt].item.grade;
+                grade_img.color = grades[grade];
+
                 cnt++;
             }
 
             yield return new WaitForSeconds(1.0f);
         }
-        modal.transform.Find("BottonPanel/ConfirmButton").gameObject.GetComponent<Button>().enabled = true;
-        modal.transform.Find("BottonPanel/CancelButton").gameObject.GetComponent<Button>().enabled = true;
+        modal.transform.Find("InnerModal/BottonPanel/ConfirmButton").gameObject.GetComponent<Button>().enabled = true;
+        modal.transform.Find("InnerModal/BottonPanel/CancelButton").gameObject.GetComponent<Button>().enabled = true;
 
         canClick = true;
     }
