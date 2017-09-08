@@ -17,6 +17,8 @@ public class FriendsViewController : MonoBehaviour {
     public InputField input;
 
     public FR_FriendProfileView fr_profile_view;
+
+    public FR_SearchedView searchView;
     void Awake() {
         notifyModal = transform.parent.GetComponent<CommunityVC>().notifyModal;
 
@@ -109,12 +111,7 @@ public class FriendsViewController : MonoBehaviour {
     }
 
     public void search() {
-        CommunitySearchAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_SEARCH) as CommunitySearchAction;
-        action._type = CommunitySearchAction.searchType.FRIEND;
-        action.keyword = input.text;
-        gameManager.gameDispatcher.dispatch(action);
-
-        input.text = null;
+        searchView.gameObject.SetActive(true);
     }
 
     public void onNotifyModal(string msg) {

@@ -14,8 +14,72 @@ public class FR_SearchedView : MonoBehaviour {
     public GameObject label;
     public MainViewController mV;
 
+    private TweenPosition tP;
+    public bool
+        isReverse_tp = false,
+        isTweening = false;
+
+    void Awake() {
+        tP = GetComponent<TweenPosition>();
+    }
+
+    void OnEnable() {
+        tweenPos();
+    }
+
     void OnDisable() {
         removeList();
+        isReverse_tp = false;
+    }
+
+    public void tweenPos() {
+        if (isTweening) {
+            return;
+        }
+        isTweening = true;
+
+        if (!isReverse_tp) {
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
+        else {
+            //swap
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
+    }
+
+    public void tPFinished() {
+        isTweening = false;
+
+        if (isReverse_tp) {
+            gameObject.SetActive(false);
+
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+        }
+        else {
+            Debug.Log("TP FInished");
+            isReverse_tp = true;
+
+            if (parent.input.text == null) {
+                return;
+            }
+
+            CommunitySearchAction action = ActionCreator.createAction(ActionTypes.COMMUNITY_SEARCH) as CommunitySearchAction;
+            action._type = CommunitySearchAction.searchType.FRIEND;
+            action.keyword = parent.input.text;
+            gameManager.gameDispatcher.dispatch(action);
+
+            parent.input.text = null;
+        }
     }
 
     //검색결과 목록 생성

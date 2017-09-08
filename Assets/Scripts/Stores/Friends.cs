@@ -171,7 +171,7 @@ public class Friends : AjwStore {
                 //Debug.Log(act.response.data);
                 searchedFriend = JsonHelper.getJsonArray<SearchedFriend>(act.response.data);
                 if(searchedFriend.Length == 0) {
-                    msg = "일치하는 사용자가 없어\n친구추에 실패했습니다.";
+                    msg = "일치하는 사용자가 없어\n친구추가에 실패했습니다.";
                     Debug.Log("존재하지 않는 아이디");
                     storeStatus = storeStatus.ERROR;
                     _emitChange();
