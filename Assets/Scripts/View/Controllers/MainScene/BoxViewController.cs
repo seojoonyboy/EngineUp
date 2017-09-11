@@ -242,6 +242,7 @@ public class BoxViewController : MonoBehaviour {
                 Text label = item.Find("Name").GetComponent<Text>();
                 Image sprite = null;
                 string parts = items[cnt].item.parts;
+                item.Find("Grade").GetComponent<Image>().enabled = true;
                 if (type == "item") {
                     var tmp = spriteManager.stage_items[items[cnt].item.id - 1];
                     if (tmp == null) {
@@ -296,6 +297,7 @@ public class BoxViewController : MonoBehaviour {
                 item.Find("Engine").GetComponent<Image>().enabled = false;
                 item.Find("Character").GetComponent<Image>().enabled = false;
                 item.Find("Name").GetComponent<Text>().text = "";
+                item.Find("Grade").GetComponent<Image>().enabled = false;
             }
         }
         else {
