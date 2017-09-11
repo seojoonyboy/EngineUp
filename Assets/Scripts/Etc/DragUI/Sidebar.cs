@@ -767,9 +767,6 @@ namespace UIWidgets {
                 ? rect.anchoredPosition.x - position.x
                 : rect.anchoredPosition.y - position.y;
             var sign = IsReverse() ? -1 : +1;
-            Debug.Log("Sidebar Anchored Position Y : " + rect.anchoredPosition.y);
-            Debug.Log("Sidebar Position Y : " + position.y);
-            Debug.Log("SidebarSize : " + SidebarSize());
             return pos / (SidebarSize() * sign);
         }
 

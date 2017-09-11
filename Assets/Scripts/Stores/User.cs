@@ -240,12 +240,14 @@ public class User : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 basicCharacters = JsonHelper.getJsonArray<character>(payload.response.data);
+                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 message = "캐릭터 정보를 불러오는데 문제가 발생하였습니다.";
                 _emitChange();
+                Debug.Log(payload.response.data);
                 break;
         }
     }
@@ -298,12 +300,14 @@ public class User : AjwStore {
                 storeStatus = storeStatus.NORMAL;
                 MyInfo act = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
                 dispatcher.dispatch(act);
+                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
 
                 message = "캐릭터 정보를 불러오는데 문제가 발생하였습니다.";
+                Debug.Log(payload.response.data);
                 _emitChange();
                 break;
         }

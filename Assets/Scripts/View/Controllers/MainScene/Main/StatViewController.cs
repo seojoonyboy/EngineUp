@@ -168,6 +168,10 @@ public class StatViewController : MonoBehaviour {
             item.GetComponent<InputIndex>().type = "bicycle";
 
             item.GetComponent<Button>().onClick.AddListener(() => onSubmit(item));
+
+            if(i == userStore.userBicycleTypes.Length - 1) {
+                item.transform.Find("Underline").GetComponent<Image>().enabled = false;
+            }
         }
     }
 
@@ -186,6 +190,10 @@ public class StatViewController : MonoBehaviour {
             item.GetComponent<InputIndex>().type = "district";
 
             item.GetComponent<Button>().onClick.AddListener(() => onSubmit(item));
+
+            if (i == locationStore.districts.Length - 1) {
+                item.transform.Find("Underline").GetComponent<Image>().enabled = false;
+            }
         }
     }
 
@@ -377,6 +385,7 @@ public class StatViewController : MonoBehaviour {
                 editModals[6].SetActive(false);
                 profileEditAct.type = EditProfileAction.profileType.BICYCLE;
                 value = obj.transform.Find("Name").GetComponent<Text>().text;
+                Debug.Log("!!");
                 break;
         }
         profileEditAct.value = value;
@@ -394,7 +403,7 @@ public class StatViewController : MonoBehaviour {
         switch(modalIndex) {
             case 0:
                 var district = userStore.myData.district;
-                Text text = editModals[modalIndex].transform.Find("District").GetComponent<Text>();
+                Text text = editModals[modalIndex].transform.Find("District/District").GetComponent<Text>();
                 if (!string.IsNullOrEmpty(district)) {
                     text.text = userStore.myData.district;
                 }
@@ -428,7 +437,7 @@ public class StatViewController : MonoBehaviour {
                 weight_text.text = weight;
                 break;
             case 5:
-                editModals[0].SetActive(false);
+                editModals[0].SetActive(true);
                 GetDistrictsData data = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
                 gm.gameDispatcher.dispatch(data);
                 break;
