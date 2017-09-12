@@ -76,6 +76,8 @@ public class CommunityVC : MonoBehaviour {
         tmp = transform.Find("TogglePanel/Group").gameObject;
         tmp.GetComponent<Toggle>().isOn = false;
         OnToggle(tmp);
+
+        transform.Find("TopPanel/Header").GetComponent<Text>().text = "친구";
     }
 
     public void offNotifyModal() {
