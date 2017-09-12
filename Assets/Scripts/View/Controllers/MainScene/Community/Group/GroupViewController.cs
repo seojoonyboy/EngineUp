@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GroupViewController : MonoBehaviour {
     public GameObject[] subPanels;
@@ -7,7 +8,7 @@ public class GroupViewController : MonoBehaviour {
     public Locations locationStore;
     private GameManager gm;
 
-    public UIInput searchInput;
+    public InputField searchInput;
 
     public GroupAddViewController addViewCtrler;
     public GroupDetailViewController detailView;
@@ -25,14 +26,14 @@ public class GroupViewController : MonoBehaviour {
 
     void OnEnable() {
         //내 그룹 목록을 불러온다.
-        Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
-        gm.gameDispatcher.dispatch(getMyGroupAct);
+        //Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
+        //gm.gameDispatcher.dispatch(getMyGroupAct);
     }
 
     void OnDisable() {
-        for(int i=0; i<subPanels.Length; i++) {
-            subPanels[i].SetActive(false);
-        }
+        //for(int i=0; i<subPanels.Length; i++) {
+        //    subPanels[i].SetActive(false);
+        //}
     }
 
     public void onPanel(GameObject obj) {

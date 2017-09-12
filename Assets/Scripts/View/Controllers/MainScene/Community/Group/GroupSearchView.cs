@@ -16,7 +16,7 @@ public class GroupSearchView : MonoBehaviour {
     void OnEnable() {
         gm = GameManager.Instance;
         Group_search searchAct = ActionCreator.createAction(ActionTypes.GROUP_SEARCH) as Group_search;
-        searchAct.keyword = controller.searchInput.value;
+        searchAct.keyword = controller.searchInput.text;
         gm.gameDispatcher.dispatch(searchAct);
     }
 
