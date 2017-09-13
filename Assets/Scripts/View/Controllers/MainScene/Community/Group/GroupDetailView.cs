@@ -1,14 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GroupDetailViewController : MonoBehaviour {
+public class GroupDetailView : MonoBehaviour {
     public GroupViewController controller;
-
-    public GroupMemberManageView memberManage;
-    public GroupSettingChangeView settingChange;
-    public GroupMemberView memberView;
-    public GroupDelView groupDelView;
-    public GroupManageMainView manageMainView;
+    private Animator animator;
 
     public UILabel
         groupName,
@@ -43,32 +38,62 @@ public class GroupDetailViewController : MonoBehaviour {
     private bool isFirstGetPosts = true;
 
     private GameObject selectedStoryObj;
-    void Start() {
-        GameObject tmp = gameObject.transform.Find("ScrollView").gameObject;
-        storyGrid = tmp.transform.Find("StoryGrid").gameObject.GetComponent<UIGrid>();
-        tmp = tmp.transform.Find("StoryAddGrid").gameObject;
-        storyAddGrid = tmp.GetComponent<UIGrid>();
-        tmp = gameObject.transform.Find("StoryAddModal").gameObject;
-        addStoryInput = tmp.transform.Find("Modal/InputField").GetComponent<UIInput>();
-    }
 
-    public void OnEnable() {
+    void Awake() {
+        animator = GetComponent<Animator>();
         gm = GameManager.Instance;
     }
 
-    void OnDisable() {
-        storyGrid.transform.DestroyChildren();
-        foreach(Transform obj in storyAddGrid.transform) {
-            if(obj.tag == "AddBtn") {
-                continue;
-            }
-            else {
-                Destroy(obj.gameObject);
-            }
+    void Start() {
+        //GameObject tmp = gameObject.transform.Find("ScrollView").gameObject;
+        //storyGrid = tmp.transform.Find("StoryGrid").gameObject.GetComponent<UIGrid>();
+        //tmp = tmp.transform.Find("StoryAddGrid").gameObject;
+        //storyAddGrid = tmp.GetComponent<UIGrid>();
+        //tmp = gameObject.transform.Find("StoryAddModal").gameObject;
+        //addStoryInput = tmp.transform.Find("Modal/InputField").GetComponent<UIInput>();
+    }
+
+    void OnEnable() {
+        Invoke("playSlideIn", 0.2f);
+    }
+
+    void playSlideIn() {
+        animator.Play("SlideIn");
+    }
+
+    public void onBackButton() {
+        animator.Play("SlideOut");
+    }
+
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
+
+        //slider in
+        if (boolParm == 1) {
+            Group_detail getGroupDetailAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL) as Group_detail;
+            getGroupDetailAct.id = id;
+            gm.gameDispatcher.dispatch(getGroupDetailAct);
         }
-        isFirstGetPosts = true;
-        containerInit();
-        gameObject.transform.Find("ScrollView").gameObject.AddComponent<SpringPanel>().target = new Vector3(-700.0f, 0.0f, 0.0f);
+
+        //slider out
+        else if (boolParm == 0) {
+            gameObject.SetActive(false);
+        }
+    }
+
+    void OnDisable() {
+        //storyGrid.transform.DestroyChildren();
+        //foreach(Transform obj in storyAddGrid.transform) {
+        //    if(obj.tag == "AddBtn") {
+        //        continue;
+        //    }
+        //    else {
+        //        Destroy(obj.gameObject);
+        //    }
+        //}
+        //isFirstGetPosts = true;
+        //containerInit();
+        //gameObject.transform.Find("ScrollView").gameObject.AddComponent<SpringPanel>().target = new Vector3(-700.0f, 0.0f, 0.0f);
     }
 
     public void refreshTxt() {
@@ -232,11 +257,6 @@ public class GroupDetailViewController : MonoBehaviour {
 
     //Group View Controller에게서 리스너 할당 받음.
     public void onGroupStoreListener() {
-        //하위 Controller에게 리스너 재할당
-        memberManage.onGroupStoreListener();
-        settingChange.onGroupStoreListener();
-        groupDelView.onGroupStoreListener();
-        manageMainView.onGroupStoreListener();
 
         groupStore = controller.groupStore;
         ActionTypes groupStoreEventType = groupStore.eventType;
@@ -260,7 +280,7 @@ public class GroupDetailViewController : MonoBehaviour {
         }
 
         if (groupStoreEventType == ActionTypes.GROUP_GET_MEMBERS) {
-            memberView.makeList();
+            //memberView.makeList();
         }
 
         if (groupStoreEventType == ActionTypes.GROUP_MEMBER_ACCEPT || groupStoreEventType == ActionTypes.GROUP_BAN) {

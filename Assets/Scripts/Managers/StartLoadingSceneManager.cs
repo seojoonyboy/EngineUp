@@ -29,7 +29,7 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         mobileServiceCheckBox,
         privacyCollectCheckBox;
 
-    private int selectIndex;
+    private int selectIndex = 0;
     public Sprite[] charPortraits;
     void Awake() {
         //Debug.Log("StartLoadingScene Awake");
@@ -64,14 +64,8 @@ public class StartLoadingSceneManager : fbl_SceneManager {
         //Debug.Log("type : " + userStore.loginType);
         newNickName = modalInput.text;
         //Debug.Log("nickName : " + newNickName);
-        int index = 0;
-        if(selectIndex == 1) {
-            index = 1;
-        }
-        else if(selectIndex == 0) {
-            index = 2;
-        }
         SignupAction signUpAct = ActionCreator.createAction(ActionTypes.SIGNUP) as SignupAction;
+        int index = selectIndex + 1;
         signUpAct.charIndex = index;
         signUpAct.nickName = newNickName;
         signUpAct.login_type = userStore.loginType;
@@ -212,14 +206,15 @@ public class StartLoadingSceneManager : fbl_SceneManager {
     //캐릭터 선택 좌우 버튼
     public void charSelArrowClicked(int type) {
         int basicCharLength = userStore.basicCharacters.Length;
-        //좌측 버튼 클릭시
         
+        //좌측 버튼 클릭시
         if (type == 0) {
             selectIndex--;
             if(selectIndex < 0) {
-                selectIndex = basicCharLength - 1;
+                selectIndex = 1;
             }
         }
+        //우측 버튼 클릭시
         else if(type == 1) {
             selectIndex++;
             if(selectIndex > basicCharLength - 1) {

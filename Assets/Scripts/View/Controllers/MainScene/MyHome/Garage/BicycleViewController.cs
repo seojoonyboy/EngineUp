@@ -90,7 +90,7 @@ public class BicycleViewController : MonoBehaviour {
             }
             if(bicycleItemStore.eventType == ActionTypes.GARAGE_ITEM_EQUIP) {
                 if(bicycleItemStore.storeStatus == storeStatus.WAITING_REQ) {
-                    mV.loadingModal.SetActive(true);
+                    //mV.loadingModal.SetActive(true);
                 }
             }
         }
@@ -254,7 +254,7 @@ public class BicycleViewController : MonoBehaviour {
             sprite.sprite = spriteManager.stage_items[85];
             sideBar.transform.Find("EngineSlot/Name").GetComponent<Text>().text = "구동계";
         }
-        mV.loadingModal.SetActive(false);
+        //mV.loadingModal.SetActive(false);
     }
 
     private void setSideBar() {

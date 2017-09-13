@@ -135,7 +135,7 @@ public class User : AjwStore {
                 var msg = GameManager.Instance.sb;
                 msg.Remove(0, msg.Length);
                 SignUpError errorJson = SignUpError.fromJSON(act.response.data);
-                //Debug.Log(act.response.data);
+                Debug.Log(act.response.data);
                 string[] nickName = errorJson.nickName;
                 if (errorJson.deviceId != null) {
                     msg.Append("이미 이전에 회원가입을 하였습니다.");

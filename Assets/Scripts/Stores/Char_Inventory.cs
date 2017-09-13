@@ -123,15 +123,15 @@ public class Char_Inventory : AjwStore {
                     //}
                 }
                 Sorting.itemSort(myCharacters, 1);
-                _emitChange();
+                
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 Debug.Log(payload.response.data);
                 message = "캐릭터 정보를 불러오는 과정에서 문제가 발생하였습니다.";
-                _emitChange();
                 break;
         }
+        _emitChange();
     }
 
     //캐릭터 장착
@@ -150,7 +150,7 @@ public class Char_Inventory : AjwStore {
                     .Append("/equip");
                 WWWForm form = new WWWForm();
                 networkManager.request("POST", strBuilder.ToString(), form, ncExt.networkCallback(dispatcher, payload));
-                _emitChange();
+                
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
@@ -158,13 +158,14 @@ public class Char_Inventory : AjwStore {
 
                 MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
                 gm.gameDispatcher.dispatch(myInfoAct);
-                _emitChange();
+                
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
-                _emitChange();
+                
                 break;
         }
+        _emitChange();
     }
 
     //캐릭터 해금

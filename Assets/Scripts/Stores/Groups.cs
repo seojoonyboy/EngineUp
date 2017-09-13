@@ -145,19 +145,18 @@ public class Groups : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-
                 Debug.Log(payload.response.data);
                 myGroups = JsonHelper.getJsonArray<Group>(payload.response.data);
-                _emitChange();
+                
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 setMessage(3);
 
                 Debug.Log(payload.response.data);
-                _emitChange();
                 break;
         }
+        _emitChange();
     }
 
     //그룹 검색 결과 목록 가져오기
@@ -277,12 +276,15 @@ public class Groups : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 message = "그룹 추가에 성공하였습니다.";
-                Debug.Log(payload.response.data);
-                _emitChange();
+                //Debug.Log(payload.response.data);
+                //_emitChange();
+
+                Group_myGroups myGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
+                dispatcher.dispatch(myGroupAct);
+
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
-
                 Debug.Log(payload.response.data);
                 GroupAddError addErrorCallback = GroupAddError.fromJSON(payload.response.data);
                 //그룹명 입력 오류
@@ -474,6 +476,9 @@ public class Groups : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 message = "그룹이 해체되었습니다.";
+
+                Group_myGroups myGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
+                dispatcher.dispatch(myGroupAct);
 
                 _emitChange();
                 break;

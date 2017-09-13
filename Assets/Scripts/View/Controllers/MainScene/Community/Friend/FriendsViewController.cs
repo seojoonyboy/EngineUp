@@ -95,6 +95,14 @@ public class FriendsViewController : MonoBehaviour {
                 fr_profile_view.gameObject.SetActive(true);
             }
         }
+
+        Debug.Log(friendsStore.storeStatus);
+        if (friendsStore.storeStatus == storeStatus.WAITING_REQ) {
+            LoadingManager.Instance.onLoading();
+        }
+        else {
+            LoadingManager.Instance.offLoading();
+        }
     }
 
     public void init() {

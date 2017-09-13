@@ -71,7 +71,7 @@ public class CharacterViewControlller : MonoBehaviour {
 
             if(charStoreEventType == ActionTypes.GARAGE_ITEM_EQUIP) {
                 if(charInvenStore.storeStatus == storeStatus.WAITING_REQ) {
-                    mV.loadingModal.SetActive(true);
+                    //mV.loadingModal.SetActive(true);
                 }
             }
         }
@@ -114,7 +114,7 @@ public class CharacterViewControlller : MonoBehaviour {
         var charImg = character.GetComponent<Image>();
         charImg.sprite = mV_controller.characters_entire_body[arrIndex].images[arrSubIndex];
 
-        mV.loadingModal.SetActive(false);
+        //mV.loadingModal.SetActive(false);
     }
 
     public void setStat() {

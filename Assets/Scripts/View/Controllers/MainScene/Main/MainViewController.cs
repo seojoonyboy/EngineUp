@@ -22,8 +22,7 @@ public class MainViewController : MonoBehaviour {
     public GameObject
         tutorial,
         tutorialChar,                           //튜토리얼에 등장하는 캐릭터 이미지
-        bicycleSprite,                          //메인 화면 상의 자전거 객체(하위 : 프레임, 엔진, 바퀴)
-        loadingModal;                           //로딩 화면
+        bicycleSprite;                          //메인 화면 상의 자전거 객체(하위 : 프레임, 엔진, 바퀴)
 
     public Sprite[] 
         ranks,
@@ -50,6 +49,7 @@ public class MainViewController : MonoBehaviour {
         MyInfo myInfoAct = ActionCreator.createAction(ActionTypes.MYINFO) as MyInfo;
         gm.gameDispatcher.dispatch(myInfoAct);
 
+        LoadingManager.Instance.onLoading();
         //튜토리얼 진행 여부 확인
         //int isFirstPlay = PlayerPrefs.GetInt("isFirstPlay");
         //if (isFirstPlay != 1) {
@@ -115,7 +115,7 @@ public class MainViewController : MonoBehaviour {
                 }
 
                 isBicycleLoaded = true;
-                loadingModal.SetActive(false);
+                LoadingManager.Instance.offLoading();
             }
         }
     }

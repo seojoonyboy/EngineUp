@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class GroupManageMainView : MonoBehaviour {
-    public GroupDetailViewController controller;
+    public GroupDetailView controller;
 
     GameManager gm;
     void Start() {

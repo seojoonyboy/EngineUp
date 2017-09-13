@@ -10,24 +10,29 @@ public class GroupViewController : MonoBehaviour {
 
     public InputField searchInput;
 
-    public GroupAddViewController addViewCtrler;
-    public GroupDetailViewController detailView;
+    public GroupAddView addViewCtrler;
+    public GroupDetailView detailView;
     public GroupSearchView searchView;
     public GroupDelView groupDelView;
 
-    public GameObject container;
-    public UIGrid grid;
+    public GameObject 
+        container,
+        addContainer,
+        content;
 
     public GameObject modal;
+    public GameObject nullMessage;
 
     void Awake() {
         gm = GameManager.Instance;
+        groupStore = gm.groupStore;
+        locationStore = gm.locationStore;
     }
 
     void OnEnable() {
         //내 그룹 목록을 불러온다.
-        //Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
-        //gm.gameDispatcher.dispatch(getMyGroupAct);
+        Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
+        gm.gameDispatcher.dispatch(getMyGroupAct);
     }
 
     void OnDisable() {
@@ -41,10 +46,12 @@ public class GroupViewController : MonoBehaviour {
         sendReq(index, obj);
     }
 
-    public void sendReq(int sceneIndex, GameObject obj) {
+    public void sendReq(int sceneIndex, GameObject obj = null) {
         Debug.Log("Scene Index : " + sceneIndex);
         switch (sceneIndex) {
             //그룹찾기
+            case 0:
+                break;
             case 1:
                 break;
             //그룹 설정 메인
@@ -52,64 +59,89 @@ public class GroupViewController : MonoBehaviour {
                 break;
             //그룹 설정 변경
             case 4:
-            //그룹추가
-            case 8:
+                //그룹추가
+
                 break;
-            //그룹원 관리
             //그룹원 보기
-            case 0:
             case 5:
                 break;
             case 6:
                 break;
-            case 7:
             //그룹 상세보기
-                int id = obj.transform.parent.GetComponent<GroupIndex>().id;
-                Group_detail getGroupDetailAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL) as Group_detail;
-                getGroupDetailAct.id = id;
-                gm.gameDispatcher.dispatch(getGroupDetailAct);
-                subPanels[sceneIndex].SetActive(true);
-                //Server에게 index를 이용한 리스트 요청 액션을 작성한다.
+            case 7:
+                int id = obj.GetComponent<GroupIndex>().id;
+                subPanels[sceneIndex].GetComponent<GroupDetailView>().id = id;
+                break;
+            case 8:
                 break;
         }
         subPanels[sceneIndex].SetActive(true);
     }
 
     public void onGroupStoreListener() {
-        detailView.onGroupStoreListener();
-        addViewCtrler.onGroupStoreListener();
-        searchView.onGroupStoreListener();
-
         ActionTypes groupStoreEventType = groupStore.eventType;
-        if (groupStoreEventType == ActionTypes.MY_GROUP_PANEL || groupStoreEventType == ActionTypes.GROUP_ADD || groupStoreEventType == ActionTypes.GROUP_DESTROY) {
-            makeList(groupStore.myGroups);
+        if (groupStoreEventType == ActionTypes.MY_GROUP_PANEL) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                makeList(groupStore.myGroups);
+            }
+        }
+
+        else if(groupStoreEventType == ActionTypes.GROUP_DETAIL) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                
+            }
+        }
+
+        else if(groupStoreEventType == ActionTypes.GET_DISTRICT_DATA) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                addViewCtrler.init();
+            }
+        }
+
+        else if(groupStoreEventType == ActionTypes.GET_CITY_DATA) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                addViewCtrler.setCityList();
+            }
+        }
+
+        Debug.Log(groupStore.storeStatus);
+        if (groupStore.storeStatus == storeStatus.WAITING_REQ) {
+            LoadingManager.Instance.onLoading();
+        }
+        else {
+            LoadingManager.Instance.offLoading();
         }
     }
 
     private void makeList(Group[] myGroups) {
         Debug.Log("내 그룹 목록 갱신");
         removeAllList();
-        if(myGroups == null) {
+
+        GameObject addCont = Instantiate(addContainer);
+        addCont.transform.SetParent(content.transform, false);
+        Button addBtn = addCont.transform.Find("AddButton").GetComponent<Button>();
+        addBtn.onClick.AddListener(() => sendReq(4));
+
+        if (myGroups == null || myGroups.Length == 0) {
+            nullMessage.SetActive(true);
             return;
         }
+        nullMessage.SetActive(false);
         for (int i = 0; i < myGroups.Length; i++) {
             GameObject item = Instantiate(container);
 
-            item.transform.SetParent(grid.transform);
+            item.transform.SetParent(content.transform, false);
             item.transform.localPosition = Vector3.zero;
             item.transform.localScale = Vector3.one;
 
             item.GetComponent<GroupIndex>().id = myGroups[i].id;
-            item.transform.Find("GroupNameLabel").GetComponent<UILabel>().text = myGroups[i].name;
-            item.transform.Find("LocationLabel").GetComponent<UILabel>().text = myGroups[i].locationDistrict + " " + myGroups[i].locationCity;
-            item.transform.Find("MemberCountLabel").GetComponent<UILabel>().text = "멤버 " + myGroups[i].membersCount + "명";
+            item.transform.Find("InnerContainer/Title").GetComponent<Text>().text = myGroups[i].name;
+            item.transform.Find("InnerContainer/District").GetComponent<Text>().text = myGroups[i].locationDistrict + " " + myGroups[i].locationCity;
+            item.transform.Find("InnerContainer/Member").GetComponent<Text>().text = "멤버 " + myGroups[i].membersCount + "명";
 
-            EventDelegate addEvent = new EventDelegate(this, "showDetail");
-            GameObject detailBtn = item.transform.Find("GotoDetailBtn").gameObject;
-            addEvent.parameters[0] = MakeParameter(detailBtn, typeof(GameObject));
-            EventDelegate.Add(detailBtn.GetComponent<UIButton>().onClick, addEvent);
+            Button detailBtn = item.transform.Find("DetailButton").GetComponent<Button>();
+            detailBtn.onClick.AddListener(() => showDetail(item));
         }
-        containerInit();
     }
 
     void showDetail(GameObject obj) {
@@ -117,27 +149,9 @@ public class GroupViewController : MonoBehaviour {
     }
 
     private void removeAllList() {
-        foreach(Transform child in grid.transform) {
-            if(child.tag == "AddBtn") {
-                continue;
-            }
-            else {
-                Destroy(child.gameObject);
-            }
+        foreach(Transform child in content.transform) {
+            Destroy(child.gameObject);
         }
-    }
-
-    private void containerInit() {
-        grid.repositionNow = true;
-        grid.Reposition();
-    }
-
-    private EventDelegate.Parameter MakeParameter(Object _value, System.Type _type) {
-        EventDelegate.Parameter param = new EventDelegate.Parameter();  // 이벤트 parameter 생성.
-        param.obj = _value;   // 이벤트 함수에 전달하고 싶은 값.
-        param.expectedType = _type;    // 값의 타입.
-
-        return param;
     }
 
     public void offModal() {

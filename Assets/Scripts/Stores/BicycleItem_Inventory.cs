@@ -92,16 +92,14 @@ public class BicycleItem_Inventory : AjwStore {
                 Sorting.itemSort(wheelItems, 0);
                 Sorting.itemSort(frameItems, 0);
                 Sorting.itemSort(engineItems, 0);
-
-                _emitChange();
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 message = "아이템 목록을 불러오는 과정에서 문제가 발생하였습니다.";
                 Debug.Log("아이템 목록 가져오기 : " + payload.response.data);
-                _emitChange();
                 break;
         }
+        _emitChange();
     }
 
     //자전거 아이템 종류별로 분류

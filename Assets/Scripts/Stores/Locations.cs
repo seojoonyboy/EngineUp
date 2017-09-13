@@ -66,8 +66,9 @@ public class Locations : AjwStore {
                 var strBuilder = GameManager.Instance.sb;
                 strBuilder.Remove(0, strBuilder.Length);
                 strBuilder.Append(networkManager.baseUrl)
-                    .Append("districts/")
-                    .Append(payload.id);
+                    .Append("countries/1/districts/")
+                    .Append(payload.id + 1);
+                //Debug.Log(strBuilder);
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 break;
             case NetworkAction.statusTypes.SUCCESS:
