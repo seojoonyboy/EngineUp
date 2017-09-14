@@ -1,51 +1,75 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GroupMemberView : MonoBehaviour {
     //View Controller로부터 그룹의 id를 할당받는다.
-    public int index;
     public GroupViewController controller;
-    GameManager gm;
-
-    public UIGrid 
-        top_grid,
-        owner_grid,
-        member_grid;
+    private GameManager gm;
+    private Animator animator;
 
     public Member[] members;
-
     public GameObject container;
 
-    void OnEnable() {
+    public GameObject 
+        content,
+        ownerContainer;
+
+    void Awake() {
+        animator = GetComponent<Animator>();
         gm = GameManager.Instance;
-        Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
-        act.id = controller.detailView.id;
-        gm.gameDispatcher.dispatch(act);
+    }
+
+    void OnEnable() {
+        Invoke("playSlideIn", 0.2f);
+    }
+
+    void playSlideIn() {
+        animator.Play("SlideIn");
+    }
+
+    public void onBackButton() {
+        animator.Play("SlideOut");
+    }
+
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
+
+        //slider in
+        if (boolParm == 1) {
+            Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+            act.id = controller.detailView.id;
+            gm.gameDispatcher.dispatch(act);
+        }
+
+        //slider out
+        else if (boolParm == 0) {
+            gameObject.SetActive(false);
+        }
     }
 
     public void makeList() {
         members = controller.groupStore.groupMembers;
         removeAllList();
-        for (int i=0; i<members.Length; i++) {
-            if(members[i].memberState != "MB") {
+        for (int i = 0; i < members.Length; i++) {
+            if (members[i].memberState != "MB") {
                 continue;
             }
             else {
-                GameObject item = Instantiate(container);
                 if (members[i].memberGrade == "GO") {
-                    item.transform.SetParent(owner_grid.transform);
+                    //item.transform.SetParent(owner_grid.transform);
+                    ownerContainer.transform.Find("InnerContainer/Nickname").GetComponent<Text>().text = members[i].user.nickName;
+                    //ownerContainer.transform.Find("InnerContainer/Dist").GetComponent<Text>().text = members[i].
                 }
-                else if(members[i].memberGrade == "GM") {
-                    item.transform.SetParent(member_grid.transform);
-                }
-                item.transform.localPosition = Vector3.zero;
-                item.transform.localScale = Vector3.one;
+                else if (members[i].memberGrade == "GM") {
+                    GameObject item = Instantiate(container);
 
-                item.transform.Find("Name_normal_type").GetComponent<UILabel>().text = members[i].user.nickName;
-                item.transform.Find("NormalType").gameObject.SetActive(true);
+                    item.transform.SetParent(content.transform, false);
+                    item.transform.Find("InnerContainer/Nickname").GetComponent<Text>().text = members[i].user.nickName;
+                }
             }
         }
-        containerInit();
+        //containerInit();
     }
 
     public void offPanel() {
@@ -53,19 +77,14 @@ public class GroupMemberView : MonoBehaviour {
     }
 
     private void removeAllList() {
-        owner_grid.transform.DestroyChildren();
-        member_grid.transform.DestroyChildren();
-    }
-
-    private void containerInit() {
-        owner_grid.repositionNow = true;
-        member_grid.repositionNow = true;
-
-        owner_grid.Reposition();
-        member_grid.Reposition();
-
-        top_grid.repositionNow = true;
-        top_grid.Reposition();
+        foreach(Transform child in content.transform) {
+            if(child.tag == "locked") {
+                continue;
+            }
+            else {
+                Destroy(child.gameObject);
+            }
+        }
     }
 }
 

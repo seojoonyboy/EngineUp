@@ -14,7 +14,8 @@ public class GroupViewController : MonoBehaviour {
     public GroupDetailView detailView;
     public GroupSearchView searchView;
     public GroupDelView groupDelView;
-
+    public GroupMemberView memberView;
+    
     public GameObject 
         container,
         addContainer,
@@ -74,6 +75,9 @@ public class GroupViewController : MonoBehaviour {
                 break;
             case 8:
                 break;
+            case 9:
+                
+                break;
         }
         subPanels[sceneIndex].SetActive(true);
     }
@@ -88,7 +92,35 @@ public class GroupViewController : MonoBehaviour {
 
         else if(groupStoreEventType == ActionTypes.GROUP_DETAIL) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
-                
+                detailView.refreshTxt();
+            }
+        }
+
+        else if(groupStoreEventType == ActionTypes.GROUP_CHECK_MY_STATUS) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                if(groupStore.isGroupMember) {
+                    if(groupStore.myInfoInGroup[0].memberGrade == "GO") {
+                        detailView.setViewMode("OWNER");
+                    }
+                    else if(groupStore.myInfoInGroup[0].memberGrade == "GM") {
+                        detailView.setViewMode("MEMBER");
+                    }
+                }
+                else {
+                    detailView.setViewMode("VISITOR");
+                }
+            }
+        }
+
+        else if(groupStoreEventType == ActionTypes.GROUP_GET_MEMBERS) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                memberView.makeList();
+            }
+        }
+
+        else if(groupStoreEventType == ActionTypes.GROUP_BAN) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                detailView.refreshTxt();
             }
         }
 
@@ -104,7 +136,13 @@ public class GroupViewController : MonoBehaviour {
             }
         }
 
-        Debug.Log(groupStore.storeStatus);
+        else if(groupStoreEventType == ActionTypes.GROUP_SEARCH) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                searchView.makeList();
+            }
+        }
+
+        //Debug.Log(groupStore.storeStatus);
         if (groupStore.storeStatus == storeStatus.WAITING_REQ) {
             LoadingManager.Instance.onLoading();
         }
@@ -117,9 +155,7 @@ public class GroupViewController : MonoBehaviour {
         Debug.Log("내 그룹 목록 갱신");
         removeAllList();
 
-        GameObject addCont = Instantiate(addContainer);
-        addCont.transform.SetParent(content.transform, false);
-        Button addBtn = addCont.transform.Find("AddButton").GetComponent<Button>();
+        Button addBtn = addContainer.GetComponent<Button>();
         addBtn.onClick.AddListener(() => sendReq(4));
 
         if (myGroups == null || myGroups.Length == 0) {
@@ -144,8 +180,9 @@ public class GroupViewController : MonoBehaviour {
         }
     }
 
-    void showDetail(GameObject obj) {
+    public void showDetail(GameObject obj) {
         sendReq(7, obj);
+        Debug.Log("Show Detail");
     }
 
     private void removeAllList() {

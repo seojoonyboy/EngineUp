@@ -38,6 +38,8 @@ public class Groups : AjwStore {
     //UTF8Encoding utf8 = new UTF8Encoding();
     public string postsCallbackHeader;
     public GameObject target;
+
+    private int userId;
     protected override void _onDispatch(Actions action) {
         switch (action.type) {
             //내 그룹 패널 활성화 액션
@@ -176,7 +178,6 @@ public class Groups : AjwStore {
                 break;
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
-
                 searchedGroups = JsonHelper.getJsonArray<Group>(payload.response.data);
                 _emitChange();
                 break;
@@ -227,6 +228,9 @@ public class Groups : AjwStore {
                     .Append(payload.id)
                     .Append("/members?userId=")
                     .Append(payload.userId);
+
+                userId = payload.userId;
+
                 networkManager.request("GET", strBuilder.ToString(), ncExt.networkCallback(dispatcher, payload));
                 Debug.Log("그룹 내 나의상태 확인 url : " + strBuilder);
                 break;
@@ -446,18 +450,30 @@ public class Groups : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 message = "그룹원을 제거(거부)하였습니다.";
+
+                //그룹원 목록 갱신
                 Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
                 act.id = tmp_groupIndex;
-                getMembers(act);
-                _emitChange();
+                dispatcher.dispatch(act);
+
+                //내 그룹 목록 갱신
+                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
+                dispatcher.dispatch(getMyGroupAct);
+
+                //그룹 내 나의 상태 갱신
+                Group_checkMyStatus checkMyStatAct = ActionCreator.createAction(ActionTypes.GROUP_CHECK_MY_STATUS) as Group_checkMyStatus;
+                checkMyStatAct.id = tmp_groupIndex;
+                checkMyStatAct.userId = userId;
+                dispatcher.dispatch(checkMyStatAct);
+
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
                 message = "제거(거부)간에 문제가 발생하였습니다.";
                 Debug.Log(payload.response.data);
-                _emitChange();
                 break;
         }
+        _emitChange();
     }
 
     //그룹 삭제

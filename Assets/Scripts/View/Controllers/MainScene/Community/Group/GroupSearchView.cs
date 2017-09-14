@@ -1,28 +1,86 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GroupSearchView : MonoBehaviour {
-    public GroupViewController controller;
+    public GroupViewController parent;
+    private GameManager gm;
+    private TweenPosition tP;
 
     public GameObject 
         container,
-        emptyMessage;
+        emptyMessage,
+        content;
 
-    public UIGrid grid;
+    public bool
+        isReverse_tp = false,
+        isTweening = false;
 
-    GameManager gm;
-    // 이벤트 parameter를 생성하여 리턴.
-
-    void OnEnable() {
+    void Awake() {
+        tP = GetComponent<TweenPosition>();
         gm = GameManager.Instance;
-        Group_search searchAct = ActionCreator.createAction(ActionTypes.GROUP_SEARCH) as Group_search;
-        searchAct.keyword = controller.searchInput.text;
-        gm.gameDispatcher.dispatch(searchAct);
     }
 
-    void makeList() {
+    void OnEnable() {
+        tweenPos();
+    }
+
+    void OnDisable() {
+        //removeList();
+        isReverse_tp = false;
+    }
+
+    public void tweenPos() {
+        if (isTweening) {
+            return;
+        }
+        isTweening = true;
+
+        if (!isReverse_tp) {
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
+        else {
+            //swap
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+
+            tP.ResetToBeginning();
+            tP.PlayForward();
+        }
+    }
+
+    public void tPFinished() {
+        isTweening = false;
+
+        if (isReverse_tp) {
+            gameObject.SetActive(false);
+
+            Vector3 tmp;
+            tmp = tP.to;
+            tP.to = tP.from;
+            tP.from = tmp;
+        }
+        else {
+            Debug.Log("TP FInished");
+            isReverse_tp = true;
+
+            if (parent.searchInput.text == null) {
+                return;
+            }
+
+            Group_search searchAct = ActionCreator.createAction(ActionTypes.GROUP_SEARCH) as Group_search;
+            searchAct.keyword = parent.searchInput.text;
+            gm.gameDispatcher.dispatch(searchAct);
+        }
+    }
+
+    public void makeList() {
         removeAllList();
-        Group[] searchedGroups = controller.groupStore.searchedGroups;
+
+        Group[] searchedGroups = parent.groupStore.searchedGroups;
         int length = searchedGroups.Length;
         if (length == 0) {
             emptyMessage.SetActive(true);
@@ -32,54 +90,26 @@ public class GroupSearchView : MonoBehaviour {
         for (int i = 0; i < length; i++) {
             GameObject item = Instantiate(container);
 
-            item.transform.SetParent(grid.transform);
-            item.transform.localPosition = Vector3.zero;
-            item.transform.localScale = Vector3.one;
+            item.transform.SetParent(content.transform, false);
 
             item.GetComponent<GroupIndex>().id = searchedGroups[i].id;
-            item.transform.Find("LocationLabel").GetComponent<UILabel>().text = searchedGroups[i].locationDistrict + " " + searchedGroups[i].locationCity;
-            item.transform.Find("GroupNameLabel").GetComponent<UILabel>().text = searchedGroups[i].name;
-            item.transform.Find("MemberCountLabel").GetComponent<UILabel>().text = "멤버 " + searchedGroups[i].membersCount + "명";
+            item.transform.Find("InnerContainer/District").GetComponent<Text>().text = searchedGroups[i].locationDistrict + " " + searchedGroups[i].locationCity;
+            item.transform.Find("InnerContainer/Title").GetComponent<Text>().text = searchedGroups[i].name;
+            item.transform.Find("InnerContainer/Member").GetComponent<Text>().text = "멤버 " + searchedGroups[i].membersCount + "명";
 
-            EventDelegate addEvent = new EventDelegate(this, "showDetail");
-            GameObject detailBtn = item.transform.Find("GotoDetailBtn").gameObject;
-            // 생성한 이벤트 parameter를 배열에 순서대로 입력.
-            addEvent.parameters[0] = MakeParameter(detailBtn, typeof(GameObject));
-
-            // m_BtnTest 변수와 연결 된 버튼에 이벤트 등록.
-            EventDelegate.Add(detailBtn.GetComponent<UIButton>().onClick, addEvent);
+            Button detailBtn = item.transform.Find("DetailButton").GetComponent<Button>();
+            detailBtn.onClick.AddListener(() => showDetail(item));
         }
-        containerInit();
     }
 
-    private EventDelegate.Parameter MakeParameter(Object _value, System.Type _type) {
-        EventDelegate.Parameter param = new EventDelegate.Parameter();  // 이벤트 parameter 생성.
-        param.obj = _value;   // 이벤트 함수에 전달하고 싶은 값.
-        param.expectedType = _type;    // 값의 타입.
-
-        return param;
+    void removeAllList() {
+        foreach(Transform child in content.transform) {
+            Destroy(child.gameObject);
+        }
     }
 
-    public void onBtnEvent(GameObject _obj, UIButton _btn) {
-        Debug.Log("onBtnEvent = " + _obj.name);
-        Debug.Log("onBtnEvent _btn = " + _btn.name);
-    }
-
-    void showDetail(GameObject _obj) {
-        controller.onPanel(_obj);
-    }
-
-    void OnDisable() {
-        emptyMessage.SetActive(false);
-    }
-
-    private void containerInit() {
-        grid.repositionNow = true;
-        grid.Reposition();
-    }
-
-    private void removeAllList() {
-        grid.transform.DestroyChildren();
+    void showDetail(GameObject obj) {
+        parent.showDetail(obj);
     }
 
     public void OffPanel() {
@@ -87,7 +117,7 @@ public class GroupSearchView : MonoBehaviour {
     }
 
     public void onGroupStoreListener() {
-        Groups groupStore = controller.groupStore;
+        Groups groupStore = parent.groupStore;
         ActionTypes groupStoreEventType = groupStore.eventType;
 
         if(groupStoreEventType == ActionTypes.GROUP_SEARCH) {
