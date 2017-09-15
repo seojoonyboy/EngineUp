@@ -128,7 +128,7 @@ public class GroupViewController : MonoBehaviour {
 
         else if(groupStoreEventType == ActionTypes.GROUP_BAN) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
-                detailView.refreshTxt();
+                detailView.refreshAct();
                 string msg = "그룹원을 강퇴시켰습니다.";
                 onModal(msg);
             }
@@ -156,7 +156,7 @@ public class GroupViewController : MonoBehaviour {
 
         else if(groupStoreEventType == ActionTypes.GROUP_EDIT) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
-                detailView.refreshTxt();
+                detailView.refreshAct();
                 string msg = "그룹 정보가 갱신되었습니다.";
                 onModal(msg);
             }

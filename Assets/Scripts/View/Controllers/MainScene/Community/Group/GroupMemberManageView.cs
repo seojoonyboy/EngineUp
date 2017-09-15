@@ -51,21 +51,24 @@ public class GroupMemberManageView : MonoBehaviour {
         //slider out
         else if (boolParm == 0) {
             message.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 
     //탈퇴 버튼, 거부 버튼, 강퇴 버튼
     void onQuitGroup(GameObject obj) {
-        int index = obj.GetComponent<GroupIndex>().id;
+        int index = obj.GetComponent<FriendIndex>().id;
         Group_ban banAct = ActionCreator.createAction(ActionTypes.GROUP_BAN) as Group_ban;
         banAct.id = groupId;
         banAct.memberId = index;
         gm.gameDispatcher.dispatch(banAct);
+
+        Debug.Log("On Quit");
     }
 
     //승인 버튼
     void onAccept(GameObject obj) {
-        int index = obj.GetComponent<GroupIndex>().id;
+        int index = obj.GetComponent<FriendIndex>().id;
         Group_accept acceptAct = ActionCreator.createAction(ActionTypes.GROUP_MEMBER_ACCEPT) as Group_accept;
         acceptAct.id = groupId;
         acceptAct.memberId = index;
@@ -84,13 +87,13 @@ public class GroupMemberManageView : MonoBehaviour {
         int waitNum = 0;
 
         for(int i=0; i<members.Length; i++) {
-            if(members[i].memberState == "GM") {
+            if(members[i].memberState == "MB" && members[i].memberGrade == "GM") {
                 GameObject item = Instantiate(member_container);
                 item.transform.SetParent(content.transform, false);
 
-                item.GetComponent<GroupIndex>().id = members[i].id;
+                item.GetComponent<FriendIndex>().id = members[i].id;
                 item.transform.Find("InnerContainer/Nickname").GetComponent<Text>().text = members[i].user.nickName;
-                item.transform.Find("InnerContainer/Rank/Text").GetComponent<Text>().text = "랭크 : " + members[i].memberGrade;
+                item.transform.Find("Rank/Text").GetComponent<Text>().text = "랭크 : " + members[i].memberGrade;
 
                 Button banBtn = item.transform.Find("InnerContainer/BanButton").GetComponent<Button>();
                 banBtn.onClick.AddListener(() => onQuitGroup(item));
@@ -102,14 +105,14 @@ public class GroupMemberManageView : MonoBehaviour {
                 GameObject item = Instantiate(waiting_container);
                 item.transform.SetParent(content.transform, false);
 
-                item.GetComponent<GroupIndex>().id = members[i].id;
-                item.transform.Find("InnerContainer/Nickname").GetComponent<Text>().text = members[i].user.nickName;
-                item.transform.Find("InnerContainer/Rank/Text").GetComponent<Text>().text = "랭크 : " + members[i].memberGrade;
+                item.GetComponent<FriendIndex>().id = members[i].id;
+                item.transform.Find("InnerContainer/Name").GetComponent<Text>().text = members[i].user.nickName;
+                item.transform.Find("InnerContainer/Image/Text").GetComponent<Text>().text = "랭크 : " + members[i].memberGrade;
 
                 Button acceptBtn = item.transform.Find("AcceptButton").GetComponent<Button>();
                 acceptBtn.onClick.AddListener(() => onAccept(item));
 
-                Button banBtn = item.transform.Find("InnerContainer/BanButton").GetComponent<Button>();
+                Button banBtn = item.transform.Find("DenyButton").GetComponent<Button>();
                 banBtn.onClick.AddListener(() => onQuitGroup(item));
 
                 waitNum++;

@@ -97,6 +97,12 @@ public class GroupDetailView : MonoBehaviour {
         //gameObject.transform.Find("ScrollView").gameObject.AddComponent<SpringPanel>().target = new Vector3(-700.0f, 0.0f, 0.0f);
     }
 
+    public void refreshAct() {
+        Group_detail getGroupDetailAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL) as Group_detail;
+        getGroupDetailAct.id = id;
+        gm.gameDispatcher.dispatch(getGroupDetailAct);
+    }
+
     public void refreshTxt() {
         Group group = controller.groupStore.clickedGroup;
         groupName.text = group.name;
