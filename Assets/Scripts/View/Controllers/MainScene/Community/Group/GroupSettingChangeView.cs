@@ -1,24 +1,19 @@
-﻿#pragma warning disable 0168
-#pragma warning disable 0219
-#pragma warning disable 0414
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class GroupSettingChangeView : MonoBehaviour {
     public GroupViewController controller;
-    public UIPopupList
-        provinceMenu,
-        cityMenu;
+    private Animator animator;
 
-    public UIInput descInput;
+    public Dropdown
+        largeArea_dropMenu,
+        detailArea_dropMenu;
+
+    public InputField descInput;
 
     GameManager gm;
-
-    private bool 
-        isEditDesc,
-        isFirstSetDistrict,
-        isEditDistrict;
 
     public GameObject
         deActivePanel,
@@ -27,75 +22,123 @@ public class GroupSettingChangeView : MonoBehaviour {
 
     private Groups groupStore;
     private Group group;
+    
     void Awake() {
+        animator = GetComponent<Animator>();
         gm = GameManager.Instance;
+        groupStore = gm.groupStore;
     }
 
     void OnEnable() {
-        isFirstSetDistrict = true;
-        isEditDistrict = false;
-        groupStore = controller.groupStore;
-        group = groupStore.clickedGroup;
-        descInput.value = group.groupIntro;
-        setProvinceList();
+        Invoke("playSlideIn", 0.2f);
     }
 
-    void OnDisable() {
-        deActivePanel.SetActive(true);
-        descModifyButton.SetActive(true);
-        isEditDesc = false;
+    void playSlideIn() {
+        animator.Play("SlideIn");
+    }
+
+    public void onBackButton() {
+        animator.Play("SlideOut");
+    }
+
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
+
+        //slider in
+        if (boolParm == 1) {
+            setProvinceList();
+            descChange();
+        }
+
+        //slider out
+        else if (boolParm == 0) {
+            gameObject.SetActive(false);
+        }
     }
 
     public void setProvinceList() {
-        District[] districts = controller.locationStore.districts;
-        provinceMenu.fontSize = 40;
-        provinceMenu.items = new List<string>();
-        for (int i = 0; i < districts.Length; i++) {
-            provinceMenu.items.Add(districts[i].name);
+        if (!gameObject.activeSelf) {
+            return;
+        }
+
+        if(controller.locationStore.districts == null || controller.locationStore.districts.Length == 0) {
+            GetDistrictsData distAct = ActionCreator.createAction(ActionTypes.GET_DISTRICT_DATA) as GetDistrictsData;
+            gm.gameDispatcher.dispatch(distAct);
+        }
+        else {
+            District[] districts = controller.locationStore.districts;
+            largeArea_dropMenu.options.Clear();
+
+            foreach (District data in districts) {
+                largeArea_dropMenu.options.Add(new Dropdown.OptionData() { text = data.name });
+            }
+
+            for(int i=0; i<districts.Length; i++) {
+                if(districts[i].name == groupStore.clickedGroup.locationDistrict) {
+                    largeArea_dropMenu.value = i;
+                    largeArea_dropMenu.transform.Find("Label").GetComponent<Text>().text = largeArea_dropMenu.options[i].text;
+                }
+            }
+        }
+
+        if(controller.locationStore.cities == null) {
+            int index = largeArea_dropMenu.value;
+
+            GetCityData getCityDataAct = ActionCreator.createAction(ActionTypes.GET_CITY_DATA) as GetCityData;
+            getCityDataAct.id = index;
+            gm.gameDispatcher.dispatch(getCityDataAct);
+        }
+        else {
+            setCityList();
+        }
+    }
+
+    public void setCityList() {
+        if (!gameObject.activeSelf) {
+            return;
+        }
+
+        Borough[] cities = controller.locationStore.borough;
+        detailArea_dropMenu.options.Clear();
+        foreach (Borough data in cities) {
+            detailArea_dropMenu.options.Add(new Dropdown.OptionData() { text = data.name });
+        }
+
+        detailArea_dropMenu.value = 0;
+        detailArea_dropMenu.transform.Find("Label").GetComponent<Text>().text = detailArea_dropMenu.options[0].text;
+
+        for (int i=0; i<cities.Length; i++) {
+            if(cities[i].name == groupStore.clickedGroup.locationCity) {
+                detailArea_dropMenu.value = i;
+                detailArea_dropMenu.transform.Find("Label").GetComponent<Text>().text = detailArea_dropMenu.options[i].text;
+            }
         }
     }
 
     public void provinceSelected() {
-        //Debug.Log("!!");
-        if (isFirstSetDistrict) {
-            provinceMenu.value = group.locationDistrict;
-            cityMenu.value = group.locationCity;
-            //Debug.Log("첫 할당 : " + controller.groupStore.clickedGroup.locationCity);
-            isFirstSetDistrict = false;
-        }
-        else {
-            //Debug.Log("새로운 할당");
+        if (gameObject.activeSelf) {
+            int index = largeArea_dropMenu.value;
             GetCityData getCityDataAct = ActionCreator.createAction(ActionTypes.GET_CITY_DATA) as GetCityData;
-            int index = provinceMenu.items.IndexOf(provinceMenu.value) + 1;
-            //Debug.Log("Index : " + index);
             getCityDataAct.id = index;
             gm.gameDispatcher.dispatch(getCityDataAct);
-
-            isEditDistrict = true;
         }
     }
 
     public void descChange() {
-        descInput.gameObject.transform.Find("Label").GetComponent<UILabel>().overflowMethod = UILabel.Overflow.ResizeFreely;
-    }
-
-    public void setCityList() {
-        Borough[] cities = controller.locationStore.borough;
-        cityMenu.fontSize = 40;
-        cityMenu.items = new List<string>();
-        for (int i = 0; i < cities.Length; i++) {
-            cityMenu.items.Add(cities[i].name);
+        string desc = groupStore.clickedGroup.groupIntro;
+        Debug.Log("소개글 : " + desc);
+        if (!string.IsNullOrEmpty(desc)) {
+            descInput.text = desc;
         }
-        cityMenu.value = cityMenu.items[0];
     }
 
     //그룹 최종 수정 버튼 클릭시
     public void posting() {
         Group_AddAction editAct = ActionCreator.createAction(ActionTypes.GROUP_EDIT) as Group_AddAction;
         editAct.id = controller.detailView.id;
-        editAct.desc = descInput.value;
-        editAct.district = provinceMenu.value;
-        editAct.city = cityMenu.value;
+        editAct.desc = descInput.text;
+        editAct.district = largeArea_dropMenu.options[largeArea_dropMenu.value].text;
+        editAct.city = detailArea_dropMenu.options[detailArea_dropMenu.value].text;
         editAct.name = controller.detailView.groupName.text;
 
         gm.gameDispatcher.dispatch(editAct);
@@ -109,21 +152,5 @@ public class GroupSettingChangeView : MonoBehaviour {
     public void onDescModifyPanel() {
         deActivePanel.SetActive(false);
         descModifyButton.SetActive(false);
-        isEditDesc = true;
-    }
-
-    //Group Detail View에게서 리스너 할당 받음.
-    public void onGroupStoreListener() {
-        Groups groupStore = controller.groupStore;
-        ActionTypes groupStoreEventType = groupStore.eventType;
-
-        //modal.SetActive(true);
-        //modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = groupStore.message;
-
-        if (groupStore.eventType == ActionTypes.GROUP_EDIT) {
-            if(groupStore.storeStatus == storeStatus.NORMAL) {
-                gameObject.SetActive(false);
-            }
-        }
     }
 }

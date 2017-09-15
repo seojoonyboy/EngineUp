@@ -1,40 +1,62 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class GroupMemberManageView : MonoBehaviour {
-    public GameObject 
-        container,
-        memberHeader,
-        waitingHeader,
-        groupModal;
-
     public GroupViewController controller;
-    public UIGrid grid;
+    public GroupDetailView detailView;
 
+    private Animator animator;
     private GameManager gm;
 
-    public Member[] allMembers;
-
-    List<Member> members = new List<Member>();
-    List<Member> waitingMembers = new List<Member>();
+    public GameObject 
+        waiting_container,
+        member_container,
+        header_container,
+        content,
+        message;
 
     public int groupId;
 
-    void Start() {
+    void Awake() {
+        animator = GetComponent<Animator>();
         gm = GameManager.Instance;
     }
 
     void OnEnable() {
-        gm = GameManager.Instance;
-        Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
-        act.id = controller.detailView.id;
-        gm.gameDispatcher.dispatch(act);
+        Invoke("playSlideIn", 0.2f);
+    }
+
+    void playSlideIn() {
+        animator.Play("SlideIn");
+    }
+
+    public void onBackButton() {
+        animator.Play("SlideOut");
+    }
+
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
+
+        //slider in
+        if (boolParm == 1) {
+            Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+            act.id = controller.detailView.id;
+            gm.gameDispatcher.dispatch(act);
+
+            groupId = detailView.id;
+        }
+
+        //slider out
+        else if (boolParm == 0) {
+            message.SetActive(false);
+        }
     }
 
     //탈퇴 버튼, 거부 버튼, 강퇴 버튼
     void onQuitGroup(GameObject obj) {
-        int index = obj.transform.parent.parent.GetComponent<GroupIndex>().id;
+        int index = obj.GetComponent<GroupIndex>().id;
         Group_ban banAct = ActionCreator.createAction(ActionTypes.GROUP_BAN) as Group_ban;
         banAct.id = groupId;
         banAct.memberId = index;
@@ -43,8 +65,7 @@ public class GroupMemberManageView : MonoBehaviour {
 
     //승인 버튼
     void onAccept(GameObject obj) {
-        int index = obj.transform.parent.parent.GetComponent<GroupIndex>().id;
-        Debug.Log("승인버튼 클릭, index : " + index);
+        int index = obj.GetComponent<GroupIndex>().id;
         Group_accept acceptAct = ActionCreator.createAction(ActionTypes.GROUP_MEMBER_ACCEPT) as Group_accept;
         acceptAct.id = groupId;
         acceptAct.memberId = index;
@@ -52,115 +73,68 @@ public class GroupMemberManageView : MonoBehaviour {
     }
 
     public void makeList() {
-        members = new List<Member>();
+        if (!gameObject.activeSelf) {
+            return;
+        }
+
+        Member[] members = controller.groupStore.groupMembers;
         removeAllList();
-        allMembers = controller.groupStore.groupMembers;
-        groupId = controller.detailView.id;
 
-        for(int i=0; i<allMembers.Length; i++) {
-            if (allMembers[i].memberState == "MB") {
-                members.Add(allMembers[i]);
+        int meberNum = 0;
+        int waitNum = 0;
+
+        for(int i=0; i<members.Length; i++) {
+            if(members[i].memberState == "GM") {
+                GameObject item = Instantiate(member_container);
+                item.transform.SetParent(content.transform, false);
+
+                item.GetComponent<GroupIndex>().id = members[i].id;
+                item.transform.Find("InnerContainer/Nickname").GetComponent<Text>().text = members[i].user.nickName;
+                item.transform.Find("InnerContainer/Rank/Text").GetComponent<Text>().text = "랭크 : " + members[i].memberGrade;
+
+                Button banBtn = item.transform.Find("InnerContainer/BanButton").GetComponent<Button>();
+                banBtn.onClick.AddListener(() => onQuitGroup(item));
+
+                meberNum++;
             }
-            else if(allMembers[i].memberState == "WT") {
-                waitingMembers.Add(allMembers[i]);
+
+            else if(members[i].memberState == "WT") {
+                GameObject item = Instantiate(waiting_container);
+                item.transform.SetParent(content.transform, false);
+
+                item.GetComponent<GroupIndex>().id = members[i].id;
+                item.transform.Find("InnerContainer/Nickname").GetComponent<Text>().text = members[i].user.nickName;
+                item.transform.Find("InnerContainer/Rank/Text").GetComponent<Text>().text = "랭크 : " + members[i].memberGrade;
+
+                Button acceptBtn = item.transform.Find("AcceptButton").GetComponent<Button>();
+                acceptBtn.onClick.AddListener(() => onAccept(item));
+
+                Button banBtn = item.transform.Find("InnerContainer/BanButton").GetComponent<Button>();
+                banBtn.onClick.AddListener(() => onQuitGroup(item));
+
+                waitNum++;
             }
         }
 
-        //멤버 헤더 prefab 생성
-        GameObject header = Instantiate(memberHeader);
-        header.transform.SetParent(grid.transform);
-        header.transform.localPosition = Vector3.zero;
-        header.transform.localScale = Vector3.one;
+        if(waitNum != 0 && meberNum != 0) {
+            //내 그룹 멤버 header
+            GameObject header = Instantiate(header_container);
+            header.transform.SetParent(content.transform, false);
+            header.transform.SetAsFirstSibling();
 
-        //멤버 prefab 생성
-        foreach (Member member in members) {
-            GameObject item = Instantiate(container);
-            item.transform.SetParent(grid.transform);
-            //그룹장은 멤버 리스트에 포함시키지 않는다.
-            if(member.memberGrade == "GO") {
-                continue;
-            }
-            item.transform.Find("MemberManageType").gameObject.SetActive(true);
-            item.transform.Find("Name_normal_type").GetComponent<UILabel>().text = member.user.nickName;
-            item.GetComponent<GroupIndex>().id = member.id;
-
-            item.transform.localPosition = Vector3.zero;
-            item.transform.localScale = Vector3.one;
-
-            EventDelegate delEvent = new EventDelegate(this, "onQuitGroup");
-            GameObject onQuitBtn = item.transform.Find("MemberManageType/BanButton").gameObject;
-            delEvent.parameters[0] = MakeParameter(onQuitBtn, typeof(GameObject));
-            EventDelegate.Add(onQuitBtn.GetComponent<UIButton>().onClick, delEvent);
+            //수락 대기 header
+            header = Instantiate(header_container);
+            header.transform.SetParent(content.transform, false);
+            header.transform.SetSiblingIndex(meberNum);
         }
-
-        //가입 신청자 헤더 prefab 생성
-        GameObject header2 = Instantiate(waitingHeader);
-        header2.transform.SetParent(grid.transform);
-        header2.transform.localPosition = Vector3.zero;
-        header2.transform.localScale = Vector3.one;
-
-        //가입 신청자 prefab 생성
-        foreach (Member member in waitingMembers) {
-            GameObject item = Instantiate(container);
-            item.transform.SetParent(grid.transform);
-            item.transform.Find("MemberAdmissionType").gameObject.SetActive(true);
-
-            item.transform.Find("Name_normal_type").GetComponent<UILabel>().text = member.user.nickName;
-            item.GetComponent<GroupIndex>().id = member.id;
-
-            EventDelegate acceptEvent = new EventDelegate(this, "onAccept");
-            GameObject acceptBtn = item.transform.Find("MemberAdmissionType/AcceptButton").gameObject;
-            acceptEvent.parameters[0] = MakeParameter(acceptBtn, typeof(GameObject));
-            EventDelegate.Add(acceptBtn.GetComponent<UIButton>().onClick, acceptEvent);
-
-            EventDelegate rejectEvent = new EventDelegate(this, "onQuitGroup");
-            GameObject rejectBtn = item.transform.Find("MemberAdmissionType/RejectButton").gameObject;
-            rejectEvent.parameters[0] = MakeParameter(rejectBtn, typeof(GameObject));
-            EventDelegate.Add(rejectBtn.GetComponent<UIButton>().onClick, rejectEvent);
-
-            item.transform.localPosition = Vector3.zero;
-            item.transform.localScale = Vector3.one;
+        else {
+            message.SetActive(true);
         }
-        containerInit();
     }
 
     private void removeAllList() {
-        grid.transform.DestroyChildren();
-        waitingMembers.Clear();
-        members.Clear();
-    }
-
-    private void containerInit() {
-        grid.repositionNow = true;
-        grid.Reposition();
-    }
-
-    public void offPanel() {
-        gameObject.SetActive(false);
-    }
-
-    private EventDelegate.Parameter MakeParameter(Object _value, System.Type _type) {
-        EventDelegate.Parameter param = new EventDelegate.Parameter();  // 이벤트 parameter 생성.
-        param.obj = _value;   // 이벤트 함수에 전달하고 싶은 값.
-        param.expectedType = _type;    // 값의 타입.
-
-        return param;
-    }
-
-    //Group Detail View에게서 리스너 할당 받음.
-    public void onGroupStoreListener() {
-        Groups groupStore = controller.groupStore;
-        ActionTypes groupStoreEventType = groupStore.eventType;
-
-        if(groupStoreEventType == ActionTypes.GROUP_GET_MEMBERS) {
-            if(groupStore.storeStatus == storeStatus.NORMAL) {
-                makeList();
-            }
-        }
-
-        if(groupStoreEventType == ActionTypes.GROUP_MEMBER_ACCEPT || groupStoreEventType == ActionTypes.GROUP_BAN) {
-            groupModal.SetActive(true);
-            groupModal.transform.Find("Modal/Label").GetComponent<UILabel>().text = groupStore.message;
+        foreach(Transform child in content.transform) {
+            Destroy(child.gameObject);
         }
     }
 }

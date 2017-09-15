@@ -49,24 +49,8 @@ public class GroupAddView : MonoBehaviour {
         }
     }
 
-    public void setProvinceList() {
-        //District[] districts = controller.locationStore.districts;
-        //provinceMenu.fontSize = 40;
-        //provinceMenu.items = new List<string>();
-        //for (int i=0; i< districts.Length; i++) {
-        //    provinceMenu.items.Add(districts[i].name);
-        //}
-        //provinceMenu.value = provinceMenu.items[0];
-    }
-
     public void provinceSelected() {
         if (gameObject.activeSelf) {
-            //if (!string.IsNullOrEmpty(provinceMenu.value)) {
-            //    GetCityData getCityDataAct = ActionCreator.createAction(ActionTypes.GET_CITY_DATA) as GetCityData;
-            //    int index = provinceMenu.items.IndexOf(provinceMenu.value) + 1;
-            //    getCityDataAct.id = index;
-            //    gm.gameDispatcher.dispatch(getCityDataAct);
-            //}
             int index = largeArea_dropMenu.value;
             Debug.Log("Drop Menu Index : " + index);
             GetCityData getCityDataAct = ActionCreator.createAction(ActionTypes.GET_CITY_DATA) as GetCityData;
@@ -99,34 +83,6 @@ public class GroupAddView : MonoBehaviour {
     public void offPanel() {
         //nameInput.value = provinceMenu.items[0];
         gameObject.SetActive(false);
-    }
-
-    public void onGroupStoreListener() {
-        Groups groupStore = controller.groupStore;
-        ActionTypes type = groupStore.eventType;
-        if (type == ActionTypes.GET_DISTRICT_DATA) {
-            if(groupStore.storeStatus == storeStatus.NORMAL) {
-                setProvinceList();
-            }
-        }
-
-        if(type == ActionTypes.GET_CITY_DATA) {
-            setCityList();
-        }
-
-        if (type == ActionTypes.GROUP_ADD) {
-            if(groupStore.storeStatus == storeStatus.NORMAL) {
-                gameObject.SetActive(false);
-
-                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
-                gm.gameDispatcher.dispatch(getMyGroupAct);
-            }
-            else if(groupStore.storeStatus == storeStatus.ERROR) {
-
-            }
-            modal.SetActive(true);
-            modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = groupStore.message;
-        }
     }
 
     public void init() {

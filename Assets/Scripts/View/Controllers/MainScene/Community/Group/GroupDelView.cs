@@ -1,30 +1,56 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GroupDelView : MonoBehaviour {
     public GroupViewController controller;
+    private Animator animator;
+
     GameManager gm;
 
     public GameObject modal;
     public bool isDestroyReq = false;
 
     void Awake() {
+        animator = GetComponent<Animator>();
         gm = GameManager.Instance;
+        modal = controller.modal;
+    }
+
+    void OnEnable() {
+        Invoke("playSlideIn", 0.2f);
+    }
+
+    void playSlideIn() {
+        animator.Play("SlideIn");
+    }
+
+    public void onBackButton() {
+        animator.Play("SlideOut");
+    }
+
+    public void slideFinished(AnimationEvent animationEvent) {
+        int boolParm = animationEvent.intParameter;
+
+        //slider in
+        if (boolParm == 1) {
+
+        }
+
+        //slider out
+        else if (boolParm == 0) {
+            gameObject.SetActive(false);
+        }
     }
 
     public void onDestroyButton() {
-        getMembers();
-    }
-
-    public void offPanel() {
-        gameObject.SetActive(false);
-    }
-
-    public void offModal() {
-        gameObject.SetActive(false);
-        modal.SetActive(false);
-        modal.transform.Find("SuccessModal").gameObject.SetActive(false);
-        modal.transform.Find("FailModal").gameObject.SetActive(false);
+        if (!checkMemberExist()) {
+            destoyReq();
+        }
+        else {
+            string msg = "가입된 그룹원이 있어 해체할 수 없습니다.";
+            controller.onModal(msg);
+        }
     }
 
     private void getMembers() {
@@ -41,11 +67,10 @@ public class GroupDelView : MonoBehaviour {
         for (int i = 0; i < members.Length; i++) {
             if (members[i].memberState != "MB") {
                 modal.SetActive(true);
-                modal.transform.Find("Modal/Label").GetComponent<UILabel>().text = "가입된 그룹원이 있어 해체할 수 없습니다.";
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public void destoyReq() {

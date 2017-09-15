@@ -67,6 +67,10 @@ public class GroupDetailView : MonoBehaviour {
             Group_detail getGroupDetailAct = ActionCreator.createAction(ActionTypes.GROUP_DETAIL) as Group_detail;
             getGroupDetailAct.id = id;
             gm.gameDispatcher.dispatch(getGroupDetailAct);
+
+            Group_getMemberAction act = ActionCreator.createAction(ActionTypes.GROUP_GET_MEMBERS) as Group_getMemberAction;
+            act.id = id;
+            gm.gameDispatcher.dispatch(act);
         }
 
         //slider out

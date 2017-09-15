@@ -24,6 +24,7 @@ public class GroupViewController : MonoBehaviour {
     public GameObject modal;
     public GameObject nullMessage;
 
+    public GameObject[] group_setting_subpanels;    //그룹 설정 내 하위 View들
     void Awake() {
         gm = GameManager.Instance;
         groupStore = gm.groupStore;
@@ -45,6 +46,12 @@ public class GroupViewController : MonoBehaviour {
     public void onPanel(GameObject obj) {
         int index = obj.GetComponent<GroupSceneIndex>().index;
         sendReq(index, obj);
+    }
+
+    //그룹 설정 하위 패널
+    public void onSubPanel(GameObject obj) {
+        int index = obj.GetComponent<GroupSceneIndex>().index;
+        group_setting_subpanels[index].SetActive(true);
     }
 
     public void sendReq(int sceneIndex, GameObject obj = null) {
@@ -115,30 +122,67 @@ public class GroupViewController : MonoBehaviour {
         else if(groupStoreEventType == ActionTypes.GROUP_GET_MEMBERS) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
                 memberView.makeList();
+                group_setting_subpanels[1].GetComponent<GroupMemberManageView>().makeList();
             }
         }
 
         else if(groupStoreEventType == ActionTypes.GROUP_BAN) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
                 detailView.refreshTxt();
+                string msg = "그룹원을 강퇴시켰습니다.";
+                onModal(msg);
             }
         }
 
         else if(groupStoreEventType == ActionTypes.GET_DISTRICT_DATA) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
                 addViewCtrler.init();
+                group_setting_subpanels[0].GetComponent<GroupSettingChangeView>().setProvinceList();
             }
         }
 
         else if(groupStoreEventType == ActionTypes.GET_CITY_DATA) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
                 addViewCtrler.setCityList();
+                group_setting_subpanels[0].GetComponent<GroupSettingChangeView>().setCityList();
             }
         }
 
         else if(groupStoreEventType == ActionTypes.GROUP_SEARCH) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
                 searchView.makeList();
+            }
+        }
+
+        else if(groupStoreEventType == ActionTypes.GROUP_EDIT) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                detailView.refreshTxt();
+                string msg = "그룹 정보가 갱신되었습니다.";
+                onModal(msg);
+            }
+        }
+
+        else if(groupStoreEventType == ActionTypes.GROUP_DESTROY) {
+            if(groupStore.storeStatus == storeStatus.NORMAL) {
+                string msg = "그룹이 해체되었습니다.";
+                onModal(msg);
+
+                //내그룹 갱신
+                Group_myGroups getMyGroupAct = ActionCreator.createAction(ActionTypes.MY_GROUP_PANEL) as Group_myGroups;
+                gm.gameDispatcher.dispatch(getMyGroupAct);
+
+                //그룹 삭제 화면 닫기
+                if (group_setting_subpanels[2].activeSelf) {
+                    group_setting_subpanels[2].GetComponent<GroupDelView>().onBackButton();
+                }
+                //그룹 상세보기 화면 닫기
+                if (detailView.gameObject.activeSelf) {
+                    detailView.onBackButton();
+                }
+                //그룹 설정 화면 닫기
+                if (subPanels[1].activeSelf) {
+                    subPanels[1].GetComponent<GroupSettingView>().onBackButton();
+                }
             }
         }
 
@@ -149,6 +193,11 @@ public class GroupViewController : MonoBehaviour {
         else {
             LoadingManager.Instance.offLoading();
         }
+    }
+
+    public void onModal(string msg) {
+        modal.SetActive(true);
+        modal.transform.Find("InnerModal/Text").GetComponent<Text>().text = msg;
     }
 
     private void makeList(Group[] myGroups) {

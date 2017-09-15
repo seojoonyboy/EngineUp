@@ -327,7 +327,7 @@ public class Groups : AjwStore {
                 strBuilder.Append(networkManager.baseUrl)
                     .Append("groups/")
                     .Append(payload.id);
-
+                Debug.Log(payload.id);
                 WWWForm form = new WWWForm();
 
                 form.AddField("groupIntro", payload.desc);
@@ -341,12 +341,12 @@ public class Groups : AjwStore {
             case NetworkAction.statusTypes.SUCCESS:
                 storeStatus = storeStatus.NORMAL;
                 message = "그룹 정보 수정에 성공하였습니다.";
-
                 Debug.Log(payload.response.data);
-                _emitChange();
+                
                 break;
             case NetworkAction.statusTypes.FAIL:
                 storeStatus = storeStatus.ERROR;
+                Debug.Log(payload.response.data);
                 GroupAddError addErrorCallback = GroupAddError.fromJSON(payload.response.data);
                 if(addErrorCallback.groupIntro != null) {
                     if (addErrorCallback.groupIntro[0].Contains("200")) {
@@ -361,6 +361,7 @@ public class Groups : AjwStore {
                 Debug.Log(payload.response.data);
                 break;
         }
+        _emitChange();
     }
 
     //그룹 가입하기
