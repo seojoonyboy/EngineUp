@@ -704,6 +704,7 @@ public class CallbackUser {
     public int representative;
     public string createDate;
     public status status;
+    public record record;
 }
 
 [System.Serializable]
