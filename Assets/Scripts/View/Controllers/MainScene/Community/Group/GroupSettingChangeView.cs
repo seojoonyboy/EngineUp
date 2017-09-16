@@ -137,8 +137,12 @@ public class GroupSettingChangeView : MonoBehaviour {
         Group_AddAction editAct = ActionCreator.createAction(ActionTypes.GROUP_EDIT) as Group_AddAction;
         editAct.id = controller.detailView.id;
         editAct.desc = descInput.text;
-        editAct.district = largeArea_dropMenu.options[largeArea_dropMenu.value].text;
-        editAct.city = detailArea_dropMenu.options[detailArea_dropMenu.value].text;
+        editAct.district = largeArea_dropMenu.value + 1;
+
+        int index = searchIndex(detailArea_dropMenu.options[detailArea_dropMenu.value].text);
+        editAct.city = index;
+        Debug.Log("Index : " + index);
+
         editAct.name = controller.detailView.groupName.text;
 
         gm.gameDispatcher.dispatch(editAct);
@@ -152,5 +156,16 @@ public class GroupSettingChangeView : MonoBehaviour {
     public void onDescModifyPanel() {
         deActivePanel.SetActive(false);
         descModifyButton.SetActive(false);
+    }
+
+    private int searchIndex(string keyword) {
+        Borough[] cities = controller.locationStore.borough;
+        int index = 0;
+        for (int i = 0; i < cities.Length; i++) {
+            if (cities[i].name == keyword) {
+                index = cities[i].id;
+            }
+        }
+        return index;
     }
 }

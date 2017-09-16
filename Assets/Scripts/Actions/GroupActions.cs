@@ -7,8 +7,8 @@ public class Group_search : NetworkAction {
 
 public class Group_AddAction : NetworkAction {
     public string name;
-    public string district;
-    public string city;
+    public int district;
+    public int city;
     public string desc = null;
     public int id;
 }

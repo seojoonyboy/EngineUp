@@ -74,8 +74,10 @@ public class GroupAddView : MonoBehaviour {
         Group_AddAction addAct = ActionCreator.createAction(ActionTypes.GROUP_ADD) as Group_AddAction;
 
         addAct.name = nameInput.text;
-        addAct.district = largeArea_dropMenu.options[largeArea_dropMenu.value].text;
-        addAct.city = detailArea_dropMenu.options[detailArea_dropMenu.value].text;
+        addAct.district = largeArea_dropMenu.value + 1;
+        
+        int index = searchIndex(detailArea_dropMenu.options[detailArea_dropMenu.value].text);
+        addAct.city = index;
 
         gm.gameDispatcher.dispatch(addAct);
     }
@@ -98,5 +100,16 @@ public class GroupAddView : MonoBehaviour {
         }
     }
 
+
+    private int searchIndex(string keyword) {
+        Borough[] cities = controller.locationStore.borough;
+        int index = 0;
+        for (int i = 0; i < cities.Length; i++) {
+            if (cities[i].name == keyword) {
+                index = cities[i].id;
+            }
+        }
+        return index;
+    }
 
 }
