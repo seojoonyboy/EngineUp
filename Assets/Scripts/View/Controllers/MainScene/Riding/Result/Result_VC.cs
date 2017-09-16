@@ -342,6 +342,8 @@ public class Result_VC : MonoBehaviour {
                 list.Add(val);
             }
             var _map = OnlineMaps.instance;
+
+            _map.zoom = 18;
             //입력받은 좌표가 없는 경우
             if (coords.Length == 0) {
                 OnlineMaps.instance.position = new Vector2(127.74437f, 37.87998f);
@@ -441,6 +443,8 @@ public class Result_VC : MonoBehaviour {
 
         _drawLine();
         _drawMarker();
+
+        mapPanel.SetActive(false);
     }
 
     public void offMapPanel() {
