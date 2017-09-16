@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class GroupMemberManageView : MonoBehaviour {
     public GroupViewController controller;
     public GroupDetailView detailView;
+    public MainViewController mV;
 
     private Animator animator;
     private GameManager gm;
@@ -15,7 +16,11 @@ public class GroupMemberManageView : MonoBehaviour {
         member_container,
         header_container,
         content,
-        message;
+        message,
+        content_members,
+        content_receivings,
+        content_members_nullMessage,
+        content_receivings_nullMessage;
 
     public int groupId;
 
@@ -83,31 +88,50 @@ public class GroupMemberManageView : MonoBehaviour {
         Member[] members = controller.groupStore.groupMembers;
         removeAllList();
 
-        int meberNum = 0;
-        int waitNum = 0;
+        int memberNum = 0;
+        int waitingNum = 0;
 
         for(int i=0; i<members.Length; i++) {
             if(members[i].memberState == "MB" && members[i].memberGrade == "GM") {
                 GameObject item = Instantiate(member_container);
-                item.transform.SetParent(content.transform, false);
+                item.transform.SetParent(content_members.transform, false);
 
                 item.GetComponent<FriendIndex>().id = members[i].id;
                 item.transform.Find("InnerContainer/Nickname").GetComponent<Text>().text = members[i].user.nickName;
-                item.transform.Find("Rank/Text").GetComponent<Text>().text = "랭크 : " + members[i].memberGrade;
+
+                int rank = members[i].user.status.rank;
+                int iconRank = (int)Mathf.Ceil((float)rank / 5);
+
+                if (iconRank == 0) {
+                    item.transform.Find("Rank/Image").GetComponent<Image>().sprite = mV.ranks[0];
+                } else {
+                    item.transform.Find("Rank/Image").GetComponent<Image>().sprite = mV.ranks[iconRank - 1];
+                }
+
+                item.transform.Find("Rank/Text").GetComponent<Text>().text = "랭크 " + rank;
 
                 Button banBtn = item.transform.Find("InnerContainer/BanButton").GetComponent<Button>();
                 banBtn.onClick.AddListener(() => onQuitGroup(item));
 
-                meberNum++;
+                memberNum++;
             }
 
             else if(members[i].memberState == "WT") {
                 GameObject item = Instantiate(waiting_container);
-                item.transform.SetParent(content.transform, false);
+                item.transform.SetParent(content_receivings.transform, false);
 
                 item.GetComponent<FriendIndex>().id = members[i].id;
                 item.transform.Find("InnerContainer/Name").GetComponent<Text>().text = members[i].user.nickName;
-                item.transform.Find("InnerContainer/Image/Text").GetComponent<Text>().text = "랭크 : " + members[i].memberGrade;
+                int rank = members[i].user.status.rank;
+                item.transform.Find("InnerContainer/Image/Text").GetComponent<Text>().text = "랭크 " + rank;
+                int iconRank = (int)Mathf.Ceil((float)rank / 5);
+
+                if(iconRank == 0) {
+                    item.transform.Find("InnerContainer/Image/Rank").GetComponent<Image>().sprite = mV.ranks[0];
+                }
+                else {
+                    item.transform.Find("InnerContainer/Image/Rank").GetComponent<Image>().sprite = mV.ranks[iconRank - 1];
+                }
 
                 Button acceptBtn = item.transform.Find("AcceptButton").GetComponent<Button>();
                 acceptBtn.onClick.AddListener(() => onAccept(item));
@@ -115,28 +139,30 @@ public class GroupMemberManageView : MonoBehaviour {
                 Button banBtn = item.transform.Find("DenyButton").GetComponent<Button>();
                 banBtn.onClick.AddListener(() => onQuitGroup(item));
 
-                waitNum++;
+                waitingNum++;
             }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(content.GetComponent<RectTransform>());
         }
 
-        if(waitNum != 0 && meberNum != 0) {
-            //내 그룹 멤버 header
-            GameObject header = Instantiate(header_container);
-            header.transform.SetParent(content.transform, false);
-            header.transform.SetAsFirstSibling();
-
-            //수락 대기 header
-            header = Instantiate(header_container);
-            header.transform.SetParent(content.transform, false);
-            header.transform.SetSiblingIndex(meberNum);
+        if(waitingNum == 0) {
+            content_receivings_nullMessage.SetActive(true);
+        } else {
+            content_receivings_nullMessage.SetActive(false);
         }
-        else {
-            message.SetActive(true);
+
+        if(memberNum == 0) {
+            content_members_nullMessage.SetActive(true);
+        } else {
+            content_members_nullMessage.SetActive(false);
         }
     }
 
     private void removeAllList() {
-        foreach(Transform child in content.transform) {
+        foreach(Transform child in content_receivings.transform) {
+            Destroy(child.gameObject);
+        }
+        foreach (Transform child in content_members.transform) {
             Destroy(child.gameObject);
         }
     }

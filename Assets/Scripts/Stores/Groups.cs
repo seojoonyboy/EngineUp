@@ -703,6 +703,7 @@ public class CallbackUser {
     public string nickName;
     public int representative;
     public string createDate;
+    public status status;
 }
 
 [System.Serializable]
