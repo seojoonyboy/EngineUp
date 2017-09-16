@@ -74,6 +74,8 @@ public class GroupSearchView : MonoBehaviour {
             Group_search searchAct = ActionCreator.createAction(ActionTypes.GROUP_SEARCH) as Group_search;
             searchAct.keyword = parent.searchInput.text;
             gm.gameDispatcher.dispatch(searchAct);
+
+            parent.searchInput.text = null;
         }
     }
 
