@@ -48,7 +48,7 @@ public class GroupDelView : MonoBehaviour {
             destoyReq();
         }
         else {
-            string msg = "가입된 그룹원이 있어 해체할 수 없습니다.";
+            string msg = "가입된 그룹원이 있어\n해체할 수 없습니다.";
             controller.onModal(msg);
         }
     }

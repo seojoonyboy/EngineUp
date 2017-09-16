@@ -164,7 +164,7 @@ public class GroupViewController : MonoBehaviour {
 
         else if(groupStoreEventType == ActionTypes.GROUP_DESTROY) {
             if(groupStore.storeStatus == storeStatus.NORMAL) {
-                string msg = "그룹이 해체되었습니다.";
+                string msg = "그룹이 해체 되었습니다.";
                 onModal(msg);
 
                 //내그룹 갱신
